@@ -40,27 +40,28 @@ def sim(mx, c, f, trials=200000, seed=1):
     for _ in range(trials): cnt[f(sorted(rng.sample(range(1, mx+1), c)))] += 1
     return {k: v/trials for k, v in cnt.items()}
 
-for game in ['power655', 'mega645', 'loto535']:
-    mx, c, _, draws = load(game); n = len(draws)
-    D = [sorted(d['nums']) for d in draws]
-    print(f'\n=== {game}: {n} kỳ, chọn {c}/{mx}')
-    odd = (mx+1)//2
-    compare('Số lẻ trong bộ', [sum(x % 2 for x in s) for s in D], {k: hyper(mx, odd, c, k) for k in range(c+1)}, n)
-    low = mx//2
-    compare(f'Số nhỏ (<= {low})', [sum(x <= low for x in s) for s in D], {k: hyper(mx, low, c, k) for k in range(c+1)}, n)
-    compare('Số <= 31 (ngày sinh)', [sum(x <= 31 for x in s) for s in D], {k: hyper(mx, 31, c, k) for k in range(c+1)}, n)
-    cons = lambda s: sum(b-a == 1 for a, b in zip(s, s[1:]))
-    compare('Cặp số liền nhau', [cons(s) for s in D], sim(mx, c, cons), n)
-    rep = [len(set(D[i]) & set(D[i-1])) for i in range(1, n)]
-    compare('Số lặp lại từ kỳ trước', rep, {k: hyper(mx, c, c, k) for k in range(c+1)}, n-1)
-    band = lambda s: (sum(s)-c*(mx+1)/2)//(c*(mx+1)/2*0.1)   # nhóm tổng theo 10% quanh trung bình
-    sums = [sum(s) for s in D]
-    ps = sim(mx, c, sum); lo, hi, acc = None, None, 0
-    for k in sorted(ps):
-        acc += ps[k]
-        if lo is None and acc >= 0.15: lo = k
-        if hi is None and acc >= 0.85: hi = k
-    inside = sum(lo <= s <= hi for s in sums)
-    print(f'  Tổng bộ số: TB {sum(sums)/n:.1f} (lý thuyết {c*(mx+1)/2:.1f}); trong khoảng giữa 70% [{lo}–{hi}]: {inside}/{n} = {inside/n*100:.1f}% (lý thuyết 70%)')
-    dec = lambda s: len({(x-1)//10 for x in s})
-    compare('Số nhóm chục khác nhau', [dec(s) for s in D], sim(mx, c, dec), n)
+if __name__ == '__main__':
+    for game in ['power655', 'mega645', 'loto535']:
+        mx, c, _, draws = load(game); n = len(draws)
+        D = [sorted(d['nums']) for d in draws]
+        print(f'\n=== {game}: {n} kỳ, chọn {c}/{mx}')
+        odd = (mx+1)//2
+        compare('Số lẻ trong bộ', [sum(x % 2 for x in s) for s in D], {k: hyper(mx, odd, c, k) for k in range(c+1)}, n)
+        low = mx//2
+        compare(f'Số nhỏ (<= {low})', [sum(x <= low for x in s) for s in D], {k: hyper(mx, low, c, k) for k in range(c+1)}, n)
+        compare('Số <= 31 (ngày sinh)', [sum(x <= 31 for x in s) for s in D], {k: hyper(mx, 31, c, k) for k in range(c+1)}, n)
+        cons = lambda s: sum(b-a == 1 for a, b in zip(s, s[1:]))
+        compare('Cặp số liền nhau', [cons(s) for s in D], sim(mx, c, cons), n)
+        rep = [len(set(D[i]) & set(D[i-1])) for i in range(1, n)]
+        compare('Số lặp lại từ kỳ trước', rep, {k: hyper(mx, c, c, k) for k in range(c+1)}, n-1)
+        band = lambda s: (sum(s)-c*(mx+1)/2)//(c*(mx+1)/2*0.1)   # nhóm tổng theo 10% quanh trung bình
+        sums = [sum(s) for s in D]
+        ps = sim(mx, c, sum); lo, hi, acc = None, None, 0
+        for k in sorted(ps):
+            acc += ps[k]
+            if lo is None and acc >= 0.15: lo = k
+            if hi is None and acc >= 0.85: hi = k
+        inside = sum(lo <= s <= hi for s in sums)
+        print(f'  Tổng bộ số: TB {sum(sums)/n:.1f} (lý thuyết {c*(mx+1)/2:.1f}); trong khoảng giữa 70% [{lo}–{hi}]: {inside}/{n} = {inside/n*100:.1f}% (lý thuyết 70%)')
+        dec = lambda s: len({(x-1)//10 for x in s})
+        compare('Số nhóm chục khác nhau', [dec(s) for s in D], sim(mx, c, dec), n)
