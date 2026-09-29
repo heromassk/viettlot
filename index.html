@@ -77,6 +77,16 @@
   .scrollbox table{margin-top:0;}
   .scrollbox thead th{position:sticky;top:0;background:var(--panel2);}
   .tablewrap{overflow-x:auto;}
+  details.sec{border-top:1px solid var(--border);margin-top:8px;}
+  details.sec>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:9px 0;user-select:none;}
+  details.sec>summary::-webkit-details-marker{display:none;}
+  details.sec>summary::before{content:'▸';color:var(--accent);font-size:1rem;transition:transform .15s;}
+  details.sec[open]>summary::before{transform:rotate(90deg);}
+  details.sec>summary h3{margin:0 !important;}
+  details.sec>summary:hover h3{color:var(--accent);}
+  details.sec>summary .hint{margin-left:auto;font-size:0.75rem;color:var(--muted);}
+  details.sec[open]>summary .hint::after{content:'thu gọn';}
+  details.sec:not([open])>summary .hint::after{content:'bấm để xem';}
   #statsPanel th[data-sort]{cursor:pointer;user-select:none;}
   #statsPanel th[data-sort]:hover{color:var(--accent);}
   #statsPanel td,#statsPanel th{font-size:0.8rem;}
@@ -2082,6 +2092,7 @@ function renderOptions(ctx){
     </tbody></table></div>
     <div class="footnote" style="margin-top:10px;"><b>Cách hiểu:</b> "hệ số ×1,30" nghĩa là trong lịch sử, các quy luật chứa số này về nhiều hơn mức ngẫu nhiên khoảng 30% (nhân dồn nếu số thuộc nhiều quy luật). Đây là <b>hy vọng nhỏ</b>: chưa quy luật nào vượt ngưỡng may mắn thuần túy (mục 3), và con số lịch sử thường cao hơn thực tế về sau. Mỗi bộ số vẫn có cùng xác suất trúng Jackpot như mọi bộ khác.</div>`;
   document.getElementById('optionsOut').innerHTML = html;
+  collapsify(document.getElementById('optionsOut'), 'gen', ['Số may mắn']);
 }
 
 // ---------- Backtest (section 2) ----------
@@ -2252,6 +2263,7 @@ function renderBacktestPanel(gameKey){
     `;
   }
   panel.innerHTML = box + statsHtml + tableHtml;
+  collapsify(panel, 'bt-'+gameKey);
   const fileInput = document.getElementById(`bt-file-${gameKey}`);
   if(fileInput) fileInput.addEventListener('change', (e)=>handleBacktestFile(e, gameKey));
   wireUpdateBox(gameKey);
@@ -2504,6 +2516,25 @@ function ingestCSVText(text, gameKey){
   const draws = parseDrawRows(rows, game);
   historyData[gameKey] = buildHistoryFromDraws(draws, game);
   backtestResult[gameKey] = runBacktest(game);
+}
+
+// ---------- Khối xổ xuống/thu gọn cho các bảng dài ----------
+// Mỗi <h3> nằm trực tiếp trong root + các phần tử theo sau (tới <h3> kế tiếp hoặc phần tử có data-sec-stop)
+// được gói vào <details>. Trạng thái mở/đóng được nhớ theo tên (bỏ các con số) để không tự đóng khi vẽ lại.
+const secState = new Map();
+function collapsify(root, prefix, openByDefault=[]){
+  if(!root) return;
+  [...root.children].filter(el=> el.tagName==='H3').forEach(h3=>{
+    const key = prefix + '|' + h3.textContent.replace(/[\d.,]+/g,'#').trim();
+    const det = document.createElement('details'); det.className = 'sec';
+    const sum = document.createElement('summary');
+    h3.replaceWith(det); sum.appendChild(h3); sum.insertAdjacentHTML('beforeend','<span class="hint"></span>'); det.appendChild(sum);
+    let nx = det.nextElementSibling;
+    while(nx && nx.tagName!=='H3' && !nx.hasAttribute('data-sec-stop')){ const cur = nx; nx = nx.nextElementSibling; det.appendChild(cur); }
+    const open = secState.has(key) ? secState.get(key) : openByDefault.some(s=> h3.textContent.includes(s));
+    det.open = open;
+    det.addEventListener('toggle', ()=> secState.set(key, det.open));
+  });
 }
 
 // ---------- Lịch & các quy luật "ngày → số" (bản JS của research/*.py, tên quy luật giữ nguyên) ----------
@@ -2856,7 +2887,7 @@ function renderStats(){
     const rowsH = keys.map(k=>{ const o = obs.get(k)||0, t = theoryOf(k)*100, pct = o/T*100;
       return `<tr><td>${labelOf(k)}</td><td>${o}</td><td style="text-align:left;"><span class="bar" style="width:${pct*1.6}px"></span> ${pct.toFixed(1)}%</td>
         <td style="text-align:left;"><span class="bar theory" style="width:${t*1.6}px"></span> ${t.toFixed(1)}%</td></tr>`; }).join('');
-    return `<div><h3 style="margin-top:16px;">${title}</h3><div class="tablewrap"><table>
+    return `<div><div style="font-weight:700;margin:14px 0 4px;">${title}</div><div class="tablewrap"><table>
       <thead><tr><th></th><th>Số kỳ</th><th style="text-align:left;">Thực tế</th><th style="text-align:left;">Lý thuyết (ngẫu nhiên)</th></tr></thead><tbody>${rowsH}</tbody></table></div></div>`;
   };
   const ks = Array.from({length:c+1},(_,i)=>i);
@@ -2867,7 +2898,8 @@ function renderStats(){
   const hasCons = s=> s.some((x,i)=> i && x-s[i-1]===1) ? 1 : 0;
   const pNoCons = nCk(max-c+1,c)/nCk(max,c);
   const sums = S.map(s=> s.reduce((a,b)=>a+b,0));
-  html += `<div class="dist-grid">
+  html += `<h3 style="margin-top:16px;">Cấu trúc bộ số trúng: chẵn/lẻ, nhỏ/to, tổng, số liền nhau</h3>
+  <div class="dist-grid">
     ${distTable('Số lẻ trong bộ', k=>`${k} lẻ – ${c-k} chẵn`, s=> s.filter(x=>x%2).length, k=> hyperP(max,oddPool,c,k), ks)}
     ${distTable(`Số nhỏ (1–${low}) trong bộ`, k=>`${k} nhỏ – ${c-k} to`, s=> s.filter(x=>x<=low).length, k=> hyperP(max,low,c,k), ks)}
     ${distTable('Tổng các số', k=>`${k}–${k+step-1}`, s=> bucket(s.reduce((a,b)=>a+b,0)), k=> sumTheory.get(k)||0, sumKeys)}
@@ -2876,6 +2908,7 @@ function renderStats(){
   <div class="footnote">Tổng trung bình thực tế <b>${(sums.reduce((a,b)=>a+b,0)/T).toFixed(1)}</b> (lý thuyết ${(c*(max+1)/2).toFixed(1)}), nhỏ nhất ${Math.min(...sums)}, lớn nhất ${Math.max(...sums)}.
     Cột "Lý thuyết" là tỉ lệ nếu máy bốc hoàn toàn ngẫu nhiên — thực tế càng sát lý thuyết càng cho thấy không có quy luật riêng. Kiểu hay gặp (ví dụ 3 lẻ – 3 chẵn) hay gặp vì có nhiều bộ số thuộc kiểu đó, không phải vì từng bộ dễ trúng hơn.</div>`;
   panel.innerHTML = html;
+  collapsify(panel, 'st');
   panel.querySelectorAll('th[data-sort]').forEach(th=> th.addEventListener('click', ()=>{
     const k = th.dataset.sort;
     statsSort = statsSort.key===k ? {key:k, dir:-statsSort.dir} : {key:k, dir: k==='n' ? 1 : -1};
@@ -2920,15 +2953,16 @@ function renderResearch(){
       ${a.recent.slice().reverse().map(k=> `<tr><td>${k.date} ${k.hour}h</td><td>${k.nums.map(n=>String(n).padStart(2,'0')).join(' ')}</td><td style="text-align:left;">${
         Object.entries(k.links).filter(([,v])=>v.length).map(([n,v])=>`<b>${n}</b> ← ${v.join(', ')}`).join('<br>') || '—'}</td></tr>`).join('')}
     </tbody></table></div>
-    <details style="margin-top:16px;"><summary style="cursor:pointer;color:var(--accent);">Xem đủ ${a.rules.length} cách (xếp từ trúng nhiều nhất đến ít nhất)</summary>
+    <details data-sec-stop style="margin-top:16px;"><summary style="cursor:pointer;color:var(--accent);">Xem đủ ${a.rules.length} cách (xếp từ trúng nhiều nhất đến ít nhất)</summary>
       <div class="scrollbox" style="margin-top:8px;"><table>${head}<tbody>${a.rules.map(row).join('')}</tbody></table></div>
     </details>
-    <div class="footnote" style="margin-top:12px;">
+    <div class="footnote" data-sec-stop style="margin-top:12px;">
       <b>Cách đọc:</b> "Trúng / kỳ vọng" = tổng số lần số trúng rơi vào nhóm của cách đó, so với kỳ vọng nếu chọn ngẫu nhiên cùng số lượng. p càng nhỏ càng ít khả năng là trùng hợp, nhưng khi thử hơn 100 cách thì vài cách có p &lt; 0,05 là bình thường.
       <b>Viết tắt:</b> MH âm / MH dương = quẻ Mai Hoa Dịch Số lập theo ngày âm / dương lịch và giờ quay (Thể/Dụng, quẻ biến, quẻ hỗ); JD = số ngày Julian; daySum = tổng chữ số ngày rút gọn còn 1 chữ số;
       tỷ hòa / được sinh / sinh ra / khắc / bị khắc = nhóm số (theo chữ số tận cùng: 1,6 Thủy · 2,7 Hỏa · 3,8 Mộc · 4,9 Kim · 5,0 Thổ) có quan hệ đó với hành của ngày/giờ.
       Dữ liệu phân tích ngày ${RESEARCH.generated}.
     </div>`;
+  collapsify(panel, 'rs', ['nên chọn', 'nên tránh']);
 }
 
 // init
