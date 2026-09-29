@@ -77,6 +77,15 @@
   .scrollbox table{margin-top:0;}
   .scrollbox thead th{position:sticky;top:0;background:var(--panel2);}
   .tablewrap{overflow-x:auto;}
+  #statsPanel th[data-sort]{cursor:pointer;user-select:none;}
+  #statsPanel th[data-sort]:hover{color:var(--accent);}
+  #statsPanel td,#statsPanel th{font-size:0.8rem;}
+  .bar{display:inline-block;height:10px;border-radius:3px;background:var(--accent);vertical-align:middle;}
+  .bar.theory{background:var(--muted);opacity:0.5;}
+  .gan-hi{color:var(--bad);font-weight:700;}
+  .hot{color:var(--good);font-weight:700;}
+  .dist-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:4px 20px;}
+  .dist-grid td:first-child{white-space:nowrap;text-align:left;}
   #researchPanel td,#researchPanel th{font-size:0.78rem;}
 </style>
 </head>
@@ -139,6 +148,13 @@
     <div class="footnote" style="margin-bottom:12px;">Hơn 100 cách lấy số từ ngày quay (dương/âm lịch, Can Chi, Nạp Âm, tiết khí, Mai Hoa Dịch Số...) được đối chiếu với toàn bộ lịch sử từng loại vé. Mỗi cách cho ra một nhóm số mỗi kỳ; bảng so số lần trúng thật với số lần kỳ vọng nếu chọn ngẫu nhiên cùng số lượng.</div>
     <div class="gametabs" id="researchTabs"></div>
     <div id="researchPanel"></div>
+  </div>
+
+  <div class="card">
+    <h2>4. Thống kê từng số và cấu trúc bộ số trúng</h2>
+    <div class="footnote" style="margin-bottom:12px;">Tính trực tiếp từ dữ liệu lịch sử đang nạp ở mục 1 — tự cập nhật khi bạn dán/gộp kết quả mới. Bấm vào tiêu đề cột để sắp xếp.</div>
+    <div class="gametabs" id="statsTabs"></div>
+    <div id="statsPanel"></div>
   </div>
 
   <div class="footnote" style="text-align:center;">Kết quả xổ số là ngẫu nhiên thật sự — công cụ này chỉ mang tính vui/tham khảo theo góc nhìn phong thủy Can Chi — Nạp Âm Ngũ Hành, không có cơ sở khoa học đảm bảo trúng thưởng.</div>
@@ -2036,6 +2052,7 @@ function runBacktest(game){
 function renderBacktestPanel(gameKey){
   const game = {...GAMES[gameKey], key: gameKey};
   const panel = document.getElementById(`bt-panel-${gameKey}`);
+  if(gameKey===statsGame) renderStats(); // dữ liệu vừa đổi (nạp/gộp/khôi phục) → cập nhật mục 4
   if(!panel) return;
   const hist = historyData[gameKey];
   const updateBox = `
@@ -2374,6 +2391,121 @@ function ingestCSVText(text, gameKey){
   const draws = parseDrawRows(rows, game);
   historyData[gameKey] = buildHistoryFromDraws(draws, game);
   backtestResult[gameKey] = runBacktest(game);
+}
+
+// ---------- Thống kê từng số (mục 4) ----------
+let statsGame = 'loto535';
+let statsSort = {key:'n', dir:1};
+function nCk(n,k){ if(k<0||k>n) return 0; let r=1; for(let i=1;i<=k;i++) r = r*(n-k+i)/i; return r; }
+function hyperP(N,K,n,k){ return nCk(K,k)*nCk(N-K,n-k)/nCk(N,n); }
+// Phân bố tổng của c số khác nhau trong 1..max (đếm chính xác bằng quy hoạch động).
+function sumDistribution(max, c){
+  let dp = [new Map([[0,1]])]; for(let k=1;k<=c;k++) dp.push(new Map());
+  for(let x=1;x<=max;x++) for(let k=Math.min(c,x);k>=1;k--) for(const [s,v] of dp[k-1]) dp[k].set(s+x,(dp[k].get(s+x)||0)+v);
+  const total = nCk(max,c), out = new Map();
+  for(const [s,v] of dp[c]) out.set(s, v/total);
+  return out;
+}
+// Thống kê cho mỗi số trong pool 1..max, dựa trên dãy kỳ quay (cũ → mới). getNums(d) trả về các số của kỳ d.
+function numberStats(draws, max, getNums){
+  const T = draws.length, pos = Array.from({length:max+1}, ()=>[]);
+  draws.forEach((d,i)=> getNums(d).forEach(x=>{ if(x>=1 && x<=max) pos[x].push(i); }));
+  const rows = [];
+  for(let x=1;x<=max;x++){
+    const p = pos[x], gaps = [];
+    for(let k=1;k<p.length;k++) gaps.push(p[k]-p[k-1]);
+    const last = p.length ? p[p.length-1] : -1;
+    rows.push({
+      n:x, count:p.length, pct: T? p.length/T*100 : 0,
+      lastDate: last>=0 ? draws[last].date : null, lastHour: last>=0 ? draws[last].hour : null,
+      current: last>=0 ? T-1-last : T,                      // số kỳ đã trôi qua mà chưa về lại
+      avgGap: gaps.length ? gaps.reduce((a,b)=>a+b,0)/gaps.length : null,
+      minGap: gaps.length ? Math.min(...gaps) : null,
+      maxGap: gaps.length ? Math.max(...gaps) : null,
+    });
+  }
+  return rows;
+}
+function renderStats(){
+  const tabs = document.getElementById('statsTabs'), panel = document.getElementById('statsPanel');
+  if(!tabs || !panel) return;
+  tabs.innerHTML = Object.entries(GAMES).map(([k,g])=> `<div class="gametab ${k===statsGame?'active':''}" data-key="${k}">${g.label}</div>`).join('');
+  tabs.querySelectorAll('.gametab').forEach(el=> el.addEventListener('click', ()=>{ statsGame = el.dataset.key; renderStats(); }));
+  const game = GAMES[statsGame], hist = historyData[statsGame];
+  if(!hist || !hist.draws.length){ panel.innerHTML = '<div class="footnote">Chưa có dữ liệu — nạp CSV ở mục 1.</div>'; return; }
+  const D = hist.draws, T = D.length, c = game.count, max = game.max;
+  const multi = game.drawHoursVN.length>1;
+  const fmtDraw = (date,hour)=> date ? toDDMMYYYY(date) + (multi && hour!=null ? ` ${hour}h` : '') : '—';
+
+  // --- bảng từng số ---
+  const tableFor = (rows, expectEach, expectGap, title, id)=>{
+    const dir = statsSort.dir, key = statsSort.key;
+    const val = r=> r[key]==null ? (dir>0 ? Infinity : -Infinity) : (key==='lastDate' ? r.lastDate : r[key]);
+    rows = rows.slice().sort((a,b)=> (val(a)<val(b) ? -1 : val(a)>val(b) ? 1 : a.n-b.n)*dir);
+    const hotMin = expectEach*1.15, coldMax = expectEach*0.85;
+    const col = (k,label)=> `<th data-sort="${k}">${label}${key===k ? (dir>0?' ▲':' ▼') : ''}</th>`;
+    return `<h3 style="margin-top:16px;">${title}</h3>
+      <div class="tablewrap scrollbox" id="${id}"><table>
+      <thead><tr>${col('n','Số')}${col('count','Số lần xuất hiện')}${col('pct','% số kỳ có mặt')}${col('lastDate','Lần cuối có mặt')}${col('current','Số kỳ chưa về')}${col('avgGap','Khoảng cách TB')}${col('minGap','Ngắn nhất')}${col('maxGap','Dài nhất')}</tr></thead>
+      <tbody>${rows.map(r=> `<tr>
+        <td><b>${String(r.n).padStart(2,'0')}</b></td>
+        <td class="${r.count>=hotMin?'hot':(r.count<=coldMax?'gan-hi':'')}">${r.count}</td>
+        <td>${r.pct.toFixed(1)}%</td>
+        <td>${fmtDraw(r.lastDate, r.lastHour)}</td>
+        <td class="${r.avgGap && r.current>2*r.avgGap ? 'gan-hi':''}">${r.current}</td>
+        <td>${r.avgGap!=null ? r.avgGap.toFixed(1) : '—'}</td>
+        <td>${r.minGap ?? '—'}</td>
+        <td>${r.maxGap ?? '—'}</td></tr>`).join('')}</tbody></table></div>
+      <div class="footnote">Kỳ vọng nếu ngẫu nhiên: mỗi số về ~<b>${expectEach.toFixed(1)}</b> lần, cứ ~<b>${expectGap.toFixed(1)}</b> kỳ về 1 lần.
+        <span class="hot">Xanh</span> = về nhiều hơn kỳ vọng 15% trở lên; <span class="gan-hi">đỏ</span> ở cột "Số lần" = ít hơn 15% trở lên, ở cột "Số kỳ chưa về" = đã vắng hơn 2 lần khoảng cách trung bình của chính số đó.
+        "Khoảng cách" = sau bao nhiêu kỳ thì số đó về lại (1 = về 2 kỳ liên tiếp).</div>`;
+  };
+  const mainRows = numberStats(D, max, d=> d.numbers);
+  let html = `<div class="stat-grid">
+      <div class="stat"><div class="num">${T}</div><div class="lbl">Kỳ quay (${toDDMMYYYY(D[0].date)} → ${toDDMMYYYY(D[T-1].date)})</div></div>
+      <div class="stat"><div class="num">${mainRows.reduce((a,r)=> r.count>a.count?r:a).n}</div><div class="lbl">Về nhiều nhất (${Math.max(...mainRows.map(r=>r.count))} lần)</div></div>
+      <div class="stat"><div class="num">${mainRows.reduce((a,r)=> r.count<a.count?r:a).n}</div><div class="lbl">Về ít nhất (${Math.min(...mainRows.map(r=>r.count))} lần)</div></div>
+      <div class="stat"><div class="num">${mainRows.reduce((a,r)=> r.current>a.current?r:a).n}</div><div class="lbl">Gan nhất hiện tại (${Math.max(...mainRows.map(r=>r.current))} kỳ chưa về)</div></div>
+    </div>`;
+  html += tableFor(mainRows, T*c/max, max/c, `Từng số chính (1–${max})`, 'statsMain');
+  if(game.luckyMax){
+    const withLucky = D.filter(d=> d.lucky!=null);
+    html += tableFor(numberStats(withLucky, game.luckyMax, d=> [d.lucky]), withLucky.length/game.luckyMax, game.luckyMax, `Số may mắn (1–${game.luckyMax})`, 'statsLucky');
+  }
+
+  // --- cấu trúc bộ số ---
+  const S = D.map(d=> d.numbers.slice().sort((a,b)=>a-b));
+  const oddPool = Math.ceil(max/2), low = Math.floor(max/2);
+  const distTable = (title, labelOf, obsOf, theoryOf, keys)=>{
+    const obs = new Map(); S.forEach(s=>{ const k = obsOf(s); obs.set(k,(obs.get(k)||0)+1); });
+    const rowsH = keys.map(k=>{ const o = obs.get(k)||0, t = theoryOf(k)*100, pct = o/T*100;
+      return `<tr><td>${labelOf(k)}</td><td>${o}</td><td style="text-align:left;"><span class="bar" style="width:${pct*1.6}px"></span> ${pct.toFixed(1)}%</td>
+        <td style="text-align:left;"><span class="bar theory" style="width:${t*1.6}px"></span> ${t.toFixed(1)}%</td></tr>`; }).join('');
+    return `<div><h3 style="margin-top:16px;">${title}</h3><div class="tablewrap"><table>
+      <thead><tr><th></th><th>Số kỳ</th><th style="text-align:left;">Thực tế</th><th style="text-align:left;">Lý thuyết (ngẫu nhiên)</th></tr></thead><tbody>${rowsH}</tbody></table></div></div>`;
+  };
+  const ks = Array.from({length:c+1},(_,i)=>i);
+  const sd = sumDistribution(max, c), step = max>40 ? 20 : 15;
+  const bucket = s=> Math.floor(s/step)*step;
+  const sumTheory = new Map(); for(const [s,p] of sd) sumTheory.set(bucket(s),(sumTheory.get(bucket(s))||0)+p);
+  const sumKeys = [...sumTheory.keys()].sort((a,b)=>a-b).filter(k=> sumTheory.get(k)*T>=0.5 || S.some(s=> bucket(s.reduce((a,b)=>a+b,0))===k));
+  const hasCons = s=> s.some((x,i)=> i && x-s[i-1]===1) ? 1 : 0;
+  const pNoCons = nCk(max-c+1,c)/nCk(max,c);
+  const sums = S.map(s=> s.reduce((a,b)=>a+b,0));
+  html += `<div class="dist-grid">
+    ${distTable('Số lẻ trong bộ', k=>`${k} lẻ – ${c-k} chẵn`, s=> s.filter(x=>x%2).length, k=> hyperP(max,oddPool,c,k), ks)}
+    ${distTable(`Số nhỏ (1–${low}) trong bộ`, k=>`${k} nhỏ – ${c-k} to`, s=> s.filter(x=>x<=low).length, k=> hyperP(max,low,c,k), ks)}
+    ${distTable('Tổng các số', k=>`${k}–${k+step-1}`, s=> bucket(s.reduce((a,b)=>a+b,0)), k=> sumTheory.get(k)||0, sumKeys)}
+    ${distTable('Có cặp số liền nhau (vd 12-13)', k=> k?'Có':'Không', hasCons, k=> k ? 1-pNoCons : pNoCons, [0,1])}
+  </div>
+  <div class="footnote">Tổng trung bình thực tế <b>${(sums.reduce((a,b)=>a+b,0)/T).toFixed(1)}</b> (lý thuyết ${(c*(max+1)/2).toFixed(1)}), nhỏ nhất ${Math.min(...sums)}, lớn nhất ${Math.max(...sums)}.
+    Cột "Lý thuyết" là tỉ lệ nếu máy bốc hoàn toàn ngẫu nhiên — thực tế càng sát lý thuyết càng cho thấy không có quy luật riêng. Kiểu hay gặp (ví dụ 3 lẻ – 3 chẵn) hay gặp vì có nhiều bộ số thuộc kiểu đó, không phải vì từng bộ dễ trúng hơn.</div>`;
+  panel.innerHTML = html;
+  panel.querySelectorAll('th[data-sort]').forEach(th=> th.addEventListener('click', ()=>{
+    const k = th.dataset.sort;
+    statsSort = statsSort.key===k ? {key:k, dir:-statsSort.dir} : {key:k, dir: k==='n' ? 1 : -1};
+    renderStats();
+  }));
 }
 
 // ---------- Nghiên cứu (mục 3) ----------
