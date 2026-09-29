@@ -13,6 +13,9 @@ rpath = os.path.join(ROOT, 'research', 'recency.json')
 if os.path.exists(rpath):   # số nóng/lạnh, cặp hay về cùng theo mốc thời gian (research/recency.py --json)
     for g, rows in json.load(open(rpath, encoding='utf-8')).items():
         if g in data['games']: data['games'][g]['recency'] = rows
+lpath = os.path.join(ROOT, 'research', 'lucky.json')
+if os.path.exists(lpath) and 'loto535_lucky' in data['games']:   # số may mắn Loto: tín hiệu từ các kỳ trước (research/lucky.py --json)
+    data['games']['loto535_lucky']['history'] = json.load(open(lpath, encoding='utf-8'))['rules']
 js = 'const RESEARCH = ' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';'
 path = os.path.join(ROOT, 'index.html')
 h = open(path, encoding='utf-8').read()
