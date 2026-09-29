@@ -2087,6 +2087,24 @@ function renderOptions(ctx){
     }).join(' · ');
   };
   let html = '';
+  // Top 8 số tiềm năng nhất của ngày: xếp theo hệ số hy vọng (hòa thì theo thứ tự cố định của ngày)
+  const top8 = order.slice(0, 8);
+  const ups = n=> why[n].filter(w=> w.lift>=1).sort((a,b)=> b.z-a.z), downs = n=> why[n].filter(w=> w.lift<1);
+  html += `<div class="csvbox" style="text-align:left;border-style:solid;border-color:var(--accent);margin-top:12px;">
+    <b style="color:var(--accent);">⭐ Top 8 số tiềm năng nhất ngày này (1–${max})</b>
+    <div class="footnote" style="margin:4px 0 8px;">Xếp theo hệ số hy vọng từ cao xuống thấp — số được nhiều quy luật "nên chọn" ủng hộ đứng trước. Bấm "Vì sao chọn từng số" ở các phương án bên dưới để xem chi tiết.</div>
+    ${top8.map((n,k)=>{
+      const u = ups(n), dn = downs(n), mult = Math.exp(score[n]);
+      const reason = u.length ? u.slice(0,2).map(w=> `${w.rule} (${fmtPct(w.lift)})`).join(' · ') + (u.length>2 ? ` · +${u.length-2} quy luật khác` : '')
+                              : '<span style="color:var(--muted);">không quy luật nào — số trung lập, xếp theo thứ tự cố định của ngày</span>';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-top:${k?'1px solid var(--border)':'none'};">
+        <span style="width:22px;color:var(--muted);font-weight:700;">#${k+1}</span>
+        <div class="ball" style="width:36px;height:36px;font-size:0.95rem;flex:none;">${n}</div>
+        <span class="badge" style="margin:0;flex:none;color:${mult>1.0001?'var(--good)':(mult<0.9999?'var(--bad)':'var(--muted)')};">×${mult.toFixed(2)}</span>
+        <span style="font-size:0.8rem;line-height:1.4;">${reason}${dn.length ? ` <span style="color:var(--bad);">· ▼ ${dn.map(w=> w.rule).join(', ')}</span>` : ''}</span>
+      </div>`;
+    }).join('')}
+  </div>`;
   options.forEach((o, k)=>{
     const st = comboStats(o.nums, max), mult = Math.exp(o.total/c);
     html += `<div class="csvbox" style="text-align:left;margin-top:14px;border-style:solid;${k===0?'border-color:var(--accent);':''}">
