@@ -153,8 +153,9 @@
         </select>
       </div>
       <div class="field" style="max-width:220px;">
-        <label>Ngày sinh của bạn (tùy chọn)</label>
-        <input type="date" id="birthDate">
+        <label>Ngày tháng năm sinh (tùy chọn)</label>
+        <input type="text" id="birthDate" inputmode="numeric" placeholder="dd/mm/yyyy, vd 15/05/1990" autocomplete="bday">
+        <div id="birthHint" class="footnote" style="margin:2px 0 0;"></div>
       </div>
     </div>
     <div class="gametabs" id="gameTabs"></div>
@@ -3482,7 +3483,41 @@ const HORIZON_TAG = {
 const horizonTag = name=> name.startsWith('Cá nhân:') ? '<span style="font-size:0.72rem;color:#ffb0c8;">👤cá nhân</span>' : HORIZON_TAG[horizonOf(name)];
 const isConsensus = mode=> mode==='all' || mode==='personal';
 // ---------- Cá nhân hóa theo ngày sinh (không kiểm chứng được bằng dữ liệu — kết quả quay không phụ thuộc người chơi) ----------
-function getBirth(){ const v = (document.getElementById('birthDate')||{}).value; return /^\d{4}-\d{2}-\d{2}$/.test(v||'') ? v : null; }
+// Nhận "15/05/1990", "15-5-1990", "15.05.1990", "15051990" hoặc "1990-05-15" → "1990-05-15"; sai thì null.
+function parseBirth(v){
+  v = (v||'').trim(); let d, m, y, t;
+  if((t = v.match(/^(\d{1,2})[\/\-. ](\d{1,2})[\/\-. ](\d{4})$/))) [d, m, y] = [+t[1], +t[2], +t[3]];
+  else if((t = v.match(/^(\d{2})(\d{2})(\d{4})$/))) [d, m, y] = [+t[1], +t[2], +t[3]];
+  else if((t = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/))) [y, m, d] = [+t[1], +t[2], +t[3]];
+  else return null;
+  const dt = new Date(Date.UTC(y, m-1, d));
+  if(y < 1900 || y > 2100 || dt.getUTCMonth() !== m-1 || dt.getUTCDate() !== d) return null;
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+function getBirth(){ return parseBirth((document.getElementById('birthDate')||{}).value); }
+const NAP_AM_NAME = ['Hải Trung Kim','Lư Trung Hỏa','Đại Lâm Mộc','Lộ Bàng Thổ','Kiếm Phong Kim','Sơn Đầu Hỏa','Giản Hạ Thủy','Thành Đầu Thổ','Bạch Lạp Kim','Dương Liễu Mộc','Tuyền Trung Thủy','Ốc Thượng Thổ','Tích Lịch Hỏa','Tùng Bách Mộc','Trường Lưu Thủy','Sa Trung Kim','Sơn Hạ Hỏa','Bình Địa Mộc','Bích Thượng Thổ','Kim Bạch Kim','Phú Đăng Hỏa','Thiên Hà Thủy','Đại Trạch Thổ','Thoa Xuyến Kim','Tang Đố Mộc','Đại Khê Thủy','Sa Trung Thổ','Thiên Thượng Hỏa','Thạch Lựu Mộc','Đại Hải Thủy'];
+// Độ hợp của ngày quay với tuổi: con giáp (tam/lục hợp, trùng, lục hại, xung), thiên can hợp, Nạp Âm ngày ↔ mệnh
+function compatibility(P, info){
+  const parts = [], add = (pt, txt)=> parts.push({pt, txt});
+  const dc = info.chi, yc = P.ychi;
+  if(P.tam.includes(dc) && dc!==yc) add(2, `ngày ${CHI_NAMES[dc]} tam hợp tuổi ${CHI_NAMES[yc]}`);
+  else if(dc===P.luc) add(2, `ngày ${CHI_NAMES[dc]} lục hợp tuổi ${CHI_NAMES[yc]}`);
+  else if(dc===yc) add(1, `ngày ${CHI_NAMES[dc]} trùng tuổi`);
+  else if(dc===P.xung) add(-2, `ngày ${CHI_NAMES[dc]} xung tuổi ${CHI_NAMES[yc]}`);
+  else if((dc+yc)%12===7) add(-1, `ngày ${CHI_NAMES[dc]} lục hại tuổi ${CHI_NAMES[yc]}`);
+  else add(0, `ngày ${CHI_NAMES[dc]} không hợp không xung tuổi ${CHI_NAMES[yc]}`);
+  if((info.can+5)%10===P.ycan) add(1, `can ${CAN_NAMES[info.can]} hợp can ${CAN_NAMES[P.ycan]}`);
+  const de = info.nap, me = P.menh;
+  if(SINH[de]===me) add(2, `ngày mệnh ${de} sinh mệnh ${me} của bạn`);
+  else if(de===me) add(1, `ngày cùng hành ${me} với bạn`);
+  else if(SINH[me]===de) add(0, `mệnh ${me} của bạn sinh ngày ${de} (hao)`);
+  else if(KHAC[de]===me) add(-2, `ngày mệnh ${de} khắc mệnh ${me} của bạn`);
+  else if(KHAC[me]===de) add(-1, `mệnh ${me} của bạn khắc ngày ${de}`);
+  const score = parts.reduce((a,p)=> a+p.pt, 0);
+  const label = score>=3 ? 'Rất hợp' : score>=1 ? 'Hợp' : score===0 ? 'Bình thường' : score>=-2 ? 'Kém hợp' : 'Kỵ';
+  const color = score>=1 ? 'var(--good)' : score===0 ? 'var(--text)' : 'var(--bad)';
+  return {score, label, color, parts};
+}
 function personalProfile(birth, info){
   const [by,bm,bd] = birth.split('-').map(Number);
   const L = solarToLunar(bd, bm, by), ycan = pmod(L.ly+6,10), ychi = pmod(L.ly+8,12);
@@ -3492,7 +3527,10 @@ function personalProfile(birth, info){
   const py = digitRoot(digitRoot(bd) + digitRoot(bm) + digitRoot(info.y)), pm = digitRoot(py + info.m), pd = digitRoot(pm + info.d);
   const tam = [ychi, (ychi+4)%12, (ychi+8)%12], luc = pmod(1-ychi,12), xung = (ychi+6)%12;
   const rel = tam.includes(info.chi) && info.chi!==ychi ? 'hợp tuổi (tam hợp)' : info.chi===luc ? 'hợp tuổi (lục hợp)' : info.chi===xung ? 'xung tuổi' : info.chi===ychi ? 'trùng tuổi' : 'bình thường';
-  return {by, bm, bd, lunar: L, ycan, ychi, menh, lp, py, pm, pd, tam, luc, xung, rel};
+  const menhName = NAP_AM_NAME[Math.floor(hoaGiapIdx(ycan,ychi)/2)];
+  const prof = {by, bm, bd, lunar: L, ycan, ychi, menh, menhName, lp, py, pm, pd, tam, luc, xung, rel};
+  prof.compat = compatibility(prof, info);
+  return prof;
 }
 function personalRules(P, max){
   const R = Array.from({length:max}, (_,k)=> k+1), nchi = n=> (n-1)%12, el = n=> DIGIT_ELEMENT[n%10];
@@ -3609,7 +3647,14 @@ function buildSuggestions(mode){
   const pairMembers = new Set();
   if(pairPick && Pall.length) recencyPick(pairPick.window ? Pall.slice(-pairPick.window) : Pall, max, 'pair', 10).forEach(p=> { pairMembers.add(p.a); pairMembers.add(p.b); });
   const pos = Array(max+1).fill(0), neg = Array(max+1).fill(0);
-  for(let n=1;n<=max;n++){ why[n].forEach(w=> w.lift>=1 ? pos[n]++ : neg[n]++); if(pairMembers.has(n)) pos[n]++; }
+  const synergy = Array(max+1).fill(0);
+  for(let n=1;n<=max;n++){
+    let dayPos = 0, perPos = 0;
+    why[n].forEach(w=>{ if(w.lift>=1){ pos[n]++; w.personal ? perPos++ : dayPos++; } else neg[n]++; });
+    if(pairMembers.has(n)){ pos[n]++; dayPos++; }
+    // tầm "Hợp với bạn": số vừa được tín hiệu của ngày chọn vừa hợp với bạn → thưởng thêm min(ngày, cá nhân) cơ sở
+    if(mode==='personal' && dayPos && perPos){ synergy[n] = Math.min(dayPos, perPos); pos[n] += synergy[n]; }
+  }
   const sel = isConsensus(mode) ? Array.from({length:max+1}, (_,n)=> n ? pos[n]-neg[n] + 0.2*score[n] : 0) : score;
   // thứ tự ưu tiên: điểm hy vọng cao trước; hòa điểm thì theo thứ tự "xáo" cố định theo ngày (để các ngày khác nhau không luôn ra số nhỏ)
   const rng = mulberry32(hashStr(`${game.label}|${targetDate}|${session}`));
@@ -3689,7 +3734,7 @@ function buildSuggestions(mode){
     const lorder = Array.from({length:game.luckyMax}, (_,k)=> k+1).sort((a,b)=> lr.score[b]-lr.score[a] || tieKey[a]-tieKey[b]);
     lucky = {order: lorder, ...lr};
   }
-  return {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pairPick, avoidPairRules, pos, neg, pairMembers, prof};
+  return {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pairPick, avoidPairRules, pos, neg, pairMembers, prof, synergy};
 }
 
 // Tạo gợi ý cho cả 3 tầm + tổng hợp; bảng tóm tắt ở đầu, tab để xem chi tiết từng tầm.
@@ -3739,7 +3784,8 @@ function renderHorizonSummary(){
 }
 
 function renderOptions(ctx){
-  const {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pos, neg, pairMembers, prof} = ctx;
+  const {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pos, neg, pairMembers, prof, synergy} = ctx;
+  const synTag = n=> synergy && synergy[n] ? ` <span style="color:#ffd76a;" title="vừa được tín hiệu của ngày chọn, vừa hợp với bạn">✨ trùng khớp +${synergy[n]}</span>` : '';
   const consTag = n=> isConsensus(mode) ? `<span class="badge" style="margin:0;flex:none;color:${pos[n]-neg[n]>0?'var(--good)':(pos[n]-neg[n]<0?'var(--bad)':'var(--muted)')};" title="${pos[n]} cơ sở chọn, ${neg[n]} cơ sở tránh">🤝 ${pos[n]-neg[n]>0?'+':''}${pos[n]-neg[n]} cơ sở</span>` : '';
   const max = game.max, c = game.count;
   document.getElementById('resultCard').style.display = 'block';
@@ -3749,9 +3795,9 @@ function renderOptions(ctx){
   const TIET = ['Lập xuân','Vũ thủy','Kinh trập','Xuân phân','Thanh minh','Cốc vũ','Lập hạ','Tiểu mãn','Mang chủng','Hạ chí','Tiểu thử','Đại thử','Lập thu','Xử thử','Bạch lộ','Thu phân','Hàn lộ','Sương giáng','Lập đông','Tiểu tuyết','Đại tuyết','Đông chí','Tiểu hàn','Đại hàn'];
   document.getElementById('explainOut').innerHTML = `
     <div><b>${WEEKDAY_VN[dateStrToDay(targetDate)]} ${toDDMMYYYY(targetDate)}</b> — âm lịch ${info.ld}/${info.lm}; ngày <b>${CAN_NAMES[info.can]} ${CHI_NAMES[info.chi]}</b> (Nạp Âm ${info.nap}); tháng ${CAN_NAMES[X.mcan]} ${CHI_NAMES[X.mchi]}; tiết ${TIET[X.tiet]}; Cửu tinh ngày ${dayStar(info)}${session!=='' ? `; giờ ${CHI_NAMES[info.hchi]} (${session}h)` : ''}.</div>
-    ${prof && mode==='personal' ? `<div style="margin:6px 0;padding:8px 10px;border:1px solid var(--border);border-radius:8px;">👤 <b>Bạn:</b> sinh ${prof.bd}/${prof.bm}/${prof.by} (âm lịch ${prof.lunar.ld}/${prof.lunar.lm}/${prof.lunar.ly}) — tuổi <b>${CAN_NAMES[prof.ycan]} ${CHI_NAMES[prof.ychi]}</b>, mệnh <b>${prof.menh}</b>; số chủ đạo <b>${prof.lp}</b>; năm/tháng/ngày cá nhân ${prof.py}/${prof.pm}/<b>${prof.pd}</b>.
-      Ngày quay (${CHI_NAMES[info.chi]}) là ngày <b style="color:${prof.rel.startsWith('hợp')?'var(--good)':prof.rel==='xung tuổi'?'var(--bad)':'var(--text)'};">${prof.rel}</b> với bạn.
-      <span class="footnote">Yếu tố cá nhân mỗi cái +1 cơ sở (xung tuổi −1), không đổi hệ số hy vọng — vì kết quả quay không phụ thuộc người chơi nên phần này không kiểm chứng được bằng dữ liệu. Số ngày/tháng sinh (≤ 31) rất nhiều người chọn → nếu trúng dễ phải chia giải.</span></div>` : ''}
+    ${prof && mode==='personal' ? `<div style="margin:6px 0;padding:8px 10px;border:1px solid var(--border);border-radius:8px;">👤 <b>Bạn:</b> sinh ${prof.bd}/${prof.bm}/${prof.by} (âm lịch ${prof.lunar.ld}/${prof.lunar.lm}/${prof.lunar.ly}) — tuổi <b>${CAN_NAMES[prof.ycan]} ${CHI_NAMES[prof.ychi]}</b>, mệnh <b>${prof.menhName}</b>; số chủ đạo <b>${prof.lp}</b>; năm/tháng/ngày cá nhân ${prof.py}/${prof.pm}/<b>${prof.pd}</b>.<br>
+      Độ hợp ngày quay (${CAN_NAMES[info.can]} ${CHI_NAMES[info.chi]}, mệnh ${info.nap}) với bạn: <b style="color:${prof.compat.color};">${prof.compat.label} (${prof.compat.score>0?'+':''}${prof.compat.score})</b> — ${prof.compat.parts.map(p=> `${p.txt} (${p.pt>0?'+':''}${p.pt})`).join('; ')}.
+      <span class="footnote">Yếu tố cá nhân mỗi cái +1 cơ sở (xung tuổi −1); số vừa được tín hiệu của ngày chọn vừa hợp với bạn được thưởng thêm ✨ (bằng số nhỏ hơn giữa số tín hiệu ngày và số yếu tố cá nhân). Không đổi hệ số hy vọng — vì kết quả quay không phụ thuộc người chơi nên phần này không kiểm chứng được bằng dữ liệu. Số ngày/tháng sinh (≤ 31) rất nhiều người chọn → nếu trúng dễ phải chia giải.</span></div>` : ''}
     <div>Quẻ Mai Hoa (âm lịch): <b>${TRIGRAM_NAME[q.up]} trên ${TRIGRAM_NAME[q.lo]}</b> (quẻ số ${q.kw}), hào ${q.mv} động, biến quẻ số ${q.bkw}, hỗ quẻ số ${q.hkw}; Thể ${TRIGRAM_NAME[q.the]} (${TRIGRAM_ELEM[q.the]}).</div>
     ${game.drawDays ? (dateInvalid
       ? `<div style="color:var(--accent);">ℹ️ Ngày này không có kỳ quay ${game.label}. Kỳ gần nhất: <b>${toDDMMYYYY(toDateInputValue(nextDrawDate(game)))}</b>.</div>`
@@ -3764,7 +3810,7 @@ function renderOptions(ctx){
     return items.sort((a,b)=> Math.abs(b.z)-Math.abs(a.z)).map(w=>{
       const sz = w.set.size, val = sz<=3 ? ` = ${[...w.set].join(', ')}` : ` (nhóm ${sz} số)`;
       return `<span style="color:${w.lift>=1?'var(--good)':'var(--bad)'};">${w.lift>=1?'▲':'▼'} ${w.rule}${val} ${w.personal ? '' : fmtPct(w.lift)}</span> ${horizonTag(w.rule)}`;
-    }).join(' · ') + (isConsensus(mode) && pairMembers.has(n) ? ` · <span style="color:var(--accent);">🔗 thuộc 10 cặp hay về cùng (+1 cơ sở)</span>` : '');
+    }).join(' · ') + (synergy && synergy[n] ? ` · <span style="color:#ffd76a;">✨ trùng khớp ngày × cá nhân (+${synergy[n]} cơ sở)</span>` : '') + (isConsensus(mode) && pairMembers.has(n) ? ` · <span style="color:var(--accent);">🔗 thuộc 10 cặp hay về cùng (+1 cơ sở)</span>` : '');
   };
   let html = '';
   // Top 8 số tiềm năng nhất của ngày: xếp theo hệ số hy vọng (hòa thì theo thứ tự cố định của ngày)
@@ -3780,7 +3826,7 @@ function renderOptions(ctx){
       return `<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-top:${k?'1px solid var(--border)':'none'};">
         <span style="width:22px;color:var(--muted);font-weight:700;">#${k+1}</span>
         <div class="ball" style="width:36px;height:36px;font-size:0.95rem;flex:none;">${n}</div>
-        ${consTag(n)}<span class="badge" style="margin:0;flex:none;color:${mult>1.0001?'var(--good)':(mult<0.9999?'var(--bad)':'var(--muted)')};">×${mult.toFixed(2)}</span>
+        ${consTag(n)}${synTag(n)}<span class="badge" style="margin:0;flex:none;color:${mult>1.0001?'var(--good)':(mult<0.9999?'var(--bad)':'var(--muted)')};">×${mult.toFixed(2)}</span>
         <span style="font-size:0.8rem;line-height:1.4;">${reason}${dn.length ? ` <span style="color:var(--bad);">· ▼ ${dn.map(w=> w.rule).join(', ')}</span>` : ''}</span>
       </div>`;
     }).join('')}
@@ -4236,8 +4282,22 @@ function renderDrawStatus(){
 }
 
 document.getElementById('genBtn').addEventListener('click', generateNumbers);
-try{ const b = localStorage.getItem('somayman_birth'); if(b) document.getElementById('birthDate').value = b; }catch(e){}
-document.getElementById('birthDate').addEventListener('change', e=>{ try{ localStorage.setItem('somayman_birth', e.target.value||''); }catch(err){} });
+function birthHint(){
+  const el = document.getElementById('birthDate'), hint = document.getElementById('birthHint'), b = getBirth();
+  if(!el.value.trim()){ hint.innerHTML = ''; return; }
+  if(!b){ hint.innerHTML = '<span style="color:var(--bad);">⚠️ Chưa đúng — gõ dạng dd/mm/yyyy, vd 15/05/1990</span>'; return; }
+  const td = document.getElementById('targetDate').value, game = GAMES[currentGame];
+  let comp = '';
+  if(td){ const [y,m,d] = td.split('-').map(Number), s = parseInt(currentSession(game),10);
+    const P = personalProfile(b, dateInfo(y,m,d, isNaN(s) ? 12 : s)), C = P.compat;
+    comp = `<br>Ngày quay ${toDDMMYYYY(td)}: <b style="color:${C.color};">${C.label} (${C.score>0?'+':''}${C.score})</b> — ${C.parts.map(p=> `${p.txt} (${p.pt>0?'+':''}${p.pt})`).join('; ')}`; }
+  const P0 = personalProfile(b, dateInfo(2000,1,1,12));
+  hint.innerHTML = `<span style="color:var(--good);">✓ ${b.split('-').reverse().join('/')}</span> → âm lịch <b>${P0.lunar.ld}/${P0.lunar.lm}/${P0.lunar.ly}</b>, tuổi <b>${CAN_NAMES[P0.ycan]} ${CHI_NAMES[P0.ychi]}</b>, mệnh <b>${P0.menhName}</b>, số chủ đạo <b>${P0.lp}</b>${comp}`;
+}
+try{ const b = localStorage.getItem('somayman_birth'); if(b) document.getElementById('birthDate').value = /^\d{4}-\d{2}-\d{2}$/.test(b) ? b.split('-').reverse().join('/') : b; }catch(e){}
+document.getElementById('targetDate').addEventListener('change', birthHint);
+document.getElementById('sessionSelect').addEventListener('change', birthHint);
+document.getElementById('birthDate').addEventListener('input', ()=>{ birthHint(); try{ localStorage.setItem('somayman_birth', document.getElementById('birthDate').value.trim()); }catch(err){} });
 
 function ingestCSVText(text, gameKey){
   const rows = parseCSV(text);
@@ -4816,6 +4876,7 @@ function renderResearch(){
   renderBacktestAllPanels();
 
   renderDrawStatus();
+  birthHint(); // sau khi mọi hằng số đã khởi tạo (tránh lỗi TDZ với pmod)
   setInterval(renderDrawStatus, 60000); // cập nhật lại mỗi phút cho đúng "thời gian thực"
   renderResearch();
 })();
