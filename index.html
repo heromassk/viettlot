@@ -1971,11 +1971,12 @@ function generateNumbers(){
   const bal = makeBalanceCheck(max, c);
   const cands = order.filter(n=> score[n] >= 0).slice(0, 16);
   const options = [];
-  const add = (title, nums, desc)=>{
+  const add = (title, nums, desc, opt={})=>{
     if(!nums) return;
     const set = nums.slice().sort((a,b)=>a-b);
     if(options.some(o=> o.nums.join()===set.join())) return;
-    options.push({title, nums:set, desc, total: set.reduce((a,n)=> a+score[n], 0)});
+    const total = set.reduce((a,n)=> a+score[n], 0);
+    options.push({title, nums:set, desc, total, rank: total + (opt.bonus||0), extra: opt.extra||{}, badge: opt.badge||''});
   };
   add('Hy vọng cao nhất', order.slice(0, c), 'Lấy đúng các số có hệ số hy vọng cao nhất theo các quy luật của ngày, không xét hình dạng bộ số.');
   add('Cân bằng + hy vọng', bestCombo(cands, c, score, s=> bal.ok(comboStats(s,max))),
@@ -1992,13 +1993,28 @@ function generateNumbers(){
     add(`Xoay quanh: ${r.rule}`, bestCombo(cands.concat(order.filter(n=> !cands.includes(n) && score[n]>=0)).slice(0, 18), c, score, s=> bal.ok(comboStats(s,max)), inside),
         `Giữ ${inside.join(', ')} (quy luật này đã về ${fmtPct(r.lift)} so với ngẫu nhiên, z = ${r.z.toFixed(2)}), phần còn lại chọn theo hy vọng + cân bằng.`);
   }
+  // Cặp hay về cùng (chỉ Power, Loto — xem PAIR_HOPE)
+  const ph = PAIR_HOPE[currentGame], hist = historyData[currentGame];
+  if(ph && hist && hist.draws.length){
+    const T = hist.draws.length, ps = pairStats(hist.draws), chosen = [];
+    for(const p of ps){ if(chosen.every(q=> q.a!==p.a && q.a!==p.b && q.b!==p.a && q.b!==p.b)) chosen.push(p); if(chosen.length===2) break; }
+    const forced = chosen.flatMap(p=> [p.a, p.b]);
+    const pool = order.filter(n=> !forced.includes(n) && score[n] >= 0).slice(0, 16);
+    const nums = bestCombo(pool, c, score, s=> bal.ok(comboStats(s,max)), forced) || bestCombo(pool, c, score, ()=> true, forced);
+    const expect = (T*c*(c-1)/(max*(max-1))).toFixed(1);
+    const extra = {};
+    chosen.forEach(p=> [p.a,p.b].forEach(n=> extra[n] = `🔗 cặp ${p.a}–${p.b} đã về cùng ${p.count} lần (kỳ vọng ${expect}), lần cuối ${toDDMMYYYY(hist.draws[p.last].date)}`));
+    add('Cặp hay về cùng', nums,
+      `Giữ 2 cặp về cùng nhiều nhất từ đầu dữ liệu (${chosen.map(p=> `${p.a}–${p.b}: ${p.count} lần`).join(', ')}). Lịch sử: chọn theo cặp như vậy trúng cả cặp ${fmtPct(ph.lift)} so với ngẫu nhiên (z = ${ph.z}). Phần còn lại chọn theo hy vọng + cân bằng.`,
+      {bonus: chosen.length*Math.log(ph.lift), extra, badge:`🔗 cặp ${fmtPct(ph.lift)}`});
+  }
   // Cách tính cũ của app (phong thủy ngày/giờ + số học), giữ để tham khảo
   const daily = computeDailyProfile(targetDate, session);
   const old = buildScores(game, daily, targetDate + (session!=='' ? '|'+session+'h' : ''), null, 0, 'hot', backtestResult[currentGame] ? backtestResult[currentGame].weights : DEFAULT_WEIGHTS).slice(0, c).map(s=> s.n);
   add('Năng lượng ngày (cách tính cũ)', old, 'Phong thủy Nạp Âm ngày/giờ và số học ngày như bản trước của app. Các yếu tố này chưa được lịch sử xác nhận (xem mục 3) — để tham khảo.');
   // xếp ưu tiên: tổng điểm hy vọng, bằng nhau thì bộ cân bằng trước
   options.forEach(o=> o.balanced = bal.ok(comboStats(o.nums, max)));
-  options.sort((a,b)=> b.total - a.total || (b.balanced - a.balanced));
+  options.sort((a,b)=> b.rank - a.rank || (b.balanced - a.balanced));
   // số may mắn (Loto)
   let lucky = null;
   if(game.luckyMax){
@@ -2039,13 +2055,13 @@ function renderOptions(ctx){
     html += `<div class="csvbox" style="text-align:left;margin-top:14px;border-style:solid;${k===0?'border-color:var(--accent);':''}">
       <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline;">
         <b style="color:${k===0?'var(--accent)':'var(--text)'};">#${k+1} · ${o.title}</b>
-        <span class="badge">hệ số hy vọng TB ×${mult.toFixed(2)}</span>
+        <span>${o.badge ? `<span class="badge">${o.badge}</span>` : ''}<span class="badge">hệ số hy vọng TB ×${mult.toFixed(2)}</span></span>
       </div>
       <div class="balls" style="margin:10px 0;">${o.nums.map(n=> ball(n)).join('')}${lucky ? luckyBall(lucky.order[0]) : ''}</div>
       <div class="footnote" style="margin:0 0 6px;">${o.desc}</div>
       <div class="footnote" style="margin:0 0 6px;">Hình dạng: ${st.odd} lẻ – ${c-st.odd} chẵn · ${st.low} nhỏ – ${c-st.low} to · tổng ${st.sum} ${o.balanced ? '<span style="color:var(--good);">✓ kiểu hay gặp</span>' : '<span style="color:var(--accent);">— kiểu ít gặp hơn</span>'}</div>
       <details><summary style="cursor:pointer;color:var(--accent);font-size:0.85rem;">Vì sao chọn từng số</summary>
-        <table style="margin-top:6px;"><tbody>${o.nums.map(n=> `<tr><td style="width:60px;"><b>${String(n).padStart(2,'0')}</b><br><span class="footnote">×${Math.exp(score[n]).toFixed(2)}</span></td><td style="text-align:left;font-size:0.8rem;line-height:1.5;">${reasonOf(n)}</td></tr>`).join('')}</tbody></table>
+        <table style="margin-top:6px;"><tbody>${o.nums.map(n=> `<tr><td style="width:60px;"><b>${String(n).padStart(2,'0')}</b><br><span class="footnote">×${Math.exp(score[n]).toFixed(2)}</span></td><td style="text-align:left;font-size:0.8rem;line-height:1.5;">${o.extra[n] ? `<span style="color:var(--accent);">${o.extra[n]}</span>${why[n].length ? '<br>'+reasonOf(n) : ''}` : reasonOf(n)}</td></tr>`).join('')}</tbody></table>
       </details>
     </div>`;
   });
@@ -2732,6 +2748,22 @@ function numberStats(draws, max, getNums){
   }
   return rows;
 }
+// Cặp số về cùng nhau: đếm số kỳ mỗi cặp (a<b) cùng có mặt, và kỳ gần nhất cùng về.
+function pairStats(draws){
+  const m = new Map();
+  draws.forEach((d,i)=>{
+    const s = d.numbers.slice().sort((a,b)=>a-b);
+    for(let x=0;x<s.length;x++) for(let y=x+1;y<s.length;y++){
+      const k = s[x]*100+s[y], e = m.get(k) || {a:s[x], b:s[y], count:0, last:-1};
+      e.count++; e.last = i; m.set(k, e);
+    }
+  });
+  return [...m.values()].sort((p,q)=> q.count-p.count || q.last-p.last || p.a-q.a || p.b-q.b);
+}
+// Kết quả kiểm tra "chọn 10 cặp về cùng nhiều nhất từ đầu" trước mỗi kỳ (research, xem mục 3 / lịch sử trao đổi):
+// Power và Loto lệch cùng chiều ở cả kỳ cũ lẫn kỳ mới → hy vọng nhỏ; Mega đảo chiều → không dùng.
+const PAIR_HOPE = {power655:{lift:1.39, z:1.87, hits:31, expected:22.2}, loto535:{lift:1.14, z:1.74, hits:166, expected:145.2}};
+
 function renderStats(){
   const tabs = document.getElementById('statsTabs'), panel = document.getElementById('statsPanel');
   if(!tabs || !panel) return;
@@ -2778,6 +2810,17 @@ function renderStats(){
     const withLucky = D.filter(d=> d.lucky!=null);
     html += tableFor(numberStats(withLucky, game.luckyMax, d=> [d.lucky]), withLucky.length/game.luckyMax, game.luckyMax, `Số may mắn (1–${game.luckyMax})`, 'statsLucky');
   }
+
+  // --- cặp số hay về cùng ---
+  const pairs = pairStats(D), pairExpect = T*c*(c-1)/(max*(max-1));
+  html += `<h3 style="margin-top:16px;">Cặp số hay về cùng nhau (top 20)</h3>
+    <div class="tablewrap"><table><thead><tr><th>Cặp</th><th>Số lần về cùng</th><th>Kỳ vọng nếu ngẫu nhiên</th><th>Lần cuối về cùng</th><th>Số kỳ chưa về cùng</th></tr></thead><tbody>
+    ${pairs.slice(0,20).map(p=> `<tr><td><b>${String(p.a).padStart(2,'0')} – ${String(p.b).padStart(2,'0')}</b></td><td>${p.count}</td><td>${pairExpect.toFixed(1)}</td><td>${fmtDraw(D[p.last].date, D[p.last].hour)}</td><td>${T-1-p.last}</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="footnote">${PAIR_HOPE[statsGame]
+      ? `Kiểm tra lịch sử: chọn 10 cặp về cùng nhiều nhất (tính đến trước mỗi kỳ) thì trúng cả cặp ${PAIR_HOPE[statsGame].hits} lần, ngẫu nhiên ${PAIR_HOPE[statsGame].expected} lần (${fmtPct(PAIR_HOPE[statsGame].lift)}, z = ${PAIR_HOPE[statsGame].z}) — lệch cùng chiều ở cả kỳ cũ lẫn kỳ mới → <b>hy vọng nhỏ</b>, được dùng cho phương án "Cặp hay về cùng" ở mục 2.`
+      : `Kiểm tra lịch sử: với ${game.label}, chọn theo cặp về cùng nhiều nhất <b>không</b> trúng hơn ngẫu nhiên (đảo chiều giữa kỳ cũ và kỳ mới) — bảng chỉ để tra cứu.`}
+      Nếu ngẫu nhiên, cặp về cùng nhiều nhất cũng thường cao gấp 3–4 lần kỳ vọng, nên số lần cao chưa chắc là "cặp duyên".</div>`;
 
   // --- cấu trúc bộ số ---
   const S = D.map(d=> d.numbers.slice().sort((a,b)=>a-b));
