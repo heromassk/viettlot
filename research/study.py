@@ -25,7 +25,7 @@ def date_info(y, m, d, h):
     jd = jd_from_date(d, m, y); can = (jd+9) % 10; chi = (jd+1) % 12
     k = next(k for k in range(60) if k % 10 == can and k % 12 == chi)
     ld, lm, ly, _ = solar_to_lunar(d, m, y)
-    return dict(y=y, m=m, d=d, h=h, jd=jd, can=can, chi=chi, nap=NAP[k//2], ld=ld, lm=lm,
+    return dict(y=y, m=m, d=d, h=h, ly=ly, jd=jd, can=can, chi=chi, nap=NAP[k//2], ld=ld, lm=lm,
                 wd=datetime.date(y, m, d).isoweekday(),  # 1=T2..7=CN
                 doy=datetime.date(y, m, d).timetuple().tm_yday,
                 ds=root(sum(map(int, f'{y}{m:02d}{d:02d}'))),
@@ -100,9 +100,9 @@ def zscore(sets, draws, c, mx, key='nums'):
         V += c*p*(1-p)*(mx-c)/(mx-1) if mx > 1 else 0
     return (H-E)/math.sqrt(V) if V > 0 else 0.0, H, E
 
-def study(game, perms=2000, seed=1):
+def study(game, perms=2000, seed=1, rules_fn=None):
     mx, c, lmx, draws = load(game)
-    R = rules(mx)
+    R = (rules_fn or rules)(mx)
     sets = {name: [f(d['info']) for d in draws] for name, f in R.items()}
     n = len(draws); cut = int(n*0.6)
     res = []
