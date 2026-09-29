@@ -155,24 +155,15 @@
     </div>
     <div class="gametabs" id="gameTabs"></div>
     <div id="drawStatusBox" class="footnote" style="margin-bottom:10px;"></div>
-    <div class="row" style="margin-bottom:12px;">
-      <div class="field" style="max-width:320px;">
-        <label>Tín hiệu dùng để gợi ý</label>
-        <select id="horizonMode">
-          <option value="all">Tất cả (dài hạn + ngắn hạn)</option>
-          <option value="long">📅 Chỉ dài hạn — theo ngày / 200+ kỳ / toàn bộ lịch sử</option>
-          <option value="mid">🕐 Chỉ trung hạn — dựa vào 30–100 kỳ gần</option>
-          <option value="short">⚡ Chỉ ngắn hạn — dựa vào kỳ trước / tối đa 20 kỳ gần</option>
-        </select>
-      </div>
-    </div>
     <button class="btn" id="genBtn">🎲 Tạo các phương án bộ số</button>
-    <div class="footnote">App tính các quy luật "ngày → số" cho ngày/kỳ đã chọn, rồi chỉ dùng những quy luật từng có <b>hy vọng nhỏ</b> trong lịch sử (mục 3) để đưa ra nhiều phương án, xếp theo mức ưu tiên và giải thích vì sao chọn từng số.</div>
+    <div class="footnote">App gợi ý bộ số cho cả 3 tầm: <b>📅 dài hạn</b> (theo ngày quay, 200+ kỳ, toàn bộ lịch sử), <b>🕐 trung hạn</b> (30–100 kỳ gần), <b>⚡ ngắn hạn</b> (kỳ trước, tối đa 20 kỳ gần) và <b>tổng hợp</b> cả 3 — mỗi tầm chỉ dùng những tín hiệu từng có <b>hy vọng nhỏ</b> với riêng loại vé này (mục 3), có giải thích vì sao chọn từng số.</div>
   </div>
 
   <div class="card" id="resultCard" style="display:none;">
     <h2>Các phương án gợi ý <span class="badge" id="resultGameLabel"></span></h2>
     <div class="explain" id="explainOut"></div>
+    <div id="horizonOut"></div>
+    <div class="gametabs" id="horizonTabs" style="margin-top:14px;"></div>
     <div id="optionsOut"></div>
   </div>
 
@@ -3484,7 +3475,7 @@ const HORIZON_TAG = {
   mid:   '<span title="Trung hạn: dựa vào 30–100 kỳ gần" style="font-size:0.72rem;color:#c9a0ff;">🕐trung hạn</span>',
   long:  '<span title="Dài hạn: từ 200 kỳ trở lên / toàn bộ lịch sử / theo ngày" style="font-size:0.72rem;color:var(--muted);">📅dài hạn</span>'};
 const horizonTag = name=> HORIZON_TAG[horizonOf(name)];
-const horizonAllowed = name=>{ const m = (document.getElementById('horizonMode')||{}).value || 'all'; return m==='all' || horizonOf(name)===m; };
+const horizonAllowed = (name, mode)=> mode==='all' || horizonOf(name)===mode;
 
 function hopeRules(researchKey){
   const g = RESEARCH && RESEARCH.games[researchKey];
@@ -3533,23 +3524,23 @@ function bestCombo(cands, c, score, accept, forced=[]){
   if(need >= 0) rec(0, []);
   return best;
 }
-function generateNumbers(){
+function buildSuggestions(mode){
   const game = GAMES[currentGame];
   const targetDate = document.getElementById('targetDate').value;
-  if(!targetDate) return;
+  if(!targetDate) return null;
   const session = currentSession(game);
   const hour = parseInt(session, 10);
   const [y,m,d] = targetDate.split('-').map(Number);
   const info = dateInfo(y, m, d, hour);
   const c = game.count, max = game.max;
-  const rules = hopeRules(currentGame).filter(r=> horizonAllowed(r.rule));
+  const rules = hopeRules(currentGame).filter(r=> horizonAllowed(r.rule, mode));
   const {score, why, active} = scoreByHope(info, max, rules);
   // Phương pháp cộng đồng (dựa vào các kỳ quay TRƯỚC kỳ đang chọn)
   const histAll = historyData[currentGame];
   if(histAll){
     const P = histAll.draws.filter(d=> d.date < targetDate || (d.date===targetDate && d.hour!=null && !isNaN(hour) && d.hour < hour)).map(d=> new Set(d.numbers));
     const CM = communityMethods(max, c);
-    if(P.length) for(const r of communityHope(currentGame).filter(r=> horizonAllowed('Cộng đồng: ' + r.rule))){
+    if(P.length) for(const r of communityHope(currentGame).filter(r=> horizonAllowed('Cộng đồng: ' + r.rule, mode))){
       if(!CM[r.rule]) continue;
       const set = CM[r.rule](P, info); if(!set.size) continue;
       const w = Math.log(r.lift), rr = {...r, rule: 'Cộng đồng: ' + r.rule, set};
@@ -3557,7 +3548,7 @@ function generateNumbers(){
       for(const n of set){ score[n] += w; why[n].push({rule: rr.rule, lift: r.lift, z: r.z, set}); }
     }
     // Số nóng / lạnh theo mốc thời gian — chỉ những mốc đạt "hy vọng nhỏ" với riêng loại vé này
-    if(P.length) for(const r of recencyHope(currentGame).filter(r=> r.mode!=='pair' && horizonAllowed('Gần đây: ' + r.rule))){
+    if(P.length) for(const r of recencyHope(currentGame).filter(r=> r.mode!=='pair' && horizonAllowed('Gần đây: ' + r.rule, mode))){
       const set = new Set(recencyPick(r.window ? P.slice(-r.window) : P, max, r.mode, r.k));
       const w = Math.log(r.lift), rr = {...r, rule: 'Gần đây: ' + r.rule, set};
       active.push(rr);
@@ -3566,7 +3557,7 @@ function generateNumbers(){
   }
   // Cặp số: mốc "nên chọn" mạnh nhất, và các cặp "nên tránh ghép lại"
   const Pall = histAll ? histAll.draws.filter(d=> d.date < targetDate || (d.date===targetDate && d.hour!=null && !isNaN(hour) && d.hour < hour)).map(d=> new Set(d.numbers)) : [];
-  const pairRules = recencyHope(currentGame).filter(r=> r.mode==='pair' && horizonAllowed('Gần đây: ' + r.rule));
+  const pairRules = recencyHope(currentGame).filter(r=> r.mode==='pair' && horizonAllowed('Gần đây: ' + r.rule, mode));
   const pairPick = pairRules.filter(r=> r.z>0).sort((a,b)=> b.z-a.z)[0];
   const avoidPairRules = pairRules.filter(r=> r.z<0);
   const avoidPairs = new Map();   // key a*100+b → mô tả
@@ -3632,15 +3623,64 @@ function generateNumbers(){
     const lorder = Array.from({length:game.luckyMax}, (_,k)=> k+1).sort((a,b)=> lr.score[b]-lr.score[a] || tieKey[a]-tieKey[b]);
     lucky = {order: lorder, ...lr};
   }
-  renderOptions({game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs});
+  return {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pairPick, avoidPairRules};
+}
+
+// Tạo gợi ý cho cả 3 tầm + tổng hợp; bảng tóm tắt ở đầu, tab để xem chi tiết từng tầm.
+const HORIZONS = [
+  {mode:'all',   label:'⭐ Tổng hợp',   desc:'dùng mọi tín hiệu (dài + trung + ngắn hạn)'},
+  {mode:'long',  label:'📅 Dài hạn',    desc:'theo ngày quay, 200+ kỳ, toàn bộ lịch sử'},
+  {mode:'mid',   label:'🕐 Trung hạn',  desc:'số nóng/lạnh, cặp số trong 30–100 kỳ gần'},
+  {mode:'short', label:'⚡ Ngắn hạn',   desc:'kỳ trước (Pascal, bóng, chạm...), tối đa 20 kỳ gần'}];
+let suggestionSet = null, suggestionTab = 'all';
+function generateNumbers(){
+  const res = {};
+  for(const hz of HORIZONS){ const r = buildSuggestions(hz.mode); if(!r) return; res[hz.mode] = r; }
+  suggestionSet = res;
+  renderHorizonSummary();
+  renderOptions(res[suggestionTab] || res.all);
+}
+function renderHorizonSummary(){
+  const res = suggestionSet, any = res.all, game = any.game, c = game.count;
+  const luckyBall = n=> `<div class="ball" style="width:34px;height:34px;font-size:0.9rem;background:radial-gradient(circle at 35% 30%,#ffe3d8,var(--accent2) 70%);color:#3a0e0a;">${n}</div>`;
+  const rows = HORIZONS.map(hz=>{
+    const r = res[hz.mode], best = r.options.find(o=> !o.title.startsWith('Năng lượng ngày')) || r.options[0];
+    const ups = r.active.filter(a=> a.z>0).sort((a,b)=> b.z-a.z), downs = r.active.filter(a=> a.z<0);
+    const mult = Math.exp(best.total/c);
+    const parts = [];
+    if(ups.length) parts.push(`${ups.length} tín hiệu nên chọn`);
+    if(downs.length) parts.push(`${downs.length} nên tránh`);
+    if(r.pairPick) parts.push(`🔗 ${r.pairPick.rule} (${fmtPct(r.pairPick.lift)})`);
+    if(r.avoidPairs.size) parts.push(`⛔ tránh ghép lại ${r.avoidPairs.size} cặp (${r.avoidPairRules.map(a=> a.rule.replace('Cặp hay về cùng ','')).join(', ')})`);
+    const why = parts.length
+      ? parts.join(', ') + (ups.length ? ` · mạnh nhất: ${ups.slice(0,2).map(a=> `${a.rule} (${fmtPct(a.lift)})`).join(', ')}` : '')
+      : `<span style="color:var(--muted);">Không có tín hiệu nào đạt ở tầm này cho ${game.label} → bộ số chỉ theo hình dạng cân bằng và thứ tự cố định của ngày.</span>`;
+    return `<div style="padding:10px 0;border-top:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline;">
+        <b>${hz.label}</b> <span class="footnote" style="margin:0;">${hz.desc}</span>
+        <span class="badge" style="margin-left:auto;">${best.title} · hệ số TB ×${mult.toFixed(2)}</span>
+      </div>
+      <div class="balls" style="margin:8px 0;">${best.nums.map(n=> `<div class="ball" style="width:34px;height:34px;font-size:0.9rem;">${n}</div>`).join('')}${r.lucky ? luckyBall(r.lucky.order[0]) : ''}</div>
+      <div class="footnote" style="margin:0;">${why}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('horizonOut').innerHTML = `<div class="csvbox" style="text-align:left;border-style:solid;border-color:var(--accent);margin-top:12px;">
+    <b style="color:var(--accent);">🎯 Bộ số gợi ý theo tầm thời gian</b>
+    <div class="footnote" style="margin:4px 0 0;">Mỗi dòng là phương án xếp đầu của tầm đó. Bấm tab bên dưới để xem top 8, các phương án khác và lý do từng số.</div>
+    ${rows}</div>`;
+  const tabs = document.getElementById('horizonTabs');
+  tabs.innerHTML = HORIZONS.map(hz=> `<div class="gametab ${hz.mode===suggestionTab?'active':''}" data-mode="${hz.mode}">${hz.label}</div>`).join('');
+  tabs.querySelectorAll('.gametab').forEach(el=> el.addEventListener('click', ()=>{
+    suggestionTab = el.dataset.mode; tabs.querySelectorAll('.gametab').forEach(t=> t.classList.toggle('active', t===el));
+    renderOptions(suggestionSet[suggestionTab]);
+  }));
 }
 
 function renderOptions(ctx){
-  const {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs} = ctx;
+  const {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode} = ctx;
   const max = game.max, c = game.count;
   document.getElementById('resultCard').style.display = 'block';
-  const hm = (document.getElementById('horizonMode')||{}).value || 'all';
-  document.getElementById('resultGameLabel').textContent = game.label + (session!=='' ? ` — kỳ ${session}h` : '') + (hm==='long' ? ' — chỉ dài hạn' : hm==='mid' ? ' — chỉ trung hạn' : hm==='short' ? ' — chỉ ngắn hạn' : '');
+  document.getElementById('resultGameLabel').textContent = game.label + (session!=='' ? ` — kỳ ${session}h` : '');
   const dateInvalid = game.drawDays && !game.drawDays.includes(dateStrToDay(targetDate));
   const q = maiHoa(info, false), X = calendarExtra(info);
   const TIET = ['Lập xuân','Vũ thủy','Kinh trập','Xuân phân','Thanh minh','Cốc vũ','Lập hạ','Tiểu mãn','Mang chủng','Hạ chí','Tiểu thử','Đại thử','Lập thu','Xử thử','Bạch lộ','Thu phân','Hàn lộ','Sương giáng','Lập đông','Tiểu tuyết','Đại tuyết','Đông chí','Tiểu hàn','Đại hàn'];
@@ -3665,7 +3705,7 @@ function renderOptions(ctx){
   const top8 = order.slice(0, 8);
   const ups = n=> why[n].filter(w=> w.lift>=1).sort((a,b)=> b.z-a.z), downs = n=> why[n].filter(w=> w.lift<1);
   html += `<div class="csvbox" style="text-align:left;border-style:solid;border-color:var(--accent);margin-top:12px;">
-    <b style="color:var(--accent);">⭐ Top 8 số tiềm năng nhất ngày này (1–${max})</b>
+    <b style="color:var(--accent);">Top 8 số tiềm năng nhất — ${(HORIZONS.find(x=> x.mode===mode)||HORIZONS[0]).label} (1–${max})</b>
     <div class="footnote" style="margin:4px 0 8px;">Xếp theo hệ số hy vọng từ cao xuống thấp — số được nhiều quy luật "nên chọn" ủng hộ đứng trước. Bấm "Vì sao chọn từng số" ở các phương án bên dưới để xem chi tiết.</div>
     ${top8.map((n,k)=>{
       const u = ups(n), dn = downs(n), mult = Math.exp(score[n]);
@@ -3711,7 +3751,7 @@ function renderOptions(ctx){
     <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Quy luật</th><th>Loại</th><th>Số hôm nay</th><th>Lịch sử</th><th>z</th></tr></thead><tbody>
     ${active.sort((a,b)=> b.z-a.z).map(r=> `<tr><td style="text-align:left;">${r.z>0?'🔺':'🔻'} ${r.rule}</td><td>${horizonTag(r.rule)}</td><td>${[...r.set].sort((a,b)=>a-b).join(' ')}</td><td style="color:${r.lift>=1?'var(--good)':'var(--bad)'};">${fmtPct(r.lift)}</td><td>${r.z.toFixed(2)}</td></tr>`).join('')}
     </tbody></table></div>
-    <div class="footnote" style="margin-top:10px;"><b>Loại tín hiệu:</b> ⚡ <b>ngắn hạn</b> = dựa vào kỳ trước hoặc tối đa 20 kỳ gần (Pascal, chạm, lô rơi/lộn, bóng, cầu vị trí, bạc nhớ chu kỳ, số nóng/lạnh và cặp 5–20 kỳ); 🕐 <b>trung hạn</b> = số nóng/lạnh và cặp trong 30–100 kỳ gần; 📅 <b>dài hạn</b> = theo ngày quay (Can Chi, Mai Hoa, thần số học...), Markov, số/cặp trong 200–500 kỳ hoặc từ đầu. Cả hai loại đều được kiểm tra trên toàn bộ lịch sử. Chọn loại ở ô "Tín hiệu dùng để gợi ý".<br><b>Cách hiểu:</b> "hệ số ×1,30" nghĩa là trong lịch sử, các quy luật chứa số này về nhiều hơn mức ngẫu nhiên khoảng 30% (nhân dồn nếu số thuộc nhiều quy luật). Đây là <b>hy vọng nhỏ</b>: chưa quy luật nào vượt ngưỡng may mắn thuần túy (mục 3), và con số lịch sử thường cao hơn thực tế về sau. Mỗi bộ số vẫn có cùng xác suất trúng Jackpot như mọi bộ khác.</div>`;
+    <div class="footnote" style="margin-top:10px;"><b>Loại tín hiệu:</b> ⚡ <b>ngắn hạn</b> = dựa vào kỳ trước hoặc tối đa 20 kỳ gần (Pascal, chạm, lô rơi/lộn, bóng, cầu vị trí, bạc nhớ chu kỳ, số nóng/lạnh và cặp 5–20 kỳ); 🕐 <b>trung hạn</b> = số nóng/lạnh và cặp trong 30–100 kỳ gần; 📅 <b>dài hạn</b> = theo ngày quay (Can Chi, Mai Hoa, thần số học...), Markov, số/cặp trong 200–500 kỳ hoặc từ đầu. Mọi loại đều được kiểm tra trên toàn bộ lịch sử. Bảng trên đang hiện chi tiết của tab: <b>${(HORIZONS.find(x=> x.mode===mode)||HORIZONS[0]).label}</b>.<br><b>Cách hiểu:</b> "hệ số ×1,30" nghĩa là trong lịch sử, các quy luật chứa số này về nhiều hơn mức ngẫu nhiên khoảng 30% (nhân dồn nếu số thuộc nhiều quy luật). Đây là <b>hy vọng nhỏ</b>: chưa quy luật nào vượt ngưỡng may mắn thuần túy (mục 3), và con số lịch sử thường cao hơn thực tế về sau. Mỗi bộ số vẫn có cùng xác suất trúng Jackpot như mọi bộ khác.</div>`;
   document.getElementById('optionsOut').innerHTML = html;
   collapsify(document.getElementById('optionsOut'), 'gen', ['Số may mắn']);
 }
