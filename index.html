@@ -3667,39 +3667,31 @@ function generateNumbers(){
   renderOptions(res[suggestionTab] || res.all);
 }
 function renderHorizonSummary(){
-  const res = suggestionSet, any = res.all, game = any.game, c = game.count;
-  const luckyBall = n=> `<div class="ball" style="width:34px;height:34px;font-size:0.9rem;background:radial-gradient(circle at 35% 30%,#ffe3d8,var(--accent2) 70%);color:#3a0e0a;">${n}</div>`;
+  const res = suggestionSet, game = res.all.game;
+  const small = 'width:30px;height:30px;font-size:0.82rem;';
+  const luckyBall = n=> `<div class="ball" style="${small}background:radial-gradient(circle at 35% 30%,#ffe3d8,var(--accent2) 70%);color:#3a0e0a;">${n}</div>`;
   const rows = HORIZONS.map(hz=>{
-    const r = res[hz.mode], best = r.options.find(o=> !o.title.startsWith('Năng lượng ngày')) || r.options[0];
-    const ups = r.active.filter(a=> a.z>0).sort((a,b)=> b.z-a.z), downs = r.active.filter(a=> a.z<0);
-    const mult = Math.exp(best.total/c);
-    const consNote = hz.mode==='all' ? `<br>🤝 Số cơ sở đồng thuận: ${best.nums.map(n=> `<b>${n}</b>(${r.pos[n]-r.neg[n]>0?'+':''}${r.pos[n]-r.neg[n]})`).join(' · ')}` : '';
-    const parts = [];
-    if(ups.length) parts.push(`${ups.length} tín hiệu nên chọn`);
-    if(downs.length) parts.push(`${downs.length} nên tránh`);
-    if(r.pairPick) parts.push(`🔗 ${r.pairPick.rule} (${fmtPct(r.pairPick.lift)})`);
-    if(r.avoidPairs.size) parts.push(`⛔ tránh ghép lại ${r.avoidPairs.size} cặp (${r.avoidPairRules.map(a=> a.rule.replace('Cặp hay về cùng ','')).join(', ')})`);
-    const why = parts.length
-      ? parts.join(', ') + (ups.length ? ` · mạnh nhất: ${ups.slice(0,2).map(a=> `${a.rule} (${fmtPct(a.lift)})`).join(', ')}` : '') + consNote
-      : `<span style="color:var(--muted);">Không có tín hiệu nào đạt ở tầm này cho ${game.label} → bộ số chỉ theo hình dạng cân bằng và thứ tự cố định của ngày.</span>`;
-    return `<div style="padding:10px 0;border-top:1px solid var(--border);">
-      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline;">
-        <b>${hz.label}</b> <span class="footnote" style="margin:0;">${hz.desc}</span>
-        <span class="badge" style="margin-left:auto;">${best.title} · hệ số TB ×${mult.toFixed(2)}</span>
-      </div>
-      <div class="balls" style="margin:8px 0;">${best.nums.map(n=> `<div class="ball" style="width:34px;height:34px;font-size:0.9rem;">${n}</div>`).join('')}${r.lucky ? luckyBall(r.lucky.order[0]) : ''}</div>
-      <div class="footnote" style="margin:0;">${why}</div>
+    const r = res[hz.mode], best = r.options[0];
+    const hasSignal = r.active.length || r.pairPick || r.avoidPairs.size;
+    const tag = hz.mode==='all'
+      ? `🤝 ${best.cons>0?'+':''}${best.cons} cơ sở`
+      : (hasSignal ? `×${Math.exp(best.total/game.count).toFixed(2)}` : 'không có tín hiệu');
+    const on = hz.mode===suggestionTab;
+    return `<div class="hz-row" data-mode="${hz.mode}" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 10px;margin-top:6px;border-radius:10px;cursor:pointer;border:1px solid ${on?'var(--accent)':'var(--border)'};background:${on?'rgba(240,180,41,0.08)':'transparent'};">
+      <b style="min-width:150px;${on?'color:var(--accent);':''}">${hz.label}</b>
+      <div class="balls" style="margin:0;gap:5px;">${best.nums.map(n=> `<div class="ball" style="${small}">${n}</div>`).join('')}${r.lucky ? luckyBall(r.lucky.order[0]) : ''}</div>
+      <span class="badge" style="margin-left:auto;${hasSignal?'':'color:var(--muted);'}">${tag}</span>
+      <span style="color:var(--accent);font-size:0.8rem;">${on ? '▼ đang xem' : 'xem ▸'}</span>
     </div>`;
   }).join('');
   document.getElementById('horizonOut').innerHTML = `<div class="csvbox" style="text-align:left;border-style:solid;border-color:var(--accent);margin-top:12px;">
     <b style="color:var(--accent);">🎯 Bộ số gợi ý theo tầm thời gian</b>
-    <div class="footnote" style="margin:4px 0 0;">Mỗi dòng là phương án xếp đầu của tầm đó. Bấm tab bên dưới để xem top 8, các phương án khác và lý do từng số.</div>
+    <div class="footnote" style="margin:4px 0 2px;">Bộ #1 của từng tầm. Bấm vào một dòng để xem bên dưới: top 8 số, đủ 10 bộ và lý do chọn từng số của tầm đó.</div>
     ${rows}</div>`;
-  const tabs = document.getElementById('horizonTabs');
-  tabs.innerHTML = HORIZONS.map(hz=> `<div class="gametab ${hz.mode===suggestionTab?'active':''}" data-mode="${hz.mode}">${hz.label}</div>`).join('');
-  tabs.querySelectorAll('.gametab').forEach(el=> el.addEventListener('click', ()=>{
-    suggestionTab = el.dataset.mode; tabs.querySelectorAll('.gametab').forEach(t=> t.classList.toggle('active', t===el));
-    renderOptions(suggestionSet[suggestionTab]);
+  document.getElementById('horizonTabs').innerHTML = '';
+  document.querySelectorAll('#horizonOut .hz-row').forEach(el=> el.addEventListener('click', ()=>{
+    suggestionTab = el.dataset.mode; renderHorizonSummary(); renderOptions(suggestionSet[suggestionTab]);
+    document.getElementById('optionsOut').scrollIntoView({behavior:'smooth', block:'start'});
   }));
 }
 
@@ -3733,7 +3725,7 @@ function renderOptions(ctx){
   const top8 = order.slice(0, 8);
   const ups = n=> why[n].filter(w=> w.lift>=1).sort((a,b)=> b.z-a.z), downs = n=> why[n].filter(w=> w.lift<1);
   html += `<div class="csvbox" style="text-align:left;border-style:solid;border-color:var(--accent);margin-top:12px;">
-    <b style="color:var(--accent);">Top 8 số tiềm năng nhất — ${(HORIZONS.find(x=> x.mode===mode)||HORIZONS[0]).label} (1–${max})</b>
+    <b style="color:var(--accent);">Chi tiết ${(HORIZONS.find(x=> x.mode===mode)||HORIZONS[0]).label} — top 8 số tiềm năng nhất (1–${max})</b>
     <div class="footnote" style="margin:4px 0 8px;">${mode==='all' ? 'Xếp theo <b>số cơ sở đồng thuận</b>: số tín hiệu "nên chọn" trùng vào số đó (tính cả việc số thuộc các cặp hay về cùng) trừ số tín hiệu "nên tránh"; bằng nhau thì theo hệ số hy vọng.' : 'Xếp theo hệ số hy vọng từ cao xuống thấp — số được nhiều quy luật "nên chọn" ủng hộ đứng trước.'} Bấm "Vì sao chọn từng số" ở các phương án bên dưới để xem chi tiết.</div>
     ${top8.map((n,k)=>{
       const u = ups(n), dn = downs(n), mult = Math.exp(score[n]);
