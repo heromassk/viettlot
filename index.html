@@ -152,6 +152,10 @@
           <option value="21">21h</option>
         </select>
       </div>
+      <div class="field" style="max-width:220px;">
+        <label>Ngày sinh của bạn (tùy chọn)</label>
+        <input type="date" id="birthDate">
+      </div>
     </div>
     <div class="gametabs" id="gameTabs"></div>
     <div id="drawStatusBox" class="footnote" style="margin-bottom:10px;"></div>
@@ -3475,8 +3479,35 @@ const HORIZON_TAG = {
   short: '<span title="Ngắn hạn: dựa vào kỳ trước / tối đa 20 kỳ gần" style="font-size:0.72rem;color:#7cc4ff;">⚡ngắn hạn</span>',
   mid:   '<span title="Trung hạn: dựa vào 30–100 kỳ gần" style="font-size:0.72rem;color:#c9a0ff;">🕐trung hạn</span>',
   long:  '<span title="Dài hạn: từ 200 kỳ trở lên / toàn bộ lịch sử / theo ngày" style="font-size:0.72rem;color:var(--muted);">📅dài hạn</span>'};
-const horizonTag = name=> HORIZON_TAG[horizonOf(name)];
-const horizonAllowed = (name, mode)=> mode==='all' || horizonOf(name)===mode;
+const horizonTag = name=> name.startsWith('Cá nhân:') ? '<span style="font-size:0.72rem;color:#ffb0c8;">👤cá nhân</span>' : HORIZON_TAG[horizonOf(name)];
+const isConsensus = mode=> mode==='all' || mode==='personal';
+// ---------- Cá nhân hóa theo ngày sinh (không kiểm chứng được bằng dữ liệu — kết quả quay không phụ thuộc người chơi) ----------
+function getBirth(){ const v = (document.getElementById('birthDate')||{}).value; return /^\d{4}-\d{2}-\d{2}$/.test(v||'') ? v : null; }
+function personalProfile(birth, info){
+  const [by,bm,bd] = birth.split('-').map(Number);
+  const L = solarToLunar(bd, bm, by), ycan = pmod(L.ly+6,10), ychi = pmod(L.ly+8,12);
+  const menh = NAP_AM[Math.floor(hoaGiapIdx(ycan,ychi)/2)];
+  let lp = digitSum(`${by}${String(bm).padStart(2,'0')}${String(bd).padStart(2,'0')}`);
+  while(lp > 9 && ![11,22,33].includes(lp)) lp = digitSum(String(lp));
+  const py = digitRoot(digitRoot(bd) + digitRoot(bm) + digitRoot(info.y)), pm = digitRoot(py + info.m), pd = digitRoot(pm + info.d);
+  const tam = [ychi, (ychi+4)%12, (ychi+8)%12], luc = pmod(1-ychi,12), xung = (ychi+6)%12;
+  const rel = tam.includes(info.chi) && info.chi!==ychi ? 'hợp tuổi (tam hợp)' : info.chi===luc ? 'hợp tuổi (lục hợp)' : info.chi===xung ? 'xung tuổi' : info.chi===ychi ? 'trùng tuổi' : 'bình thường';
+  return {by, bm, bd, lunar: L, ycan, ychi, menh, lp, py, pm, pd, tam, luc, xung, rel};
+}
+function personalRules(P, max){
+  const R = Array.from({length:max}, (_,k)=> k+1), nchi = n=> (n-1)%12, el = n=> DIGIT_ELEMENT[n%10];
+  const set = f=> new Set(R.filter(f));
+  return [
+    {rule:'Cá nhân: số chủ đạo ' + P.lp, set: set(n=> n===P.lp || digitRoot(n)===digitRoot(P.lp))},
+    {rule:'Cá nhân: ngày cá nhân ' + P.pd + ' (thần số học)', set: set(n=> digitRoot(n)===P.pd)},
+    {rule:'Cá nhân: hợp mệnh ' + P.menh, set: set(n=> el(n)===P.menh || el(n)===SINH[P.menh])},
+    {rule:'Cá nhân: tam hợp tuổi ' + CHI_NAMES[P.ychi], set: set(n=> P.tam.includes(nchi(n)))},
+    {rule:'Cá nhân: lục hợp tuổi ' + CHI_NAMES[P.ychi], set: set(n=> nchi(n)===P.luc)},
+    {rule:'Cá nhân: ngày/tháng sinh', set: new Set([P.bd, P.bm, P.bd+P.bm].filter(n=> n>=1 && n<=max))},
+    {rule:'Cá nhân: xung tuổi ' + CHI_NAMES[P.ychi], set: set(n=> nchi(n)===P.xung), avoid: true},
+  ];
+}
+const horizonAllowed = (name, mode)=> mode==='all' || mode==='personal' || horizonOf(name)===mode;
 
 function hopeRules(researchKey){
   const g = RESEARCH && RESEARCH.games[researchKey];
@@ -3556,6 +3587,14 @@ function buildSuggestions(mode){
       for(const n of set){ score[n] += w; why[n].push({rule: rr.rule, lift: r.lift, z: r.z, set}); }
     }
   }
+  // Cá nhân (chỉ tầm "Hợp với bạn"): mỗi yếu tố hợp = +1 cơ sở, xung tuổi = −1; không đổi hệ số hy vọng
+  const birth = getBirth(), prof = birth ? personalProfile(birth, info) : null;
+  if(mode==='personal' && prof) for(const r of personalRules(prof, max)){
+    if(!r.set.size) continue;
+    const rr = {rule: r.rule, lift: r.avoid ? 0.9999 : 1, z: 0, set: r.set, personal: true};
+    active.push(rr);
+    for(const n of r.set) why[n].push({rule: r.rule, lift: rr.lift, z: 0, set: r.set, personal: true});
+  }
   // Cặp số: mốc "nên chọn" mạnh nhất, và các cặp "nên tránh ghép lại"
   const Pall = histAll ? histAll.draws.filter(d=> d.date < targetDate || (d.date===targetDate && d.hour!=null && !isNaN(hour) && d.hour < hour)).map(d=> new Set(d.numbers)) : [];
   const pairRules = recencyHope(currentGame).filter(r=> r.mode==='pair' && horizonAllowed('Gần đây: ' + r.rule, mode));
@@ -3571,7 +3610,7 @@ function buildSuggestions(mode){
   if(pairPick && Pall.length) recencyPick(pairPick.window ? Pall.slice(-pairPick.window) : Pall, max, 'pair', 10).forEach(p=> { pairMembers.add(p.a); pairMembers.add(p.b); });
   const pos = Array(max+1).fill(0), neg = Array(max+1).fill(0);
   for(let n=1;n<=max;n++){ why[n].forEach(w=> w.lift>=1 ? pos[n]++ : neg[n]++); if(pairMembers.has(n)) pos[n]++; }
-  const sel = mode==='all' ? Array.from({length:max+1}, (_,n)=> n ? pos[n]-neg[n] + 0.2*score[n] : 0) : score;
+  const sel = isConsensus(mode) ? Array.from({length:max+1}, (_,n)=> n ? pos[n]-neg[n] + 0.2*score[n] : 0) : score;
   // thứ tự ưu tiên: điểm hy vọng cao trước; hòa điểm thì theo thứ tự "xáo" cố định theo ngày (để các ngày khác nhau không luôn ra số nhỏ)
   const rng = mulberry32(hashStr(`${game.label}|${targetDate}|${session}`));
   const tieKey = Array.from({length:max+1}, ()=> rng());
@@ -3586,7 +3625,7 @@ function buildSuggestions(mode){
     const set = nums.slice().sort((a,b)=>a-b);
     if(options.some(o=> o.nums.join()===set.join())) return;
     const total = set.reduce((a,n)=> a+score[n], 0), cons = set.reduce((a,n)=> a+pos[n]-neg[n], 0);
-    options.push({title, nums:set, desc, total, cons, rank: (mode==='all' ? set.reduce((a,n)=> a+sel[n], 0) : total) + (opt.bonus||0), extra: opt.extra||{}, badge: opt.badge||''});
+    options.push({title, nums:set, desc, total, cons, rank: (isConsensus(mode) ? set.reduce((a,n)=> a+sel[n], 0) : total) + (opt.bonus||0), extra: opt.extra||{}, badge: opt.badge||''});
   };
   add('Hy vọng cao nhất', avoidPairs.size ? (bestCombo(order.slice(0, 16), c, score, pairFree) || bestCombo(order.slice(0, 22), c, score, pairFree)) : order.slice(0, c), 'Lấy đúng các số có hệ số hy vọng cao nhất theo các quy luật của ngày, không xét hình dạng bộ số.');
   add('Cân bằng + hy vọng', combo(s=> bal.ok(comboStats(s,max)) && pairFree(s)),
@@ -3650,19 +3689,22 @@ function buildSuggestions(mode){
     const lorder = Array.from({length:game.luckyMax}, (_,k)=> k+1).sort((a,b)=> lr.score[b]-lr.score[a] || tieKey[a]-tieKey[b]);
     lucky = {order: lorder, ...lr};
   }
-  return {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pairPick, avoidPairRules, pos, neg, pairMembers};
+  return {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pairPick, avoidPairRules, pos, neg, pairMembers, prof};
 }
 
 // Tạo gợi ý cho cả 3 tầm + tổng hợp; bảng tóm tắt ở đầu, tab để xem chi tiết từng tầm.
 const HORIZONS = [
   {mode:'all',   label:'⭐ Tổng hợp (đồng thuận)', desc:'gộp mọi tín hiệu, ưu tiên số được nhiều cơ sở cùng chọn'},
+  {mode:'personal', label:'👤 Hợp với bạn', desc:'tổng hợp đồng thuận + yếu tố theo ngày sinh của bạn', needBirth: true},
   {mode:'long',  label:'📅 Dài hạn',    desc:'theo ngày quay, 200+ kỳ, toàn bộ lịch sử'},
   {mode:'mid',   label:'🕐 Trung hạn',  desc:'số nóng/lạnh, cặp số trong 30–100 kỳ gần'},
   {mode:'short', label:'⚡ Ngắn hạn',   desc:'kỳ trước (Pascal, bóng, chạm...), tối đa 20 kỳ gần'}];
 let suggestionSet = null, suggestionTab = 'all';
 function generateNumbers(){
   const res = {};
-  for(const hz of HORIZONS){ const r = buildSuggestions(hz.mode); if(!r) return; res[hz.mode] = r; }
+  const hasBirth = !!getBirth();
+  for(const hz of HORIZONS){ if(hz.needBirth && !hasBirth) continue; const r = buildSuggestions(hz.mode); if(!r) return; res[hz.mode] = r; }
+  if(!res[suggestionTab]) suggestionTab = 'all';
   suggestionSet = res;
   renderHorizonSummary();
   renderOptions(res[suggestionTab] || res.all);
@@ -3671,10 +3713,10 @@ function renderHorizonSummary(){
   const res = suggestionSet, game = res.all.game;
   const small = 'width:30px;height:30px;font-size:0.82rem;';
   const luckyBall = n=> `<div class="ball" style="${small}background:radial-gradient(circle at 35% 30%,#ffe3d8,var(--accent2) 70%);color:#3a0e0a;">${n}</div>`;
-  const rows = HORIZONS.map(hz=>{
+  const rows = HORIZONS.filter(hz=> res[hz.mode]).map(hz=>{
     const r = res[hz.mode], best = r.options[0];
     const hasSignal = r.active.length || r.pairPick || r.avoidPairs.size;
-    const tag = hz.mode==='all'
+    const tag = isConsensus(hz.mode)
       ? `🤝 ${best.cons>0?'+':''}${best.cons} cơ sở`
       : (hasSignal ? `×${Math.exp(best.total/game.count).toFixed(2)}` : 'không có tín hiệu');
     const on = hz.mode===suggestionTab;
@@ -3697,8 +3739,8 @@ function renderHorizonSummary(){
 }
 
 function renderOptions(ctx){
-  const {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pos, neg, pairMembers} = ctx;
-  const consTag = n=> mode==='all' ? `<span class="badge" style="margin:0;flex:none;color:${pos[n]-neg[n]>0?'var(--good)':(pos[n]-neg[n]<0?'var(--bad)':'var(--muted)')};" title="${pos[n]} cơ sở chọn, ${neg[n]} cơ sở tránh">🤝 ${pos[n]-neg[n]>0?'+':''}${pos[n]-neg[n]} cơ sở</span>` : '';
+  const {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pos, neg, pairMembers, prof} = ctx;
+  const consTag = n=> isConsensus(mode) ? `<span class="badge" style="margin:0;flex:none;color:${pos[n]-neg[n]>0?'var(--good)':(pos[n]-neg[n]<0?'var(--bad)':'var(--muted)')};" title="${pos[n]} cơ sở chọn, ${neg[n]} cơ sở tránh">🤝 ${pos[n]-neg[n]>0?'+':''}${pos[n]-neg[n]} cơ sở</span>` : '';
   const max = game.max, c = game.count;
   document.getElementById('resultCard').style.display = 'block';
   document.getElementById('resultGameLabel').textContent = game.label + (session!=='' ? ` — kỳ ${session}h` : '');
@@ -3707,6 +3749,9 @@ function renderOptions(ctx){
   const TIET = ['Lập xuân','Vũ thủy','Kinh trập','Xuân phân','Thanh minh','Cốc vũ','Lập hạ','Tiểu mãn','Mang chủng','Hạ chí','Tiểu thử','Đại thử','Lập thu','Xử thử','Bạch lộ','Thu phân','Hàn lộ','Sương giáng','Lập đông','Tiểu tuyết','Đại tuyết','Đông chí','Tiểu hàn','Đại hàn'];
   document.getElementById('explainOut').innerHTML = `
     <div><b>${WEEKDAY_VN[dateStrToDay(targetDate)]} ${toDDMMYYYY(targetDate)}</b> — âm lịch ${info.ld}/${info.lm}; ngày <b>${CAN_NAMES[info.can]} ${CHI_NAMES[info.chi]}</b> (Nạp Âm ${info.nap}); tháng ${CAN_NAMES[X.mcan]} ${CHI_NAMES[X.mchi]}; tiết ${TIET[X.tiet]}; Cửu tinh ngày ${dayStar(info)}${session!=='' ? `; giờ ${CHI_NAMES[info.hchi]} (${session}h)` : ''}.</div>
+    ${prof && mode==='personal' ? `<div style="margin:6px 0;padding:8px 10px;border:1px solid var(--border);border-radius:8px;">👤 <b>Bạn:</b> sinh ${prof.bd}/${prof.bm}/${prof.by} (âm lịch ${prof.lunar.ld}/${prof.lunar.lm}/${prof.lunar.ly}) — tuổi <b>${CAN_NAMES[prof.ycan]} ${CHI_NAMES[prof.ychi]}</b>, mệnh <b>${prof.menh}</b>; số chủ đạo <b>${prof.lp}</b>; năm/tháng/ngày cá nhân ${prof.py}/${prof.pm}/<b>${prof.pd}</b>.
+      Ngày quay (${CHI_NAMES[info.chi]}) là ngày <b style="color:${prof.rel.startsWith('hợp')?'var(--good)':prof.rel==='xung tuổi'?'var(--bad)':'var(--text)'};">${prof.rel}</b> với bạn.
+      <span class="footnote">Yếu tố cá nhân mỗi cái +1 cơ sở (xung tuổi −1), không đổi hệ số hy vọng — vì kết quả quay không phụ thuộc người chơi nên phần này không kiểm chứng được bằng dữ liệu. Số ngày/tháng sinh (≤ 31) rất nhiều người chọn → nếu trúng dễ phải chia giải.</span></div>` : ''}
     <div>Quẻ Mai Hoa (âm lịch): <b>${TRIGRAM_NAME[q.up]} trên ${TRIGRAM_NAME[q.lo]}</b> (quẻ số ${q.kw}), hào ${q.mv} động, biến quẻ số ${q.bkw}, hỗ quẻ số ${q.hkw}; Thể ${TRIGRAM_NAME[q.the]} (${TRIGRAM_ELEM[q.the]}).</div>
     ${game.drawDays ? (dateInvalid
       ? `<div style="color:var(--accent);">ℹ️ Ngày này không có kỳ quay ${game.label}. Kỳ gần nhất: <b>${toDDMMYYYY(toDateInputValue(nextDrawDate(game)))}</b>.</div>`
@@ -3715,11 +3760,11 @@ function renderOptions(ctx){
   const luckyBall = n=> `<div class="ball" style="background:radial-gradient(circle at 35% 30%,#ffe3d8,var(--accent2) 70%);color:#3a0e0a;">${n}</div>`;
   const reasonOf = n=>{
     const items = why[n];
-    if(!items.length) return mode==='all' && pairMembers.has(n) ? `<span style="color:var(--accent);">🔗 thuộc 10 cặp hay về cùng (+1 cơ sở)</span>` : `<span style="color:var(--muted);">không thuộc quy luật nào hôm nay — chọn bổ sung để đủ bộ/cân bằng</span>`;
+    if(!items.length) return isConsensus(mode) && pairMembers.has(n) ? `<span style="color:var(--accent);">🔗 thuộc 10 cặp hay về cùng (+1 cơ sở)</span>` : `<span style="color:var(--muted);">không thuộc quy luật nào hôm nay — chọn bổ sung để đủ bộ/cân bằng</span>`;
     return items.sort((a,b)=> Math.abs(b.z)-Math.abs(a.z)).map(w=>{
       const sz = w.set.size, val = sz<=3 ? ` = ${[...w.set].join(', ')}` : ` (nhóm ${sz} số)`;
-      return `<span style="color:${w.lift>=1?'var(--good)':'var(--bad)'};">${w.lift>=1?'▲':'▼'} ${w.rule}${val} ${fmtPct(w.lift)}</span> ${horizonTag(w.rule)}`;
-    }).join(' · '); + (mode==='all' && pairMembers.has(n) ? ` · <span style="color:var(--accent);">🔗 thuộc 10 cặp hay về cùng (+1 cơ sở)</span>` : '');
+      return `<span style="color:${w.lift>=1?'var(--good)':'var(--bad)'};">${w.lift>=1?'▲':'▼'} ${w.rule}${val} ${w.personal ? '' : fmtPct(w.lift)}</span> ${horizonTag(w.rule)}`;
+    }).join(' · ') + (isConsensus(mode) && pairMembers.has(n) ? ` · <span style="color:var(--accent);">🔗 thuộc 10 cặp hay về cùng (+1 cơ sở)</span>` : '');
   };
   let html = '';
   // Top 8 số tiềm năng nhất của ngày: xếp theo hệ số hy vọng (hòa thì theo thứ tự cố định của ngày)
@@ -3727,10 +3772,10 @@ function renderOptions(ctx){
   const ups = n=> why[n].filter(w=> w.lift>=1).sort((a,b)=> b.z-a.z), downs = n=> why[n].filter(w=> w.lift<1);
   html += `<div class="csvbox" style="text-align:left;border-style:solid;border-color:var(--accent);margin-top:12px;">
     <b style="color:var(--accent);">Chi tiết ${(HORIZONS.find(x=> x.mode===mode)||HORIZONS[0]).label} — top 8 số tiềm năng nhất (1–${max})</b>
-    <div class="footnote" style="margin:4px 0 8px;">${mode==='all' ? 'Xếp theo <b>số cơ sở đồng thuận</b>: số tín hiệu "nên chọn" trùng vào số đó (tính cả việc số thuộc các cặp hay về cùng) trừ số tín hiệu "nên tránh"; bằng nhau thì theo hệ số hy vọng.' : 'Xếp theo hệ số hy vọng từ cao xuống thấp — số được nhiều quy luật "nên chọn" ủng hộ đứng trước.'} Bấm "Vì sao chọn từng số" ở các phương án bên dưới để xem chi tiết.</div>
+    <div class="footnote" style="margin:4px 0 8px;">${isConsensus(mode) ? 'Xếp theo <b>số cơ sở đồng thuận</b>: số tín hiệu "nên chọn" trùng vào số đó (tính cả việc số thuộc các cặp hay về cùng) trừ số tín hiệu "nên tránh"; bằng nhau thì theo hệ số hy vọng.' : 'Xếp theo hệ số hy vọng từ cao xuống thấp — số được nhiều quy luật "nên chọn" ủng hộ đứng trước.'} Bấm "Vì sao chọn từng số" ở các phương án bên dưới để xem chi tiết.</div>
     ${top8.map((n,k)=>{
       const u = ups(n), dn = downs(n), mult = Math.exp(score[n]);
-      const reason = u.length ? u.slice(0,2).map(w=> `${w.rule} (${fmtPct(w.lift)}) ${horizonTag(w.rule)}`).join(' · ') + (u.length>2 ? ` · +${u.length-2} quy luật khác` : '')
+      const reason = u.length ? u.slice(0,2).map(w=> `${w.rule}${w.personal ? '' : ` (${fmtPct(w.lift)})`} ${horizonTag(w.rule)}`).join(' · ') + (u.length>2 ? ` · +${u.length-2} quy luật khác` : '')
                               : '<span style="color:var(--muted);">không quy luật nào — số trung lập, xếp theo thứ tự cố định của ngày</span>';
       return `<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-top:${k?'1px solid var(--border)':'none'};">
         <span style="width:22px;color:var(--muted);font-weight:700;">#${k+1}</span>
@@ -3744,14 +3789,14 @@ function renderOptions(ctx){
     const st = comboStats(o.nums, max), mult = Math.exp(o.total/c);
     html += `<div class="csvbox" style="text-align:left;margin-top:14px;border-style:solid;${k===0?'border-color:var(--accent);':''}">
       <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline;">
-        <b style="color:${k===0?'var(--accent)':'var(--text)'};">#${k+1} · ${o.title}</b>${mode==='all' ? `<span class="badge">🤝 tổng ${o.cons>0?'+':''}${o.cons} cơ sở</span>` : ''}
+        <b style="color:${k===0?'var(--accent)':'var(--text)'};">#${k+1} · ${o.title}</b>${isConsensus(mode) ? `<span class="badge">🤝 tổng ${o.cons>0?'+':''}${o.cons} cơ sở</span>` : ''}
         <span>${o.badge ? `<span class="badge">${o.badge}</span>` : ''}<span class="badge">hệ số hy vọng TB ×${mult.toFixed(2)}</span></span>
       </div>
       <div class="balls" style="margin:10px 0;">${o.nums.map(n=> ball(n)).join('')}${lucky ? luckyBall(lucky.order[0]) : ''}</div>
       <div class="footnote" style="margin:0 0 6px;">${o.desc}</div>
       <div class="footnote" style="margin:0 0 6px;">Hình dạng: ${st.odd} lẻ – ${c-st.odd} chẵn · ${st.low} nhỏ – ${c-st.low} to · tổng ${st.sum} ${o.balanced ? '<span style="color:var(--good);">✓ kiểu hay gặp</span>' : '<span style="color:var(--accent);">— kiểu ít gặp hơn</span>'}</div>
       <details><summary style="cursor:pointer;color:var(--accent);font-size:0.85rem;">Vì sao chọn từng số</summary>
-        <table style="margin-top:6px;"><tbody>${o.nums.map(n=> `<tr><td style="width:60px;"><b>${String(n).padStart(2,'0')}</b><br><span class="footnote">×${Math.exp(score[n]).toFixed(2)}${mode==='all' ? `<br>🤝 ${pos[n]-neg[n]>0?'+':''}${pos[n]-neg[n]}` : ''}</span></td><td style="text-align:left;font-size:0.8rem;line-height:1.5;">${o.extra[n] ? `<span style="color:var(--accent);">${o.extra[n]}</span>${why[n].length ? '<br>'+reasonOf(n) : ''}` : reasonOf(n)}</td></tr>`).join('')}</tbody></table>
+        <table style="margin-top:6px;"><tbody>${o.nums.map(n=> `<tr><td style="width:60px;"><b>${String(n).padStart(2,'0')}</b><br><span class="footnote">×${Math.exp(score[n]).toFixed(2)}${isConsensus(mode) ? `<br>🤝 ${pos[n]-neg[n]>0?'+':''}${pos[n]-neg[n]}` : ''}</span></td><td style="text-align:left;font-size:0.8rem;line-height:1.5;">${o.extra[n] ? `<span style="color:var(--accent);">${o.extra[n]}</span>${why[n].length ? '<br>'+reasonOf(n) : ''}` : reasonOf(n)}</td></tr>`).join('')}</tbody></table>
       </details>
     </div>`;
   });
@@ -3770,7 +3815,7 @@ function renderOptions(ctx){
   }
   html += `<h3 style="margin-top:18px;">Quy luật đang tác động hôm nay (${active.length})</h3>
     <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Quy luật</th><th>Loại</th><th>Số hôm nay</th><th>Lịch sử</th><th>z</th></tr></thead><tbody>
-    ${active.sort((a,b)=> b.z-a.z).map(r=> `<tr><td style="text-align:left;">${r.z>0?'🔺':'🔻'} ${r.rule}</td><td>${horizonTag(r.rule)}</td><td>${[...r.set].sort((a,b)=>a-b).join(' ')}</td><td style="color:${r.lift>=1?'var(--good)':'var(--bad)'};">${fmtPct(r.lift)}</td><td>${r.z.toFixed(2)}</td></tr>`).join('')}
+    ${active.sort((a,b)=> b.z-a.z).map(r=> `<tr><td style="text-align:left;">${r.personal ? (r.lift>=1?'👤':'⛔') : r.z>0?'🔺':'🔻'} ${r.rule}</td><td>${horizonTag(r.rule)}</td><td>${[...r.set].sort((a,b)=>a-b).join(' ')}</td><td style="color:${r.lift>=1?'var(--good)':'var(--bad)'};">${r.personal ? 'cá nhân' : fmtPct(r.lift)}</td><td>${r.personal ? '—' : r.z.toFixed(2)}</td></tr>`).join('')}
     </tbody></table></div>
     <div class="footnote" style="margin-top:10px;"><b>Loại tín hiệu:</b> ⚡ <b>ngắn hạn</b> = dựa vào kỳ trước hoặc tối đa 20 kỳ gần (Pascal, chạm, lô rơi/lộn, bóng, cầu vị trí, bạc nhớ chu kỳ, số nóng/lạnh và cặp 5–20 kỳ); 🕐 <b>trung hạn</b> = số nóng/lạnh và cặp trong 30–100 kỳ gần; 📅 <b>dài hạn</b> = theo ngày quay (Can Chi, Mai Hoa, thần số học...), Markov, số/cặp trong 200–500 kỳ hoặc từ đầu. Mọi loại đều được kiểm tra trên toàn bộ lịch sử. Bảng trên đang hiện chi tiết của tab: <b>${(HORIZONS.find(x=> x.mode===mode)||HORIZONS[0]).label}</b>.<br><b>Cách hiểu:</b> "hệ số ×1,30" nghĩa là trong lịch sử, các quy luật chứa số này về nhiều hơn mức ngẫu nhiên khoảng 30% (nhân dồn nếu số thuộc nhiều quy luật). Đây là <b>hy vọng nhỏ</b>: chưa quy luật nào vượt ngưỡng may mắn thuần túy (mục 3), và con số lịch sử thường cao hơn thực tế về sau. Mỗi bộ số vẫn có cùng xác suất trúng Jackpot như mọi bộ khác.</div>`;
   document.getElementById('optionsOut').innerHTML = html;
@@ -4191,6 +4236,8 @@ function renderDrawStatus(){
 }
 
 document.getElementById('genBtn').addEventListener('click', generateNumbers);
+try{ const b = localStorage.getItem('somayman_birth'); if(b) document.getElementById('birthDate').value = b; }catch(e){}
+document.getElementById('birthDate').addEventListener('change', e=>{ try{ localStorage.setItem('somayman_birth', e.target.value||''); }catch(err){} });
 
 function ingestCSVText(text, gameKey){
   const rows = parseCSV(text);
