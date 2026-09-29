@@ -5,6 +5,14 @@ ROOT = os.path.join(os.path.dirname(__file__), '..')
 data = json.load(open(os.path.join(ROOT, 'research', 'results.json'), encoding='utf-8'))
 for g in data['games'].values():  # bớt dung lượng: chỉ giữ tên cách lấy số, bỏ dấu cách thừa
     for k in g['recent']: k['links'] = {n: v for n, v in k['links'].items() if v}
+cpath = os.path.join(ROOT, 'research', 'community.json')
+if os.path.exists(cpath):   # kết quả các phương pháp cộng đồng (research/community.py --json)
+    for g, rows in json.load(open(cpath, encoding='utf-8')).items():
+        if g in data['games']: data['games'][g]['community'] = rows
+rpath = os.path.join(ROOT, 'research', 'recency.json')
+if os.path.exists(rpath):   # số nóng/lạnh, cặp hay về cùng theo mốc thời gian (research/recency.py --json)
+    for g, rows in json.load(open(rpath, encoding='utf-8')).items():
+        if g in data['games']: data['games'][g]['recency'] = rows
 js = 'const RESEARCH = ' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';'
 path = os.path.join(ROOT, 'index.html')
 h = open(path, encoding='utf-8').read()

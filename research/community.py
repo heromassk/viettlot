@@ -90,7 +90,44 @@ def run(game, start=30):
             if x in s: last = i
     return mx, c, n, cut-start, n-cut, res, hz
 
-if __name__ == '__main__':
+def summary(res):
+    out = []
+    for k, (a, b) in res.items():
+        H = a[0]+b[0]; E = a[1]+b[1]; V = a[2]+b[2]
+        if E == 0: continue
+        z = (H-E)/math.sqrt(V); za = (a[0]-a[1])/math.sqrt(a[2]) if a[2] else 0; zb = (b[0]-b[1])/math.sqrt(b[2]) if b[2] else 0
+        out.append(dict(rule=k, hits=int(H), expected=round(E, 1), lift=round(H/E, 3), z=round(z, 2), p=round(zp(z), 4),
+                        z_old=round(za, 2), z_new=round(zb, 2), consistent=za*zb > 0, size=None))
+    return sorted(out, key=lambda r: -r['z'])
+
+def dump(game, idxs):
+    """Tập số của từng phương pháp khi dự đoán kỳ i (chỉ dùng kỳ < i) — để đối chiếu bản JS."""
+    mx, c, _, dr = load(game); D = [set(d['nums']) for d in dr]; M = methods(mx, c)
+    st = {'follow': Counter(), 'cnt': Counter(), 'pos': list(permutations(range(2*c), 2))}
+    out = {}
+    for i in range(1, len(D)+1):
+        if i in idxs:
+            I = dr[i]['info'] if i < len(D) else None
+            out[i] = {k: sorted(f(D[:i], st)) for k, f in M.items()}
+        if i < len(D):
+            for x in D[i-1]:
+                st['cnt'][x] += 1
+                for y in D[i]: st['follow'][(x, y)] += 1
+    return out
+
+if __name__ == '__main__' and '--json' in sys.argv:
+    import json
+    res = {g: summary(run(g)[5]) for g in ['power655', 'mega645', 'loto535']}
+    json.dump(res, open(sys.argv[sys.argv.index('--json')+1], 'w'), ensure_ascii=False)
+    if '--dump' in sys.argv:
+        import random
+        dd = {}
+        for g in ['power655', 'mega645', 'loto535']:
+            n = len(load(g)[3]); rng = random.Random(3)
+            dd[g] = dump(g, set([n] + rng.sample(range(10, n), 25)))
+        json.dump(dd, open(sys.argv[sys.argv.index('--dump')+1], 'w'))
+    print('đã ghi')
+elif __name__ == '__main__':
     for game in ['power655', 'mega645', 'loto535']:
         mx, c, n, nold, nnew, res, hz = run(game)
         print(f'\n######## {game}: kiểm {nold+nnew} kỳ (cũ {nold}, mới {nnew})')
