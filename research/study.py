@@ -89,6 +89,8 @@ def load(game):
         draws.append(dict(info=date_info(yy, mm, dd, h), nums=set(map(int, r[1:1+c])),
                           lucky=int(r[1+c]) if lmx and len(r) > 1+c else None))
     draws.reverse()
+    for k, d in enumerate(draws):  # kỳ trước (dùng làm nhóm đối chứng "không phải từ ngày")
+        d['info']['prev'] = draws[k-1]['nums'] if k else set()
     return mx, c, lmx, draws
 
 def zscore(sets, draws, c, mx, key='nums'):
