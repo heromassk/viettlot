@@ -5,13 +5,22 @@ sys.path.insert(0, os.path.dirname(__file__))
 from study import load, zscore, rules as r1
 from kinhdich import rules as r2
 from more_rules import rules as r3
-LABEL = {'power655': 'Power 6/55', 'mega645': 'Mega 6/45', 'loto535': 'Loto 5/35'}
+from web_rules import rules as r4
+LABEL = {'power655': 'Power 6/55', 'mega645': 'Mega 6/45', 'loto535': 'Loto 5/35', 'loto535_lucky': 'Loto – số may mắn'}
 def p(z): return math.erfc(abs(z)/math.sqrt(2))
 
+def all_rules(mx):
+    R = {**r1(mx), **r2(mx), **r3(mx), **r4(mx)}
+    return {k: v for k, v in R.items() if not k.startswith('ĐỐI CHỨNG')}
+
 def analyse(game, perms=500, seed=7):
-    mx, c, _, draws = load(game); n = len(draws); cut = int(n*0.6)
-    R = {**r1(mx), **r2(mx), **r3(mx)}
-    R = {k: v for k, v in R.items() if not k.startswith('ĐỐI CHỨNG')}
+    if game.endswith('_lucky'):   # số may mắn của Loto: bốc 1 số trong 1..12
+        _, _, mx, draws = load(game[:-6]); c = 1
+        draws = [dict(d, nums={d['lucky']}) for d in draws if d['lucky']]
+    else:
+        mx, c, _, draws = load(game)
+    n = len(draws); cut = int(n*0.6)
+    R = all_rules(mx)
     sets = {k: [f(d['info']) for d in draws] for k, f in R.items()}
     rows = []
     for k, S in sets.items():
@@ -58,7 +67,7 @@ def show(a):
 
 if __name__ == '__main__':
     args = [x for x in sys.argv[1:] if not x.startswith('--')]
-    games = ['power655', 'mega645', 'loto535'] if not args or args[0] == 'all' else [args[0]]
+    games = ['power655', 'mega645', 'loto535', 'loto535_lucky'] if not args or args[0] == 'all' else [args[0]]
     perms = int(args[1]) if len(args) > 1 else 500
     res = [analyse(g, perms) for g in games]
     for a in res: show(a)
