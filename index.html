@@ -3751,9 +3751,14 @@ function buildSuggestions(mode){
       }
     }
     const lpos = n=> lr.why[n].filter(w=> w.lift>=1).length - lr.why[n].filter(w=> w.lift<1).length;
-    const lsel = n=> isConsensus(mode) ? lpos(n) + 0.2*lr.score[n] : lr.score[n];
-    const lorder = Array.from({length:L}, (_,k)=> k+1).sort((a,b)=> lsel(b)-lsel(a) || tieKey[a]-tieKey[b]);
-    lucky = {order: lorder, ...lr, lpos};
+    const lsel = n=> lpos(n) + 0.2*lr.score[n];   // mọi tầm: xếp theo số cơ sở, hệ số hy vọng chỉ để phân định
+    // thống kê từng số may mắn trong các kỳ trước: số lần về, cách bao nhiêu kỳ chưa về
+    const lcount = Array(L+1).fill(0), lago = Array(L+1).fill(past.length);
+    past.forEach((d,j)=>{ lcount[d.lucky]++; lago[d.lucky] = past.length-1-j; });
+    const lgood = n=> lr.why[n].filter(w=> w.lift>=1).length;
+    // hòa điểm → ưu tiên số lâu chưa về (dữ liệu: số gan nhỉnh hơn, số nóng hay "nguội"), rồi thứ tự cố định của ngày
+    const lorder = Array.from({length:L}, (_,k)=> k+1).sort((a,b)=> lsel(b)-lsel(a) || lago[b]-lago[a] || tieKey[a]-tieKey[b]);
+    lucky = {order: lorder, ...lr, lpos, lgood, lcount, lago, total: past.length, lsel};
   }
   return {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pairPick, avoidPairRules, pos, neg, pairMembers, prof, synergy};
 }
@@ -3874,10 +3879,22 @@ function renderOptions(ctx){
   html += `<h3 style="margin-top:18px;">🔻 Số nên tránh hôm nay (${avoid.length})</h3>
     <div class="footnote">${avoid.length ? avoid.map(n=> `<b>${n}</b> ×${Math.exp(score[n]).toFixed(2)}`).join(' · ') : 'Không có'}</div>`;
   if(lucky){
-    const top = lucky.order.slice(0, 3);
-    html += `<h3 style="margin-top:18px;">🟠 Số may mắn (1–${game.luckyMax}) — gợi ý 2 số, xếp ưu tiên</h3>
-      <table><tbody>${top.map((n,k)=> `<tr><td style="width:60px;">${luckyBall(n)}</td><td style="text-align:left;font-size:0.8rem;line-height:1.5;"><b>#${k+1}</b>${k<2 ? ' <span style="color:var(--good);">✓ gợi ý</span>' : ' <span style="color:var(--muted);">(dự phòng)</span>'}${isConsensus(mode) ? ` 🤝 ${lucky.lpos(n)>0?'+':''}${lucky.lpos(n)} cơ sở,` : ''} hệ số ×${Math.exp(lucky.score[n]).toFixed(2)} — ${
-        lucky.why[n].length ? lucky.why[n].map(w=> `<span style="color:${w.lift>=1?'var(--good)':'var(--bad)'};">${w.lift>=1?'▲':'▼'} ${w.rule}${w.set.size<=3?` = ${[...w.set].join(', ')}`:` (nhóm ${w.set.size} số)`} ${fmtPct(w.lift)} ${horizonTag(w.rule)}</span>`).join(' · ') : '<span style="color:var(--muted);">không thuộc quy luật nào — chọn theo thứ tự cố định của ngày</span>'}</td></tr>`).join('')}</tbody></table>
+    const L = game.luckyMax;
+    const reasons = n=> lucky.why[n].length
+      ? lucky.why[n].map(w=> `<span style="color:${w.lift>=1?'var(--good)':'var(--bad)'};">${w.lift>=1?'▲':'▼'} ${w.rule}${w.set.size<=3?` = ${[...w.set].join(', ')}`:` (nhóm ${w.set.size} số)`} ${fmtPct(w.lift)} ${horizonTag(w.rule)}</span>`).join(' · ')
+      : '<span style="color:var(--muted);">không thuộc tín hiệu nào</span>';
+    const level = n=> lucky.lgood(n) >= 2 && lucky.lpos(n) >= 2 ? ['var(--good)','Tiềm năng cao'] : lucky.lpos(n) >= 1 ? ['#7cc4ff','Có cơ sở'] : lucky.lpos(n) === 0 ? ['var(--muted)','Chưa có cơ sở'] : ['var(--bad)','Nên tránh'];
+    const row = (n, k)=>{ const [col, lab] = level(n), pct = lucky.total ? (100*lucky.lcount[n]/lucky.total).toFixed(1) : '0';
+      return `<tr style="${k<2?'background:rgba(240,180,41,0.07);':''}"><td style="width:74px;vertical-align:top;"><b>#${k+1}</b> ${luckyBall(n)}</td><td style="text-align:left;font-size:0.8rem;line-height:1.55;">
+        ${k<2 ? '<b style="color:var(--accent);">✓ gợi ý</b> · ' : ''}<b style="color:${col};">${lab}</b> · 🤝 ${lucky.lpos(n)>0?'+':''}${lucky.lpos(n)} cơ sở${lucky.why[n].length ? ` (${lucky.lgood(n)} nên chọn` : ''}${lucky.lgood(n)!==lucky.why[n].length ? `, ${lucky.why[n].length-lucky.lgood(n)} nên tránh` : ''}${lucky.why[n].length ? ')' : ''} · hệ số ×${Math.exp(lucky.score[n]).toFixed(2)}<br>
+        <span style="color:var(--muted);">Đã về ${lucky.lcount[n]}/${lucky.total} kỳ (${pct}%, ngẫu nhiên ${(100/L).toFixed(1)}%) · ${lucky.lago[n]===0 ? 'vừa về kỳ trước' : `${lucky.lago[n]} kỳ chưa về`}</span><br>${reasons(n)}</td></tr>`; };
+    const o = lucky.order, noBase = o.slice(0,2).filter(n=> lucky.lpos(n) <= 0);
+    html += `<h3 style="margin-top:18px;">🟠 Số may mắn (1–${L}) — gợi ý 2 số, xếp theo tiềm năng</h3>
+      <div class="footnote" style="margin:0 0 6px;">Xếp theo <b>số cơ sở</b> = số tín hiệu "nên chọn" trùng vào số đó trừ số tín hiệu "nên tránh" (cùng số cơ sở thì xét hệ số hy vọng); bằng nhau thì ưu tiên số lâu chưa về hơn. <b style="color:var(--good);">Tiềm năng cao</b> = ≥ 2 tín hiệu nên chọn cùng trùng; <b style="color:#7cc4ff;">Có cơ sở</b> = ít nhất 1; <b>Chưa có cơ sở</b> = không tín hiệu nào.</div>
+      <table><tbody>${o.slice(0,3).map(row).join('')}</tbody></table>
+      ${noBase.length ? `<div class="footnote" style="color:var(--accent);">⚠️ ${noBase.join(', ')} chưa có tín hiệu nào ủng hộ ở tầm này — chỉ đứng đầu vì các số khác bị tín hiệu "nên tránh" hoặc vì lâu chưa về. Xem tầm ⭐ Tổng hợp để có nhiều cơ sở hơn.</div>` : ''}
+      <details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--accent);font-size:0.85rem;">Xem đủ ${L} số may mắn</summary>
+        <table><tbody>${o.slice(3).map((n,k)=> row(n, k+3)).join('')}</tbody></table></details>
       <div class="footnote">Mọi phương án ở trên gợi ý 2 số may mắn #1 và #2 (bóng cam). Mỗi vé Loto chỉ chọn được 1 số may mắn — muốn phủ cả 2 thì mua 2 vé cùng 5 số chính, mỗi vé 1 số may mắn. Căn cứ: quy luật theo ngày (📅) cộng tín hiệu từ các kỳ trước — số gan, số nóng/lạnh, bạc nhớ cùng giờ quay, 5 số chính kỳ trước (chỉ những tín hiệu đạt "hy vọng nhỏ" riêng với cột số may mắn). Jackpot Loto cần trúng cả 5 số chính lẫn số may mắn.</div>`;
   }
   html += `<h3 style="margin-top:18px;">Quy luật đang tác động hôm nay (${active.length})</h3>
