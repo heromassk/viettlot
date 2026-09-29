@@ -87,6 +87,33 @@
   details.sec>summary .hint{margin-left:auto;font-size:0.75rem;color:var(--muted);}
   details.sec[open]>summary .hint::after{content:'thu gọn';}
   details.sec:not([open])>summary .hint::after{content:'bấm để xem';}
+  .ball.small{display:inline-flex;margin:1px;}
+  /* ---- Điện thoại / màn hình hẹp ---- */
+  @media (max-width:600px){
+    body{padding:14px 10px 40px;}
+    h1{font-size:1.25rem;}
+    .sub{font-size:0.84rem;margin-bottom:16px;}
+    .card{padding:14px 12px;border-radius:12px;margin-bottom:14px;}
+    .card h2{font-size:0.98rem;}
+    .csvbox{padding:10px;}
+    .balls{gap:6px;margin:10px 0;}
+    .ball{width:40px;height:40px;font-size:1rem;}
+    .ball.small{width:26px;height:26px;font-size:0.72rem;}
+    .gametab{padding:7px 11px;font-size:0.82rem;}
+    .stat{padding:10px 12px;min-width:120px;}
+    .stat .num{font-size:1.15rem;}
+    .stat .lbl{font-size:0.7rem;}
+    table{font-size:0.76rem;}
+    th,td{padding:5px 4px;}
+    #statsPanel td,#statsPanel th,#researchPanel td,#researchPanel th{font-size:0.72rem;}
+    details.sec>summary .hint{display:none;}
+    details.sec>summary h3{font-size:0.9rem;}
+    .field{max-width:none !important;min-width:130px;}
+    .btn{padding:10px 14px;}
+    /* bảng rộng: cuộn ngang, giữ cột đầu đứng yên */
+    .tablewrap table th:first-child,.tablewrap table td:first-child{position:sticky;left:0;background:var(--panel);z-index:1;}
+    .scrollbox thead th:first-child{z-index:2;}
+  }
   #statsPanel th[data-sort]{cursor:pointer;user-select:none;}
   #statsPanel th[data-sort]:hover{color:var(--accent);}
   #statsPanel td,#statsPanel th{font-size:0.8rem;}
@@ -2255,7 +2282,7 @@ function renderBacktestPanel(gameKey){
               + (r.lucky!=null ? ` <span class="ball small ${r.luckyHit?'matched':''}" style="opacity:0.8;">${r.lucky}</span>` : '');
             const predHtml = r.predicted.map(n=>`<span class="ball small ${r.matchNumbers.includes(n)?'matched':''}">${n}</span>`).join(' ')
               + (r.predictedLucky!=null ? ` <span class="ball small ${r.luckyHit?'matched':''}" style="opacity:0.8;">${r.predictedLucky}</span>` : '');
-            return `<tr class="${r.matchCount>=2?'row-hit':''}"><td>${r.date}${r.hour!=null && game.drawHoursVN.length>1 ? ' '+r.hour+'h' : ''}</td><td>${numsHtml}</td><td>${predHtml}</td><td>${r.matchCount}${r.matchCount>=game.count+ (game.luckyMax?1:0)?' ⭐':''}</td></tr>`;
+            return `<tr class="${r.matchCount>=2?'row-hit':''}"><td>${toDDMMYYYY(r.date)}${r.hour!=null && game.drawHoursVN.length>1 ? ' '+r.hour+'h' : ''}</td><td>${numsHtml}</td><td>${predHtml}</td><td>${r.matchCount}${r.matchCount>=game.count+ (game.luckyMax?1:0)?' ⭐':''}</td></tr>`;
           }).join('')}
         </tbody>
       </table>
