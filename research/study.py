@@ -81,10 +81,10 @@ def load(game):
     mx, c, lmx = cfg
     rows = list(csv.reader(open(os.path.join(ROOT, f'{game}_history.csv'))))
     seen = {}; draws = []
-    for r in rows:  # file mới nhất trước; Loto: dòng đầu của 1 ngày = 21h, dòng sau = 13h (giả định)
+    for r in rows:  # file mới nhất trước; Loto: cột cuối = giờ quay, nếu thiếu thì dòng đầu của 1 ngày = 21h
         dd, mm, yy = map(int, r[0].split('/'))
         if game == 'loto535':
-            h = 21 if r[0] not in seen else 13; seen[r[0]] = 1
+            h = int(r[2+c]) if len(r) > 2+c and r[2+c] else (21 if r[0] not in seen else 13); seen[r[0]] = 1
         else: h = 18
         draws.append(dict(info=date_info(yy, mm, dd, h), nums=set(map(int, r[1:1+c])),
                           lucky=int(r[1+c]) if lmx and len(r) > 1+c else None))
