@@ -3609,10 +3609,29 @@ function buildSuggestions(mode){
       `Giữ 2 cặp về cùng nhiều nhất ${pairPick.window ? `trong ${pairPick.window} kỳ gần nhất` : 'từ đầu dữ liệu'} (${chosen.map(p=> `${p.a}–${p.b}: ${p.count} lần`).join(', ')}). Lịch sử của riêng ${game.label}: chọn theo cặp như vậy trúng cả cặp ${fmtPct(pairPick.lift)} so với ngẫu nhiên (z = ${pairPick.z}). Phần còn lại chọn theo hy vọng + cân bằng.`,
       {bonus: chosen.length*Math.log(pairPick.lift), extra, badge:`🔗 cặp ${fmtPct(pairPick.lift)}`});
   }
-  // Cách tính cũ của app (phong thủy ngày/giờ + số học), giữ để tham khảo
-  const daily = computeDailyProfile(targetDate, session);
-  const old = buildScores(game, daily, targetDate + (session!=='' ? '|'+session+'h' : ''), null, 0, 'hot', backtestResult[currentGame] ? backtestResult[currentGame].weights : DEFAULT_WEIGHTS).slice(0, c).map(s=> s.n);
-  add('Năng lượng ngày (cách tính cũ)', old, 'Phong thủy Nạp Âm ngày/giờ và số học ngày như bản trước của app. Các yếu tố này chưa được lịch sử xác nhận (xem mục 3) — để tham khảo.');
+  // Bổ sung "Biến thể" cho đủ 10 bộ: bộ cân bằng có điểm hy vọng cao tiếp theo, khác mọi bộ đã có ≥ 2 số.
+  const TARGET = 10;
+  if(options.length < TARGET){
+    const pool = order.filter(n=> score[n] >= 0).slice(0, c>=6 ? 19 : 22);   // 19 ứng viên cho vé 6 số để tính nhanh
+    const all = [];
+    const rec = (start, chosen)=>{
+      if(chosen.length===c){ const s = chosen.slice().sort((a,b)=>a-b);
+        if(bal.ok(comboStats(s,max)) && pairFree(s)) all.push({s, t: s.reduce((a,n)=> a+score[n], 0), r: chosen.reduce((a,n)=> a+pool.indexOf(n), 0)});
+        return; }
+      for(let k=start; k<=pool.length-(c-chosen.length); k++){ chosen.push(pool[k]); rec(k+1, chosen); chosen.pop(); }
+    };
+    rec(0, []);
+    all.sort((a,b)=> b.t-a.t || a.r-b.r);
+    const overlap = (a,b)=> a.filter(x=> b.includes(x)).length;
+    let k = 1;
+    for(const maxShare of [c-2, c-1]){
+      for(const v of all){
+        if(options.length >= TARGET) break;
+        if(options.some(o=> overlap(o.nums, v.s) > maxShare)) continue;
+        add(`Biến thể ${k++}`, v.s, `Bộ cân bằng có điểm hy vọng cao tiếp theo, khác các bộ ở trên ít nhất ${c-maxShare} số — để có đủ ${TARGET} lựa chọn đa dạng.`);
+      }
+    }
+  }
   // xếp ưu tiên: tổng điểm hy vọng, bằng nhau thì bộ cân bằng trước
   options.forEach(o=> o.balanced = bal.ok(comboStats(o.nums, max)));
   options.sort((a,b)=> b.rank - a.rank || (b.balanced - a.balanced));
@@ -3886,7 +3905,7 @@ function renderBacktestPanel(gameKey){
         <div class="stat"><div class="num">${bt.avgMatch > bt.expected ? '✅ Cao hơn' : (bt.avgMatch < bt.expected ? '⚠️ Thấp hơn' : '≈ Bằng')}</div><div class="lbl">So với ngẫu nhiên</div></div>
       </div>
       <div class="footnote">"Mức trùng nếu thuần ngẫu nhiên" là kỳ vọng toán học nếu số không có liên hệ gì với cá nhân bạn — dùng để bạn tự đánh giá liệu điểm cộng hưởng cá nhân có thật sự "nhỉnh" hơn ăn may hay không.</div>
-      <h3 style="margin-top:16px;">Trọng số cho phương án “Năng lượng ngày (cách tính cũ)” ở mục 2</h3>
+      <h3 style="margin-top:16px;">Trọng số của cách tính cũ (phong thủy ngày) — chỉ dùng cho bảng đối chiếu này, không còn dùng để gợi ý</h3>
       <table>
         <thead><tr><th>Yếu tố</th><th>Lift so với ngẫu nhiên</th><th>Trọng số áp dụng</th></tr></thead>
         <tbody>
