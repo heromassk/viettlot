@@ -2909,13 +2909,15 @@ function renderStats(){
   // --- cấu trúc bộ số ---
   const S = D.map(d=> d.numbers.slice().sort((a,b)=>a-b));
   const oddPool = Math.ceil(max/2), low = Math.floor(max/2);
-  const distTable = (title, labelOf, obsOf, theoryOf, keys)=>{
+  const bal = makeBalanceCheck(max, c), [bLo, bHi] = bal.band;
+  const inBand = k=> k>=bLo && k<=bHi;
+  const distTable = (title, labelOf, obsOf, theoryOf, keys, common)=>{
     const obs = new Map(); S.forEach(s=>{ const k = obsOf(s); obs.set(k,(obs.get(k)||0)+1); });
-    const rowsH = keys.map(k=>{ const o = obs.get(k)||0, t = theoryOf(k)*100, pct = o/T*100;
-      return `<tr><td>${labelOf(k)}</td><td>${o}</td><td style="text-align:left;"><span class="bar" style="width:${pct*1.6}px"></span> ${pct.toFixed(1)}%</td>
+    const rowsH = keys.map(k=>{ const o = obs.get(k)||0, t = theoryOf(k)*100, pct = o/T*100, hit = common(k);
+      return `<tr class="${hit?'row-hit':''}"><td>${hit?'✓ ':''}${labelOf(k)}</td><td>${o}</td><td style="text-align:left;"><span class="bar" style="width:${pct*1.6}px"></span> ${pct.toFixed(1)}%</td>
         <td style="text-align:left;"><span class="bar theory" style="width:${t*1.6}px"></span> ${t.toFixed(1)}%</td></tr>`; }).join('');
     return `<div><div style="font-weight:700;margin:14px 0 4px;">${title}</div><div class="tablewrap"><table>
-      <thead><tr><th></th><th>Số kỳ</th><th style="text-align:left;">Thực tế</th><th style="text-align:left;">Lý thuyết (ngẫu nhiên)</th></tr></thead><tbody>${rowsH}</tbody></table></div></div>`;
+      <thead><tr><th></th><th>Số kỳ</th><th style="text-align:left;">Kết quả thật</th><th style="text-align:left;">Nếu bốc ngẫu nhiên</th></tr></thead><tbody>${rowsH}</tbody></table></div></div>`;
   };
   const ks = Array.from({length:c+1},(_,i)=>i);
   const sd = sumDistribution(max, c), step = max>40 ? 20 : 15;
@@ -2925,15 +2927,28 @@ function renderStats(){
   const hasCons = s=> s.some((x,i)=> i && x-s[i-1]===1) ? 1 : 0;
   const pNoCons = nCk(max-c+1,c)/nCk(max,c);
   const sums = S.map(s=> s.reduce((a,b)=>a+b,0));
+  // tóm tắt bằng lời
+  const pct = f=> (S.filter(f).length/T*100).toFixed(0);
+  const oddOf = s=> s.filter(x=>x%2).length, lowOf = s=> s.filter(x=>x<=low).length, sumOf = s=> s.reduce((a,b)=>a+b,0);
+  let thOdd = 0, thLow = 0; for(let k=bLo;k<=bHi;k++){ thOdd += hyperP(max,oddPool,c,k); thLow += hyperP(max,low,c,k); }
+  let thSum = 0; for(const [s,p] of sd) if(s>=bal.lo && s<=bal.hi) thSum += p;
   html += `<h3 style="margin-top:16px;">Cấu trúc bộ số trúng: chẵn/lẻ, nhỏ/to, tổng, số liền nhau</h3>
-  <div class="dist-grid">
-    ${distTable('Số lẻ trong bộ', k=>`${k} lẻ – ${c-k} chẵn`, s=> s.filter(x=>x%2).length, k=> hyperP(max,oddPool,c,k), ks)}
-    ${distTable(`Số nhỏ (1–${low}) trong bộ`, k=>`${k} nhỏ – ${c-k} to`, s=> s.filter(x=>x<=low).length, k=> hyperP(max,low,c,k), ks)}
-    ${distTable('Tổng các số', k=>`${k}–${k+step-1}`, s=> bucket(s.reduce((a,b)=>a+b,0)), k=> sumTheory.get(k)||0, sumKeys)}
-    ${distTable('Có cặp số liền nhau (vd 12-13)', k=> k?'Có':'Không', hasCons, k=> k ? 1-pNoCons : pNoCons, [0,1])}
+  <div class="csvbox" style="text-align:left;border-style:solid;color:var(--text);line-height:1.7;">
+    <b>📌 Tóm tắt dễ hiểu (${T} kỳ ${game.label})</b><br>
+    • <b>${pct(s=> inBand(oddOf(s)))}%</b> bộ số trúng có <b>${bLo}–${bHi} số lẻ</b> <span style="color:var(--muted);">(bốc ngẫu nhiên cũng ~${(thOdd*100).toFixed(0)}%)</span><br>
+    • <b>${pct(s=> inBand(lowOf(s)))}%</b> có <b>${bLo}–${bHi} số nhỏ</b> (số nhỏ = 1–${low}) <span style="color:var(--muted);">(ngẫu nhiên ~${(thLow*100).toFixed(0)}%)</span><br>
+    • <b>${pct(s=> sumOf(s)>=bal.lo && sumOf(s)<=bal.hi)}%</b> có <b>tổng từ ${bal.lo} đến ${bal.hi}</b> <span style="color:var(--muted);">(ngẫu nhiên ~${(thSum*100).toFixed(0)}%)</span><br>
+    • <b>${pct(s=> hasCons(s))}%</b> có ít nhất 1 cặp số liền nhau như 12-13 <span style="color:var(--muted);">(ngẫu nhiên ~${((1-pNoCons)*100).toFixed(0)}%)</span> → có số liền nhau là chuyện bình thường, không cần tránh.<br>
+    <span style="color:var(--muted);">→ Kết quả thật gần như trùng với bốc ngẫu nhiên, tức máy quay <b>không có quy luật riêng</b>. Điều dùng được: chọn bộ số nằm trong các khoảng hay gặp ở trên (✓) — phương án "Cân bằng" ở mục 2 đã làm sẵn việc này. Kiểu hay gặp chỉ hay gặp vì có nhiều bộ số thuộc kiểu đó, từng bộ cụ thể không dễ trúng hơn.</span>
   </div>
-  <div class="footnote">Tổng trung bình thực tế <b>${(sums.reduce((a,b)=>a+b,0)/T).toFixed(1)}</b> (lý thuyết ${(c*(max+1)/2).toFixed(1)}), nhỏ nhất ${Math.min(...sums)}, lớn nhất ${Math.max(...sums)}.
-    Cột "Lý thuyết" là tỉ lệ nếu máy bốc hoàn toàn ngẫu nhiên — thực tế càng sát lý thuyết càng cho thấy không có quy luật riêng. Kiểu hay gặp (ví dụ 3 lẻ – 3 chẵn) hay gặp vì có nhiều bộ số thuộc kiểu đó, không phải vì từng bộ dễ trúng hơn.</div>`;
+  <div class="dist-grid">
+    ${distTable('Số lẻ trong bộ', k=>`${k} lẻ – ${c-k} chẵn`, oddOf, k=> hyperP(max,oddPool,c,k), ks, inBand)}
+    ${distTable(`Số nhỏ (1–${low}) và số to (${low+1}–${max})`, k=>`${k} nhỏ – ${c-k} to`, lowOf, k=> hyperP(max,low,c,k), ks, inBand)}
+    ${distTable('Tổng các số trong bộ', k=>`${k}–${k+step-1}`, s=> bucket(sumOf(s)), k=> sumTheory.get(k)||0, sumKeys, k=> k+step/2>=bal.lo && k+step/2<=bal.hi)}
+    ${distTable('Có cặp số liền nhau (vd 12-13)', k=> k?'Có':'Không', hasCons, k=> k ? 1-pNoCons : pNoCons, [0,1], ()=> false)}
+  </div>
+  <div class="footnote"><b>Cách đọc bảng:</b> mỗi dòng là một kiểu bộ số. "Số kỳ" = bao nhiêu kỳ đã ra kiểu đó; "Kết quả thật" = tỉ lệ trên tổng ${T} kỳ; "Nếu bốc ngẫu nhiên" = tỉ lệ tính theo toán học khi máy bốc hoàn toàn ngẫu nhiên. Hai cột càng giống nhau càng cho thấy không có quy luật riêng. Dòng ✓ là khoảng hay gặp.
+    Tổng trung bình thực tế ${(sums.reduce((a,b)=>a+b,0)/T).toFixed(1)} (ngẫu nhiên ${(c*(max+1)/2).toFixed(1)}), nhỏ nhất ${Math.min(...sums)}, lớn nhất ${Math.max(...sums)}.</div>`;
   panel.innerHTML = html;
   collapsify(panel, 'st');
   panel.querySelectorAll('th[data-sort]').forEach(th=> th.addEventListener('click', ()=>{
