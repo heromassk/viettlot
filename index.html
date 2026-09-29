@@ -1993,7 +1993,7 @@ function generateNumbers(){
     add(`Xoay quanh: ${r.rule}`, bestCombo(cands.concat(order.filter(n=> !cands.includes(n) && score[n]>=0)).slice(0, 18), c, score, s=> bal.ok(comboStats(s,max)), inside),
         `Giữ ${inside.join(', ')} (quy luật này đã về ${fmtPct(r.lift)} so với ngẫu nhiên, z = ${r.z.toFixed(2)}), phần còn lại chọn theo hy vọng + cân bằng.`);
   }
-  // Cặp hay về cùng (chỉ Power, Loto — xem PAIR_HOPE)
+  // Cặp hay về cùng (chỉ loại vé có trong PAIR_HOPE)
   const ph = PAIR_HOPE[currentGame], hist = historyData[currentGame];
   if(ph && hist && hist.draws.length){
     const T = hist.draws.length, ps = pairStats(hist.draws), chosen = [];
@@ -2760,9 +2760,20 @@ function pairStats(draws){
   });
   return [...m.values()].sort((p,q)=> q.count-p.count || q.last-p.last || p.a-q.a || p.b-q.b);
 }
-// Kết quả kiểm tra "chọn 10 cặp về cùng nhiều nhất từ đầu" trước mỗi kỳ (research, xem mục 3 / lịch sử trao đổi):
-// Power và Loto lệch cùng chiều ở cả kỳ cũ lẫn kỳ mới → hy vọng nhỏ; Mega đảo chiều → không dùng.
-const PAIR_HOPE = {power655:{lift:1.39, z:1.87, hits:31, expected:22.2}, loto535:{lift:1.14, z:1.74, hits:166, expected:145.2}};
+// Bộ k số (k = 3, 4) về cùng nhau: đếm số kỳ mỗi bộ cùng có mặt, và kỳ gần nhất.
+function groupStats(draws, k){
+  const m = new Map();
+  const rec = (s, start, pick, i)=>{
+    if(pick.length===k){ const key = pick.join('-'), e = m.get(key) || {nums: pick.slice(), count:0, last:-1}; e.count++; e.last = i; m.set(key, e); return; }
+    for(let j=start; j<=s.length-(k-pick.length); j++){ pick.push(s[j]); rec(s, j+1, pick, i); pick.pop(); }
+  };
+  draws.forEach((d,i)=> rec(d.numbers.slice().sort((a,b)=>a-b), 0, [], i));
+  return [...m.values()].sort((p,q)=> q.count-p.count || q.last-p.last);
+}
+// Kết quả research/recency.py: "chọn 10 cặp về cùng nhiều nhất từ đầu" (hòa thì cặp về cùng gần đây hơn trước) trước mỗi kỳ.
+// Loto: lệch lên ở cả kỳ cũ lẫn kỳ mới và ở mọi mốc 30/50/100 kỳ → hy vọng nhỏ.
+// Power: chỉ nổi ở vài mốc/cách xếp hòa, không ổn định → không dùng. Mega: cặp vừa về cùng gần đây còn về ÍT hơn ngẫu nhiên.
+const PAIR_HOPE = {loto535:{lift:1.18, z:2.24, hits:172, expected:145.2}};
 
 function renderStats(){
   const tabs = document.getElementById('statsTabs'), panel = document.getElementById('statsPanel');
@@ -2819,8 +2830,23 @@ function renderStats(){
     </tbody></table></div>
     <div class="footnote">${PAIR_HOPE[statsGame]
       ? `Kiểm tra lịch sử: chọn 10 cặp về cùng nhiều nhất (tính đến trước mỗi kỳ) thì trúng cả cặp ${PAIR_HOPE[statsGame].hits} lần, ngẫu nhiên ${PAIR_HOPE[statsGame].expected} lần (${fmtPct(PAIR_HOPE[statsGame].lift)}, z = ${PAIR_HOPE[statsGame].z}) — lệch cùng chiều ở cả kỳ cũ lẫn kỳ mới → <b>hy vọng nhỏ</b>, được dùng cho phương án "Cặp hay về cùng" ở mục 2.`
-      : `Kiểm tra lịch sử: với ${game.label}, chọn theo cặp về cùng nhiều nhất <b>không</b> trúng hơn ngẫu nhiên (đảo chiều giữa kỳ cũ và kỳ mới) — bảng chỉ để tra cứu.`}
+      : statsGame==='mega645'
+        ? `Kiểm tra lịch sử: với Mega, chọn theo cặp về cùng nhiều nhất <b>không</b> trúng hơn ngẫu nhiên; cặp vừa về cùng trong 5–50 kỳ gần đây còn về lại <b>ít hơn</b> ngẫu nhiên (−26% đến −41%) — bảng chỉ để tra cứu.`
+        : `Kiểm tra lịch sử: với ${game.label}, chọn theo cặp về cùng nhiều nhất cho kết quả <b>không ổn định</b> (tùy mốc thời gian và cách xếp, từ −6% đến +44%) — bảng chỉ để tra cứu.`}
       Nếu ngẫu nhiên, cặp về cùng nhiều nhất cũng thường cao gấp 3–4 lần kỳ vọng, nên số lần cao chưa chắc là "cặp duyên".</div>`;
+
+  // --- bộ 3, bộ 4 số hay về cùng ---
+  const groupNote = {3:'Chọn 10 bộ 3 về nhiều nhất trước mỗi kỳ: trúng trọn bộ gần đúng mức ngẫu nhiên (Power 1/1,7 lần, Mega 2/3,1, Loto 14/13,2).',
+                     4:'Chọn 10 bộ 4 về nhiều nhất trước mỗi kỳ: Power 0/0,1 lần, Mega 1/0,2, Loto 0/0,8 — quá hiếm để dùng.'};
+  for(const k of [3,4]){
+    if(k > c) continue;
+    const gs = groupStats(D, k), ge = T*nCk(c,k)/nCk(max,k), rep2 = gs.filter(g=> g.count>=2).length;
+    html += `<h3 style="margin-top:16px;">Bộ ${k} số hay về cùng nhau (top ${k===3?15:10})</h3>
+      <div class="tablewrap"><table><thead><tr><th>Bộ ${k} số</th><th>Số lần về cùng</th><th>Kỳ vọng mỗi bộ</th><th>Lần cuối về cùng</th><th>Số kỳ chưa về cùng</th></tr></thead><tbody>
+      ${gs.slice(0, k===3?15:10).map(g=> `<tr><td><b>${g.nums.map(x=>String(x).padStart(2,'0')).join(' – ')}</b></td><td>${g.count}</td><td>${ge.toFixed(ge<0.1?3:2)}</td><td>${fmtDraw(D[g.last].date, D[g.last].hour)}</td><td>${T-1-g.last}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="footnote">Có ${rep2} bộ ${k} số đã về cùng từ 2 lần trở lên — với ${T} kỳ, mức này nằm trong khoảng ngẫu nhiên. ${groupNote[k]} Bảng chỉ để tra cứu, không dùng để gợi ý.</div>`;
+  }
 
   // --- cấu trúc bộ số ---
   const S = D.map(d=> d.numbers.slice().sort((a,b)=>a-b));
