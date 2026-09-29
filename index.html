@@ -3857,9 +3857,29 @@ function renderOptions(ctx){
       </div>`;
     }).join('')}
   </div>`;
+  let luckyReasons = null, luckyLevel = null;
+  if(lucky){
+    const L = game.luckyMax;
+    luckyReasons = n=> lucky.why[n].length
+      ? lucky.why[n].map(w=> `<span style="color:${w.lift>=1?'var(--good)':'var(--bad)'};">${w.lift>=1?'▲':'▼'} ${w.rule}${w.set.size<=3?` = ${[...w.set].join(', ')}`:` (nhóm ${w.set.size} số)`} ${fmtPct(w.lift)} ${horizonTag(w.rule)}</span>`).join(' · ')
+      : '<span style="color:var(--muted);">không thuộc tín hiệu nào</span>';
+    luckyLevel = n=> lucky.lgood(n) >= 2 && lucky.lpos(n) >= 2 ? ['var(--good)','Tiềm năng cao'] : lucky.lpos(n) >= 1 ? ['#7cc4ff','Có cơ sở'] : lucky.lpos(n) === 0 ? ['var(--muted)','Chưa có cơ sở'] : ['var(--bad)','Nên tránh'];
+    const row = (n, k)=>{ const [col, lab] = luckyLevel(n), pct = lucky.total ? (100*lucky.lcount[n]/lucky.total).toFixed(1) : '0';
+      return `<tr style="${k<2?'background:rgba(240,180,41,0.07);':''}"><td style="width:74px;vertical-align:top;"><b>#${k+1}</b> ${luckyBall(n)}</td><td style="text-align:left;font-size:0.8rem;line-height:1.55;">
+        ${k<2 ? '<b style="color:var(--accent);">✓ gợi ý</b> · ' : ''}<b style="color:${col};">${lab}</b> · 🤝 ${lucky.lpos(n)>0?'+':''}${lucky.lpos(n)} cơ sở${lucky.why[n].length ? ` (${lucky.lgood(n)} nên chọn` : ''}${lucky.lgood(n)!==lucky.why[n].length ? `, ${lucky.why[n].length-lucky.lgood(n)} nên tránh` : ''}${lucky.why[n].length ? ')' : ''} · hệ số ×${Math.exp(lucky.score[n]).toFixed(2)}<br>
+        <span style="color:var(--muted);">Đã về ${lucky.lcount[n]}/${lucky.total} kỳ (${pct}%, ngẫu nhiên ${(100/L).toFixed(1)}%) · ${lucky.lago[n]===0 ? 'vừa về kỳ trước' : `${lucky.lago[n]} kỳ chưa về`}</span><br>${luckyReasons(n)}</td></tr>`; };
+    const o = lucky.order, noBase = o.slice(0,2).filter(n=> lucky.lpos(n) <= 0);
+    html += `<h3 style="margin-top:16px;">🟠 Số may mắn (1–${L}) — gợi ý 2 số, xếp theo tiềm năng</h3>
+      <div class="footnote" style="margin:0 0 6px;">Xếp theo <b>số cơ sở</b> = số tín hiệu "nên chọn" trùng vào số đó trừ số tín hiệu "nên tránh" (cùng số cơ sở thì xét hệ số hy vọng); bằng nhau thì ưu tiên số lâu chưa về hơn. <b style="color:var(--good);">Tiềm năng cao</b> = ≥ 2 tín hiệu nên chọn cùng trùng; <b style="color:#7cc4ff;">Có cơ sở</b> = ít nhất 1; <b>Chưa có cơ sở</b> = không tín hiệu nào.</div>
+      <table><tbody>${o.slice(0,3).map(row).join('')}</tbody></table>
+      ${noBase.length ? `<div class="footnote" style="color:var(--accent);">⚠️ ${noBase.join(', ')} chưa có tín hiệu nào ủng hộ ở tầm này — chỉ đứng đầu vì các số khác bị tín hiệu "nên tránh" hoặc vì lâu chưa về. Xem tầm ⭐ Tổng hợp để có nhiều cơ sở hơn.</div>` : ''}
+      <details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--accent);font-size:0.85rem;">Xem đủ ${L} số may mắn</summary>
+        <table><tbody>${o.slice(3).map((n,k)=> row(n, k+3)).join('')}</tbody></table></details>
+      <div class="footnote">Mọi phương án bên dưới gợi ý 2 số may mắn #1 và #2 (bóng cam). Mỗi vé Loto chỉ chọn được 1 số may mắn — muốn phủ cả 2 thì mua 2 vé cùng 5 số chính, mỗi vé 1 số may mắn. Căn cứ: quy luật theo ngày (📅) cộng tín hiệu từ các kỳ trước — số gan, số nóng/lạnh, bạc nhớ cùng giờ quay, 5 số chính kỳ trước (chỉ những tín hiệu đạt "hy vọng nhỏ" riêng với cột số may mắn). Jackpot Loto cần trúng cả 5 số chính lẫn số may mắn.</div>`;
+  }
   options.forEach((o, k)=>{
     const st = comboStats(o.nums, max), mult = Math.exp(o.total/c);
-    html += `<div class="csvbox" style="text-align:left;margin-top:14px;border-style:solid;${k===0?'border-color:var(--accent);':''}">
+    html += `<div class="csvbox" data-sec-stop style="text-align:left;margin-top:14px;border-style:solid;${k===0?'border-color:var(--accent);':''}">
       <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline;">
         <b style="color:${k===0?'var(--accent)':'var(--text)'};">#${k+1} · ${o.title}</b>${isConsensus(mode) ? `<span class="badge">🤝 tổng ${o.cons>0?'+':''}${o.cons} cơ sở</span>` : ''}
         <span>${o.badge ? `<span class="badge">${o.badge}</span>` : ''}<span class="badge">hệ số hy vọng TB ×${mult.toFixed(2)}</span></span>
@@ -3868,7 +3888,7 @@ function renderOptions(ctx){
       <div class="footnote" style="margin:0 0 6px;">${o.desc}</div>
       <div class="footnote" style="margin:0 0 6px;">Hình dạng: ${st.odd} lẻ – ${c-st.odd} chẵn · ${st.low} nhỏ – ${c-st.low} to · tổng ${st.sum} ${o.balanced ? '<span style="color:var(--good);">✓ kiểu hay gặp</span>' : '<span style="color:var(--accent);">— kiểu ít gặp hơn</span>'}</div>
       <details><summary style="cursor:pointer;color:var(--accent);font-size:0.85rem;">Vì sao chọn từng số</summary>
-        <table style="margin-top:6px;"><tbody>${o.nums.map(n=> `<tr><td style="width:60px;"><b>${String(n).padStart(2,'0')}</b><br><span class="footnote">×${Math.exp(score[n]).toFixed(2)}${isConsensus(mode) ? `<br>🤝 ${pos[n]-neg[n]>0?'+':''}${pos[n]-neg[n]}` : ''}</span></td><td style="text-align:left;font-size:0.8rem;line-height:1.5;">${o.extra[n] ? `<span style="color:var(--accent);">${o.extra[n]}</span>${why[n].length ? '<br>'+reasonOf(n) : ''}` : reasonOf(n)}</td></tr>`).join('')}</tbody></table>
+        <table style="margin-top:6px;"><tbody>${o.nums.map(n=> `<tr><td style="width:60px;"><b>${String(n).padStart(2,'0')}</b><br><span class="footnote">×${Math.exp(score[n]).toFixed(2)}${isConsensus(mode) ? `<br>🤝 ${pos[n]-neg[n]>0?'+':''}${pos[n]-neg[n]}` : ''}</span></td><td style="text-align:left;font-size:0.8rem;line-height:1.5;">${o.extra[n] ? `<span style="color:var(--accent);">${o.extra[n]}</span>${why[n].length ? '<br>'+reasonOf(n) : ''}` : reasonOf(n)}</td></tr>`).join('')}${lucky ? lucky.order.slice(0,2).map((n,k)=>{ const [col, lab] = luckyLevel(n); return `<tr><td style="width:60px;">${luckyBall(n)}</td><td style="text-align:left;font-size:0.8rem;line-height:1.5;"><b style="color:var(--accent);">🟠 Số may mắn #${k+1}</b> · <b style="color:${col};">${lab}</b> · 🤝 ${lucky.lpos(n)>0?'+':''}${lucky.lpos(n)} cơ sở · ${lucky.lago[n]===0 ? 'vừa về kỳ trước' : `${lucky.lago[n]} kỳ chưa về`}<br>${luckyReasons(n)}</td></tr>`; }).join('') : ''}</tbody></table>
       </details>
     </div>`;
   });
@@ -3878,25 +3898,6 @@ function renderOptions(ctx){
     <div class="footnote">Với ${game.label}, cặp vừa về cùng gần đây trong lịch sử lại về cùng <b>ít hơn</b> ngẫu nhiên, nên các phương án trên không ghép lại các cặp này: ${[...avoidPairs.entries()].map(([k,why])=> `<b>${Math.floor(k/100)}–${k%100}</b>`).join(' · ')}. Nguồn: ${[...new Set(avoidPairs.values())].join('; ')}.</div>`;
   html += `<h3 style="margin-top:18px;">🔻 Số nên tránh hôm nay (${avoid.length})</h3>
     <div class="footnote">${avoid.length ? avoid.map(n=> `<b>${n}</b> ×${Math.exp(score[n]).toFixed(2)}`).join(' · ') : 'Không có'}</div>`;
-  if(lucky){
-    const L = game.luckyMax;
-    const reasons = n=> lucky.why[n].length
-      ? lucky.why[n].map(w=> `<span style="color:${w.lift>=1?'var(--good)':'var(--bad)'};">${w.lift>=1?'▲':'▼'} ${w.rule}${w.set.size<=3?` = ${[...w.set].join(', ')}`:` (nhóm ${w.set.size} số)`} ${fmtPct(w.lift)} ${horizonTag(w.rule)}</span>`).join(' · ')
-      : '<span style="color:var(--muted);">không thuộc tín hiệu nào</span>';
-    const level = n=> lucky.lgood(n) >= 2 && lucky.lpos(n) >= 2 ? ['var(--good)','Tiềm năng cao'] : lucky.lpos(n) >= 1 ? ['#7cc4ff','Có cơ sở'] : lucky.lpos(n) === 0 ? ['var(--muted)','Chưa có cơ sở'] : ['var(--bad)','Nên tránh'];
-    const row = (n, k)=>{ const [col, lab] = level(n), pct = lucky.total ? (100*lucky.lcount[n]/lucky.total).toFixed(1) : '0';
-      return `<tr style="${k<2?'background:rgba(240,180,41,0.07);':''}"><td style="width:74px;vertical-align:top;"><b>#${k+1}</b> ${luckyBall(n)}</td><td style="text-align:left;font-size:0.8rem;line-height:1.55;">
-        ${k<2 ? '<b style="color:var(--accent);">✓ gợi ý</b> · ' : ''}<b style="color:${col};">${lab}</b> · 🤝 ${lucky.lpos(n)>0?'+':''}${lucky.lpos(n)} cơ sở${lucky.why[n].length ? ` (${lucky.lgood(n)} nên chọn` : ''}${lucky.lgood(n)!==lucky.why[n].length ? `, ${lucky.why[n].length-lucky.lgood(n)} nên tránh` : ''}${lucky.why[n].length ? ')' : ''} · hệ số ×${Math.exp(lucky.score[n]).toFixed(2)}<br>
-        <span style="color:var(--muted);">Đã về ${lucky.lcount[n]}/${lucky.total} kỳ (${pct}%, ngẫu nhiên ${(100/L).toFixed(1)}%) · ${lucky.lago[n]===0 ? 'vừa về kỳ trước' : `${lucky.lago[n]} kỳ chưa về`}</span><br>${reasons(n)}</td></tr>`; };
-    const o = lucky.order, noBase = o.slice(0,2).filter(n=> lucky.lpos(n) <= 0);
-    html += `<h3 style="margin-top:18px;">🟠 Số may mắn (1–${L}) — gợi ý 2 số, xếp theo tiềm năng</h3>
-      <div class="footnote" style="margin:0 0 6px;">Xếp theo <b>số cơ sở</b> = số tín hiệu "nên chọn" trùng vào số đó trừ số tín hiệu "nên tránh" (cùng số cơ sở thì xét hệ số hy vọng); bằng nhau thì ưu tiên số lâu chưa về hơn. <b style="color:var(--good);">Tiềm năng cao</b> = ≥ 2 tín hiệu nên chọn cùng trùng; <b style="color:#7cc4ff;">Có cơ sở</b> = ít nhất 1; <b>Chưa có cơ sở</b> = không tín hiệu nào.</div>
-      <table><tbody>${o.slice(0,3).map(row).join('')}</tbody></table>
-      ${noBase.length ? `<div class="footnote" style="color:var(--accent);">⚠️ ${noBase.join(', ')} chưa có tín hiệu nào ủng hộ ở tầm này — chỉ đứng đầu vì các số khác bị tín hiệu "nên tránh" hoặc vì lâu chưa về. Xem tầm ⭐ Tổng hợp để có nhiều cơ sở hơn.</div>` : ''}
-      <details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--accent);font-size:0.85rem;">Xem đủ ${L} số may mắn</summary>
-        <table><tbody>${o.slice(3).map((n,k)=> row(n, k+3)).join('')}</tbody></table></details>
-      <div class="footnote">Mọi phương án ở trên gợi ý 2 số may mắn #1 và #2 (bóng cam). Mỗi vé Loto chỉ chọn được 1 số may mắn — muốn phủ cả 2 thì mua 2 vé cùng 5 số chính, mỗi vé 1 số may mắn. Căn cứ: quy luật theo ngày (📅) cộng tín hiệu từ các kỳ trước — số gan, số nóng/lạnh, bạc nhớ cùng giờ quay, 5 số chính kỳ trước (chỉ những tín hiệu đạt "hy vọng nhỏ" riêng với cột số may mắn). Jackpot Loto cần trúng cả 5 số chính lẫn số may mắn.</div>`;
-  }
   html += `<h3 style="margin-top:18px;">Quy luật đang tác động hôm nay (${active.length})</h3>
     <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Quy luật</th><th>Loại</th><th>Số hôm nay</th><th>Lịch sử</th><th>z</th></tr></thead><tbody>
     ${active.sort((a,b)=> b.z-a.z).map(r=> `<tr><td style="text-align:left;">${r.personal ? (r.lift>=1?'👤':'⛔') : r.z>0?'🔺':'🔻'} ${r.rule}</td><td>${horizonTag(r.rule)}</td><td>${[...r.set].sort((a,b)=>a-b).join(' ')}</td><td style="color:${r.lift>=1?'var(--good)':'var(--bad)'};">${r.personal ? 'cá nhân' : fmtPct(r.lift)}</td><td>${r.personal ? '—' : r.z.toFixed(2)}</td></tr>`).join('')}
