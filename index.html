@@ -4977,13 +4977,23 @@ function renderStats(){
   const oddPool = Math.ceil(max/2), low = Math.floor(max/2);
   const bal = makeBalanceCheck(max, c), [bLo, bHi] = bal.band;
   const inBand = k=> k>=bLo && k<=bHi;
+  // 6 tháng gần nhất (tính từ kỳ mới nhất)
+  const [ly, lm, ld] = D[T-1].date.split('-').map(Number), c6 = new Date(ly, lm-1-6, ld);
+  const cut6 = `${c6.getFullYear()}-${String(c6.getMonth()+1).padStart(2,'0')}-${String(c6.getDate()).padStart(2,'0')}`;
+  const I6 = D.map((d,i)=> i).filter(i=> D[i].date > cut6), T6 = I6.length, IA = D.map((d,i)=> i);
+  const devs = [];   // độ lệch 6 tháng gần so với ngẫu nhiên, để viết nhận xét
+  // obsOf(s, i): s = bộ số đã sắp xếp của kỳ i; trả về khóa (null = bỏ qua, vd kỳ đầu không có kỳ trước)
   const distTable = (title, labelOf, obsOf, theoryOf, keys, common)=>{
-    const obs = new Map(); S.forEach(s=>{ const k = obsOf(s); obs.set(k,(obs.get(k)||0)+1); });
-    const rowsH = keys.map(k=>{ const o = obs.get(k)||0, t = theoryOf(k)*100, pct = o/T*100, hit = common(k);
-      return `<tr class="${hit?'row-hit':''}"><td>${hit?'✓ ':''}${labelOf(k)}</td><td>${o}</td><td style="text-align:left;"><span class="bar" style="width:${pct*1.6}px"></span> ${pct.toFixed(1)}%</td>
-        <td style="text-align:left;"><span class="bar theory" style="width:${t*1.6}px"></span> ${t.toFixed(1)}%</td></tr>`; }).join('');
+    const count = idx=>{ const m = new Map(); let n = 0; idx.forEach(i=>{ const k = obsOf(S[i], i); if(k==null) return; n++; m.set(k,(m.get(k)||0)+1); }); return {m, n}; };
+    const A = count(IA), R = count(I6);
+    const rowsH = keys.map(k=>{ const o = A.m.get(k)||0, t = theoryOf(k)*100, pct = A.n ? o/A.n*100 : 0, r = R.n ? (R.m.get(k)||0)/R.n*100 : 0, hit = common(k);
+      if(R.n) devs.push({title, label: labelOf(k), r, t, all: pct});
+      const dc = r - t >= 5 ? 'var(--good)' : t - r >= 5 ? 'var(--bad)' : 'var(--text)';
+      return `<tr class="${hit?'row-hit':''}"><td>${hit?'✓ ':''}${labelOf(k)}</td><td>${o}</td><td style="text-align:left;"><span class="bar" style="width:${pct*1.4}px"></span> ${pct.toFixed(1)}%</td>
+        <td style="color:${dc};">${r.toFixed(1)}%</td>
+        <td style="text-align:left;"><span class="bar theory" style="width:${t*1.4}px"></span> ${t.toFixed(1)}%</td></tr>`; }).join('');
     return `<div><div style="font-weight:700;margin:14px 0 4px;">${title}</div><div class="tablewrap"><table>
-      <thead><tr><th></th><th>Số kỳ</th><th style="text-align:left;">Kết quả thật</th><th style="text-align:left;">Nếu bốc ngẫu nhiên</th></tr></thead><tbody>${rowsH}</tbody></table></div></div>`;
+      <thead><tr><th></th><th>Số kỳ</th><th style="text-align:left;">Toàn bộ</th><th>6 tháng gần</th><th style="text-align:left;">Nếu bốc ngẫu nhiên</th></tr></thead><tbody>${rowsH}</tbody></table></div></div>`;
   };
   const ks = Array.from({length:c+1},(_,i)=>i);
   const sd = sumDistribution(max, c), step = max>40 ? 20 : 15;
@@ -4992,28 +5002,55 @@ function renderStats(){
   const sumKeys = [...sumTheory.keys()].sort((a,b)=>a-b).filter(k=> sumTheory.get(k)*T>=0.5 || S.some(s=> bucket(s.reduce((a,b)=>a+b,0))===k));
   const hasCons = s=> s.some((x,i)=> i && x-s[i-1]===1) ? 1 : 0;
   const pNoCons = nCk(max-c+1,c)/nCk(max,c);
+  // số cặp liền nhau: số bộ k số có đúng j cặp liền = C(k−1, j)·C(n−k+1, k−j)
+  const consOf = s=> s.filter((x,i)=> i && x-s[i-1]===1).length;
+  const pCons = j=> nCk(c-1, j)*nCk(max-c+1, c-j)/nCk(max, c);
+  const consKey = s=> Math.min(2, consOf(s));
+  // lặp số kỳ trước: siêu bội
+  const repKey = (s, i)=> i ? Math.min(2, s.filter(x=> D[i-1].numbers.includes(x)).length) : null;
+  const pRep = k=> k<2 ? hyperP(max, c, c, k) : 1 - hyperP(max, c, c, 0) - hyperP(max, c, c, 1);
+  // nhóm đầu chục (0x, 1x, 2x…) và đuôi trùng: mô phỏng 100.000 bộ ngẫu nhiên (cố định theo loại vé)
+  const decOf = s=> new Set(s.map(x=> Math.floor(x/10))).size;
+  const tailKey = s=> Math.min(2, c - new Set(s.map(x=> x%10)).size);
+  const mc = (()=>{ const rng = mulberry32(hashStr('cautruc|' + statsGame)), dec = new Map(), tail = new Map(), N = 100000, pool = Array.from({length:max},(_,i)=>i+1);
+    for(let t=0;t<N;t++){ for(let i=0;i<c;i++){ const j = i + Math.floor(rng()*(max-i)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+      const s = pool.slice(0,c).sort((a,b)=>a-b), a = decOf(s), b = tailKey(s); dec.set(a,(dec.get(a)||0)+1); tail.set(b,(tail.get(b)||0)+1); }
+    return {dec: k=> (dec.get(k)||0)/N, tail: k=> (tail.get(k)||0)/N}; })();
+  const decKeys = Array.from({length: Math.min(c, Math.floor(max/10)+1)}, (_,i)=> i+1).filter(k=> mc.dec(k) > 0.0005 || S.some(s=> decOf(s)===k));
   const sums = S.map(s=> s.reduce((a,b)=>a+b,0));
   // tóm tắt bằng lời
   const pct = f=> (S.filter(f).length/T*100).toFixed(0);
   const oddOf = s=> s.filter(x=>x%2).length, lowOf = s=> s.filter(x=>x<=low).length, sumOf = s=> s.reduce((a,b)=>a+b,0);
   let thOdd = 0, thLow = 0; for(let k=bLo;k<=bHi;k++){ thOdd += hyperP(max,oddPool,c,k); thLow += hyperP(max,low,c,k); }
   let thSum = 0; for(const [s,p] of sd) if(s>=bal.lo && s<=bal.hi) thSum += p;
-  html += `<h3 style="margin-top:16px;">Cấu trúc bộ số trúng: chẵn/lẻ, nhỏ/to, tổng, số liền nhau</h3>
-  <div class="csvbox" style="text-align:left;border-style:solid;color:var(--text);line-height:1.7;">
-    <b>📌 Tóm tắt dễ hiểu (${T} kỳ ${game.label})</b><br>
-    • <b>${pct(s=> inBand(oddOf(s)))}%</b> bộ số trúng có <b>${bLo}–${bHi} số lẻ</b> <span style="color:var(--muted);">(bốc ngẫu nhiên cũng ~${(thOdd*100).toFixed(0)}%)</span><br>
-    • <b>${pct(s=> inBand(lowOf(s)))}%</b> có <b>${bLo}–${bHi} số nhỏ</b> (số nhỏ = 1–${low}) <span style="color:var(--muted);">(ngẫu nhiên ~${(thLow*100).toFixed(0)}%)</span><br>
-    • <b>${pct(s=> sumOf(s)>=bal.lo && sumOf(s)<=bal.hi)}%</b> có <b>tổng từ ${bal.lo} đến ${bal.hi}</b> <span style="color:var(--muted);">(ngẫu nhiên ~${(thSum*100).toFixed(0)}%)</span><br>
-    • <b>${pct(s=> hasCons(s))}%</b> có ít nhất 1 cặp số liền nhau như 12-13 <span style="color:var(--muted);">(ngẫu nhiên ~${((1-pNoCons)*100).toFixed(0)}%)</span> → có số liền nhau là chuyện bình thường, không cần tránh.<br>
-    <span style="color:var(--muted);">→ Kết quả thật gần như trùng với bốc ngẫu nhiên, tức máy quay <b>không có quy luật riêng</b>. Điều dùng được: chọn bộ số nằm trong các khoảng hay gặp ở trên (✓) — phương án "Cân bằng" ở mục 2 đã làm sẵn việc này. Kiểu hay gặp chỉ hay gặp vì có nhiều bộ số thuộc kiểu đó, từng bộ cụ thể không dễ trúng hơn.</span>
-  </div>
-  <div class="dist-grid">
+  const tables = `
     ${distTable('Số lẻ trong bộ', k=>`${k} lẻ – ${c-k} chẵn`, oddOf, k=> hyperP(max,oddPool,c,k), ks, inBand)}
     ${distTable(`Số nhỏ (1–${low}) và số to (${low+1}–${max})`, k=>`${k} nhỏ – ${c-k} to`, lowOf, k=> hyperP(max,low,c,k), ks, inBand)}
     ${distTable('Tổng các số trong bộ', k=>`${k}–${k+step-1}`, s=> bucket(sumOf(s)), k=> sumTheory.get(k)||0, sumKeys, k=> k+step/2>=bal.lo && k+step/2<=bal.hi)}
-    ${distTable('Có cặp số liền nhau (vd 12-13)', k=> k?'Có':'Không', hasCons, k=> k ? 1-pNoCons : pNoCons, [0,1], ()=> false)}
+    ${distTable('Số cặp liền nhau (vd 12-13)', k=> k===0 ? 'Không có cặp liền' : k===1 ? '1 cặp liền' : '≥ 2 cặp liền', consKey, k=> k<2 ? pCons(k) : 1-pCons(0)-pCons(1), [0,1,2], ()=> false)}
+    ${distTable('Lặp lại số của kỳ trước', k=> k===0 ? 'Không lặp số nào' : k===1 ? 'Lặp 1 số' : 'Lặp ≥ 2 số', repKey, pRep, [0,1,2], ()=> false)}
+    ${distTable('Số nhóm đầu chục (0x, 1x, 2x…)', k=> `${k} nhóm đầu`, decOf, mc.dec, decKeys, ()=> false)}
+    ${distTable('Đuôi trùng nhau (vd 13 và 23)', k=> k===0 ? 'Không trùng đuôi' : k===1 ? '1 cặp trùng đuôi' : '≥ 2 cặp trùng đuôi', tailKey, mc.tail, [0,1,2], ()=> false)}`;
+  // nhận xét 6 tháng gần: các kiểu lệch khỏi ngẫu nhiên nhiều nhất
+  const big = devs.filter(d=> Math.abs(d.r - d.t) >= 4).sort((a,b)=> Math.abs(b.r-b.t) - Math.abs(a.r-a.t)).slice(0, 3);
+  const se = T6 ? Math.round(100*Math.sqrt(0.25/T6)) : 0;   // sai số chuẩn tối đa (điểm %) với T6 kỳ
+  const note6 = !T6 ? '' : big.length
+    ? `Các kiểu lệch nhiều nhất: ${big.map(d=> `<b>${d.label}</b> (${d.title.toLowerCase()}) ${d.r.toFixed(0)}% so với ngẫu nhiên ${d.t.toFixed(0)}%`).join('; ')}. Với ${T6} kỳ, dao động ±${se}–${2*se} điểm % là bình thường do may rủi, nên đây <b>chưa phải quy luật</b> — chỉ là giai đoạn ngắn đang lệch.`
+    : `Mọi kiểu đều lệch dưới 4 điểm % so với ngẫu nhiên — 6 tháng gần diễn ra đúng như bốc ngẫu nhiên.`;
+  html += `<h3 style="margin-top:16px;">Cấu trúc bộ số trúng: chẵn/lẻ, nhỏ/to, tổng, số liền, lặp kỳ trước, đầu chục, đuôi</h3>
+  <div class="csvbox" style="text-align:left;border-style:solid;color:var(--text);line-height:1.7;">
+    <b>📌 Tóm tắt dễ hiểu (${T} kỳ ${game.label})</b><br>
+    • <b>${pct(s=> inBand(oddOf(s)))}%</b> bộ số trúng có <b>${bLo}–${bHi} số lẻ</b> <span style="color:var(--muted);">(bốc ngẫu nhiên cũng ~${(thOdd*100).toFixed(0)}%)</span>; toàn chẵn hoặc toàn lẻ chỉ <b>${pct(s=> oddOf(s)===0 || oddOf(s)===c)}%</b> <span style="color:var(--muted);">(~${((hyperP(max,oddPool,c,0)+hyperP(max,oddPool,c,c))*100).toFixed(1)}%)</span><br>
+    • <b>${pct(s=> inBand(lowOf(s)))}%</b> có <b>${bLo}–${bHi} số nhỏ</b> (số nhỏ = 1–${low}) <span style="color:var(--muted);">(ngẫu nhiên ~${(thLow*100).toFixed(0)}%)</span><br>
+    • <b>${pct(s=> sumOf(s)>=bal.lo && sumOf(s)<=bal.hi)}%</b> có <b>tổng từ ${bal.lo} đến ${bal.hi}</b> <span style="color:var(--muted);">(ngẫu nhiên ~${(thSum*100).toFixed(0)}%)</span><br>
+    • <b>${pct(s=> hasCons(s))}%</b> có ít nhất 1 cặp số liền nhau như 12-13 <span style="color:var(--muted);">(ngẫu nhiên ~${((1-pNoCons)*100).toFixed(0)}%)</span> → có số liền nhau là chuyện bình thường, không cần tránh.<br>
+    • <b>${(S.filter((s,i)=> i && repKey(s,i)>0).length/(T-1)*100).toFixed(0)}%</b> kỳ lặp lại ít nhất 1 số của kỳ trước <span style="color:var(--muted);">(ngẫu nhiên ~${((1-hyperP(max,c,c,0))*100).toFixed(0)}%)</span><br>
+    <span style="color:var(--muted);">→ Kết quả thật gần như trùng với bốc ngẫu nhiên, tức máy quay <b>không có quy luật riêng</b>. Điều dùng được: chọn bộ số nằm trong các khoảng hay gặp ở trên (✓) — phương án "Cân bằng" ở mục 2 đã làm sẵn việc này. Kiểu hay gặp chỉ hay gặp vì có nhiều bộ số thuộc kiểu đó, từng bộ cụ thể không dễ trúng hơn.</span>
+    ${T6 ? `<br><b>🕒 6 tháng gần (${T6} kỳ, từ ${toDDMMYYYY(I6.length ? D[I6[0]].date : cut6)}):</b> ${note6}` : ''}
   </div>
-  <div class="footnote"><b>Cách đọc bảng:</b> mỗi dòng là một kiểu bộ số. "Số kỳ" = bao nhiêu kỳ đã ra kiểu đó; "Kết quả thật" = tỉ lệ trên tổng ${T} kỳ; "Nếu bốc ngẫu nhiên" = tỉ lệ tính theo toán học khi máy bốc hoàn toàn ngẫu nhiên. Hai cột càng giống nhau càng cho thấy không có quy luật riêng. Dòng ✓ là khoảng hay gặp.
+  <div class="dist-grid">${tables}
+  </div>
+  <div class="footnote"><b>Cách đọc bảng:</b> mỗi dòng là một kiểu bộ số. "Số kỳ" = bao nhiêu kỳ đã ra kiểu đó; "Toàn bộ" = tỉ lệ trên tổng ${T} kỳ; "6 tháng gần" = tỉ lệ trong ${T6} kỳ gần nhất (xanh/đỏ = cao/thấp hơn ngẫu nhiên từ 5 điểm % trở lên); "Nếu bốc ngẫu nhiên" = tỉ lệ tính theo toán học (đầu chục và đuôi trùng: mô phỏng 100.000 bộ). Hai cột càng giống nhau càng cho thấy không có quy luật riêng. Dòng ✓ là khoảng hay gặp.
     Tổng trung bình thực tế ${(sums.reduce((a,b)=>a+b,0)/T).toFixed(1)} (ngẫu nhiên ${(c*(max+1)/2).toFixed(1)}), nhỏ nhất ${Math.min(...sums)}, lớn nhất ${Math.max(...sums)}.</div>`;
   panel.innerHTML = html;
   collapsify(panel, 'st');
