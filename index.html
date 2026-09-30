@@ -3584,7 +3584,23 @@ function scoreByHope(info, max, rules){
 function comboStats(nums, max){
   const low = Math.floor(max/2);
   return {odd: nums.filter(x=>x%2).length, low: nums.filter(x=>x<=low).length, sum: nums.reduce((a,b)=>a+b,0),
-    run3: nums.some((x,i)=> i>=2 && x-nums[i-1]===1 && nums[i-1]-nums[i-2]===1)};
+    run3: nums.some((x,i)=> i>=2 && x-nums[i-1]===1 && nums[i-1]-nums[i-2]===1),
+    sw: nums.reduce((a,x,i)=> a + (i && (x%2)!==(nums[i-1]%2) ? 1 : 0), 0)};   // số lần đổi chẵn↔lẻ khi xếp từ nhỏ đến lớn
+}
+const parityPattern = nums=> nums.slice().sort((a,b)=>a-b).map(x=> x%2 ? 'L' : 'C').join('');
+// ví dụ kiểu xếp có đúng k lần đổi chẵn↔lẻ (c ô): CCC…LLL, CCLLCC…, CLCLCL
+function swExample(c, k){ const seg = k+1, base = Math.floor(c/seg), extra = c % seg; let s = '';
+  for(let i=0;i<seg;i++) s += (i%2 ? 'L' : 'C').repeat(base + (i<extra ? 1 : 0)); return s; }
+// tỉ lệ số lần đổi chẵn↔lẻ khi bốc ngẫu nhiên (mô phỏng 100.000 bộ, cố định theo loại vé)
+const _swTheory = {};
+function SW_THEORY(max, c){
+  const key = max+'|'+c; if(_swTheory[key]) return _swTheory[key];
+  const rng = mulberry32(hashStr('sw|'+key)), cnt = Array(c).fill(0), pat = new Map(), N = 100000, pool = Array.from({length:max},(_,i)=>i+1);
+  for(let t=0;t<N;t++){ for(let i=0;i<c;i++){ const j = i + Math.floor(rng()*(max-i)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    const s = pool.slice(0,c).sort((a,b)=>a-b), ps = s.map(x=> x%2 ? 'L' : 'C').join('');
+    cnt[comboStats(s, max).sw]++; pat.set(ps, (pat.get(ps)||0)+1); }
+  const out = cnt.map(v=> v/N); out.pat = ps=> (pat.get(ps)||0)/N;   // tỉ lệ từng kiểu xếp khi bốc ngẫu nhiên
+  return _swTheory[key] = out;
 }
 function makeBalanceCheck(max, c){
   const sd = sumDistribution(max, c), keys = [...sd.keys()].sort((a,b)=>a-b);
@@ -3684,9 +3700,10 @@ function buildSuggestions(mode, ov){
   const pastD = histAll ? histAll.draws.filter(d=> d.date < targetDate || (d.date===targetDate && d.hour!=null && !isNaN(hour) && d.hour < hour)) : [];
   const monthsBack = mo=>{ const t = new Date(y, m-1-mo, d); return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; };
   const oddTheory = k=> hyperP(max, Math.ceil(max/2), c, k);
-  const oddDist = months=>{ const cut = monthsBack(months), W = pastD.filter(x=> x.date >= cut), cnt = Array(c+1).fill(0);
-    W.forEach(x=> cnt[x.numbers.filter(v=> v%2).length]++);
-    return {months, n: W.length, from: W.length ? W[0].date : null, cnt, p: cnt.map((v,k)=> W.length ? v/W.length : oddTheory(k))}; };
+  const oddDist = months=>{ const cut = monthsBack(months), W = pastD.filter(x=> x.date >= cut), cnt = Array(c+1).fill(0), swc = Array(c).fill(0);
+    W.forEach(x=>{ cnt[x.numbers.filter(v=> v%2).length]++; swc[comboStats(x.numbers.slice().sort((a,b)=>a-b), max).sw]++; });
+    return {months, n: W.length, from: W.length ? W[0].date : null, cnt, p: cnt.map((v,k)=> W.length ? v/W.length : oddTheory(k)),
+      swP: swc.map(v=> W.length ? v/W.length : null)}; };
   const oddDists = ({short:[3], mid:[12], long:[60]}[mode] || [3,12,60]).map(oddDist);
   const oddP = Array.from({length:c+1}, (_,k)=> oddDists.reduce((a,x)=> a + x.p[k], 0)/oddDists.length);
   const oddQuota = Array(c+1).fill(0);
@@ -3696,11 +3713,15 @@ function buildSuggestions(mode, ov){
     let left = TARGET - raw.reduce((a,r)=> a+Math.floor(r.v), 0);
     raw.sort((a,b)=> (b.v-Math.floor(b.v)) - (a.v-Math.floor(a.v)) || b.v-a.v).forEach(r=>{ if(left>0){ oddQuota[r.k]++; left--; } }); }
   const oddLeft = oddQuota.slice();
+  // Cách xếp chẵn/lẻ (từ nhỏ đến lớn): chỉ dùng số lần đổi chẵn↔lẻ chiếm ≥ 10% ở tầm này (vd bỏ kiểu xen kẽ đều CLCLCL ~4%)
+  const swP = Array.from({length:c}, (_,k)=>{ const v = oddDists.filter(x=> x.swP[k]!=null); return v.length ? v.reduce((a,x)=> a+x.swP[k], 0)/v.length : null; });
+  const swOk = new Set(swP.map((v,k)=> v==null || v >= 0.10 ? k : -1).filter(k=> k>=0 && k>0));
+  let useSw = true;
   const bal0 = makeBalanceCheck(max, c);
   // shapeStatic: nhỏ/to và tổng ở khoảng hay gặp + số lẻ thuộc kiểu có trong tỉ lệ; bal.ok: thêm điều kiện kiểu đó còn suất
-  const shapeStatic = st=> oddQuota[st.odd]>0 && st.low>=bal0.band[0] && st.low<=bal0.band[1] && st.sum>=bal0.lo && st.sum<=bal0.hi;
+  const shapeStatic = st=> oddQuota[st.odd]>0 && (!useSw || swOk.has(st.sw)) && st.low>=bal0.band[0] && st.low<=bal0.band[1] && st.sum>=bal0.lo && st.sum<=bal0.hi;
   const bal = {...bal0, ok: st=> shapeStatic(st) && oddLeft[st.odd]>0};
-  const shapeInfo = {dists: oddDists, p: oddP, quota: oddQuota};
+  const shapeInfo = {dists: oddDists, p: oddP, quota: oddQuota, swP, swOk, swRelaxed: false};
   const cands = order.filter(n=> sel[n] >= 0).slice(0, 16);
   const wide = order.filter(n=> sel[n] >= 0).slice(0, 22);
   const combo = (acc, forced)=> bestCombo(cands, c, sel, acc, forced) || bestCombo(wide, c, sel, acc, forced);   // nới rộng ứng viên khi điều kiện chặt
@@ -3747,13 +3768,17 @@ function buildSuggestions(mode, ov){
   // Bổ sung "Biến thể" cho đủ 10 bộ, theo suất của từng kiểu chẵn/lẻ: bộ có điểm hy vọng cao tiếp theo, khác các bộ đã có ≥ 2 số.
   const overlap = (a,b)=> a.filter(x=> b.includes(x)).length;
   let vk = 1;
-  for(const poolSize of c>=6 ? [19, 24, 24] : [22, 26, 26]){
+  const small = c>=6 ? 19 : 22, wideN = c>=6 ? 24 : 26;
+  // Các bước nới dần khi chưa đủ 10 bộ: (1) 19/22 số đầu → (2) 24/26 số đầu → (3) chuyển suất kiểu lệch (1–5, 5–1…) sang kiểu cân bằng gần nhất
+  // → (4) bỏ điều kiện cách xếp chẵn/lẻ.
+  for(const step of [1, 2, 3, 4]){
     if(options.length >= TARGET) break;
-    if(poolSize === (c>=6 ? 24 : 26) && vk > 0 && options.length < TARGET && oddLeft.some((v,k)=> v>0 && (k<2 || k>c-2))){
-      // kiểu lệch (vd 1 lẻ – 5 chẵn) không đủ bộ hợp lệ → chuyển suất còn lại sang kiểu cân bằng gần nhất
+    if(step===3){
+      if(!oddLeft.some((v,k)=> v>0 && (k<2 || k>c-2))) continue;
       for(let k=0;k<=c;k++) if(oddLeft[k]>0 && (k<2 || k>c-2)){ const to = k<2 ? 2 : c-2; oddQuota[to] += oddLeft[k]; oddLeft[to] += oddLeft[k]; oddQuota[k] -= oddLeft[k]; oddLeft[k] = 0; }
     }
-    const pool = order.filter(n=> sel[n] >= 0).slice(0, poolSize);
+    if(step===4){ useSw = false; shapeInfo.swRelaxed = true; }
+    const pool = order.filter(n=> sel[n] >= 0).slice(0, step===1 ? small : wideN);
     if(pool.length < c) break;
     const all = [];
     const rec = (start, chosen)=>{
@@ -3913,7 +3938,12 @@ function renderOptions(ctx){
       <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Kiểu</th>${SI.dists.length>1 ? SI.dists.map(x=> `<th>${winName(x.months)}</th>`).join('') : ''}<th>Tỉ lệ dùng</th><th>Ngẫu nhiên</th><th>Số bộ</th></tr></thead><tbody>
       ${ksh.map(k=> `<tr><td style="text-align:left;">${k} lẻ – ${c-k} chẵn</td>${SI.dists.length>1 ? SI.dists.map(x=> `<td>${(100*x.p[k]).toFixed(0)}%</td>`).join('') : ''}<td><b>${(100*SI.p[k]).toFixed(0)}%</b></td><td style="color:var(--muted);">${(100*hyperP(max, Math.ceil(max/2), c, k)).toFixed(0)}%</td><td><b style="color:var(--accent);">${SI.quota[k]||0}</b></td></tr>`).join('')}
       </tbody></table></div>
-      <div class="footnote">Toàn chẵn/toàn lẻ không dùng. Mỗi bộ lấy các số tiềm năng nhất của ngày mà đúng kiểu chẵn/lẻ được chia; nhỏ/to và tổng vẫn giữ ở khoảng hay gặp.</div></div>`;
+      <div class="footnote">Toàn chẵn/toàn lẻ không dùng. Mỗi bộ lấy các số tiềm năng nhất của ngày mà đúng kiểu chẵn/lẻ được chia; nhỏ/to và tổng vẫn giữ ở khoảng hay gặp.</div>
+      <div style="font-weight:700;margin:10px 0 4px;">Cách xếp chẵn/lẻ (đọc từ nhỏ đến lớn)</div>
+      <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Số lần đổi chẵn↔lẻ</th>${SI.dists.length>1 ? SI.dists.map(x=> `<th>${winName(x.months)}</th>`).join('') : ''}<th>Tỉ lệ dùng</th><th>Ngẫu nhiên</th><th>Dùng?</th></tr></thead><tbody>
+      ${SI.swP.map((v,k)=> `<tr><td style="text-align:left;">${k} lần <span class="footnote">(vd ${swExample(c,k)})</span></td>${SI.dists.length>1 ? SI.dists.map(x=> `<td>${x.swP[k]==null ? '—' : (100*x.swP[k]).toFixed(0)+'%'}</td>`).join('') : ''}<td><b>${v==null ? '—' : (100*v).toFixed(0)+'%'}</b></td><td style="color:var(--muted);">${(100*SW_THEORY(max,c)[k]).toFixed(0)}%</td><td>${SI.swOk.has(k) ? '<span style="color:var(--good);">✓</span>' : '<span style="color:var(--bad);">✗</span>'}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="footnote">Chỉ dùng số lần đổi chiếm ≥ 10% ở tầm này — bỏ kiểu hiếm như toàn chẵn/lẻ (0 lần) hay xen kẽ đều ${swExample(c,c-1)} (~4%).${SI.swRelaxed ? ' <b>Hôm nay đã phải nới điều kiện này cho vài bộ cuối vì không đủ bộ hợp lệ.</b>' : ''} Lưu ý: cách xếp chỉ là hệ quả của số lượng chẵn/lẻ và độ lớn các số, không làm tăng khả năng trúng — chỉ giúp bộ số giống kiểu hay ra.</div></div>`;
   }
   let luckyReasons = null, luckyLevel = null;
   if(lucky){
@@ -3944,7 +3974,7 @@ function renderOptions(ctx){
       </div>
       <div class="balls" style="margin:10px 0;">${o.nums.map(n=> ball(n)).join('')}${lucky ? '<span style="font-size:0.75rem;color:var(--muted);align-self:center;">·</span>' + lucky.order.slice(0,2).map(luckyBall).join('') + '<span style="font-size:0.75rem;color:var(--muted);align-self:center;">🟠 2 số may mắn</span>' : ''}</div>
       <div class="footnote" style="margin:0 0 6px;">${o.desc}</div>
-      <div class="footnote" style="margin:0 0 6px;">Hình dạng: ${st.odd} lẻ – ${c-st.odd} chẵn · ${st.low} nhỏ – ${c-st.low} to · tổng ${st.sum} ${o.balanced ? '<span style="color:var(--good);">✓ kiểu hay gặp</span>' : '<span style="color:var(--accent);">— kiểu ít gặp hơn</span>'}</div>
+      <div class="footnote" style="margin:0 0 6px;">Hình dạng: ${st.odd} lẻ – ${c-st.odd} chẵn (xếp ${parityPattern(o.nums)}, đổi ${st.sw} lần) · ${st.low} nhỏ – ${c-st.low} to · tổng ${st.sum} ${o.balanced ? '<span style="color:var(--good);">✓ kiểu hay gặp</span>' : '<span style="color:var(--accent);">— kiểu ít gặp hơn</span>'}</div>
       <details><summary style="cursor:pointer;color:var(--accent);font-size:0.85rem;">Vì sao chọn từng số</summary>
         <table style="margin-top:6px;"><tbody>${o.nums.map(n=> `<tr><td style="width:60px;"><b>${String(n).padStart(2,'0')}</b><br><span class="footnote">×${Math.exp(score[n]).toFixed(2)}${isConsensus(mode) ? `<br>🤝 ${pos[n]-neg[n]>0?'+':''}${pos[n]-neg[n]}` : ''}</span></td><td style="text-align:left;font-size:0.8rem;line-height:1.5;">${o.extra[n] ? `<span style="color:var(--accent);">${o.extra[n]}</span>${why[n].length ? '<br>'+reasonOf(n) : ''}` : reasonOf(n)}</td></tr>`).join('')}${lucky ? lucky.order.slice(0,2).map((n,k)=>{ const [col, lab] = luckyLevel(n); return `<tr><td style="width:60px;">${luckyBall(n)}</td><td style="text-align:left;font-size:0.8rem;line-height:1.5;"><b style="color:var(--accent);">🟠 Số may mắn #${k+1}</b> · <b style="color:${col};">${lab}</b> · 🤝 ${lucky.lpos(n)>0?'+':''}${lucky.lpos(n)} cơ sở · ${lucky.lago[n]===0 ? 'vừa về kỳ trước' : `${lucky.lago[n]} kỳ chưa về`}<br>${luckyReasons(n)}</td></tr>`; }).join('') : ''}</tbody></table>
       </details>
@@ -5075,6 +5105,25 @@ function renderStats(){
     ${distTable('Lặp lại số của kỳ trước', k=> k===0 ? 'Không lặp số nào' : k===1 ? 'Lặp 1 số' : 'Lặp ≥ 2 số', repKey, pRep, [0,1,2], ()=> false)}
     ${distTable('Số nhóm đầu chục (0x, 1x, 2x…)', k=> `${k} nhóm đầu`, decOf, mc.dec, decKeys, ()=> false)}
     ${distTable('Đuôi trùng nhau (vd 13 và 23)', k=> k===0 ? 'Không trùng đuôi' : k===1 ? '1 cặp trùng đuôi' : '≥ 2 cặp trùng đuôi', tailKey, mc.tail, [0,1,2], ()=> false)}`;
+  // cách xếp chẵn/lẻ (đọc từ nhỏ đến lớn) theo 3 tầm: 3 tháng, 1 năm, 5 năm
+  const parityArrangeHtml = ()=>{
+    const back = mo=>{ const t = new Date(ly, lm-1-mo, ld); return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; };
+    const W = [3, 12, 60].map(mo=>{ const cut = back(mo), idx = D.map((x,i)=> i).filter(i=> D[i].date > cut); return {mo, idx}; });
+    const name = mo=> mo===3 ? '⚡ 3 tháng' : mo===12 ? '🕐 1 năm' : '📅 5 năm';
+    const swT = SW_THEORY(max, c), pat = i=> parityPattern(S[i]), swOf = i=> comboStats(S[i], max).sw;
+    const swRows = Array.from({length:c}, (_,k)=> `<tr><td style="text-align:left;">${k} lần <span class="footnote">(vd ${swExample(c,k)})</span></td>${W.map(w=>{ const v = w.idx.length ? 100*w.idx.filter(i=> swOf(i)===k).length/w.idx.length : 0, col = v - 100*swT[k] >= 5 ? 'var(--good)' : 100*swT[k] - v >= 5 ? 'var(--bad)' : 'var(--text)'; return `<td style="color:${col};">${v.toFixed(0)}%</td>`; }).join('')}<td style="color:var(--muted);">${(100*swT[k]).toFixed(0)}%</td></tr>`).join('');
+    // kiểu xếp hay gặp nhất trong 5 năm; mức ngẫu nhiên của 1 kiểu = xác suất có đúng số lẻ đó × 1/C(c, số lẻ) (xấp xỉ)
+    const cnt5 = new Map(); W[2].idx.forEach(i=> cnt5.set(pat(i), (cnt5.get(pat(i))||0)+1));
+    const top = [...cnt5.entries()].sort((a,b)=> b[1]-a[1]).slice(0, 10);
+    const pRand = ps=> swT.pat(ps);
+    const patRows = top.map(([ps])=> `<tr><td style="text-align:left;font-family:monospace;">${ps}</td>${W.map(w=> `<td>${w.idx.length ? (100*w.idx.filter(i=> pat(i)===ps).length/w.idx.length).toFixed(1) : '0'}%</td>`).join('')}<td style="color:var(--muted);">${(100*pRand(ps)).toFixed(1)}%</td></tr>`).join('');
+    const last10 = S.slice(-10).map(s=> parityPattern(s)).join(' · ');
+    return `<div style="font-weight:700;margin:16px 0 4px;">Cách xếp chẵn/lẻ (đọc bộ số từ nhỏ đến lớn, C = chẵn, L = lẻ)</div>
+      <div class="footnote" style="margin:0 0 6px;">Dữ liệu chỉ có bộ số đã sắp xếp (không có thứ tự bóng ra). 10 kỳ gần nhất: <span style="font-family:monospace;">${last10}</span></div>
+      <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Số lần đổi chẵn↔lẻ</th>${W.map(w=> `<th>${name(w.mo)} (${w.idx.length} kỳ)</th>`).join('')}<th>Ngẫu nhiên</th></tr></thead><tbody>${swRows}</tbody></table></div>
+      <div class="tablewrap" style="margin-top:8px;"><table><thead><tr><th style="text-align:left;">Kiểu xếp hay gặp (5 năm)</th>${W.map(w=> `<th>${name(w.mo)}</th>`).join('')}<th>Ngẫu nhiên</th></tr></thead><tbody>${patRows}</tbody></table></div>
+      <div class="footnote">Có ${2**c} kiểu xếp nên mỗi kiểu chỉ ra ~${(100/2**c*1.3).toFixed(0)}–${(100/2**c*2.5).toFixed(0)}% — kiểu nào cũng hiếm, không kiểu nào nổi trội hơn ngẫu nhiên. Mục 2 dùng bảng "số lần đổi" của từng tầm để bỏ các cách xếp hiếm (dưới 10%).</div>`;
+  };
   // nhận xét 6 tháng gần: các kiểu lệch khỏi ngẫu nhiên nhiều nhất
   const big = devs.filter(d=> Math.abs(d.r - d.t) >= 4).sort((a,b)=> Math.abs(b.r-b.t) - Math.abs(a.r-a.t)).slice(0, 3);
   const se = T6 ? Math.round(100*Math.sqrt(0.25/T6)) : 0;   // sai số chuẩn tối đa (điểm %) với T6 kỳ
@@ -5094,6 +5143,7 @@ function renderStats(){
   </div>
   <div class="dist-grid">${tables}
   </div>
+  ${parityArrangeHtml()}
   <div class="footnote"><b>Cách đọc bảng:</b> mỗi dòng là một kiểu bộ số. "Số kỳ" = bao nhiêu kỳ đã ra kiểu đó; "Toàn bộ" = tỉ lệ trên tổng ${T} kỳ; "6 tháng gần" = tỉ lệ trong ${T6} kỳ gần nhất (xanh/đỏ = cao/thấp hơn ngẫu nhiên từ 5 điểm % trở lên); "Nếu bốc ngẫu nhiên" = tỉ lệ tính theo toán học (đầu chục và đuôi trùng: mô phỏng 100.000 bộ). Hai cột càng giống nhau càng cho thấy không có quy luật riêng. Dòng ✓ là khoảng hay gặp.
     Tổng trung bình thực tế ${(sums.reduce((a,b)=>a+b,0)/T).toFixed(1)} (ngẫu nhiên ${(c*(max+1)/2).toFixed(1)}), nhỏ nhất ${Math.min(...sums)}, lớn nhất ${Math.max(...sums)}.</div>`;
   panel.innerHTML = html;
