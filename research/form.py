@@ -13,7 +13,7 @@ from recency import pick
 from community import methods as cmethods
 
 game = sys.argv[1] if len(sys.argv) > 1 else 'loto535'
-TEST = int(sys.argv[2]) if len(sys.argv) > 2 else 300
+TEST = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 300
 RW, PW = 200, 300
 mx, c, _, dr = load(game); D = [set(d['nums']) for d in dr]; n = len(D)
 
@@ -46,13 +46,18 @@ def seg(k, a, b):
     H, E, V = pre[k]; e = E[b]-E[a]; v = V[b]-V[a]; h = H[b]-H[a]
     return h, e, ((h-e)/math.sqrt(v) if v > 0 else 0.0)
 
+TOP5 = '--top5' in sys.argv   # cách mới: chỉ lấy 5 phương pháp tốt nhất 200 kỳ gần (xếp theo z), không xét 300 kỳ trước
 def select(t):
     a = max(0, t-RW); b0 = max(0, a-PW); out = []
     for k in names:
         h, e, z = seg(k, a, t)
+        if TOP5:
+            if e > 0 and h > e and M[k][t] if t < n else e > 0 and h > e: out.append((k, h/e, z))
+            continue
         if e <= 0 or z < 1.5: continue
         if a - b0 >= 50 and seg(k, b0, a)[2] < 0: continue
         out.append((k, h/e, z))
+    if TOP5: out = sorted(out, key=lambda r: -r[2])[:5]
     return out
 
 rs = random.Random(2); tot = sorted(sum(rs.sample(range(1, mx+1), c)) for _ in range(100000))
