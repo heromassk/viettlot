@@ -59,7 +59,9 @@ def select(t):
         if e <= 0 or z < 1.5: continue
         if a - b0 >= 50 and seg(k, b0, a)[2] < 0: continue
         out.append((k, h/e, z))
-    if TOP5: out = sorted(out, key=lambda r: -r[2])[:TOPK]
+    if TOP5 and '--hits' in sys.argv:   # xếp theo số lần đúng nhiều nhất (không so với ngẫu nhiên)
+        out = sorted(out, key=lambda r: (-seg(r[0], max(0, t-RW), t)[0], -r[2]))[:TOPK]
+    elif TOP5: out = sorted(out, key=lambda r: -r[2])[:TOPK]
     return out
 
 rs = random.Random(2); tot = sorted(sum(rs.sample(range(1, mx+1), c)) for _ in range(100000))
