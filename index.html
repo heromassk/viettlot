@@ -4879,7 +4879,11 @@ function formStyle(gameKey, targetDate, session){
   // ghép 10 bộ: hình dạng hay gặp + 2 bộ bất kỳ chung tối đa 1 số (không đủ thì nới lên 2)
   const bal = makeBalanceCheck(max, c), half = Math.floor(max/2);
   const okShape = s=>{ const st = comboStats(s, max); return st.odd>=1 && st.odd<=c-1 && st.low>=(c>=5?2:1) && st.low<=c-2 && st.sum>=bal.lo && st.sum<=bal.hi; };
-  const pool = order.slice(0, 22), cand = [];
+  // ứng viên: 5 số đầu của mỗi nhóm (nhỏ-lẻ, nhỏ-chẵn, to-lẻ, to-chẵn) + số xếp đầu còn lại cho đủ 22 → luôn ghép được bộ cân bằng
+  const pool = [];
+  for(const lo of [true, false]) for(const od of [1, 0]) pool.push(...order.filter(x=> (x<=half)===lo && x%2===od).slice(0,5));
+  pool.push(...order.filter(x=> !pool.includes(x)).slice(0, 22-pool.length));
+  const cand = [];
   const rec = (start, ch)=>{ if(ch.length===c){ const s = ch.slice().sort((x,y)=>x-y); if(okShape(s)) cand.push({s, t: s.reduce((acc,x)=> acc+sc[x]+tie[x], 0)}); return; }
     for(let k=start;k<=pool.length-(c-ch.length);k++){ ch.push(pool[k]); rec(k+1, ch); ch.pop(); } };
   rec(0, []); cand.sort((x,y)=> y.t-x.t);

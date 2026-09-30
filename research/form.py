@@ -61,12 +61,18 @@ def shape_ok(s):
     o = sum(x % 2 for x in s); lo = sum(x <= half for x in s)
     return 1 <= o <= c-1 and (2 if c >= 5 else 1) <= lo <= c-2 and LO <= sum(s) <= HI
 def gen(order, score, K=22, share=1):
-    cand = [(sum(score[x] for x in s), s) for s in itertools.combinations(sorted(order[:K]), c) if shape_ok(s)]
+    # ứng viên: 5 số đầu của mỗi nhóm (nhỏ-lẻ, nhỏ-chẵn, to-lẻ, to-chẵn) + các số xếp đầu còn lại cho đủ K
+    # → luôn ghép được bộ cân bằng chẵn/lẻ, nhỏ/to dù các phương pháp dồn phiếu về một nhóm
+    pool = []
+    for lo in (True, False):
+        for od in (1, 0): pool += [x for x in order if (x <= half) == lo and x % 2 == od][:5]
+    pool += [x for x in order if x not in pool][:K-len(pool)]
+    cand = [(sum(score[x] for x in s), s) for s in itertools.combinations(sorted(pool), c) if shape_ok(s)]
     cand.sort(key=lambda z: -z[0]); out = []
-    for _, s in cand:
-        if all(len(set(s) & set(o)) <= share for o in out):
-            out.append(s)
+    for sh in (share, share+1):   # vé 6 số: 10 bộ chung ≤ 1 số từ 22 số đầu không phải lúc nào cũng đủ → nới lên 2
+        for _, s in cand:
             if len(out) == 10: break
+            if s not in out and all(len(set(s) & set(o)) <= sh for o in out): out.append(s)
     return out
 
 def run(scorer, reps=1):
