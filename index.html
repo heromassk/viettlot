@@ -22,6 +22,11 @@
     padding:20px; margin-bottom:18px; box-shadow:0 4px 18px rgba(0,0,0,0.25);
   }
   .card h2{margin:0 0 14px;font-size:1.05rem;color:var(--accent);}
+  .card > h2.fold{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;}
+  .card > h2.fold::after{content:'▾';margin-left:auto;font-size:0.9rem;color:var(--muted);transition:transform .15s;}
+  .card.folded > h2.fold{margin-bottom:0;}
+  .card.folded > h2.fold::after{transform:rotate(-90deg);}
+  .card.folded > .card-body{display:none;}
   .card h3{margin:0 0 10px;font-size:0.95rem;color:var(--text);}
   .row{display:flex;flex-wrap:wrap;gap:12px;}
   .field{flex:1;min-width:150px;}
@@ -201,6 +206,22 @@
 </div>
 
 <script>
+// ---------- Thu gọn / mở từng mục (bấm tiêu đề). Mặc định mở mục 2 và kết quả gợi ý, các mục khác thu gọn; nhớ lựa chọn. ----------
+(function foldCards(){
+  let st = {}; try{ st = JSON.parse(localStorage.getItem('somayman_fold') || '{}') || {}; }catch(e){}
+  document.querySelectorAll('.wrap > .card').forEach((card, k)=>{
+    const h2 = card.querySelector(':scope > h2'); if(!h2) return;
+    const body = document.createElement('div'); body.className = 'card-body';
+    while(h2.nextSibling) body.appendChild(h2.nextSibling);
+    card.appendChild(body); h2.classList.add('fold');
+    const key = card.id || ('card' + k), openDefault = card.id === 'resultCard' || /^2\./.test(h2.textContent.trim());
+    if(!(key in st ? st[key] : openDefault)) card.classList.add('folded');
+    h2.addEventListener('click', e=>{ if(e.target.closest('.badge, button, a')) return;
+      card.classList.toggle('folded'); st[key] = !card.classList.contains('folded');
+      try{ localStorage.setItem('somayman_fold', JSON.stringify(st)); }catch(err){} });
+  });
+})();
+
 // ---------- Game definitions ----------
 // drawDays: JS Date.getDay() values (0=CN,1=T2,...6=T7) khi loại vé đó có quay. Bỏ trống = quay mọi ngày.
 // drawHoursVN: giờ quay trong ngày (giờ Việt Nam, 24h).
