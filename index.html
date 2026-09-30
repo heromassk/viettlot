@@ -3686,11 +3686,13 @@ function buildSuggestions(mode, ov){
   const add = (title, nums, desc, opt={})=>{
     if(!nums) return;
     const set = nums.slice().sort((a,b)=>a-b);
+    if(!bal.ok(comboStats(set, max))) return;   // mọi bộ gợi ý đều giữ hình dạng hay gặp (chẵn/lẻ, nhỏ/to, tổng)
     if(options.some(o=> o.nums.join()===set.join())) return;
     const total = set.reduce((a,n)=> a+score[n], 0), cons = set.reduce((a,n)=> a+pos[n]-neg[n], 0);
     options.push({title, nums:set, desc, total, cons, rank: (isConsensus(mode) ? set.reduce((a,n)=> a+sel[n], 0) : total) + (opt.bonus||0), extra: opt.extra||{}, badge: opt.badge||''});
   };
-  add('Hy vọng cao nhất', avoidPairs.size ? (bestCombo(order.slice(0, 16), c, score, pairFree) || bestCombo(order.slice(0, 22), c, score, pairFree)) : order.slice(0, c), 'Lấy đúng các số có hệ số hy vọng cao nhất theo các quy luật của ngày, không xét hình dạng bộ số.');
+  const shapeOk = s=> bal.ok(comboStats(s,max)) && pairFree(s);
+  add('Hy vọng cao nhất', bestCombo(order.slice(0, 16), c, score, shapeOk) || bestCombo(order.slice(0, 22), c, score, shapeOk), 'Các số có hệ số hy vọng cao nhất theo quy luật của ngày, chỉ giữ hình dạng hay gặp (không toàn chẵn/toàn lẻ, không lệch nhỏ/to, tổng ở khoảng giữa).');
   add('Cân bằng + hy vọng', combo(s=> bal.ok(comboStats(s,max)) && pairFree(s)),
       `Số có hy vọng cao nhất nhưng bộ số giữ hình dạng hay gặp: ${bal.band[0]}–${bal.band[1]} số lẻ, ${bal.band[0]}–${bal.band[1]} số nhỏ, tổng ${bal.lo}–${bal.hi} (khoảng 70% kỳ quay rơi vào).`);
   const bigMin = max > 40 ? 2 : 1;
