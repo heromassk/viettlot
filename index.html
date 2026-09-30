@@ -3588,6 +3588,19 @@ function comboStats(nums, max){
     sw: nums.reduce((a,x,i)=> a + (i && (x%2)!==(nums[i-1]%2) ? 1 : 0), 0)};   // số lần đổi chẵn↔lẻ khi xếp từ nhỏ đến lớn
 }
 const parityPattern = nums=> nums.slice().sort((a,b)=>a-b).map(x=> x%2 ? 'L' : 'C').join('');
+// 📝 Ghi chú chẵn/lẻ gần đây (10/20 kỳ) so với tỉ lệ đang dùng để chia 10 bộ
+function recentParityNote(SI, c){
+  const r = SI.r20; if(!r || r.n < 10) return '';
+  const lab = k=> `${k} lẻ – ${c-k} chẵn`, notes = [];
+  for(let k=0;k<=c;k++){ const d = r.cnt[k]/r.n - SI.p[k];
+    if(d >= 0.10) notes.push(`<b>${lab(k)}</b> đang ra nhiều (${Math.round(100*r.cnt[k]/r.n)}% so với ${Math.round(100*SI.p[k])}%)`);
+    else if(d <= -0.10) notes.push(`<b>${lab(k)}</b> đang ra ít (${Math.round(100*r.cnt[k]/r.n)}% so với ${Math.round(100*SI.p[k])}%)`); }
+  const moreEven = r.cnt.reduce((a,v,k)=> a + (k < c/2 ? v : 0), 0), moreOdd = r.cnt.reduce((a,v,k)=> a + (k > c/2 ? v : 0), 0);
+  const lean = moreEven - moreOdd >= 4 ? ` Nghiêng về <b>chẵn</b>: ${moreEven}/${r.n} kỳ có nhiều số chẵn hơn.` : moreOdd - moreEven >= 4 ? ` Nghiêng về <b>lẻ</b>: ${moreOdd}/${r.n} kỳ có nhiều số lẻ hơn.` : '';
+  const last = SI.r10.last.map(k=> `${k}–${c-k}`).join(', ');
+  return `<div class="footnote" style="margin-top:6px;padding:6px 8px;border-left:3px solid var(--accent);">📝 <b>Ghi chú 20 kỳ gần:</b> ${notes.length ? notes.join('; ') + '.' : 'khớp với tỉ lệ đang dùng.'}${lean} 10 kỳ gần nhất (lẻ–chẵn): ${last}.
+    <span style="color:var(--muted);">Chỉ để tham khảo khi tự chọn — 10–20 kỳ lệch 1–2 kỳ là tỉ lệ đổi 5–10 điểm %, nên không dùng để chia 10 bộ.</span></div>`;
+}
 // ví dụ kiểu xếp có đúng k lần đổi chẵn↔lẻ (c ô): CCC…LLL, CCLLCC…, CLCLCL
 function swExample(c, k){ const seg = k+1, base = Math.floor(c/seg), extra = c % seg; let s = '';
   for(let i=0;i<seg;i++) s += (i%2 ? 'L' : 'C').repeat(base + (i<extra ? 1 : 0)); return s; }
@@ -3721,7 +3734,9 @@ function buildSuggestions(mode, ov){
   // shapeStatic: nhỏ/to và tổng ở khoảng hay gặp + số lẻ thuộc kiểu có trong tỉ lệ; bal.ok: thêm điều kiện kiểu đó còn suất
   const shapeStatic = st=> oddQuota[st.odd]>0 && (!useSw || swOk.has(st.sw)) && st.low>=bal0.band[0] && st.low<=bal0.band[1] && st.sum>=bal0.lo && st.sum<=bal0.hi;
   const bal = {...bal0, ok: st=> shapeStatic(st) && oddLeft[st.odd]>0};
-  const shapeInfo = {dists: oddDists, p: oddP, quota: oddQuota, swP, swOk, swRelaxed: false};
+  // ghi chú: tỉ lệ chẵn/lẻ 10 và 20 kỳ gần nhất (chỉ để tham khảo, không đổi cách chia 10 bộ)
+  const recentOdd = nk=>{ const W = pastD.slice(-nk), cnt = Array(c+1).fill(0); W.forEach(x=> cnt[x.numbers.filter(v=> v%2).length]++); return {n: W.length, cnt, last: W.map(x=> x.numbers.filter(v=> v%2).length)}; };
+  const shapeInfo = {dists: oddDists, p: oddP, quota: oddQuota, swP, swOk, swRelaxed: false, r10: recentOdd(10), r20: recentOdd(20)};
   const cands = order.filter(n=> sel[n] >= 0).slice(0, 16);
   const wide = order.filter(n=> sel[n] >= 0).slice(0, 22);
   const combo = (acc, forced)=> bestCombo(cands, c, sel, acc, forced) || bestCombo(wide, c, sel, acc, forced);   // nới rộng ứng viên khi điều kiện chặt
@@ -3935,9 +3950,11 @@ function renderOptions(ctx){
     html += `<div class="csvbox" style="text-align:left;border-style:solid;margin-top:12px;">
       <b>⚖️ Chia 10 bộ theo tỉ lệ chẵn/lẻ thực tế</b>
       <div class="footnote" style="margin:4px 0 6px;">Dựa trên ${SI.dists.map(x=> `<b>${winName(x.months)}</b> (${x.n} kỳ${x.n && x.from ? `, từ ${toDDMMYYYY(x.from)}` : ''})`).join(' + ')}${SI.dists.length>1 ? ' — lấy trung bình' : ''}${SI.dists.some(x=> x.months===60 && x.n && x.from > '2021') ? '. Dữ liệu chưa đủ 5 năm thì dùng toàn bộ đang có' : ''}.</div>
-      <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Kiểu</th>${SI.dists.length>1 ? SI.dists.map(x=> `<th>${winName(x.months)}</th>`).join('') : ''}<th>Tỉ lệ dùng</th><th>Ngẫu nhiên</th><th>Số bộ</th></tr></thead><tbody>
-      ${ksh.map(k=> `<tr><td style="text-align:left;">${k} lẻ – ${c-k} chẵn</td>${SI.dists.length>1 ? SI.dists.map(x=> `<td>${(100*x.p[k]).toFixed(0)}%</td>`).join('') : ''}<td><b>${(100*SI.p[k]).toFixed(0)}%</b></td><td style="color:var(--muted);">${(100*hyperP(max, Math.ceil(max/2), c, k)).toFixed(0)}%</td><td><b style="color:var(--accent);">${SI.quota[k]||0}</b></td></tr>`).join('')}
+      <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Kiểu</th>${SI.dists.length>1 ? SI.dists.map(x=> `<th>${winName(x.months)}</th>`).join('') : ''}<th>Tỉ lệ dùng</th><th>Ngẫu nhiên</th><th>Số bộ</th><th style="color:var(--muted);">📝 20 kỳ gần</th><th style="color:var(--muted);">📝 10 kỳ gần</th></tr></thead><tbody>
+      ${ksh.map(k=> `<tr><td style="text-align:left;">${k} lẻ – ${c-k} chẵn</td>${SI.dists.length>1 ? SI.dists.map(x=> `<td>${(100*x.p[k]).toFixed(0)}%</td>`).join('') : ''}<td><b>${(100*SI.p[k]).toFixed(0)}%</b></td><td style="color:var(--muted);">${(100*hyperP(max, Math.ceil(max/2), c, k)).toFixed(0)}%</td><td><b style="color:var(--accent);">${SI.quota[k]||0}</b></td>
+        ${[SI.r20, SI.r10].map(r=> `<td style="color:var(--muted);">${r.n ? `${r.cnt[k]} (${Math.round(100*r.cnt[k]/r.n)}%)` : '—'}</td>`).join('')}</tr>`).join('')}
       </tbody></table></div>
+      ${recentParityNote(SI, c)}
       <div class="footnote">Toàn chẵn/toàn lẻ không dùng. Mỗi bộ lấy các số tiềm năng nhất của ngày mà đúng kiểu chẵn/lẻ được chia; nhỏ/to và tổng vẫn giữ ở khoảng hay gặp.</div>
       <div style="font-weight:700;margin:10px 0 4px;">Cách xếp chẵn/lẻ (đọc từ nhỏ đến lớn)</div>
       <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Số lần đổi chẵn↔lẻ</th>${SI.dists.length>1 ? SI.dists.map(x=> `<th>${winName(x.months)}</th>`).join('') : ''}<th>Tỉ lệ dùng</th><th>Ngẫu nhiên</th><th>Dùng?</th></tr></thead><tbody>
