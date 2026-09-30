@@ -3864,7 +3864,7 @@ function generateNumbers(){
   for(const hz of HORIZONS){ if(hz.needBirth && !hasBirth) continue; const r = buildSuggestions(hz.mode); if(!r) return; res[hz.mode] = r; }
   if(!res[suggestionTab]) suggestionTab = 'all';
   const fs = FORM_GAMES.includes(currentGame) ? formStyle(currentGame, res.all.targetDate, res.all.session) : null;
-  if(fs) res.form = {options: fs.sets.map(nums=> ({nums})), lucky: res.all.lucky};
+  if(fs) res.form = {options: fs.sets.map(nums=> ({nums})), lucky: fs.lucky ? {order: fs.lucky} : null};
   suggestionSet = res;
   logSuggestions(res);
   renderFormStyle(fs, res.all);
@@ -4829,7 +4829,9 @@ function luckyHope(researchKey){
 const FORM_GAMES = ['loto535'];
 const FORM_RW = 200, FORM_PW = 300;
 // kết quả kiểm tra lại (research/form.py, đi từng kỳ, chỉ dùng dữ liệu trước kỳ đó)
-const FORM_BACKTEST = {loto535: {n: 300, one: 0.710, ge2: 75.3, ge3: 12.3, rone: 0.697, rge2: 72.6, rge3: 13.1, rnd: 0.714}};
+const FORM_BACKTEST = {loto535: {n: 300, one: 0.710, ge2: 75.3, ge3: 12.3, rone: 0.697, rge2: 72.6, rge3: 13.1, rnd: 0.714,
+  // số may mắn (2 số), kiểm từng kỳ 300 kỳ gần — research/form_lucky.py
+  lucky: [['2 số gan nhất (đang dùng)', 20.0], ['2 số lạnh 20 kỳ gần', 20.0], ['Cách của tầm Tổng hợp (hy vọng nhỏ)', 17.7], ['Phong độ gần đây (như 5 số chính)', 15.0], ['Ngẫu nhiên (lý thuyết)', 16.7]]}};
 const _formCache = {};
 function formStyle(gameKey, targetDate, session){
   const game = GAMES[gameKey], c = game.count, max = game.max, hist = historyData[gameKey];
@@ -4883,14 +4885,18 @@ function formStyle(gameKey, targetDate, session){
   rec(0, []); cand.sort((x,y)=> y.t-x.t);
   const sets = [];
   for(const share of [1, 2]) for(const v of cand){ if(sets.length>=10) break; if(sets.some(o=> o.filter(x=> v.s.includes(x)).length > share)) continue; if(!sets.some(o=> o.join()===v.s.join())) sets.push(v.s); }
-  return _formCache[key] = {gameKey, sel, sc, votes, order, sets, nR: T-a, nP: a-b0, fromR: past[a].date, fromP: past[b0].date};
+  // số may mắn: 2 số gan nhất (lâu chưa về nhất) — cách tốt nhất khi kiểm tra từng kỳ (research/form_lucky.py)
+  const lk = game.luckyMax ? past.filter(d=> d.lucky!=null).map(d=> d.lucky) : null;
+  const lucky = lk && lk.length ? luckyRank(lk, 'gan', 2, game.luckyMax) : null;
+  const luckyAgo = lucky ? lucky.map(x=>{ const j = lk.lastIndexOf(x); return j<0 ? lk.length : lk.length-1-j; }) : null;
+  return _formCache[key] = {gameKey, sel, sc, votes, order, sets, lucky, luckyAgo, nR: T-a, nP: a-b0, fromR: past[a].date, fromP: past[b0].date};
 }
 function renderFormStyle(fs, ctxAll){
   const out = document.getElementById('formOut'); if(!out) return;
   if(!fs){ out.innerHTML = ''; return; }
   const game = GAMES[fs.gameKey], c = game.count, B = FORM_BACKTEST[fs.gameKey];
   const ball = (n, st='')=> `<div class="ball" style="${st}">${n}</div>`;
-  const lucky = ctxAll && ctxAll.lucky ? ctxAll.lucky.order.slice(0,2) : null;
+  const lucky = fs.lucky;
   const luckyBall = n=> `<div class="ball" style="width:30px;height:30px;font-size:0.82rem;background:radial-gradient(circle at 35% 30%,#ffe3d8,var(--accent2) 70%);color:#3a0e0a;">${n}</div>`;
   const small = 'width:30px;height:30px;font-size:0.82rem;';
   const topN = fs.order.filter(x=> fs.sc[x] > 0).slice(0, 8);
@@ -4905,12 +4911,60 @@ function renderFormStyle(fs, ctxAll){
       <div style="margin:8px 0 4px;"><b>Số được nhiều phương pháp chọn:</b></div>
       <div class="balls" style="margin:0 0 6px;gap:6px;">${topN.map(n=> `<div style="text-align:center;">${ball(n)}<div class="footnote" style="margin:0;">${fs.votes[n].length} phiếu</div></div>`).join('')}</div>`;
   }
-  html += `<div style="margin:8px 0 4px;"><b>10 bộ gợi ý</b>${lucky ? ' <span class="footnote">(bóng cam = 2 số may mắn của tầm ⭐ Tổng hợp)</span>' : ''}</div>
+  if(lucky && B && B.lucky) html += `<div style="margin:8px 0 4px;"><b>🟠 Số may mắn: ${lucky.map((n,k)=> `${n} <span class="footnote">(${fs.luckyAgo[k]} kỳ chưa về)</span>`).join(', ')}</b></div>
+    <div class="footnote" style="margin:0 0 6px;">Chọn 2 số <b>gan nhất</b> (lâu chưa về nhất). Kiểm tra từng kỳ trên ${B.n} kỳ gần, 2 số may mắn trúng: ${B.lucky.map(([lab, v])=> `${lab} <b>${v}%</b>`).join(' · ')}. Chênh lệch ±2–3% vẫn trong mức may rủi.</div>`;
+  html += `<div style="margin:8px 0 4px;"><b>10 bộ gợi ý</b></div>
     ${fs.sets.map((s,k)=>{ const st = comboStats(s, game.max); return `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 0;border-top:${k?'1px solid var(--border)':'none'};">
       <span style="width:26px;color:var(--muted);font-weight:700;">#${k+1}</span><div class="balls" style="margin:0;gap:5px;">${s.map(n=> ball(n, small)).join('')}${lucky ? '<span style="font-size:0.75rem;color:var(--muted);align-self:center;">·</span>' + lucky.map(luckyBall).join('') : ''}</div>
       <span class="footnote" style="margin:0;">${st.odd} lẻ – ${c-st.odd} chẵn · tổng ${st.sum} · ${s.reduce((acc,x)=> acc+fs.votes[x].length, 0)} phiếu</span></div>`; }).join('')}`;
   if(B) html += `<div class="footnote" style="margin-top:8px;padding:6px 8px;border-left:3px solid #ff8a5c;">📊 <b>Kiểm tra lại ${B.n} kỳ gần nhất</b> (mỗi kỳ chỉ dùng dữ liệu trước nó): bộ #1 trúng TB <b>${B.one.toFixed(2)}</b> số (ngẫu nhiên ${B.rnd.toFixed(2)}); có bộ trúng ≥ 2 số <b>${B.ge2}%</b> số kỳ, ≥ 3 số <b>${B.ge3}%</b>. Đối chứng — 10 bộ điểm ngẫu nhiên cùng cách ghép: ${B.rge2}% và ${B.rge3}%. Tức là phần lợi đến từ <b>cách ghép 10 bộ đa dạng</b>; việc chọn phương pháp theo phong độ chưa cho thấy hơn ngẫu nhiên. Nhật ký (mục 5) theo dõi tiếp dòng "🔥 Phong độ".</div>`;
-  out.innerHTML = html + '</div>';
+  out.innerHTML = html + `<div id="formPast" style="margin-top:10px;"></div></div>`;
+  renderFormPast(fs.gameKey);
+}
+// 📜 Đối chiếu quá khứ: tính lại phong cách 🔥 cho N kỳ vừa quay (mỗi kỳ chỉ dùng dữ liệu trước nó) và dò với kết quả thật
+let formPastN = 20; const _formPast = {};
+function renderFormPast(gameKey){
+  const box = document.getElementById('formPast'); if(!box) return;
+  const hist = historyData[gameKey]; if(!hist) return;
+  const game = GAMES[gameKey], c = game.count, multi = game.drawHoursVN.length > 1;
+  const D = hist.draws.slice(-formPastN), key = `${gameKey}|${formPastN}|${hist.draws.length}|${hist.draws[hist.draws.length-1].date}`;
+  const head = `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><b>📜 Đối chiếu quá khứ</b>
+    ${[20, 50].map(n=> `<button class="btn secondary fp-n" data-n="${n}" style="margin:0;padding:4px 10px;${n===formPastN?'border-color:#ff8a5c;color:#ff8a5c;':''}">${n} kỳ</button>`).join('')}<span id="fpProg" class="footnote"></span></div>`;
+  const bindN = ()=> box.querySelectorAll('.fp-n').forEach(b=> b.addEventListener('click', ()=>{ formPastN = +b.dataset.n; renderFormPast(gameKey); }));
+  const draw = rows=>{
+    const done = rows.filter(Boolean);
+    const one = done.reduce((a,r)=> a+r.h[0], 0)/done.length, ge2 = done.filter(r=> Math.max(...r.h)>=2).length, ge3 = done.filter(r=> Math.max(...r.h)>=3).length;
+    const lk = done.filter(r=> r.lk!=null), lkHit = lk.filter(r=> r.lk).length;
+    const P = k=> nCk(c,k)*nCk(game.max-c,c-k)/nCk(game.max,c); let p2 = 0, p3 = 0; for(let k=2;k<=c;k++) p2 += P(k); for(let k=3;k<=c;k++) p3 += P(k);
+    box.innerHTML = head + `<div class="footnote" style="margin:6px 0;">${done.length} kỳ gần nhất: bộ #1 trúng TB <b>${one.toFixed(2)}</b> số (ngẫu nhiên ${(c*c/game.max).toFixed(2)}) · có bộ trúng ≥ 2 số <b>${ge2}/${done.length}</b> kỳ (${Math.round(100*ge2/done.length)}%; 10 bộ ngẫu nhiên không trùng nhau ≈ ${Math.round(100*(1-Math.pow(1-p2,10)))}%) · ≥ 3 số <b>${ge3}</b> kỳ (≈ ${Math.round(100*(1-Math.pow(1-p3,10)))}%)${lk.length ? ` · số may mắn trúng <b>${lkHit}/${lk.length}</b> (${Math.round(100*lkHit/lk.length)}%, ngẫu nhiên 17%)` : ''}</div>
+      <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Kỳ</th><th>Kết quả</th><th>PP đạt</th><th>Bộ #1</th><th>Tốt nhất</th>${game.luckyMax ? '<th>May mắn</th>' : ''}</tr></thead><tbody>
+      ${rows.map((r,i)=>{ const d = D[D.length-1-i]; if(!r) return `<tr><td style="text-align:left;">${toDDMMYYYY(d.date)}${multi ? ' '+d.hour+'h' : ''}</td><td colspan="5" style="color:var(--muted);">đang tính…</td></tr>`;
+        const b = Math.max(...r.h), W = new Set(d.numbers), bi = r.h.indexOf(b);
+        const fmt = s=> s.map(n=> W.has(n) ? `<b style="color:var(--good);">${String(n).padStart(2,'0')}</b>` : String(n).padStart(2,'0')).join(' ');
+        return `<tr><td style="text-align:left;white-space:nowrap;">${toDDMMYYYY(d.date)}${multi ? ' '+d.hour+'h' : ''}</td>
+          <td style="white-space:nowrap;">${d.numbers.map(n=> String(n).padStart(2,'0')).join(' ')}${d.lucky!=null ? ` | ${d.lucky}` : ''}</td>
+          <td title="${r.m.join('\n')}">${r.m.length}</td>
+          <td style="white-space:nowrap;">${fmt(r.s[0])} → <b style="color:${r.h[0]>=2?'var(--good)':'var(--text)'};">${r.h[0]}</b></td>
+          <td style="white-space:nowrap;" title="bộ #${bi+1}">${fmt(r.s[bi])} → <b style="color:${b>=3?'var(--good)':b>=2?'#7cc4ff':'var(--text)'};">${b}</b></td>
+          ${game.luckyMax ? `<td>${r.l ? r.l.join(', ') : '—'} ${r.lk==null ? '' : r.lk ? '<span style="color:var(--good);">✓</span>' : '<span style="color:var(--muted);">✗</span>'}</td>` : ''}</tr>`; }).join('')}
+      </tbody></table></div>
+      <div class="footnote">Mỗi kỳ tính lại đúng như bấm "Tạo" trước giờ quay hôm đó (chọn lại phương pháp theo 200 + 300 kỳ trước nó). Số <b style="color:var(--good);">xanh</b> = trúng. "PP đạt" = số phương pháp đạt điều kiện kỳ đó (chạm để xem tên).</div>`;
+    bindN();
+  };
+  if(_formPast[key] && _formPast[key].every(Boolean)){ draw(_formPast[key]); return; }
+  const rows = _formPast[key] = _formPast[key] || Array(D.length).fill(null);
+  draw(rows);
+  let i = rows.findIndex(r=> !r);
+  const step = ()=>{
+    if(i < 0 || i >= D.length || document.getElementById('formPast') !== box) return;
+    const d = D[D.length-1-i], f = formStyle(gameKey, d.date, String(d.hour ?? game.drawHoursVN[0])), W = new Set(d.numbers);
+    rows[i] = f ? {s: f.sets, h: f.sets.map(s=> s.filter(n=> W.has(n)).length), m: f.sel.map(x=> x.name.replace(/^(Ngày|Gần đây|Cộng đồng): /,'')), l: f.lucky, lk: f.lucky && d.lucky!=null ? f.lucky.includes(d.lucky) : null}
+                 : {s: [[]], h: [0], m: [], l: null, lk: null};
+    i++; if(i % 2 === 0 || i >= D.length) draw(rows);
+    const pr = document.getElementById('fpProg'); if(pr) pr.textContent = i < D.length ? `đang tính ${i}/${D.length}…` : '';
+    setTimeout(step, 0);
+  };
+  setTimeout(step, 50);
 }
 
 // ---------- Nhật ký theo dõi (mục 5) ----------
@@ -5025,7 +5079,7 @@ function runRetro(){
     for(const h of HORIZONS){ if(h.needBirth && !getBirth()) continue;
       const r = buildSuggestions(h.mode, {game: gameKey, date: d.date, session});
       if(r) hz[h.mode] = {sets: r.options.map(o=> o.nums), lucky: r.lucky ? r.lucky.order.slice(0,2) : null}; }
-    if(FORM_GAMES.includes(gameKey)){ const f = formStyle(gameKey, d.date, session); if(f) hz.form = {sets: f.sets, lucky: hz.all ? hz.all.lucky : null}; }
+    if(FORM_GAMES.includes(gameKey)){ const f = formStyle(gameKey, d.date, session); if(f) hz.form = {sets: f.sets, lucky: f.lucky}; }
     out.push({date: d.date, session, draw: d, hz});
     if(prog) prog.textContent = `đang tính ${i}/${D.length}…`;
     setTimeout(step, 0);
