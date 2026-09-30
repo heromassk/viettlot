@@ -3678,7 +3678,29 @@ function buildSuggestions(mode, ov){
   const rng = mulberry32(hashStr(`${game.label}|${targetDate}|${session}`));
   const tieKey = Array.from({length:max+1}, ()=> rng());
   const order = Array.from({length:max}, (_,k)=> k+1).sort((a,b)=> sel[b]-sel[a] || tieKey[a]-tieKey[b]);
-  const bal = makeBalanceCheck(max, c);
+  // Tỉ lệ chẵn/lẻ thực tế theo tầm: ⚡ ngắn hạn = 3 tháng gần, 🕐 trung hạn = 1 năm, 📅 dài hạn = 5 năm;
+  // ⭐ tổng hợp / 👤 cá nhân = trung bình 3 mốc. 10 bộ gợi ý chia theo đúng tỉ lệ này (không dùng toàn chẵn/toàn lẻ).
+  const TARGET = 10;
+  const pastD = histAll ? histAll.draws.filter(d=> d.date < targetDate || (d.date===targetDate && d.hour!=null && !isNaN(hour) && d.hour < hour)) : [];
+  const monthsBack = mo=>{ const t = new Date(y, m-1-mo, d); return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; };
+  const oddTheory = k=> hyperP(max, Math.ceil(max/2), c, k);
+  const oddDist = months=>{ const cut = monthsBack(months), W = pastD.filter(x=> x.date >= cut), cnt = Array(c+1).fill(0);
+    W.forEach(x=> cnt[x.numbers.filter(v=> v%2).length]++);
+    return {months, n: W.length, from: W.length ? W[0].date : null, cnt, p: cnt.map((v,k)=> W.length ? v/W.length : oddTheory(k))}; };
+  const oddDists = ({short:[3], mid:[12], long:[60]}[mode] || [3,12,60]).map(oddDist);
+  const oddP = Array.from({length:c+1}, (_,k)=> oddDists.reduce((a,x)=> a + x.p[k], 0)/oddDists.length);
+  const oddQuota = Array(c+1).fill(0);
+  { const ks = Array.from({length:c-1}, (_,i)=> i+1), tot = ks.reduce((a,k)=> a+oddP[k], 0) || 1;
+    const raw = ks.map(k=> ({k, v: TARGET*oddP[k]/tot}));
+    raw.forEach(r=> oddQuota[r.k] = Math.floor(r.v));
+    let left = TARGET - raw.reduce((a,r)=> a+Math.floor(r.v), 0);
+    raw.sort((a,b)=> (b.v-Math.floor(b.v)) - (a.v-Math.floor(a.v)) || b.v-a.v).forEach(r=>{ if(left>0){ oddQuota[r.k]++; left--; } }); }
+  const oddLeft = oddQuota.slice();
+  const bal0 = makeBalanceCheck(max, c);
+  // shapeStatic: nhỏ/to và tổng ở khoảng hay gặp + số lẻ thuộc kiểu có trong tỉ lệ; bal.ok: thêm điều kiện kiểu đó còn suất
+  const shapeStatic = st=> oddQuota[st.odd]>0 && st.low>=bal0.band[0] && st.low<=bal0.band[1] && st.sum>=bal0.lo && st.sum<=bal0.hi;
+  const bal = {...bal0, ok: st=> shapeStatic(st) && oddLeft[st.odd]>0};
+  const shapeInfo = {dists: oddDists, p: oddP, quota: oddQuota};
   const cands = order.filter(n=> sel[n] >= 0).slice(0, 16);
   const wide = order.filter(n=> sel[n] >= 0).slice(0, 22);
   const combo = (acc, forced)=> bestCombo(cands, c, sel, acc, forced) || bestCombo(wide, c, sel, acc, forced);   // nới rộng ứng viên khi điều kiện chặt
@@ -3686,15 +3708,16 @@ function buildSuggestions(mode, ov){
   const add = (title, nums, desc, opt={})=>{
     if(!nums) return;
     const set = nums.slice().sort((a,b)=>a-b);
-    if(!bal.ok(comboStats(set, max))) return;   // mọi bộ gợi ý đều giữ hình dạng hay gặp (chẵn/lẻ, nhỏ/to, tổng)
+    if(options.length >= TARGET || !bal.ok(comboStats(set, max))) return;   // hình dạng hay gặp + kiểu chẵn/lẻ còn suất
     if(options.some(o=> o.nums.join()===set.join())) return;
+    oddLeft[comboStats(set, max).odd]--;
     const total = set.reduce((a,n)=> a+score[n], 0), cons = set.reduce((a,n)=> a+pos[n]-neg[n], 0);
     options.push({title, nums:set, desc, total, cons, rank: (isConsensus(mode) ? set.reduce((a,n)=> a+sel[n], 0) : total) + (opt.bonus||0), extra: opt.extra||{}, badge: opt.badge||''});
   };
   const shapeOk = s=> bal.ok(comboStats(s,max)) && pairFree(s);
   add('Hy vọng cao nhất', bestCombo(order.slice(0, 16), c, score, shapeOk) || bestCombo(order.slice(0, 22), c, score, shapeOk), 'Các số có hệ số hy vọng cao nhất theo quy luật của ngày, chỉ giữ hình dạng hay gặp (không toàn chẵn/toàn lẻ, không lệch nhỏ/to, tổng ở khoảng giữa).');
   add('Cân bằng + hy vọng', combo(s=> bal.ok(comboStats(s,max)) && pairFree(s)),
-      `Số có hy vọng cao nhất nhưng bộ số giữ hình dạng hay gặp: ${bal.band[0]}–${bal.band[1]} số lẻ, ${bal.band[0]}–${bal.band[1]} số nhỏ, tổng ${bal.lo}–${bal.hi} (khoảng 70% kỳ quay rơi vào).`);
+      `Số có hy vọng cao nhất nhưng bộ số giữ hình dạng hay gặp: số chẵn/lẻ theo tỉ lệ thực tế của tầm này, ${bal.band[0]}–${bal.band[1]} số nhỏ, tổng ${bal.lo}–${bal.hi}.`);
   const bigMin = max > 40 ? 2 : 1;
   add('Tránh chia giải', combo(s=>{ const st = comboStats(s,max); return bal.ok(st) && !st.run3 && s.filter(x=>x>31).length>=bigMin && pairFree(s); }),
       `Như "Cân bằng" nhưng có ít nhất ${bigMin} số lớn hơn 31 và không có 3 số liền nhau — tránh kiểu số ngày sinh/dãy đẹp mà nhiều người cùng chọn, nếu trúng ít phải chia Jackpot.`);
@@ -3721,31 +3744,38 @@ function buildSuggestions(mode, ov){
       `Giữ 2 cặp về cùng nhiều nhất ${pairPick.window ? `trong ${pairPick.window} kỳ gần nhất` : 'từ đầu dữ liệu'} (${chosen.map(p=> `${p.a}–${p.b}: ${p.count} lần`).join(', ')}). Lịch sử của riêng ${game.label}: chọn theo cặp như vậy trúng cả cặp ${fmtPct(pairPick.lift)} so với ngẫu nhiên (z = ${pairPick.z}). Phần còn lại chọn theo hy vọng + cân bằng.`,
       {bonus: chosen.length*Math.log(pairPick.lift), extra, badge:`🔗 cặp ${fmtPct(pairPick.lift)}`});
   }
-  // Bổ sung "Biến thể" cho đủ 10 bộ: bộ cân bằng có điểm hy vọng cao tiếp theo, khác mọi bộ đã có ≥ 2 số.
-  const TARGET = 10;
-  if(options.length < TARGET){
-    const pool = order.filter(n=> sel[n] >= 0).slice(0, c>=6 ? 19 : 22);   // 19 ứng viên cho vé 6 số để tính nhanh
+  // Bổ sung "Biến thể" cho đủ 10 bộ, theo suất của từng kiểu chẵn/lẻ: bộ có điểm hy vọng cao tiếp theo, khác các bộ đã có ≥ 2 số.
+  const overlap = (a,b)=> a.filter(x=> b.includes(x)).length;
+  let vk = 1;
+  for(const poolSize of c>=6 ? [19, 24, 24] : [22, 26, 26]){
+    if(options.length >= TARGET) break;
+    if(poolSize === (c>=6 ? 24 : 26) && vk > 0 && options.length < TARGET && oddLeft.some((v,k)=> v>0 && (k<2 || k>c-2))){
+      // kiểu lệch (vd 1 lẻ – 5 chẵn) không đủ bộ hợp lệ → chuyển suất còn lại sang kiểu cân bằng gần nhất
+      for(let k=0;k<=c;k++) if(oddLeft[k]>0 && (k<2 || k>c-2)){ const to = k<2 ? 2 : c-2; oddQuota[to] += oddLeft[k]; oddLeft[to] += oddLeft[k]; oddQuota[k] -= oddLeft[k]; oddLeft[k] = 0; }
+    }
+    const pool = order.filter(n=> sel[n] >= 0).slice(0, poolSize);
+    if(pool.length < c) break;
     const all = [];
     const rec = (start, chosen)=>{
       if(chosen.length===c){ const s = chosen.slice().sort((a,b)=>a-b);
-        if(bal.ok(comboStats(s,max)) && pairFree(s)) all.push({s, t: s.reduce((a,n)=> a+sel[n], 0), r: chosen.reduce((a,n)=> a+pool.indexOf(n), 0)});
+        if(shapeStatic(comboStats(s,max)) && pairFree(s)) all.push({s, t: s.reduce((a,n)=> a+sel[n], 0), r: chosen.reduce((a,n)=> a+pool.indexOf(n), 0)});
         return; }
       for(let k=start; k<=pool.length-(c-chosen.length); k++){ chosen.push(pool[k]); rec(k+1, chosen); chosen.pop(); }
     };
     rec(0, []);
     all.sort((a,b)=> b.t-a.t || a.r-b.r);
-    const overlap = (a,b)=> a.filter(x=> b.includes(x)).length;
-    let k = 1;
     for(const maxShare of [c-2, c-1]){
       for(const v of all){
         if(options.length >= TARGET) break;
-        if(options.some(o=> overlap(o.nums, v.s) > maxShare)) continue;
-        add(`Biến thể ${k++}`, v.s, `Bộ cân bằng có điểm hy vọng cao tiếp theo, khác các bộ ở trên ít nhất ${c-maxShare} số — để có đủ ${TARGET} lựa chọn đa dạng.`);
+        if(oddLeft[comboStats(v.s,max).odd] <= 0 || options.some(o=> overlap(o.nums, v.s) > maxShare)) continue;
+        const before = options.length;
+        add(`Biến thể ${vk}`, v.s, `Bộ có điểm hy vọng cao tiếp theo, đúng kiểu chẵn/lẻ còn thiếu theo tỉ lệ, khác các bộ ở trên ít nhất ${c-maxShare} số — để đủ ${TARGET} lựa chọn.`);
+        if(options.length > before) vk++;
       }
     }
   }
   // xếp ưu tiên: tổng điểm hy vọng, bằng nhau thì bộ cân bằng trước
-  options.forEach(o=> o.balanced = bal.ok(comboStats(o.nums, max)));
+  options.forEach(o=> o.balanced = shapeStatic(comboStats(o.nums, max)));
   options.sort((a,b)=> b.rank - a.rank || (b.balanced - a.balanced));
   // số may mắn (Loto)
   let lucky = null;
@@ -3775,7 +3805,7 @@ function buildSuggestions(mode, ov){
     const lorder = Array.from({length:L}, (_,k)=> k+1).sort((a,b)=> lsel(b)-lsel(a) || lago[b]-lago[a] || tieKey[a]-tieKey[b]);
     lucky = {order: lorder, ...lr, lpos, lgood, lcount, lago, total: past.length, lsel};
   }
-  return {game, info, session, targetDate, options, score, why, active, lucky, order, bal, avoidPairs, mode, pairPick, avoidPairRules, pos, neg, pairMembers, prof, synergy};
+  return {game, info, session, targetDate, options, score, why, active, lucky, order, bal, shapeInfo, avoidPairs, mode, pairPick, avoidPairRules, pos, neg, pairMembers, prof, synergy};
 }
 
 // Tạo gợi ý cho cả 3 tầm + tổng hợp; bảng tóm tắt ở đầu, tab để xem chi tiết từng tầm.
@@ -3873,6 +3903,18 @@ function renderOptions(ctx){
       </div>`;
     }).join('')}
   </div>`;
+  // tỉ lệ chẵn/lẻ thực tế dùng để chia 10 bộ
+  if(ctx.shapeInfo){
+    const SI = ctx.shapeInfo, winName = mo=> mo===3 ? '3 tháng gần' : mo===12 ? '1 năm gần' : '5 năm gần';
+    const ksh = Array.from({length:c-1}, (_,i)=> i+1).filter(k=> SI.quota[k] || SI.p[k] >= 0.01);
+    html += `<div class="csvbox" style="text-align:left;border-style:solid;margin-top:12px;">
+      <b>⚖️ Chia 10 bộ theo tỉ lệ chẵn/lẻ thực tế</b>
+      <div class="footnote" style="margin:4px 0 6px;">Dựa trên ${SI.dists.map(x=> `<b>${winName(x.months)}</b> (${x.n} kỳ${x.n && x.from ? `, từ ${toDDMMYYYY(x.from)}` : ''})`).join(' + ')}${SI.dists.length>1 ? ' — lấy trung bình' : ''}${SI.dists.some(x=> x.months===60 && x.n && x.from > '2021') ? '. Dữ liệu chưa đủ 5 năm thì dùng toàn bộ đang có' : ''}.</div>
+      <div class="tablewrap"><table><thead><tr><th style="text-align:left;">Kiểu</th>${SI.dists.length>1 ? SI.dists.map(x=> `<th>${winName(x.months)}</th>`).join('') : ''}<th>Tỉ lệ dùng</th><th>Ngẫu nhiên</th><th>Số bộ</th></tr></thead><tbody>
+      ${ksh.map(k=> `<tr><td style="text-align:left;">${k} lẻ – ${c-k} chẵn</td>${SI.dists.length>1 ? SI.dists.map(x=> `<td>${(100*x.p[k]).toFixed(0)}%</td>`).join('') : ''}<td><b>${(100*SI.p[k]).toFixed(0)}%</b></td><td style="color:var(--muted);">${(100*hyperP(max, Math.ceil(max/2), c, k)).toFixed(0)}%</td><td><b style="color:var(--accent);">${SI.quota[k]||0}</b></td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="footnote">Toàn chẵn/toàn lẻ không dùng. Mỗi bộ lấy các số tiềm năng nhất của ngày mà đúng kiểu chẵn/lẻ được chia; nhỏ/to và tổng vẫn giữ ở khoảng hay gặp.</div></div>`;
+  }
   let luckyReasons = null, luckyLevel = null;
   if(lucky){
     const L = game.luckyMax;
