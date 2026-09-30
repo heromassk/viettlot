@@ -486,7 +486,10 @@ function detailRow(g,m,cols){
   return `<tr class="detail"><td colspan="${cols}"><div class="foot" style="margin:0 0 6px;">Lịch sử ${g.meta.methods[m].n}: ${g.meta.methods[m].l}</div><table class="dt"><thead><tr><th class="l">Kỳ</th><th class="l">Kết quả</th><th class="l">Gợi ý của phương pháp</th><th>Trùng</th></tr></thead><tbody>${rows.join('')}</tbody></table>${more}</td></tr>`;
 }
 // danh sach phuong phap dung de bau cho ky t (t = L la ky toi)
-function baseList(g,t,scope){const ex=S.excl[g.meta.game],b=baseRaw(g,t,scope);return ex&&ex.size?b.filter(r=>!ex.has(r.m)):b;}   // chi cac phuong phap dang duoc tich
+function drawOf(g,t){return t===g.L?g.L+S.nextIdx:t;}   // chi so du lieu goi y cua ky t
+function nSug(g,m,d){const b=(m*g.D+d)*g.W;return pop(g.U[b])+pop(g.U[b+1])+(g.W>2?pop(g.U[b+2]):0);}
+function okCnt(g,m,d){const c=nSug(g,m,d);return c>=S.lo&&c<=S.hi;}   // so so goi y CUA KY NAY nam trong khoang thanh truot
+function baseList(g,t,scope){const ex=S.excl[g.meta.game]||new Set(),d=drawOf(g,t);return baseRaw(g,t,scope).filter(r=>!ex.has(r.m)&&okCnt(g,r.m,d));}   // chi cac phuong phap dang duoc tich va dung khoang so goi y
 function baseRaw(g,t,scope){
   const lim=scope===0?Infinity:scope;
   if(S.modeB)return rank(g,t,S.win,S.lo,S.hi,lim);            // cach B: chi dung du lieu truoc ky t
@@ -503,15 +506,16 @@ function sortedVotes(v){return Object.keys(v).map(Number).sort((a,b)=>v[b]-v[a]|
 function drawLabel(g,t){return t===g.L?`Kỳ tới ${fmtDraw(g.meta.nextDates[S.nextIdx])}`:fmtDraw(g.meta.dates[t]);}
 function renderVoters(){
   if(!G[S.game]||S.drawIdx==null)return;   // du lieu game chua nap xong
-  const g=G[S.game],t=S.drawIdx,d=t===g.L?g.L+S.nextIdx:t,past=t<g.L,hs=past?new Set(g.meta.results[t]):null,ls=past&&g.LN?new Set([g.meta.luckyRes[t]]):null,list=baseRaw(g,t,S.scope),exv=S.excl[g.meta.game]||new Set(),nUse=list.filter(r=>!exv.has(r.m)).length;
-  $('votersSum').textContent=`Xem danh sách ${list.length} phương pháp${exv.size?` (đang tính ${nUse}, đã bỏ tích ${list.length-nUse})`:' đã bầu'} cho ${drawLabel(g,t)}`;
+  const g=G[S.game],t=S.drawIdx,d=t===g.L?g.L+S.nextIdx:t,past=t<g.L,hs=past?new Set(g.meta.results[t]):null,ls=past&&g.LN?new Set([g.meta.luckyRes[t]]):null,list=baseRaw(g,t,S.scope),exv=S.excl[g.meta.game]||new Set(),nEx=list.filter(r=>exv.has(r.m)).length,nOut=list.filter(r=>!exv.has(r.m)&&!okCnt(g,r.m,d)).length,nUse=list.length-nEx-nOut;
+  $('votersSum').textContent=`Xem danh sách ${list.length} phương pháp${nEx||nOut?` (đang tính ${nUse}${nEx?`, đã bỏ tích ${nEx}`:''}${nOut?`, ${nOut} không tính vì kỳ này không có gợi ý hoặc số số gợi ý ngoài khoảng ${S.lo}–${S.hi}`:''})`:' đã bầu'} cho ${drawLabel(g,t)}`;
   if(!$('voters').open){$('votersTbl').innerHTML='';return;}
   const rows=list.map(r=>{const nums=setOf(g,r.m,d),lk=g.LN?lkOf(g,r.m,d):[];return {m:r.m,nums,lk,n:nums.length+lk.length,hit:past?nums.filter(x=>hs.has(x)).length+(ls&&lk.some(x=>ls.has(x))?1:0):0};});
   if(S.vsort==='n'||S.vsort==='hit'){const k=S.vsort;rows.sort((a,b)=>(a[k]-b[k])*S.vdir||a.m-b.m);}
   const vh=(k,t)=>`<th class="sortable${k==='hit'&&!past?' x':''}" data-k="${k}">${t}${S.vsort===k?`<span class="ar">${S.vdir<0?'▼':'▲'}</span>`:''}</th>`;
   $('votersTbl').innerHTML=`<thead><tr><th title="Bỏ tích để không tính phương pháp vào phiếu">✓</th><th class="l">Phương pháp</th>${vh('n','Số gợi ý')}${past?vh('hit','Số trùng'):''}<th class="l">Dãy số phương pháp bầu${past?' (số trùng in màu)':''}</th></tr></thead><tbody>`+rows.map((r,i)=>{
     const {nums,lk,hit}=r;
-    return `<tr${exv.has(r.m)?' class="off"':''} title="${g.meta.methods[r.m].l.replace(/"/g,'&quot;')}"><td><input type="checkbox" class="exck" data-m="${r.m}"${exv.has(r.m)?'':' checked'}></td><td class="l"><b>${g.meta.methods[r.m].n}</b></td><td>${r.n}</td>${past?`<td>${hit}</td>`:''}<td class="l">${nums.length||lk.length?ballsHtml(nums,hs,null,lk,ls):'—'}</td></tr>`;}).join('')+'</tbody>';
+    const out=!okCnt(g,r.m,d);
+    return `<tr${exv.has(r.m)||out?' class="off"':''} title="${g.meta.methods[r.m].l.replace(/"/g,'&quot;')}${out?` | không tính: ${r.n?`kỳ này gợi ý ${r.n} số, ngoài khoảng ${S.lo}–${S.hi}`:'kỳ này không gợi ý số nào'}`:''}"><td><input type="checkbox" class="exck" data-m="${r.m}"${exv.has(r.m)?'':' checked'}></td><td class="l"><b>${g.meta.methods[r.m].n}</b></td><td>${r.n}</td>${past?`<td>${hit}</td>`:''}<td class="l">${nums.length||lk.length?ballsHtml(nums,hs,null,lk,ls):'—'}</td></tr>`;}).join('')+'</tbody>';
   $('votersTbl').querySelectorAll('th.sortable').forEach(e=>e.onclick=()=>{const k=e.dataset.k;if(S.vsort===k)S.vdir*=-1;else{S.vsort=k;S.vdir=-1;}renderVoters();});
   $('votersTbl').querySelectorAll('.exck').forEach(c=>{c.onchange=()=>setExcl(+c.dataset.m,!c.checked);});
 }
