@@ -6,11 +6,12 @@ from study import load, zscore, rules as r1
 from kinhdich import rules as r2
 from more_rules import rules as r3
 from web_rules import rules as r4
+from astro import rules as r5
 LABEL = {'power655': 'Power 6/55', 'mega645': 'Mega 6/45', 'loto535': 'Loto 5/35', 'loto535_lucky': 'Loto – số may mắn'}
 def p(z): return math.erfc(abs(z)/math.sqrt(2))
 
 def all_rules(mx):
-    R = {**r1(mx), **r2(mx), **r3(mx), **r4(mx)}
+    R = {**r1(mx), **r2(mx), **r3(mx), **r4(mx), **r5(mx)}
     return {k: v for k, v in R.items() if not k.startswith('ĐỐI CHỨNG')}
 
 def analyse(game, perms=500, seed=7):

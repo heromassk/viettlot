@@ -14,7 +14,9 @@ from community import methods as cmethods
 
 game = sys.argv[1] if len(sys.argv) > 1 else 'loto535'
 TEST = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 300
-RW, PW = 200, 300
+RW = int(sys.argv[sys.argv.index('--w')+1]) if '--w' in sys.argv else 200
+PW = 300
+TOPK = int(sys.argv[sys.argv.index('--k')+1]) if '--k' in sys.argv else 5
 mx, c, _, dr = load(game); D = [set(d['nums']) for d in dr]; n = len(D)
 
 M = {}
@@ -46,7 +48,7 @@ def seg(k, a, b):
     H, E, V = pre[k]; e = E[b]-E[a]; v = V[b]-V[a]; h = H[b]-H[a]
     return h, e, ((h-e)/math.sqrt(v) if v > 0 else 0.0)
 
-TOP5 = '--top5' in sys.argv   # cách mới: chỉ lấy 5 phương pháp tốt nhất 200 kỳ gần (xếp theo z), không xét 300 kỳ trước
+TOP5 = '--top5' in sys.argv or '--k' in sys.argv   # lấy TOPK phương pháp tốt nhất RW kỳ gần (xếp theo z), không xét 300 kỳ trước
 def select(t):
     a = max(0, t-RW); b0 = max(0, a-PW); out = []
     for k in names:
@@ -57,7 +59,7 @@ def select(t):
         if e <= 0 or z < 1.5: continue
         if a - b0 >= 50 and seg(k, b0, a)[2] < 0: continue
         out.append((k, h/e, z))
-    if TOP5: out = sorted(out, key=lambda r: -r[2])[:5]
+    if TOP5: out = sorted(out, key=lambda r: -r[2])[:TOPK]
     return out
 
 rs = random.Random(2); tot = sorted(sum(rs.sample(range(1, mx+1), c)) for _ in range(100000))
@@ -100,8 +102,12 @@ def rand_scorer(t, rng):
 
 if __name__ == '__main__':
     p = lambda k: math.comb(c, k)*math.comb(mx-c, c-k)/math.comb(mx, c)
-    print(f'{game}: kiểm {TEST} kỳ gần nhất, mỗi kỳ chọn phương pháp theo {RW} kỳ trước (và không thua ở {PW} kỳ trước đó)')
+    print(f'{game}: kiểm {TEST} kỳ gần nhất, mỗi kỳ chọn {TOPK if TOP5 else "các"} phương pháp tốt nhất {RW} kỳ trước')
     print(f'Ngẫu nhiên 1 bộ: {c*c/mx:.3f} số')
+    if '--list' in sys.argv:   # TOPK phương pháp đúng nhiều nhất RW kỳ gần nhất (tính cho kỳ sắp tới)
+        for k, lift, z in select(n):
+            h, e, _ = seg(k, n-RW, n); print(f"  {k[:60]:60s} đúng {int(h):4d} số / {RW} kỳ = {h/RW:.2f} số/kỳ (ngẫu nhiên {e/RW:.2f}, +{100*(lift-1):.0f}%, z {z:+.2f})")
+        sys.exit()
     a = run(form_scorer); b = run(rand_scorer, 3)
     for lab, r in (('Phong độ gần đây', a), ('Đối chứng ngẫu nhiên', b)):
         print(f"{lab:22s} PP/kỳ {r['nsel']:4.1f} | top{c} số {r['top5']:.3f} | bộ#1 {r['one']:.3f} | tốt nhất {r['best']:.3f} | có bộ ≥2 {100*r['ge2']:.1f}% | ≥3 {100*r['ge3']:.1f}%")
