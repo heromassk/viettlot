@@ -175,6 +175,7 @@
   <div class="card" id="resultCard" style="display:none;">
     <h2>Các phương án gợi ý <span class="badge" id="resultGameLabel"></span></h2>
     <div id="formOut"></div>
+    <div id="formOut2"></div>
     <div class="explain" id="explainOut"></div>
     <div id="horizonOut"></div>
     <div class="gametabs" id="horizonTabs" style="margin-top:14px;"></div>
@@ -3889,6 +3890,7 @@ function generateNumbers(){
   suggestionSet = res;
   logSuggestions(res);
   renderFormStyle(fs, res.all);
+  renderFormStyle(FORM_GAMES.includes(currentGame) ? formStyle(currentGame, res.all.targetDate, res.all.session, formRW, 'rate') : null, res.all, 'formOut2', 'rate');
   renderHorizonSummary();
   renderOptions(res[suggestionTab] || res.all);
 }
@@ -4943,7 +4945,7 @@ const FORM_BACKTEST = {
     lucky: [['2 số gan nhất (đang dùng)', 20.0], ['2 số lạnh 20 kỳ gần', 20.0], ['Cách của tầm Tổng hợp (hy vọng nhỏ)', 17.7], ['Phong độ gần đây (như 5 số chính)', 15.0], ['Ngẫu nhiên (lý thuyết)', 16.7]]},
   mega645: {n: 300, 50: {one: 0.873, ge2: 75.0, ge3: 15.0, rnd: 0.800, rge2: 74.7, rge3: 21.8}, 100: {one: 0.850, ge2: 75.7, ge3: 18.3, rnd: 0.800, rge2: 74.7, rge3: 21.8}, 200: {one: 0.780, ge2: 74.7, ge3: 20.3, rnd: 0.800, rge2: 74.7, rge3: 21.8}},
   power655: {n: 300, 50: {one: 0.723, ge2: 55.7, ge3: 11.3, rnd: 0.655, rge2: 60.2, rge3: 11.8}, 100: {one: 0.700, ge2: 57.0, ge3: 11.0, rnd: 0.655, rge2: 60.2, rge3: 11.8}, 200: {one: 0.667, ge2: 59.3, ge3: 11.0, rnd: 0.655, rge2: 60.2, rge3: 11.8}}};
-const _formCache = {};
+const _formCache = {}, _formBase = {}, FORM_MIN_GUESS = 30;
 function formStyle(gameKey, targetDate, session, RW = formRW, sortBy = formSort){
   const game = GAMES[gameKey], c = game.count, max = game.max, hist = historyData[gameKey];
   if(!hist || !targetDate) return null;
@@ -4954,6 +4956,9 @@ function formStyle(gameKey, targetDate, session, RW = formRW, sortBy = formSort)
   const key = `${gameKey}|${targetDate}|${session}|${T}|${past.length ? past[T-1].date : ''}|${RW}|${sortBy}`;
   if(_formCache[key]) return _formCache[key];
   const P = past.map(d=> new Set(d.numbers));
+  const baseKey = key.replace(/\|[^|]*$/, '');   // phần chấm phương pháp dùng chung cho mọi cách xếp
+  let all = _formBase[baseKey];
+  if(!all){
   const infoOf = (date, h)=>{ const [y,m,d] = date.split('-').map(Number); return dateInfo(y, m, d, h); };
   const H0 = game.drawHoursVN[0];
   const infos = []; for(let i=b0;i<=T;i++) infos[i] = i<T ? infoOf(past[i].date, past[i].hour ?? H0) : infoOf(targetDate, isNaN(hour) ? H0 : hour);
@@ -4968,7 +4973,7 @@ function formStyle(gameKey, targetDate, session, RW = formRW, sortBy = formSort)
   M[`Gần đây: ${c} số gan nhất`] = i=> ganAt[i];
   const CM = communityMethods(max, c);
   for(const k in CM) M['Cộng đồng: ' + k] = i=> i ? CM[k](P.slice(0, i), infos[i]) : new Set();
-  const all = [];
+  all = [];
   for(const name in M){
     const f = M[name]; let hR = 0, eR = 0, vR = 0, cur = null; const log = [];
     for(let i=a;i<=T;i++){
@@ -4981,9 +4986,13 @@ function formStyle(gameKey, targetDate, session, RW = formRW, sortBy = formSort)
     all.push({name, hR, eR, liftR: hR/eR, zR: vR>0 ? (hR-eR)/Math.sqrt(vR) : 0, set: cur || new Set(), nR: T-a, log});
   }
   all.forEach(m=>{ m.guess = m.log.reduce((acc,r)=> acc + r.set.size, 0); });
-  all.sort(sortBy==='hits' ? (x,y)=> y.hR-x.hR || y.zR-x.zR : (x,y)=> y.zR-x.zR);
+  _formBase[baseKey] = all;
+  }
+  // cách xếp: 'hits' = đúng nhiều số nhất · 'z' = hơn ngẫu nhiên · 'rate' = % số đoán trúng cao nhất (cần ≥ FORM_MIN_GUESS số đã đoán)
+  all = sortBy==='rate' ? all.filter(m=> m.guess >= FORM_MIN_GUESS) : all.slice();
+  all.sort(sortBy==='hits' ? (x,y)=> y.hR-x.hR || y.zR-x.zR : sortBy==='rate' ? (x,y)=> y.hR/y.guess - x.hR/x.guess || y.zR-x.zR : (x,y)=> y.zR-x.zR);
   // chọn số: 8 phương pháp đầu bảng có số cho kỳ này (xếp theo 'hơn ngẫu nhiên' thì chỉ lấy phương pháp hơn ngẫu nhiên)
-  const sel = all.filter(m=> m.set.size && (sortBy==='hits' || m.hR > m.eR)).slice(0, FORM_TOP);
+  const sel = all.filter(m=> m.set.size && (sortBy!=='z' || m.hR > m.eR)).slice(0, FORM_TOP);
   sel.forEach(m=> m.log.forEach(r=>{ r.date = past[r.i].date; r.hour = past[r.i].hour; r.res = past[r.i].numbers; }));
   const sc = Array(max+1).fill(0), votes = Array.from({length:max+1}, ()=> []);
   sel.forEach(m=> m.set.forEach(x=>{ sc[x] += 1 + 0.2*Math.log(m.liftR); votes[x].push(m); }));
@@ -5008,8 +5017,10 @@ function formStyle(gameKey, targetDate, session, RW = formRW, sortBy = formSort)
   const luckyAgo = lucky ? lucky.map(x=>{ const j = lk.lastIndexOf(x); return j<0 ? lk.length : lk.length-1-j; }) : null;
   return _formCache[key] = {gameKey, sel, all, sc, votes, order, sets, lucky, luckyAgo, nR: T-a, fromR: past[a].date, RW, sortBy};
 }
-function renderFormStyle(fs, ctxAll){
-  const out = document.getElementById('formOut'); if(!out) return;
+const FORM_SORT_NAME = {hits: 'đúng nhiều số nhất', z: 'hơn ngẫu nhiên nhiều nhất', rate: 'có xác suất trúng cao nhất'};
+function renderFormStyle(fs, ctxAll, elId = 'formOut', variant = 'main'){
+  const out = document.getElementById(elId); if(!out) return;
+  const isRate = variant === 'rate', col = isRate ? '#5cc8ff' : '#ff8a5c';
   if(!fs){ out.innerHTML = ''; return; }
   const game = GAMES[fs.gameKey], c = game.count, B = FORM_BACKTEST[fs.gameKey];
   const ball = (n, st='')=> `<div class="ball" style="${st}">${n}</div>`;
@@ -5017,16 +5028,16 @@ function renderFormStyle(fs, ctxAll){
   const luckyBall = n=> `<div class="ball" style="width:30px;height:30px;font-size:0.82rem;background:radial-gradient(circle at 35% 30%,#ffe3d8,var(--accent2) 70%);color:#3a0e0a;">${n}</div>`;
   const small = 'width:30px;height:30px;font-size:0.82rem;';
   const topN = fs.order.filter(x=> fs.sc[x] > 0).slice(0, 8);
-  let html = `<div class="csvbox" style="text-align:left;border-style:solid;border-color:#ff8a5c;margin:10px 0 12px;">
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><b style="color:#ff8a5c;font-size:1.05rem;">🔥 Theo phong độ gần đây <span class="badge">thử nghiệm</span></b>
-      <span style="margin-left:auto;font-size:0.8rem;color:var(--muted);">Chấm theo</span>${[50, 100, 200, 300, 500].map(n=> `<button class="btn secondary form-rw" data-n="${n}" style="margin:0;padding:4px 10px;${n===fs.RW?'border-color:#ff8a5c;color:#ff8a5c;':''}">${n} kỳ</button>`).join('')}</div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;"><span style="font-size:0.8rem;color:var(--muted);">Xếp phương pháp theo</span>${[['hits','Đúng nhiều số nhất'],['z','Hơn ngẫu nhiên']].map(([k,l])=> `<button class="btn secondary form-sort" data-k="${k}" style="margin:0;padding:4px 10px;${k===fs.sortBy?'border-color:#ff8a5c;color:#ff8a5c;':''}">${l}</button>`).join('')}</div>
-    <div class="footnote" style="margin:4px 0 8px;">Chấm mọi phương pháp trên <b>${fs.nR} kỳ gần nhất</b> (từ ${toDDMMYYYY(fs.fromR)}), chọn <b>${FORM_TOP} phương pháp ${fs.sortBy==='hits' ? 'đúng nhiều số nhất' : 'hơn ngẫu nhiên nhiều nhất'}</b> rồi lấy số của chúng cho kỳ này.${fs.sortBy==='hits' ? ' <span style="color:var(--accent);">Lưu ý: phương pháp đoán nhiều số mỗi kỳ tự nhiên đúng nhiều — xem cột "% số đoán trúng" để so công bằng.</span>' : ''} 10 bộ ghép sao cho 2 bộ bất kỳ chung tối đa 1 số — phủ được nhiều số hơn.</div>`;
+  let html = `<div class="csvbox" style="text-align:left;border-style:solid;border-color:${col};margin:10px 0 12px;">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><b style="color:${col};font-size:1.05rem;">${isRate ? '🎯 Theo xác suất trúng' : '🔥 Theo phong độ gần đây'} <span class="badge">thử nghiệm</span></b>
+      <span style="margin-left:auto;font-size:0.8rem;color:var(--muted);">Chấm theo</span>${[50, 100, 200, 300, 500].map(n=> `<button class="btn secondary form-rw" data-n="${n}" style="margin:0;padding:4px 10px;${n===fs.RW?`border-color:${col};color:${col};`:''}">${n} kỳ</button>`).join('')}</div>
+    <div style="display:${isRate ? 'none' : 'flex'};align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;"><span style="font-size:0.8rem;color:var(--muted);">Xếp phương pháp theo</span>${[['hits','Đúng nhiều số nhất'],['z','Hơn ngẫu nhiên']].map(([k,l])=> `<button class="btn secondary form-sort" data-k="${k}" style="margin:0;padding:4px 10px;${k===fs.sortBy?'border-color:#ff8a5c;color:#ff8a5c;':''}">${l}</button>`).join('')}</div>
+    <div class="footnote" style="margin:4px 0 8px;">Chấm mọi phương pháp trên <b>${fs.nR} kỳ gần nhất</b> (từ ${toDDMMYYYY(fs.fromR)}), chọn <b>${FORM_TOP} phương pháp ${FORM_SORT_NAME[fs.sortBy]}</b> rồi lấy số của chúng cho kỳ này.${isRate ? ` Xác suất trúng = số lần đúng ÷ số đã đoán (ngẫu nhiên ${(100*c/game.max).toFixed(1)}%); chỉ xếp phương pháp đã đoán ≥ ${FORM_MIN_GUESS} số để tỉ lệ đủ tin cậy.` : ''}${fs.sortBy==='hits' ? ' <span style="color:var(--accent);">Lưu ý: phương pháp đoán nhiều số mỗi kỳ tự nhiên đúng nhiều — xem cột "% số đoán trúng" để so công bằng.</span>' : ''} 10 bộ ghép sao cho 2 bộ bất kỳ chung tối đa 1 số — phủ được nhiều số hơn.</div>`;
   if(!fs.sel.length){ html += `<div class="footnote" style="color:var(--accent);">Không có phương pháp nào đúng nhiều hơn ngẫu nhiên trong ${fs.nR} kỳ gần — 10 bộ dưới đây chỉ là bộ đa dạng.</div>`; }
   else {
     const pad = x=> String(x).padStart(2,'0'), nm = m=> m.name.replace(/^(Ngày|Gần đây|Cộng đồng): /,'');
     const pctHit = m=> m.guess ? 100*m.hR/m.guess : 0, pctRnd = 100*c/game.max;
-    html += `<div style="margin:4px 0;"><b>${FORM_TOP} phương pháp ${fs.sortBy==='hits' ? 'đúng nhiều số nhất' : 'hơn ngẫu nhiên nhiều nhất'} — ${fs.nR} kỳ gần</b></div>
+    html += `<div style="margin:4px 0;"><b>${FORM_TOP} phương pháp ${FORM_SORT_NAME[fs.sortBy]} — ${fs.nR} kỳ gần</b></div>
       ${fs.sel.map((m,k)=>{ const per = m.hR/m.nR, rnd = m.eR/m.nR, hitDraws = m.log.filter(r=> r.hit.length).length, avgSize = m.log.reduce((acc,r)=> acc+r.set.size, 0)/m.log.length;
         return `<details style="margin:4px 0;padding:6px 8px;border:1px solid var(--border);border-radius:8px;">
         <summary style="cursor:pointer;line-height:1.5;"><b>${k+1}. ${nm(m)}</b> ${horizonTag(m.name.startsWith('Ngày: ') ? m.name.slice(6) : m.name)}<br>
@@ -5039,7 +5050,7 @@ function renderFormStyle(fs, ctxAll){
             <td style="text-align:left;white-space:nowrap;">${r.res.map(x=> hs.has(x) ? `<b style="color:var(--good);">${pad(x)}</b>` : pad(x)).join(' ')}</td>
             <td><b style="color:${r.hit.length ? 'var(--good)' : 'var(--muted)'};">${r.hit.length ? r.hit.sort((x,y)=>x-y).map(pad).join(' ') : '—'}</b></td></tr>`; }).join('')}
         </tbody></table></div></details>`; }).join('')}
-      <details style="margin:6px 0;"><summary style="cursor:pointer;color:#ff8a5c;font-size:0.9rem;">📋 Xem tất cả ${fs.all.length} phương pháp, xếp theo ${fs.sortBy==='hits' ? 'số lần đoán đúng' : 'mức hơn ngẫu nhiên'} (${fs.nR} kỳ gần)</summary>
+      <details style="margin:6px 0;"><summary style="cursor:pointer;color:${col};font-size:0.9rem;">📋 Xem tất cả ${fs.all.length} phương pháp, xếp theo ${fs.sortBy==='hits' ? 'số lần đoán đúng' : fs.sortBy==='rate' ? 'xác suất trúng' : 'mức hơn ngẫu nhiên'} (${fs.nR} kỳ gần)</summary>
         <div class="tablewrap" style="margin-top:6px;max-height:420px;overflow-y:auto;"><table><thead><tr><th>#</th><th style="text-align:left;">Phương pháp</th><th>Đoán/kỳ</th><th>Đúng</th><th>Số/kỳ</th><th>% số đoán trúng</th><th>Hơn NN</th><th>z</th></tr></thead><tbody>
         ${fs.all.map((m,k)=> `<tr style="${fs.sel.includes(m)?'background:rgba(255,138,92,0.08);':''}"><td>${k+1}</td><td style="text-align:left;min-width:150px;">${nm(m)}<div style="font-size:0.75rem;color:#ff8a5c;margin-top:2px;">🎯 ${m.set.size ? [...m.set].sort((x,y)=>x-y).map(pad).join(' ') : '<span style="color:var(--muted);">kỳ này không có số</span>'}</div></td><td>${(m.guess/m.nR).toFixed(1)}</td><td><b>${m.hR}</b></td><td>${(m.hR/m.nR).toFixed(2)}</td><td>${pctHit(m).toFixed(1)}%</td><td style="color:${m.liftR>=1?'var(--good)':'var(--bad)'};">${m.liftR>=1?'+':''}${Math.round((m.liftR-1)*100)}%</td><td>${m.zR.toFixed(2)}</td></tr>`).join('')}
         </tbody></table></div>
@@ -5047,7 +5058,7 @@ function renderFormStyle(fs, ctxAll){
       <div style="margin:8px 0 4px;"><b>Số được nhiều phương pháp chọn:</b></div>
       <div class="balls" style="margin:0 0 6px;gap:6px;">${topN.map(n=> `<div style="text-align:center;">${ball(n)}<div class="footnote" style="margin:0;">${fs.votes[n].length} phiếu</div></div>`).join('')}</div>`;
   }
-  if(lucky && B && B.lucky) html += `<div style="margin:8px 0 4px;"><b>🟠 Số may mắn: ${lucky.map((n,k)=> `${n} <span class="footnote">(${fs.luckyAgo[k]} kỳ chưa về)</span>`).join(', ')}</b></div>
+  if(lucky && B && B.lucky && !isRate) html += `<div style="margin:8px 0 4px;"><b>🟠 Số may mắn: ${lucky.map((n,k)=> `${n} <span class="footnote">(${fs.luckyAgo[k]} kỳ chưa về)</span>`).join(', ')}</b></div>
     <div class="footnote" style="margin:0 0 6px;">Chọn 2 số <b>gan nhất</b> (lâu chưa về nhất). Kiểm tra từng kỳ trên ${B.n} kỳ gần, 2 số may mắn trúng: ${B.lucky.map(([lab, v])=> `${lab} <b>${v}%</b>`).join(' · ')}. Chênh lệch ±2–3% vẫn trong mức may rủi.</div>`;
   html += `<div style="margin:8px 0 4px;"><b>10 bộ gợi ý</b></div>
     ${fs.sets.map((s,k)=>{ const st = comboStats(s, game.max); return `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 0;border-top:${k?'1px solid var(--border)':'none'};">
