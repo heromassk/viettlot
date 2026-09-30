@@ -4909,16 +4909,16 @@ function luckyHope(researchKey){
 // ngẫu nhiên vừa đủ chắc); gộp phiếu → xếp số → ghép 10 bộ, 2 bộ bất kỳ chung tối đa 1 số (phủ được nhiều số hơn).
 const FORM_GAMES = ['loto535', 'mega645', 'power655'];
 const FORM_TOP = 8;
-let formRW = 200;   // mốc chấm phương pháp: 100 hoặc 200 kỳ gần nhất (chọn trong khung 🔥)
-try{ const v = +localStorage.getItem('somayman_formRW'); if(v===100 || v===200) formRW = v; }catch(e){}
+let formRW = 200;   // mốc chấm phương pháp: 50, 100 hoặc 200 kỳ gần nhất (chọn trong khung 🔥)
+try{ const v = +localStorage.getItem('somayman_formRW'); if([50, 100, 200].includes(v)) formRW = v; }catch(e){}
 // kết quả kiểm tra lại (research/form.py, đi từng kỳ, chỉ dùng dữ liệu trước kỳ đó)
-// kiểm tra lại (research/form.py --k 8 --w 100|200): mỗi kỳ chọn 8 phương pháp tốt nhất theo mốc, chỉ dùng dữ liệu trước kỳ đó
+// kiểm tra lại (research/form.py --k 8 --w 50|100|200): mỗi kỳ chọn 8 phương pháp tốt nhất theo mốc, chỉ dùng dữ liệu trước kỳ đó
 const FORM_BACKTEST = {
-  loto535: {n: 300, 100: {one: 0.710, ge2: 67.3, ge3: 10.3, rnd: 0.714, rge2: 72.4, rge3: 13.1}, 200: {one: 0.707, ge2: 76.3, ge3: 16.0, rnd: 0.714, rge2: 72.4, rge3: 13.1},
+  loto535: {n: 300, 50: {one: 0.680, ge2: 72.3, ge3: 9.7, rnd: 0.714, rge2: 72.4, rge3: 13.1}, 100: {one: 0.710, ge2: 67.3, ge3: 10.3, rnd: 0.714, rge2: 72.4, rge3: 13.1}, 200: {one: 0.707, ge2: 76.3, ge3: 16.0, rnd: 0.714, rge2: 72.4, rge3: 13.1},
     // số may mắn (2 số), kiểm từng kỳ 300 kỳ gần — research/form_lucky.py
     lucky: [['2 số gan nhất (đang dùng)', 20.0], ['2 số lạnh 20 kỳ gần', 20.0], ['Cách của tầm Tổng hợp (hy vọng nhỏ)', 17.7], ['Phong độ gần đây (như 5 số chính)', 15.0], ['Ngẫu nhiên (lý thuyết)', 16.7]]},
-  mega645: {n: 300, 100: {one: 0.850, ge2: 75.7, ge3: 18.3, rnd: 0.800, rge2: 74.7, rge3: 21.8}, 200: {one: 0.780, ge2: 74.7, ge3: 20.3, rnd: 0.800, rge2: 74.7, rge3: 21.8}},
-  power655: {n: 300, 100: {one: 0.700, ge2: 57.0, ge3: 11.0, rnd: 0.655, rge2: 60.2, rge3: 11.8}, 200: {one: 0.667, ge2: 59.3, ge3: 11.0, rnd: 0.655, rge2: 60.2, rge3: 11.8}}};
+  mega645: {n: 300, 50: {one: 0.873, ge2: 75.0, ge3: 15.0, rnd: 0.800, rge2: 74.7, rge3: 21.8}, 100: {one: 0.850, ge2: 75.7, ge3: 18.3, rnd: 0.800, rge2: 74.7, rge3: 21.8}, 200: {one: 0.780, ge2: 74.7, ge3: 20.3, rnd: 0.800, rge2: 74.7, rge3: 21.8}},
+  power655: {n: 300, 50: {one: 0.723, ge2: 55.7, ge3: 11.3, rnd: 0.655, rge2: 60.2, rge3: 11.8}, 100: {one: 0.700, ge2: 57.0, ge3: 11.0, rnd: 0.655, rge2: 60.2, rge3: 11.8}, 200: {one: 0.667, ge2: 59.3, ge3: 11.0, rnd: 0.655, rge2: 60.2, rge3: 11.8}}};
 const _formCache = {};
 function formStyle(gameKey, targetDate, session, RW = formRW){
   const game = GAMES[gameKey], c = game.count, max = game.max, hist = historyData[gameKey];
@@ -4994,7 +4994,7 @@ function renderFormStyle(fs, ctxAll){
   const topN = fs.order.filter(x=> fs.sc[x] > 0).slice(0, 8);
   let html = `<div class="csvbox" style="text-align:left;border-style:solid;border-color:#ff8a5c;margin:10px 0 12px;">
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><b style="color:#ff8a5c;font-size:1.05rem;">🔥 Theo phong độ gần đây <span class="badge">thử nghiệm</span></b>
-      <span style="margin-left:auto;font-size:0.8rem;color:var(--muted);">Chấm theo</span>${[100, 200].map(n=> `<button class="btn secondary form-rw" data-n="${n}" style="margin:0;padding:4px 10px;${n===fs.RW?'border-color:#ff8a5c;color:#ff8a5c;':''}">${n} kỳ</button>`).join('')}</div>
+      <span style="margin-left:auto;font-size:0.8rem;color:var(--muted);">Chấm theo</span>${[50, 100, 200].map(n=> `<button class="btn secondary form-rw" data-n="${n}" style="margin:0;padding:4px 10px;${n===fs.RW?'border-color:#ff8a5c;color:#ff8a5c;':''}">${n} kỳ</button>`).join('')}</div>
     <div class="footnote" style="margin:4px 0 8px;">Chấm mọi phương pháp trên <b>${fs.nR} kỳ gần nhất</b> (từ ${toDDMMYYYY(fs.fromR)}), chọn <b>${FORM_TOP} phương pháp đúng tốt nhất</b> rồi lấy số của chúng cho kỳ này. 10 bộ ghép sao cho 2 bộ bất kỳ chung tối đa 1 số — phủ được nhiều số hơn.</div>`;
   if(!fs.sel.length){ html += `<div class="footnote" style="color:var(--accent);">Không có phương pháp nào đúng nhiều hơn ngẫu nhiên trong ${fs.nR} kỳ gần — 10 bộ dưới đây chỉ là bộ đa dạng.</div>`; }
   else {
