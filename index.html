@@ -206,19 +206,19 @@
 </div>
 
 <script>
-// ---------- Thu gọn / mở từng mục (bấm tiêu đề). Mặc định mở mục 2 và kết quả gợi ý, các mục khác thu gọn; nhớ lựa chọn. ----------
+// ---------- Thu gọn / mở từng mục (bấm tiêu đề). Mặc định chỉ mở mục 2 (tạo bộ số); kết quả tự mở khi bấm Tạo; nhớ lựa chọn. ----------
 (function foldCards(){
-  let st = {}; try{ st = JSON.parse(localStorage.getItem('somayman_fold') || '{}') || {}; }catch(e){}
+  let st = {}; try{ st = JSON.parse(localStorage.getItem('somayman_fold2') || '{}') || {}; }catch(e){}
   document.querySelectorAll('.wrap > .card').forEach((card, k)=>{
     const h2 = card.querySelector(':scope > h2'); if(!h2) return;
     const body = document.createElement('div'); body.className = 'card-body';
     while(h2.nextSibling) body.appendChild(h2.nextSibling);
     card.appendChild(body); h2.classList.add('fold');
-    const key = card.id || ('card' + k), openDefault = card.id === 'resultCard' || /^2\./.test(h2.textContent.trim());
+    const key = card.id || ('card' + k), openDefault = /^2\./.test(h2.textContent.trim());
     if(!(key in st ? st[key] : openDefault)) card.classList.add('folded');
     h2.addEventListener('click', e=>{ if(e.target.closest('.badge, button, a')) return;
       card.classList.toggle('folded'); st[key] = !card.classList.contains('folded');
-      try{ localStorage.setItem('somayman_fold', JSON.stringify(st)); }catch(err){} });
+      try{ localStorage.setItem('somayman_fold2', JSON.stringify(st)); }catch(err){} });
   });
 })();
 
@@ -3927,6 +3927,7 @@ function renderOptions(ctx){
   const consTag = n=> isConsensus(mode) ? `<span class="badge" style="margin:0;flex:none;color:${pos[n]-neg[n]>0?'var(--good)':(pos[n]-neg[n]<0?'var(--bad)':'var(--muted)')};" title="${pos[n]} cơ sở chọn, ${neg[n]} cơ sở tránh">🤝 ${pos[n]-neg[n]>0?'+':''}${pos[n]-neg[n]} cơ sở</span>` : '';
   const max = game.max, c = game.count;
   document.getElementById('resultCard').style.display = 'block';
+  document.getElementById('resultCard').classList.remove('folded');   // vừa bấm Tạo → mở phần kết quả
   document.getElementById('resultGameLabel').textContent = game.label + (session!=='' ? ` — kỳ ${session}h` : '');
   const dateInvalid = game.drawDays && !game.drawDays.includes(dateStrToDay(targetDate));
   const q = maiHoa(info, false), X = calendarExtra(info);
