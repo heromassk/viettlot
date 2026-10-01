@@ -154,8 +154,8 @@ tr.off .b{opacity:.5;}
   <div id="lkBox" style="display:none;margin-top:10px;"><div class="lbl" style="margin-bottom:4px;">Số may mắn (đỏ):</div><div class="votes" id="votesLk"></div></div>
   <details id="voters" style="margin-top:10px;"><summary style="cursor:pointer;color:var(--accent);font-size:.88rem;" id="votersSum">Xem danh sách các phương pháp đã bầu cho kỳ này</summary><div class="tw" style="margin-top:6px;"><table id="votersTbl"></table></div></details>
   <details class="sub" id="poolCard" style="margin-top:10px;"><summary>Lọc pool nhỏ nhất (gom phương pháp để kỳ nào cũng đủ số trúng)</summary>
-    <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong danh sách đang lọc theo thanh trượt và cột ✓) sao cho trong các kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ.</div>
-    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed"></select><button class="btn" id="poolRun">Tìm bộ phương pháp</button></div>
+    <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong các phương pháp qua thanh trượt) sao cho trong số kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ. Tự tính lại khi đổi số kỳ, thanh trượt hoặc yêu cầu số trúng.</div>
+    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed"></select></div>
     <div id="poolOut"></div>
   </details>
 </details>
@@ -464,8 +464,8 @@ function renderTop(){
       const row=`<tr class="m${exs.has(r.m)?' off':''}" data-m="${r.m}" title="${mt.l.replace(/"/g,'&quot;')} | mức ngẫu nhiên của phương pháp này: ${pct(r.base)}"><td><input type="checkbox" class="exck" data-m="${r.m}"${exs.has(r.m)?'':' checked'} title="Bỏ tích để không tính phương pháp này vào phiếu"></td><td class="l"><b>${mt.n}</b></td><td>${fmtAvg(r.avg)}</td><td>${r.hits}</td><td>${r.dh}<span class="foot">/${r.n}</span></td><td class="rate ${up?'up':'dn'}">${pct(r.rate)}</td><td class="l dzc">${nums.length?ballsHtml(nums):'—'}</td>${hasLk?`<td class="l dzc">${lk.length?lkHtml(lk):'—'}</td>`:''}</tr>`;
       return row+(S.open.has(r.m)?detailRow(g,r.m,cols):'');
     }).join(''):`<tr><td colspan="${cols}" class="loading">Không có phương pháp nào trong khoảng số gợi ý này.</td></tr>`)+'</tbody>';
-  $('exBar').innerHTML=exs.size?`Đã bỏ tích <b>${exs.size}</b> phương pháp: chúng vẫn nằm trong danh sách nhưng <b>không được tính</b> vào phiếu, tổng hợp và so sánh nhiều kỳ. <button class="btn" id="exAll">Tích lại hết</button>`:'Mặc định tích hết. Bỏ tích ở cột ✓ để không tính một phương pháp vào phiếu, tổng hợp và so sánh nhiều kỳ (phương pháp vẫn nằm trong danh sách).';
-  if($('exAll'))$('exAll').onclick=()=>{S.excl[g.meta.game]=new Set();S.fixed=null;renderTop();renderVotes();renderCmp();};
+  $('exBar').innerHTML=S.poolOn===g.meta.game?`<b class="hit-txt">Đang chỉ dùng ${g.M-exs.size} phương pháp từ "Lọc pool nhỏ nhất"</b> cho phiếu, tổng hợp và so sánh. <button class="btn" id="exAll">Dùng lại tất cả</button>`:exs.size?`Đã bỏ tích <b>${exs.size}</b> phương pháp: chúng vẫn nằm trong danh sách nhưng <b>không được tính</b> vào phiếu, tổng hợp và so sánh nhiều kỳ. <button class="btn" id="exAll">Tích lại hết</button>`:'Mặc định tích hết. Bỏ tích ở cột ✓ để không tính một phương pháp vào phiếu, tổng hợp và so sánh nhiều kỳ (phương pháp vẫn nằm trong danh sách).';
+  if($('exAll'))$('exAll').onclick=()=>{S.excl[g.meta.game]=new Set();S.poolOn=null;S.fixed=null;renderTop();renderVotes();renderCmp();};
   $('tbl').querySelectorAll('.exck').forEach(c=>{c.onclick=e=>e.stopPropagation();c.onchange=()=>setExcl(+c.dataset.m,!c.checked);});
   $('tbl').querySelectorAll('th.sortable').forEach(e=>e.onclick=()=>{const k=e.dataset.k;if(S.sort===k)S.sortDir*=-1;else{S.sort=k;S.sortDir=-1;}renderTop();});
   $('tbl').querySelectorAll('tr.m').forEach(e=>e.onclick=()=>{const m=+e.dataset.m;if(S.open.has(m))S.open.delete(m);else{S.open.add(m);S.detN[m]=30;}renderTop();});
@@ -524,32 +524,40 @@ function renderVoters(){
   $('votersTbl').querySelectorAll('th.sortable').forEach(e=>e.onclick=()=>{const k=e.dataset.k;if(S.vsort===k)S.vdir*=-1;else{S.vsort=k;S.vdir=-1;}renderVoters();});
   $('votersTbl').querySelectorAll('.exck').forEach(c=>{c.onchange=()=>setExcl(+c.dataset.m,!c.checked);});
 }
+function sugMask(g,m,d){if(!okCnt(g,m,d))return [0,0];const b=(m*g.D+d)*g.W;return [g.U[b],g.U[b+1]];}   // dung khoang thanh truot nhu phan phieu
 function greedyPool(g,cands,ts,need){   // chon dan phuong phap: nhieu so trung moi nhat tren moi so tang them cua pool
   const n=ts.length,uLo=new Uint32Array(n),uHi=new Uint32Array(n),chosen=[],used=new Set();
+  const mk=new Map(cands.map(m=>{const lo=new Uint32Array(n),hi=new Uint32Array(n);ts.forEach((t,i)=>{const[x,y]=sugMask(g,m,t);lo[i]=x;hi[i]=y;});return [m,[lo,hi]];}));
   const hitOf=(lo,hi,t)=>Math.min(need,pop((lo&g.rlo[t])>>>0)+pop((hi&g.rhi[t])>>>0));
   let miss=0;
   for(;;){
     miss=0;for(let i=0;i<n;i++)miss+=need-hitOf(uLo[i],uHi[i],ts[i]);
     if(!miss)break;
     let best=-1,bs=0;
-    for(const m of cands){if(used.has(m))continue;let gain=0,cost=0;
-      for(let i=0;i<n;i++){const t=ts[i],b=(m*g.D+t)*g.W,ol=uLo[i],oh=uHi[i],nl=(ol|g.U[b])>>>0,nh=(oh|g.U[b+1])>>>0;
+    for(const m of cands){if(used.has(m))continue;const[lo,hi]=mk.get(m);let gain=0,cost=0;
+      for(let i=0;i<n;i++){const t=ts[i],ol=uLo[i],oh=uHi[i],nl=(ol|lo[i])>>>0,nh=(oh|hi[i])>>>0;
         if(nl===ol&&nh===oh)continue;gain+=hitOf(nl,nh,t)-hitOf(ol,oh,t);cost+=pop(nl)+pop(nh)-pop(ol)-pop(oh);}
       if(gain>0){const sc=gain/(cost||1e-9);if(sc>bs){bs=sc;best=m;}}}
     if(best<0)break;
-    chosen.push(best);used.add(best);
-    for(let i=0;i<n;i++){const b=(best*g.D+ts[i])*g.W;uLo[i]=(uLo[i]|g.U[b])>>>0;uHi[i]=(uHi[i]|g.U[b+1])>>>0;}
+    chosen.push(best);used.add(best);const[lo,hi]=mk.get(best);
+    for(let i=0;i<n;i++){uLo[i]=(uLo[i]|lo[i])>>>0;uHi[i]=(uHi[i]|hi[i])>>>0;}
   }
-  return {chosen,ok:miss===0};
+  let bad=0;for(let i=0;i<n;i++)if(hitOf(uLo[i],uHi[i],ts[i])<need)bad++;
+  return {chosen,ok:miss===0,bad};
 }
-function poolAt(g,ms,d){const v={};ms.forEach(m=>setOf(g,m,d).forEach(x=>v[x]=(v[x]||0)+1));return v;}
-function poolCands(g,t){const ex=S.excl[g.meta.game]||new Set();return rank(g,t,S.win,S.lo,S.hi,Infinity).filter(r=>!ex.has(r.m)).map(r=>r.m);}
+function poolAt(g,ms,d){const v={};ms.forEach(m=>{if(okCnt(g,m,d))setOf(g,m,d).forEach(x=>v[x]=(v[x]||0)+1);});return v;}
+function poolCands(g,t){return rank(g,t,S.win,S.lo,S.hi,Infinity).map(r=>r.m);}   // moi phuong phap qua thanh truot (khong phu thuoc cot ✓, de nut ap dung khong tu khoa minh)
 function renderPoolCtl(){
   const g=G[S.game],sel=$('poolNeed');if(S.poolNeed==null||S.poolNeed>g.C)S.poolNeed=g.C;
   sel.innerHTML=Array.from({length:g.C},(_,i)=>g.C-i).map(k=>`<option value="${k}"${k===S.poolNeed?' selected':''}>${k===g.C?`đủ ${k} số`:`từ ${k} đến ${g.C} số`}</option>`).join('');
-  sel.onchange=()=>{S.poolNeed=+sel.value;};
-  $('poolOut').innerHTML='<div class="foot">Bấm "Tìm bộ phương pháp" để tính (dùng đúng trò chơi, số kỳ, thanh trượt và cột ✓ hiện tại).</div>';
-  $('poolRun').onclick=()=>{$('poolOut').innerHTML='<div class="loading">Đang tính…</div>';setTimeout(runPool,20);};
+  sel.onchange=()=>{S.poolNeed=+sel.value;schedulePool();};
+  $('poolCard').ontoggle=()=>{if($('poolCard').open)schedulePool();};
+  schedulePool();
+}
+function schedulePool(){   // chi tinh khi muc dang mo; neu dang ap dung bo loc pool thi van tinh lai de cap nhat
+  if(!G[S.game])return;
+  if(!$('poolCard').open&&S.poolOn!==G[S.game].meta.game){$('poolOut').innerHTML='';return;}
+  clearTimeout(S.poolT);S.poolT=setTimeout(runPool,40);
 }
 function distTbl(dIn,nIn,dOut,nOut,need,C,N,pool){   // phan bo so trung moi ky: trong mau / ky sau / ngau nhien (sieu boi) cung kich thuoc pool
   const P=Math.round(pool),rnd=k=>comb(C,k)*comb(N-C,P-k)/comb(N,P);
@@ -557,23 +565,44 @@ function distTbl(dIn,nIn,dOut,nOut,need,C,N,pool){   // phan bo so trung moi ky:
   const ge=(d)=>d.slice(need).reduce((a,x)=>a+x,0);let rg=0;for(let k=need;k<=C;k++)rg+=rnd(k)*nOut;
   return `<div class="tw" style="margin-top:8px;"><table><thead><tr><th>Số trúng mỗi kỳ</th><th>Quá khứ (${nIn} kỳ)</th><th>Kỳ sau (${nOut} kỳ)</th><th>Ngẫu nhiên ${P} số (${nOut} kỳ)</th></tr></thead><tbody>${Array.from({length:C+1},(_,i)=>C-i).map(row).join('')}<tr><td class="hit-txt">Từ ${need} đến ${C}</td><td><b>${ge(dIn)}</b></td><td><b>${ge(dOut)}</b></td><td><b>${rg.toFixed(1)}</b></td></tr></tbody></table></div>`;
 }
+function applyPool(ms){   // chi giu cac phuong phap da chon cho phan goi y so / phieu
+  const g=G[S.game],keep=new Set(ms);S.excl[g.meta.game]=new Set(Array.from({length:g.M},(_,m)=>m).filter(m=>!keep.has(m)));
+  S.poolOn=g.meta.game;S.scope=0;S.fixed=null;S.page=0;S.open.clear();renderTop();renderVotes();renderCmp();
+}
+function clearPool(){S.excl[G[S.game].meta.game]=new Set();S.poolOn=null;S.scope=50;S.fixed=null;S.page=0;renderTop();renderVotes();renderCmp();}
+function poolBacktest(g,Wn,need,dIn){   // kiem tra ngoai mau: chon bo phuong phap chi bang du lieu truoc ky t, roi xem ky t
+  const L=g.L,N=g.N,C=g.C,B=Math.min(20,L-Wn),dOut=Array(C+1).fill(0),bt=[],hc=k=>k>=need?'hit-txt':'lk-txt',rng=need===C?`đủ ${C}/${C} số`:`từ ${need} đến ${C} số`;let bp=0,bh=0,bn=0;
+  for(let k=1;k<=B;k++){const t=L-k,tt=Array.from({length:Wn},(_,i)=>t-Wn+i);if(tt[0]<0)break;
+    const r=greedyPool(g,poolCands(g,t),tt,need),v=poolAt(g,r.chosen,t),p=Object.keys(v).length,w=g.meta.results[t].filter(x=>v[x]).length;
+    bp+=p;bh+=w;dOut[w]++;bn++;bt.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${r.chosen.length}</td><td class="${hc(w)}">${w}/${C}</td><td>${p}</td><td>${(C*p/N).toFixed(2)}</td></tr>`);}
+  if(!bn)return '<div class="foot">Không đủ dữ liệu để kiểm tra.</div>';
+  return `<div class="sum" style="border-left:3px solid var(--bad);">Mỗi kỳ chọn lại bộ phương pháp chỉ bằng ${Wn} kỳ trước nó (không nhìn trước kết quả), rồi xem kỳ đó: trúng ${rng} ở <b>${dOut.slice(need).reduce((a,x)=>a+x,0)}/${bn}</b> kỳ · pool TB <b>${(bp/bn).toFixed(1)}</b> số · trúng TB <b>${(bh/bn).toFixed(2)}</b>/${C} · chọn ngẫu nhiên cùng số lượng trúng TB <b>${(C*bp/bn/N).toFixed(2)}</b>. Hai con số gần bằng nhau nghĩa là "luôn trúng" trong quá khứ không mang sang được kỳ mới.</div>`+
+    distTbl(dIn,Wn,dOut,bn,need,C,N,bp/bn)+
+    `<div class="tw" style="margin-top:8px;"><table><thead><tr><th class="l">Kỳ</th><th>Số phương pháp</th><th>Số trúng</th><th>Pool</th><th>Ngẫu nhiên TB</th></tr></thead><tbody>${bt.join('')}</tbody></table></div>`;
+}
 function runPool(){
   const g=G[S.game],L=g.L,N=g.N,C=g.C,need=S.poolNeed,Wn=Math.min(S.win,L),ts=Array.from({length:Wn},(_,i)=>L-Wn+i);
-  const cands=poolCands(g,L),{chosen,ok}=greedyPool(g,cands,ts,need);
-  let ps=0,hs=0,full=0;const dIn=Array(C+1).fill(0),dOut=Array(C+1).fill(0);ts.forEach(t=>{const v=poolAt(g,chosen,t),w=g.meta.results[t].filter(x=>v[x]).length;ps+=Object.keys(v).length;hs+=w;dIn[w]++;if(w===C)full++;});
+  const cands=poolCands(g,L),{chosen,ok,bad}=greedyPool(g,cands,ts,need);S.poolLast=chosen;
+  if(S.poolOn===g.meta.game){const ex=S.excl[g.meta.game]||new Set(),cur=Array.from({length:g.M},(_,m)=>m).filter(m=>!ex.has(m));if(cur.length!==chosen.length||chosen.some(m=>ex.has(m)))applyPool(chosen);}
+  const rng=need===C?`đủ ${C}/${C} số`:`từ ${need} đến ${C} số`,hc=k=>k>=need?'hit-txt':'lk-txt';
+  let ps=0,hs=0;const dIn=Array(C+1).fill(0),dOut=Array(C+1).fill(0),past=[];
+  for(let t=L-1;t>=L-Wn;t--){const v=poolAt(g,chosen,t),p=Object.keys(v).length,w=g.meta.results[t].filter(x=>v[x]).length,act=chosen.filter(m=>okCnt(g,m,t)).length;
+    ps+=p;hs+=w;dIn[w]++;
+    past.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${act}</td><td class="${hc(w)}">${w}/${C}</td><td>${p}</td><td class="l">${ballsHtml(g.meta.results[t],new Set(Object.keys(v).map(Number)))}</td></tr>`);}
   const d=L+S.nextIdx,vn=poolAt(g,chosen,d),nums=Object.keys(vn).map(Number).sort((a,b)=>a-b);
-  // kiem tra ngoai mau: chon bo phuong phap chi bang du lieu truoc ky t, roi xem ky t
-  const B=Math.min(20,L-Wn);let bp=0,bh=0,bf=0,bn=0;const bt=[];
-  for(let k=1;k<=B;k++){const t=L-k,tt=Array.from({length:Wn},(_,i)=>t-Wn+i);if(tt[0]<0)break;
-    const r=greedyPool(g,poolCands(g,t),tt,need),v=poolAt(g,r.chosen,t),p=Object.keys(v).length,res=g.meta.results[t],h=res.filter(x=>v[x]).length;
-    bp+=p;bh+=h;dOut[h]++;if(h===C)bf++;bn++;bt.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${r.chosen.length}</td><td>${p}</td><td class="${h===C?'hit-txt':''}">${h}/${C}</td><td>${(C*p/N).toFixed(2)}</td></tr>`);}
-  let h=`<div class="foot" style="margin:0 0 4px;">Tính với: ${g.meta.label} · ${Wn} kỳ · phương pháp gợi ý ${S.lo}–${S.hi} số · yêu cầu trúng từ ${need} đến ${C} số mỗi kỳ</div><div class="sum">Trong ${Wn} kỳ quá khứ: chọn được <b>${chosen.length}</b> phương pháp (từ ${cands.length} ứng viên) · pool TB <b>${(ps/Wn).toFixed(1)}</b>/${N} số · trúng TB <b>${(hs/Wn).toFixed(2)}</b>/${C} · kỳ đủ ${C}/${C}: <b>${full}</b>/${Wn}${ok?'':` · <span class="lk-txt">không thể đảm bảo ${need} số trúng ở mọi kỳ với các phương pháp hiện có</span>`}</div>`;
+  const on=S.poolOn===g.meta.game;
+  let h=`<div class="foot" style="margin:0 0 4px;">Tính với: ${g.meta.label} · ${Wn} kỳ gần nhất · phương pháp gợi ý ${S.lo}–${S.hi} số · yêu cầu trúng ${rng} mỗi kỳ</div>`;
+  h+=ok?`<div class="sum" style="border-left:3px solid var(--good);font-size:.95rem;">✔ Để <b>tất cả ${Wn} kỳ</b> đều trúng <b>${rng}</b> cần <b class="hit-txt" style="font-size:1.1rem;">${chosen.length} phương pháp</b> · pool trung bình <b>${(ps/Wn).toFixed(1)}</b>/${N} số mỗi kỳ.</div>`
+       :`<div class="sum" style="border-left:3px solid var(--bad);font-size:.95rem;">✘ Không đạt: dùng ${chosen.length} phương pháp vẫn còn <b class="lk-txt">${bad}</b>/${Wn} kỳ chưa trúng ${rng} (các phương pháp trong khoảng thanh trượt không bao giờ gợi ý đủ). Thử nới thanh trượt hoặc hạ yêu cầu.</div>`;
+  h+=`<div class="row" style="margin:8px 0;"><button class="btn" id="poolApply"${chosen.length?'':' disabled'} style="border-color:var(--accent);">Chỉ dùng ${chosen.length} phương pháp này cho gợi ý số</button>${on?'<button class="btn" id="poolClear">Bỏ, dùng lại tất cả phương pháp</button><span class="foot" style="margin:0;">Đang áp dụng bộ lọc pool.</span>':''}</div>`;
   h+=`<div class="lbl" style="margin:6px 0 4px;">Pool cho ${drawLabel(g,L)}: <b>${nums.length}</b> số (trong ngoặc: số phương pháp đã chọn bầu cho số đó)</div>${ballsHtml(nums,null,vn)}`;
-  if(bn)h+=`<div class="sum" style="border-left:3px solid var(--bad);margin-top:10px;"><b>Kiểm tra trên kỳ sau (${bn} kỳ gần nhất):</b> mỗi kỳ chọn lại bộ phương pháp chỉ bằng ${Wn} kỳ trước nó, rồi xem kỳ đó. Pool TB <b>${(bp/bn).toFixed(1)}</b> số · trúng TB <b>${(bh/bn).toFixed(2)}</b>/${C} · chọn ngẫu nhiên cùng số lượng trúng TB <b>${(C*bp/bn/N).toFixed(2)}</b> · đủ ${C}/${C}: <b>${bf}</b>/${bn} kỳ. Nếu hai con số trúng TB gần bằng nhau thì việc "luôn đủ số" trong quá khứ không mang sang được kỳ mới.</div>`+
-    distTbl(dIn,Wn,dOut,bn,need,C,N,bp/bn)+
-    `<details class="sub"><summary>Chi tiết từng kỳ kiểm tra</summary><div class="tw"><table><thead><tr><th class="l">Kỳ</th><th>Số PP</th><th>Pool</th><th>Trúng</th><th>Ngẫu nhiên TB</th></tr></thead><tbody>${bt.join('')}</tbody></table></div></details>`;
+  h+=`<h3 style="margin:12px 0 6px;font-size:.95rem;">Kiểm tra quá khứ (${Wn} kỳ)</h3><div class="tw" style="max-height:420px;overflow-y:auto;"><table><thead><tr><th class="l">Kỳ</th><th>Số phương pháp</th><th>Số trúng</th><th>Pool</th><th class="l">Kết quả (xanh = có trong pool)</th></tr></thead><tbody>${past.join('')}</tbody></table></div>`;
+  h+=`<details class="sub" id="poolBt"><summary>Kiểm tra trên kỳ sau (20 kỳ gần nhất, mở để tính)</summary><div id="poolBtBody"><div class="loading">Đang tính…</div></div></details>`;
   h+=`<details class="sub"><summary>Các phương pháp được chọn (${chosen.length})</summary><div class="foot">${chosen.map(m=>`<b>${g.meta.methods[m].n}</b>`).join(' · ')||'—'}</div></details>`;
   $('poolOut').innerHTML=h;
+  $('poolBt').ontoggle=()=>{if($('poolBt').open&&!$('poolBt').dataset.done){$('poolBt').dataset.done=1;setTimeout(()=>{$('poolBtBody').innerHTML=poolBacktest(g,Wn,need,dIn);},20);}};
+  $('poolApply').onclick=()=>{applyPool(chosen);runPool();};
+  if($('poolClear'))$('poolClear').onclick=()=>{clearPool();runPool();};
 }
 function renderScope(){
   document.querySelectorAll('.scopeBtns').forEach(el=>{
@@ -613,7 +642,7 @@ function renderCmp(){
   const rows=[];const ts=[L];for(let t=L-1;t>=L-S.cmpN;t--)ts.push(t);
   let nd=0;const N=g.N,acc={w:0,n:0},full={m:0,l:0,a:0,n:0};
   for(const t of ts){
-    const {v,l}=votesFor(g,t,50),order=sortedVotes(v),lorder=sortedVotes(l),past=t<L,hs=past?new Set(g.meta.results[t]):null;
+    const {v,l}=votesFor(g,t,S.poolOn===g.meta.game?0:50),order=sortedVotes(v),lorder=sortedVotes(l),past=t<L,hs=past?new Set(g.meta.results[t]):null;
     const res=past?g.meta.results[t]:null,lres=past&&LN?g.meta.luckyRes[t]:null;
     let shown,vv=v,lshown=[],lv=l;
     if(S.topM===-1){ // chi cac so da ra, kem so phieu (ke ca 0 phieu)
@@ -683,7 +712,7 @@ function bindSumSlider(sums,Wn,N,C,defLo,defHi){
 }
 // ---------- su kien ----------
 function bindSliders(){
-  const set=()=>{let lo=+$('lo').value,hi=+$('hi').value;if(lo>hi){if(document.activeElement===$('lo'))hi=lo;else lo=hi;}$('lo').value=lo;$('hi').value=hi;S.lo=lo;S.hi=hi;$('loV').textContent=lo;$('hiV').textContent=hi;S.page=0;S.open.clear();S.fixed=null;renderTop();renderVotes();renderCmp();};
+  const set=()=>{let lo=+$('lo').value,hi=+$('hi').value;if(lo>hi){if(document.activeElement===$('lo'))hi=lo;else lo=hi;}$('lo').value=lo;$('hi').value=hi;S.lo=lo;S.hi=hi;$('loV').textContent=lo;$('hiV').textContent=hi;S.page=0;S.open.clear();S.fixed=null;renderTop();renderVotes();renderCmp();schedulePool();};
   $('lo').oninput=set;$('hi').oninput=set;
   $('nextSel').onchange=()=>{S.nextIdx=+$('nextSel').value;setNextNote();renderTop();renderVotes();renderCmp();renderLearn();};
   $('drawSel').onchange=()=>{S.drawIdx=+$('drawSel').value;renderVotes();};
