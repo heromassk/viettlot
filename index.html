@@ -153,6 +153,11 @@ tr.off .b{opacity:.5;}
   <div class="votes" id="votes"></div>
   <div id="lkBox" style="display:none;margin-top:10px;"><div class="lbl" style="margin-bottom:4px;">Số may mắn (đỏ):</div><div class="votes" id="votesLk"></div></div>
   <details id="voters" style="margin-top:10px;"><summary style="cursor:pointer;color:var(--accent);font-size:.88rem;" id="votersSum">Xem danh sách các phương pháp đã bầu cho kỳ này</summary><div class="tw" style="margin-top:6px;"><table id="votersTbl"></table></div></details>
+  <details class="sub" id="poolCard" style="margin-top:10px;"><summary>Lọc pool nhỏ nhất (gom phương pháp để kỳ nào cũng đủ số trúng)</summary>
+    <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong danh sách đang lọc theo thanh trượt và cột ✓) sao cho trong các kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ.</div>
+    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải chứa ít nhất</span><select id="poolNeed"></select><span class="lbl">số trúng</span><button class="btn" id="poolRun">Tìm bộ phương pháp</button></div>
+    <div id="poolOut"></div>
+  </details>
 </details>
 
 <details class="card">
@@ -250,7 +255,7 @@ async function refresh(){
   $('cmpFoot').textContent=`Cột 2: tổng hợp gợi ý của 50 phương pháp cho kỳ đó kèm số phiếu, xếp từ nhiều phiếu đến ít. Số trùng với kết quả in xanh${g.LN?', số may mắn in đỏ':''}.`;
   $('nextSel').innerHTML=m.nextDates.map((d,i)=>`<option value="${i}">${fmtDraw(d)} ${i?'':'— kỳ tới'}</option>`).join('');$('nextSel').value=S.nextIdx;setNextNote();
   $('lkBox').style.display=g.LN?'block':'none';
-  renderTop();renderStats();renderVotes();renderCmp();renderTicket();renderLearn();
+  renderTop();renderStats();renderVotes();renderCmp();renderTicket();renderLearn();renderPoolCtl();
 }
 // ---------- tinh gia ve: ve thuong 10.000d, ve bao ----------
 S.dopen=S.dopen||{};
@@ -518,6 +523,50 @@ function renderVoters(){
     return `<tr${exv.has(r.m)||out?' class="off"':''} title="${g.meta.methods[r.m].l.replace(/"/g,'&quot;')}${out?` | không tính: ${r.n?`kỳ này gợi ý ${r.n} số, ngoài khoảng ${S.lo}–${S.hi}`:'kỳ này không gợi ý số nào'}`:''}"><td><input type="checkbox" class="exck" data-m="${r.m}"${exv.has(r.m)?'':' checked'}></td><td class="l"><b>${g.meta.methods[r.m].n}</b></td><td>${r.n}</td>${past?`<td>${hit}</td>`:''}<td class="l">${nums.length||lk.length?ballsHtml(nums,hs,null,lk,ls):'—'}</td></tr>`;}).join('')+'</tbody>';
   $('votersTbl').querySelectorAll('th.sortable').forEach(e=>e.onclick=()=>{const k=e.dataset.k;if(S.vsort===k)S.vdir*=-1;else{S.vsort=k;S.vdir=-1;}renderVoters();});
   $('votersTbl').querySelectorAll('.exck').forEach(c=>{c.onchange=()=>setExcl(+c.dataset.m,!c.checked);});
+}
+function greedyPool(g,cands,ts,need){   // chon dan phuong phap: nhieu so trung moi nhat tren moi so tang them cua pool
+  const n=ts.length,uLo=new Uint32Array(n),uHi=new Uint32Array(n),chosen=[],used=new Set();
+  const hitOf=(lo,hi,t)=>Math.min(need,pop((lo&g.rlo[t])>>>0)+pop((hi&g.rhi[t])>>>0));
+  let miss=0;
+  for(;;){
+    miss=0;for(let i=0;i<n;i++)miss+=need-hitOf(uLo[i],uHi[i],ts[i]);
+    if(!miss)break;
+    let best=-1,bs=0;
+    for(const m of cands){if(used.has(m))continue;let gain=0,cost=0;
+      for(let i=0;i<n;i++){const t=ts[i],b=(m*g.D+t)*g.W,ol=uLo[i],oh=uHi[i],nl=(ol|g.U[b])>>>0,nh=(oh|g.U[b+1])>>>0;
+        if(nl===ol&&nh===oh)continue;gain+=hitOf(nl,nh,t)-hitOf(ol,oh,t);cost+=pop(nl)+pop(nh)-pop(ol)-pop(oh);}
+      if(gain>0){const sc=gain/(cost||1e-9);if(sc>bs){bs=sc;best=m;}}}
+    if(best<0)break;
+    chosen.push(best);used.add(best);
+    for(let i=0;i<n;i++){const b=(best*g.D+ts[i])*g.W;uLo[i]=(uLo[i]|g.U[b])>>>0;uHi[i]=(uHi[i]|g.U[b+1])>>>0;}
+  }
+  return {chosen,ok:miss===0};
+}
+function poolAt(g,ms,d){const v={};ms.forEach(m=>setOf(g,m,d).forEach(x=>v[x]=(v[x]||0)+1));return v;}
+function poolCands(g,t){const ex=S.excl[g.meta.game]||new Set();return rank(g,t,S.win,S.lo,S.hi,Infinity).filter(r=>!ex.has(r.m)).map(r=>r.m);}
+function renderPoolCtl(){
+  const g=G[S.game],sel=$('poolNeed');if(S.poolNeed==null||S.poolNeed>g.C)S.poolNeed=g.C;
+  sel.innerHTML=Array.from({length:g.C},(_,i)=>g.C-i).map(k=>`<option value="${k}"${k===S.poolNeed?' selected':''}>${k}</option>`).join('');
+  sel.onchange=()=>{S.poolNeed=+sel.value;};
+  $('poolOut').innerHTML='<div class="foot">Bấm "Tìm bộ phương pháp" để tính (dùng đúng trò chơi, số kỳ, thanh trượt và cột ✓ hiện tại).</div>';
+  $('poolRun').onclick=()=>{$('poolOut').innerHTML='<div class="loading">Đang tính…</div>';setTimeout(runPool,20);};
+}
+function runPool(){
+  const g=G[S.game],L=g.L,N=g.N,C=g.C,need=S.poolNeed,Wn=Math.min(S.win,L),ts=Array.from({length:Wn},(_,i)=>L-Wn+i);
+  const cands=poolCands(g,L),{chosen,ok}=greedyPool(g,cands,ts,need);
+  let ps=0,hs=0,full=0;ts.forEach(t=>{const v=poolAt(g,chosen,t),w=g.meta.results[t].filter(x=>v[x]).length;ps+=Object.keys(v).length;hs+=w;if(w===C)full++;});
+  const d=L+S.nextIdx,vn=poolAt(g,chosen,d),nums=Object.keys(vn).map(Number).sort((a,b)=>a-b);
+  // kiem tra ngoai mau: chon bo phuong phap chi bang du lieu truoc ky t, roi xem ky t
+  const B=Math.min(20,L-Wn);let bp=0,bh=0,bf=0,bn=0;const bt=[];
+  for(let k=1;k<=B;k++){const t=L-k,tt=Array.from({length:Wn},(_,i)=>t-Wn+i);if(tt[0]<0)break;
+    const r=greedyPool(g,poolCands(g,t),tt,need),v=poolAt(g,r.chosen,t),p=Object.keys(v).length,res=g.meta.results[t],h=res.filter(x=>v[x]).length;
+    bp+=p;bh+=h;if(h===C)bf++;bn++;bt.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${r.chosen.length}</td><td>${p}</td><td class="${h===C?'hit-txt':''}">${h}/${C}</td><td>${(C*p/N).toFixed(2)}</td></tr>`);}
+  let h=`<div class="foot" style="margin:0 0 4px;">Tính với: ${g.meta.label} · ${Wn} kỳ · phương pháp gợi ý ${S.lo}–${S.hi} số · yêu cầu ≥${need} số trúng mỗi kỳ</div><div class="sum">Trong ${Wn} kỳ quá khứ: chọn được <b>${chosen.length}</b> phương pháp (từ ${cands.length} ứng viên) · pool TB <b>${(ps/Wn).toFixed(1)}</b>/${N} số · trúng TB <b>${(hs/Wn).toFixed(2)}</b>/${C} · kỳ đủ ${C}/${C}: <b>${full}</b>/${Wn}${ok?'':` · <span class="lk-txt">không thể đảm bảo ${need} số trúng ở mọi kỳ với các phương pháp hiện có</span>`}</div>`;
+  h+=`<div class="lbl" style="margin:6px 0 4px;">Pool cho ${drawLabel(g,L)}: <b>${nums.length}</b> số (trong ngoặc: số phương pháp đã chọn bầu cho số đó)</div>${ballsHtml(nums,null,vn)}`;
+  if(bn)h+=`<div class="sum" style="border-left:3px solid var(--bad);margin-top:10px;"><b>Kiểm tra trên kỳ sau (${bn} kỳ gần nhất):</b> mỗi kỳ chọn lại bộ phương pháp chỉ bằng ${Wn} kỳ trước nó, rồi xem kỳ đó. Pool TB <b>${(bp/bn).toFixed(1)}</b> số · trúng TB <b>${(bh/bn).toFixed(2)}</b>/${C} · chọn ngẫu nhiên cùng số lượng trúng TB <b>${(C*bp/bn/N).toFixed(2)}</b> · đủ ${C}/${C}: <b>${bf}</b>/${bn} kỳ. Nếu hai con số trúng TB gần bằng nhau thì việc "luôn đủ số" trong quá khứ không mang sang được kỳ mới.</div>`+
+    `<details class="sub"><summary>Chi tiết từng kỳ kiểm tra</summary><div class="tw"><table><thead><tr><th class="l">Kỳ</th><th>Số PP</th><th>Pool</th><th>Trúng</th><th>Ngẫu nhiên TB</th></tr></thead><tbody>${bt.join('')}</tbody></table></div></details>`;
+  h+=`<details class="sub"><summary>Các phương pháp được chọn (${chosen.length})</summary><div class="foot">${chosen.map(m=>`<b>${g.meta.methods[m].n}</b>`).join(' · ')||'—'}</div></details>`;
+  $('poolOut').innerHTML=h;
 }
 function renderScope(){
   document.querySelectorAll('.scopeBtns').forEach(el=>{
