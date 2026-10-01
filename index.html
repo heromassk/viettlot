@@ -162,7 +162,7 @@ tr.off .b{opacity:.5;}
     <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed" class="needSync"></select><label class="lbl lkSyncW" id="poolLkW" style="display:none;"><input type="checkbox" id="poolLk" class="lkSync" checked> và phải trúng cả số may mắn</label></div>
     <div id="poolOut"></div>
   </details>
-  <details class="sub" id="sgCard" style="margin-top:10px;"><summary>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</summary><div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div><div class="row" style="margin-bottom:6px;"><span class="lbl">Pool phải khớp quá khứ: mỗi kỳ trúng</span><select class="needSync"></select><label class="lbl lkSyncW" style="display:none;"><input type="checkbox" class="lkSync" checked> và cả số may mắn</label><span class="foot" style="margin:0;">(đồng bộ với mục Lọc pool; khớp càng cao thì pool càng to, gợi ý càng kém chọn lọc)</span></div><div id="sgBody"></div></details>
+  <details class="sub" id="sgCard" style="margin-top:10px;"><summary>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</summary><div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div><div class="row" style="margin-bottom:6px;"><span class="lbl">Pool phải khớp quá khứ: mỗi kỳ trúng</span><select class="needSync"></select><label class="lbl lkSyncW" style="display:none;"><input type="checkbox" class="lkSync" checked> và cả số may mắn</label><span class="foot" style="margin:0;">(đồng bộ với mục Lọc pool; khớp càng cao thì pool càng to, gợi ý càng kém chọn lọc)</span></div><div id="sgBody"></div><details class="sub" id="sgTune"><summary>Tự học: tìm cách gợi ý khớp nhất với các kỳ quá khứ</summary><div id="sgTuneOut"></div></details></details>
 </details>
 
 <details class="card">
@@ -262,7 +262,7 @@ async function refresh(){
   $('cmpFoot').textContent=`Cột 2: tổng hợp gợi ý của 50 phương pháp cho kỳ đó kèm số phiếu, xếp từ nhiều phiếu đến ít. Số trùng với kết quả in xanh${g.LN?', số may mắn in đỏ':''}.`;
   $('nextSel').innerHTML=m.nextDates.map((d,i)=>`<option value="${i}">${fmtDraw(d)} ${i?'':'— kỳ tới'}</option>`).join('');$('nextSel').value=S.nextIdx;setNextNote();
   $('lkBox').style.display=g.LN?'block':'none';
-  renderTop();renderStats();renderVotes();renderCmp();renderTicket();renderLearn();renderPoolCtl();
+  renderTop();renderStats();renderVotes();renderCmp();renderTicket();renderLearn();renderPoolCtl();renderTuneCtl();
 }
 // ---------- tinh gia ve: ve thuong 10.000d, ve bao ----------
 S.dopen=S.dopen||{};
@@ -644,18 +644,23 @@ function countCombos(nums,C,par,slo,shi){   // dem chinh xac so bo C so trong nu
   let tot=0,ok=0;for(let j=0;j<=C;j++)for(let s2=0;s2<M;s2++){const c=dp[C][j][s2];if(!c)continue;tot+=c;if(par.has(j)&&s2>=slo&&s2<=shi)ok+=c;}
   return {tot,ok};
 }
+function sgCond(g,tr,st){   // dieu kien chan:le + tong dang dung (st.f===false: tat loc)
+  if(st.f===false)return {par:new Set(Array.from({length:g.C+1},(_,i)=>i)),slo:0,shi:1e9};
+  return {par:st.par||new Set(tr.top.slice(0,3).map(x=>x[0])),slo:st.lo??tr.lo,shi:st.hi??tr.hi};
+}
 function relW(g,m,t,Wn){   // he so tin cay: ti le trung tren moi so goi y / muc ngau nhien, co keo ve 1 khi it du lieu (them 20 so "ao" o muc ngau nhien); 1 = ngang ngau nhien
   const s=stat(g,m,t,Wn),k=20;if(!s.sug||!s.base)return 0;return ((s.hits+k*s.base)/(s.sug+k))/s.base;
 }
 function sgScores(g,t,ms,d,Wn){   // diem moi so = tong he so tin cay cua cac phuong phap cung chon so do (doi chieu cheo giua cac phuong phap)
   const v={},l={},cnt={},info=[];
-  ms.forEach(m=>{if(!okCnt(g,m,d))return;const w=relW(g,m,t,Wn),ns=setOf(g,m,d),ls=g.LN?lkOf(g,m,d):[];if(!ns.length&&!ls.length)return;
+  ms.forEach(m=>{if(!okCnt(g,m,d))return;const w=S.sgSc==='c'?1:relW(g,m,t,Wn),ns=setOf(g,m,d),ls=g.LN?lkOf(g,m,d):[];if(!ns.length&&!ls.length)return;
     info.push({m,w,ns,ls});ns.forEach(x=>{v[x]=(v[x]||0)+w;cnt[x]=(cnt[x]||0)+1;});ls.forEach(x=>{l[x]=(l[x]||0)+w;});});
   return {v,l,cnt,info};
 }
 function sgPick(g,t,par,slo,shi,nT,src,pw){   // pw: so ky ra cua tung dang chan:le -> chia so ve theo ti le   // nguon: pool rut gon (src='pool') hoac cac phuong phap dang bau phieu; chon cac bo dung dang + tong, uu tien diem tin cay cao, cac ve khac nhau it nhat 2 so
   const C=g.C,L=g.L,Wn=Math.min(S.win,L),d=t===L?L+S.nextIdx:t;let P=null,K=20,ms;
   if(src==='pool'){P=poolFor(g,t);if(!P)return {out:[],pool:[],full:[],nCand:0,P,sc:{v:{},l:{},cnt:{},info:[]}};ms=P.ms;K=22;}else ms=baseList(g,t,S.scope).map(r=>r.m);
+  if(S.sgK)K=S.sgK;
   const sc=sgScores(g,t,ms,d,Wn),v=sc.v,full=sortedVotes(v),pool=full.slice(0,K),lorder=sortedVotes(sc.l),cand=[],cur=[];
   (function rec(i,sum,ev,s2){
     if(cur.length===C){if(par.has(ev)&&sum>=slo&&sum<=shi)cand.push({nums:cur.slice().sort((a,b)=>a-b),sum,ev,sc:s2});return;}
@@ -677,7 +682,7 @@ function sgState(g){   // lua chon cua nguoi dung theo game; null = tu dong theo
 function renderSuggest(){
   const box=$('sgBody');if(!box||!$('sgCard').open){if(box)box.innerHTML='';return;}
   const g=G[S.game],L=g.L,C=g.C,N=g.N,Wn=Math.min(S.win,500,L),tr=sgTrend(g,L,Wn),st=sgState(g);
-  const par=st.par||new Set(tr.top.slice(0,3).map(x=>x[0])),slo=st.lo??tr.lo,shi=st.hi??tr.hi;
+  const {par,slo,shi}=sgCond(g,tr,st);
   const rows=Array.from({length:C+1},(_,i)=>C-i).map(e=>{const pr=tr.cnt[e]/tr.n,th=tr.th(e),up=pr>th;
     return `<tr${par.has(e)?' style="background:rgba(240,180,41,.10);"':''}><td><input type="checkbox" class="sgP" data-e="${e}"${par.has(e)?' checked':''}></td><td>${e}:${C-e}</td><td>${tr.cnt[e]}</td><td class="rate ${up?'up':'dn'}">${pct1(pr)}</td><td>${pct1(th)}</td></tr>`;}).join('');
   const {out,pool,full,nCand,P,sc}=sgPick(g,L,par,slo,shi,st.n,st.src,tr.cnt),isP=st.src==='pool';
@@ -707,7 +712,7 @@ function renderSuggest(){
 function sgBacktest(g,Wn,st){   // moi ky t: pool, xu huong va ve chi tu du lieu truoc t; so voi cung nguon nhung khong loc va voi ve ngau nhien
   const L=g.L,C=g.C,N=g.N,all=new Set(Array.from({length:C+1},(_,i)=>i)),isP=st.src==='pool';let nT=0,hF=0,hA=0,nA=0,n=0,parOk=0,sumOk=0,inP=0,pSz=0;const rows=[];
   const dist=Array(C+1).fill(0);let best=0,lkH=0;
-  for(let k=1;k<=(st.bt||20);k++){const t=L-k;if(t-Wn<0)break;const tr=sgTrend(g,t,Wn),par=st.par||new Set(tr.top.slice(0,3).map(x=>x[0])),slo=st.lo??tr.lo,shi=st.hi??tr.hi;
+  for(let k=1;k<=(st.bt||20);k++){const t=L-k;if(t-Wn<0)break;const tr=sgTrend(g,t,Wn),{par,slo,shi}=sgCond(g,tr,st);
     const res=g.meta.results[t],hs=new Set(res),F=sgPick(g,t,par,slo,shi,st.n,st.src,tr.cnt),a=sgPick(g,t,all,0,1e9,st.n,st.src).out,f=F.out;
     const ev=res.filter(x=>x%2===0).length,sm=res.reduce((a,x)=>a+x,0),ip=F.full.filter(x=>hs.has(x)).length;if(par.has(ev))parOk++;if(sm>=slo&&sm<=shi)sumOk++;n++;inP+=ip;pSz+=F.full.length;
     const hf=f.map(o=>o.nums.filter(x=>hs.has(x)).length);hf.forEach(x=>{hF+=x;nT++;dist[x]++;if(x>best)best=x;});if(g.LN)f.forEach(o=>{if(o.lk===g.meta.luckyRes[t])lkH++;});a.forEach(o=>{hA+=o.nums.filter(x=>hs.has(x)).length;nA++;});
@@ -719,6 +724,42 @@ function sgBacktest(g,Wn,st){   // moi ky t: pool, xu huong va ve chi tu du lieu
   const dTbl=`<div class="tw" style="margin:8px 0;"><table><thead><tr><th>Mỗi vé trúng</th><th>Số vé gợi ý (${nT} vé / ${n} kỳ)</th><th>Vé ngẫu nhiên cùng số lượng (kỳ vọng)</th></tr></thead><tbody>${Array.from({length:C+1},(_,i)=>C-i).map(x=>`<tr${x>=3?' style="background:rgba(63,185,80,.08);"':''}><td>${x} số</td><td>${dist[x]}</td><td>${(pk(x)*nT).toFixed(1)}</td></tr>`).join('')}<tr><td class="hit-txt">Từ 3 số trở lên</td><td><b>${dist.slice(3).reduce((a,x)=>a+x,0)}</b></td><td><b>${(Array.from({length:C-2},(_,i)=>pk(i+3)).reduce((a,x)=>a+x,0)*nT).toFixed(1)}</b></td></tr></tbody></table></div><div class="foot">Vé tốt nhất trúng <b>${best}</b>/${C} số.${g.LN?` Số may mắn đúng ở <b>${lkH}</b>/${nT} vé (ngẫu nhiên ≈ ${(nT/g.LN).toFixed(1)}).`:''}</div>`;
   return `<div class="sum" style="border-left:3px solid var(--bad);">Mỗi kỳ chỉ dùng dữ liệu trước nó. ${isP?`Pool TB <b>${(pSz/n).toFixed(1)}</b> số, chứa TB <b>${(inP/n).toFixed(2)}</b>/${C} số trúng (ngẫu nhiên cùng số lượng: ${(C*pSz/n/N).toFixed(2)}) · `:''}dạng chẵn:lẻ được ưu tiên đúng <b>${parOk}/${n}</b> kỳ · tổng nằm trong khoảng <b>${sumOk}/${n}</b> kỳ.<br>Số trúng TB mỗi vé: <b>${nT?(hF/nT).toFixed(2):'—'}</b> (có lọc) · <b>${nA?(hA/nA).toFixed(2):'—'}</b> (cùng nguồn, không lọc) · <b>${(C*C/N).toFixed(2)}</b> (vé ngẫu nhiên).</div>`+dTbl+
     `<div class="tw" style="max-height:640px;overflow-y:auto;"><table id="sgBtTbl"><thead><tr><th class="l">Kỳ</th><th class="l">Kết quả (xanh = có trong ${isP?'pool':'nguồn'})</th><th class="l">Các dãy app đã gợi ý cho kỳ này (số trùng in xanh) · số trúng</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
+// ---------- tu hoc: thu nhieu cau hinh goi y, chon cau hinh khop nhat voi cac ky qua khu ----------
+function sgCfgNow(g){const st=sgState(g);return {need:S.poolNeed||g.C,sc:S.sgSc||'w',f:st.f!==false,K:S.sgK||0};}
+function sgCfgTxt(g,c){return `khớp ${c.need===g.C?`đủ ${g.C}/${g.C}`:`từ ${c.need}`} số · chấm điểm ${c.sc==='c'?'đếm số phương pháp':'theo độ tin cậy'} · lọc chẵn:lẻ + tổng ${c.f?'bật':'tắt'} · chọn trong ${c.K||22} số điểm cao nhất`;}
+function sgEvalCfg(g,c,t0,t1,n){   // so trung TB moi ve khi dung cau hinh c cho cac ky t0..t1-1 (moi ky chi dung du lieu truoc no)
+  const st=sgState(g),Wn=Math.min(S.win,g.L),sv=[S.poolNeed,S.sgSc,S.sgK,st.f];S.poolNeed=c.need;S.sgSc=c.sc;S.sgK=c.K;st.f=c.f;
+  let h=0,k=0,g3=0;
+  for(let t=t0;t<t1;t++){if(t-Wn<0)continue;const tr=sgTrend(g,t,Wn),{par,slo,shi}=sgCond(g,tr,st),hs=new Set(g.meta.results[t]);
+    sgPick(g,t,par,slo,shi,n,'pool',tr.cnt).out.forEach(o=>{const x=o.nums.filter(y=>hs.has(y)).length;h+=x;k++;if(x>=3)g3++;});}
+  [S.poolNeed,S.sgSc,S.sgK,st.f]=sv;return {avg:k?h/k:0,g3,k};
+}
+function sgTuneCfgs(g){const C=g.C,out=[];for(const need of [...new Set([3,4,C-1,C])].filter(x=>x>=1&&x<=C))for(const sc of ['w','c'])for(const f of [true,false])for(const K of [14,22])out.push({need,sc,f,K});return out;}
+function sgTune(){
+  const g=G[S.game],L=g.L,C=g.C,N=g.N,st=sgState(g),E=Math.min(S.win,100),box=$('sgTuneOut'),nT=st.n,rnd=C*C/N,cfgs=sgTuneCfgs(g);
+  const res=[];let i=0;
+  const step=()=>{const t1=Date.now();
+    while(i<cfgs.length&&Date.now()-t1<150){const c=cfgs[i++];res.push({c,fit:sgEvalCfg(g,c,L-E,L,nT),old:sgEvalCfg(g,c,L-2*E,L-E,nT)});}
+    if(i<cfgs.length){box.innerHTML=`<div class="loading">Đang thử cách gợi ý ${i}/${cfgs.length}…</div>`;setTimeout(step,0);return;}
+    const by=k=>res.slice().sort((a,b)=>b[k].avg-a[k].avg||b[k].g3-a[k].g3);
+    const bf=by('fit')[0],bo=by('old')[0];
+    const row=r=>`<tr${r===bf?' style="background:rgba(63,185,80,.10);"':''}><td class="l">${sgCfgTxt(g,r.c)}</td><td><b>${r.fit.avg.toFixed(2)}</b></td><td>${r.fit.g3}</td><td>${r.old.avg.toFixed(2)}</td></tr>`;
+    box.innerHTML=`<div class="sum" style="border-left:3px solid var(--good);">Đã thử <b>${cfgs.length}</b> cách gợi ý trên <b>${E}</b> kỳ gần nhất (${nT} vé mỗi kỳ, mỗi kỳ chỉ dùng dữ liệu trước nó). Cách khớp nhất: <b>${sgCfgTxt(g,bf.c)}</b> → trúng TB <b class="hit-txt">${bf.fit.avg.toFixed(2)}</b> số/vé, <b>${bf.fit.g3}</b> vé trúng ≥3 số (vé ngẫu nhiên: ${rnd.toFixed(2)} số/vé).</div>`+
+      `<div class="row" style="margin:8px 0;"><button class="btn" id="sgTuneApply" style="border-color:var(--accent);">Áp dụng cách này cho kỳ tới</button><button class="btn" id="sgTuneReset">Về mặc định</button></div>`+
+      `<div class="sum" style="border-left:3px solid var(--bad);"><b>Kiểm tra:</b> nếu học trên ${E} kỳ <i>trước đó</i> thì cách khớp nhất là <b>${sgCfgTxt(g,bo.c)}</b> (${bo.old.avg.toFixed(2)} số/vé lúc học). Đem cách đó dùng cho ${E} kỳ gần nhất được <b>${bo.fit.avg.toFixed(2)}</b> số/vé, ${bo.fit.g3} vé ≥3 số; vé ngẫu nhiên ${rnd.toFixed(2)}. Nếu con số này không cao hơn ngẫu nhiên thì việc khớp quá khứ chưa mang sang được kỳ sau.</div>`+
+      `<details class="sub"><summary>Kết quả từng cách (${cfgs.length})</summary><div class="tw"><table><thead><tr><th class="l">Cách gợi ý</th><th>Số/vé ${E} kỳ gần nhất</th><th>Vé ≥3 số</th><th>Số/vé ${E} kỳ trước đó</th></tr></thead><tbody>${by('fit').map(row).join('')}</tbody></table></div></details>`+
+      `<div class="foot" id="sgTuneNow">Đang dùng: ${sgCfgTxt(g,sgCfgNow(g))}.</div>`;
+    const now=()=>{$('sgTuneNow').textContent='Đang dùng: '+sgCfgTxt(g,sgCfgNow(g))+'.';};
+    $('sgTuneApply').onclick=()=>{const c=bf.c;S.poolNeed=c.need;S.sgSc=c.sc;S.sgK=c.K;st.f=c.f;renderPoolCtl();renderSuggest();now();};
+    $('sgTuneReset').onclick=()=>{S.sgSc='w';S.sgK=0;st.f=true;renderPoolCtl();renderSuggest();now();};
+  };
+  box.innerHTML='<div class="loading">Đang thử…</div>';setTimeout(step,20);
+}
+function renderTuneCtl(){
+  const g=G[S.game],E=Math.min(S.win,100);
+  $('sgTuneOut').innerHTML=`<div class="foot" style="margin:0 0 6px;">App thử ${sgTuneCfgs(g).length} cách gợi ý (mức khớp pool, cách chấm điểm, bật/tắt lọc chẵn:lẻ + tổng, số lượng số để chọn vé) trên ${E} kỳ gần nhất (theo "Số kỳ gần nhất", tối đa 100), giữ cách có nhiều số trúng nhất để dùng cho kỳ tới. Có thể mất 1–3 phút (máy yếu lâu hơn).</div><button class="btn" id="sgTuneRun" style="border-color:var(--accent);">Tự học ngay</button><div class="foot">Đang dùng: ${sgCfgTxt(g,sgCfgNow(g))}.</div>`;
+  $('sgTuneRun').onclick=sgTune;
 }
 function renderScope(){
   document.querySelectorAll('.scopeBtns').forEach(el=>{
