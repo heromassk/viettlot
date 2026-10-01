@@ -789,20 +789,22 @@ function l5Nlk(g){return !!(g.LN&&S.l5Lk);}
 function l5Key(g){const st=sgState(g);return [S.lkP||0,l5Nlk(g),g.meta.game,Math.min(S.win,g.L),sgY(g),st.n,S.lo,S.hi,S.poolPrune!==false,S.poolNeed,poolNl(g)].join('|');}
 function l5Now(g){return S.l5&&S.l5.key===l5Key(g)?S.l5:null;}
 function l5AutoSec(Wn){return Wn<=20?60:Wn<=50?180:Wn<=100?300:600;}
-function l5Run(){   // hoc 1 luot roi mai tiep loi giai tot nhat cho den het thoi gian / bam Dung / da dat het x ky
+function l5Run(resume){   // hoc 1 luot roi mai tiep loi giai tot nhat cho den khi dat muc tieu / bam Dung / lau khong tien them; resume: hoc tiep tu lan truoc
   const g=G[S.game],L=g.L,st=sgState(g),Wn=Math.min(S.win,L),y=sgY(g),n=st.n,goal=Math.ceil(sgGoal()/100*Wn),box=$('sgTuneOut'),T0=Date.now(),iters=Wn>50?2500:4000,AUTO=true,SEC=Infinity,STALL=Math.max(120,l5AutoSec(Wn))*Math.max(1,5/n);   // hoc den khi dat muc tieu; chot an toan: qua lau khong tien them thi dung
-  const live={},gen=l5Learn(g,L,Wn,y,n,iters,7919,live,l5Nlk(g));let lastUi=0,lastPass=-1,lastUp=Date.now();
+  S.poolNeed=y;const jk=l5Key(g),job=resume&&S.l5Job&&S.l5Job.key===jk?S.l5Job:{key:jk,live:{},prev:0};
+  if(!job.gen)job.gen=l5Learn(g,L,Wn,y,n,iters,7919,job.live,l5Nlk(g));S.l5Job=job;
+  const live=job.live,gen=job.gen,prev=job.prev;let lastUi=0,lastPass=-1,lastUp=Date.now();
   S.l5Stop=false;
-  const ui=()=>{const el=((Date.now()-T0)/1000).toFixed(0);box.innerHTML=`<div class="loading">Đang học… ${live.rules?`tốt nhất <b>${live.pass}/${Wn}</b> kỳ (mục tiêu ≥${goal} = ${sgGoal()}%) · đã mài ${live.steps} bước`:'đang dựng lời giải đầu tiên'} · ${el} giây (đạt mục tiêu là dừng) <button class="btn" id="l5StopBtn">Dừng, dùng kết quả hiện tại</button></div>`;$('l5StopBtn').onclick=()=>{S.l5Stop=true;};};
+  const ui=()=>{const el=(prev+(Date.now()-T0)/1000).toFixed(0);box.innerHTML=`<div class="loading">Đang học… ${live.rules?`tốt nhất <b>${live.pass}/${Wn}</b> kỳ (mục tiêu ≥${goal} = ${sgGoal()}%) · đã mài ${live.steps} bước`:'đang dựng lời giải đầu tiên'} · ${el} giây (đạt mục tiêu là dừng) <button class="btn" id="l5StopBtn">Dừng, dùng kết quả hiện tại</button></div>`;$('l5StopBtn').onclick=()=>{S.l5Stop=true;};};
   const step=()=>{
     const t0=performance.now();do{gen.next();}while(performance.now()-t0<12);   // moi lat cat ~12ms roi nhuong trinh duyet
     const has=!!live.rules,over=Date.now()-T0>=SEC*1000;if(has&&live.pass>lastPass){lastPass=live.pass;lastUp=Date.now();}
     const reached=has&&(AUTO?live.pass>=goal:live.pass>=Wn),stall=AUTO&&has&&Date.now()-lastUp>STALL*1000;
     if(!has||(!S.l5Stop&&!over&&!reached&&!stall)){if(Date.now()-lastUi>500){lastUi=Date.now();ui();}setTimeout(step,0);return;}
-    const el=((Date.now()-T0)/1000).toFixed(0),best=live;
+    const el=(prev+(Date.now()-T0)/1000).toFixed(0),best=live;job.prev=+el;
     S.poolNeed=y;renderPoolCtl();   // pool cua cach da hoc = pool khop >= y so
     S.l5={key:l5Key(g),rules:best.rules,M:best.M,pass:best.pass,nlk:l5Nlk(g),Wn,y,n,goal:sgGoal(),need:y,prune:S.poolPrune!==false,from:g.meta.dates[L-Wn],to:g.meta.dates[L-1],at:new Date(),sec:+el};
-    S.sgTuneMsg={key:[g.meta.game,Wn,y,n,S.lo,S.hi].join('|'),html:`<div class="sum" style="border-left:3px solid var(--${best.pass>=goal?'good':'bad'});">Đã học ${el} giây (mài ${best.steps} bước${S.l5Stop?', bạn bấm dừng':best.pass>=Wn?', đã đạt hết các kỳ':AUTO&&best.pass>=goal?', đạt mục tiêu nên dừng':stall?', ${Math.round(STALL/60)} phút liền không khớp thêm được kỳ nào nên dừng – mục tiêu có thể quá cao':', hết thời gian'}). Tốt nhất: <b class="${best.pass>=goal?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${best.pass}/${Wn}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số${l5Nlk(g)?' + số may mắn':''} (${pct1(best.pass/Wn)}${best.pass>=goal?`, đạt mục tiêu ${sgGoal()}%`:`, chưa đạt ${sgGoal()}% – thử học lâu hơn`}). Mỗi dãy do một nhóm phương pháp tạo ra (${best.rules.map(r=>r.length).join(', ')} phương pháp), chỉ lấy số trong pool (${best.M.length} phương pháp lọc pool). Đã dùng cách này cho ${n} dãy kỳ tới và bảng bên dưới.</div>`};
+    S.sgTuneMsg={key:[g.meta.game,Wn,y,n,S.lo,S.hi].join('|'),html:`<div class="sum" style="border-left:3px solid var(--${best.pass>=goal?'good':'bad'});">Đã học ${el} giây (mài ${best.steps} bước${S.l5Stop?', bạn bấm dừng':best.pass>=Wn?', đã đạt hết các kỳ':AUTO&&best.pass>=goal?', đạt mục tiêu nên dừng':stall?`, ${Math.round(STALL/60)} phút liền không khớp thêm được kỳ nào nên tạm dừng – mục tiêu có thể quá cao`:', hết thời gian'}). Tốt nhất: <b class="${best.pass>=goal?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${best.pass}/${Wn}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số${l5Nlk(g)?' + số may mắn':''} (${pct1(best.pass/Wn)}${best.pass>=goal?`, đạt mục tiêu ${sgGoal()}%`:`, chưa đạt ${sgGoal()}% – thử học lâu hơn`}). Mỗi dãy do một nhóm phương pháp tạo ra (${best.rules.map(r=>r.length).join(', ')} phương pháp), chỉ lấy số trong pool (${best.M.length} phương pháp lọc pool). Đã dùng cách này cho ${n} dãy kỳ tới và bảng bên dưới.${best.pass<goal?`<div class="row" style="margin-top:6px;"><button class="btn" id="l5Resume" style="border-color:var(--accent);">Học tiếp từ kết quả này</button><span class="foot" style="margin:0;">hoặc hạ y / mục tiêu %, hoặc tăng số dãy</span></div>`:''}</div>`};
     renderSuggest();renderPastCtl();
   };
   ui();setTimeout(step,20);
@@ -820,7 +822,7 @@ function renderPastCtl(){   // khoi rieng "Doi chieu qua khu va tu hoc": bo loc 
   if($('l5LkChk'))$('l5LkChk').onchange=()=>{S.l5Lk=$('l5LkChk').checked;again();};
   $('sgNsel').onchange=()=>{st.n=+$('sgNsel').value;again();};   // dong bo voi o So ve o muc Goi y ve
   $('sgGoalSel').onchange=()=>{S.sgGoal=+$('sgGoalSel').value;again();};
-  $('sgTuneRun').onclick=l5Run;$('sgTuneReset').onclick=()=>{S.l5=null;S.sgSc='w';S.sgK=0;st.f=true;S.sgTuneMsg=null;again();};
+  $('sgTuneRun').onclick=()=>l5Run(false);if($('l5Resume'))$('l5Resume').onclick=()=>l5Run(true);$('sgTuneReset').onclick=()=>{S.l5=null;S.sgSc='w';S.sgK=0;st.f=true;S.sgTuneMsg=null;again();};
   $('sgBt').ontoggle=()=>{if($('sgBt').open){$('sgBtBody').innerHTML='<div class="loading">Đang tính…</div>';clearTimeout(S.pastT);S.pastT=setTimeout(renderPast,30);}};
   if($('sgBt').open){$('sgBtBody').innerHTML='<div class="loading">Đang tính…</div>';clearTimeout(S.pastT);S.pastT=setTimeout(renderPast,30);}else $('sgBtBody').innerHTML='';
 }
