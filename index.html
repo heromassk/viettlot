@@ -652,7 +652,7 @@ function sgPick(g,t,par,slo,shi,nT,src,pw,opt){   // opt={ms,wt}: dung bo phuong
   cand.sort((a,b)=>b.sc-a.sc||a.sum-b.sum);
   const ps=[...par],q={};let tw=0;ps.forEach(e=>tw+=(pw?pw[e]:1)||0);   // chia ve: dang ra nhieu hon trong x ky thi nhieu ve hon (phan du chia theo phan le lon nhat)
   if(ps.length>1&&tw>0){let used=0;const fr=ps.map(e=>{const x=nT*((pw?pw[e]:1)||0)/tw;q[e]=Math.floor(x);used+=q[e];return [e,x-q[e]];}).sort((a,b)=>b[1]-a[1]);for(let i=0;used<nT&&i<fr.length;i++,used++)q[fr[i][0]]++;}
-  const out=[],div=c=>out.every(o=>o.nums.filter(x=>c.nums.includes(x)).length<=C-2),has={};
+  const out=[],div=c=>out.every(o=>o.nums.filter(x=>c.nums.includes(x)).length<=(S.sgDiv??C-2)),has={};
   if(Object.keys(q).length)for(const c of cand){if(out.length>=nT)break;if((has[c.ev]||0)<q[c.ev]&&div(c)){out.push(c);has[c.ev]=(has[c.ev]||0)+1;}}
   for(const c of cand){if(out.length>=nT)break;if(!out.includes(c)&&div(c))out.push(c);}   // thieu bo o dang nao thi bu tu dang khac
   out.sort((a,b)=>b.sc-a.sc);
