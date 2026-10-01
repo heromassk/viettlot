@@ -168,6 +168,7 @@ tr.off .b{opacity:.5;}
 <details class="card" id="sgBt"><summary><h2 id="sgBtTitle">Đối chiếu quá khứ và tự học</h2></summary>
   <div id="sgBtCtl"></div>
   <div id="sgTuneOut"></div>
+  <div id="sgVerifyOut"></div>
   <div id="sgBtBody"></div>
 </details>
 
@@ -813,13 +814,14 @@ function l5Run(resume){   // hoc 1 luot roi mai tiep loi giai tot nhat cho den k
 function renderPastCtl(){   // khoi rieng "Doi chieu qua khu va tu hoc": bo loc x, y, %, nut tu hoc
   const g=G[S.game];if(!g)return;const st=sgState(g),C=g.C,L=g.L,Wn=Math.min(S.win,L),yv=sgY(g);
   $('sgBtTitle').textContent=`Đối chiếu quá khứ và tự học (${Wn} kỳ · mục tiêu ≥${sgGoal()}% số kỳ có ít nhất 1 trong ${st.n} dãy trúng ≥${yv} số${l5Nlk(g)?' + số may mắn':''})`;
-  $('sgBtCtl').innerHTML=`<div class="row" style="margin:0 0 6px;"><span class="lbl">Số kỳ gần nhất (x):</span>${WINS.map(w=>`<span class="chip${w===S.win?' on':''}" data-w2="${w}">${w}</span>`).join('')}</div><div class="row" style="margin:4px 0 6px;"><span class="lbl">Số dãy mỗi kỳ</span><select id="sgNsel">${[1,2,3,5,7,10].map(v=>`<option value="${v}"${v===st.n?' selected':''}>${v} dãy</option>`).join('')}</select><span class="lbl">· mỗi kỳ cần ít nhất 1 dãy trúng từ</span><select id="sgYsel">${Array.from({length:C-1},(_,i)=>i+2).map(k=>`<option value="${k}"${k===yv?' selected':''}>${k}/${C}</option>`).join('')}</select><span class="lbl">số trở lên, ở ít nhất</span><select id="sgGoalSel">${[70,80,90,100].map(v=>`<option value="${v}"${v===sgGoal()?' selected':''}>${v}%</option>`).join('')}</select><span class="lbl">số kỳ</span>${g.LN?`<label class="lbl"><input type="checkbox" id="l5LkChk"${S.l5Lk?' checked':''}> dãy đạt phải trúng cả số may mắn</label>`:''}<button class="btn" id="sgTuneRun" style="border-color:var(--accent);">Tự học</button><button class="btn" id="sgTuneReset">Về mặc định</button></div><div class="foot" style="margin:0 0 6px;">Số dãy mỗi kỳ đồng bộ với ô Số vé ở mục Gợi ý vé; cách lọc pool theo mục Lọc pool. Cách đã học được dùng luôn cho các dãy ở mục Gợi ý vé.</div>`;
+  $('sgBtCtl').innerHTML=`<div class="row" style="margin:0 0 6px;"><span class="lbl">Số kỳ gần nhất (x):</span>${WINS.map(w=>`<span class="chip${w===S.win?' on':''}" data-w2="${w}">${w}</span>`).join('')}</div><div class="row" style="margin:4px 0 6px;"><span class="lbl">Số dãy mỗi kỳ</span><select id="sgNsel">${[1,2,3,5,7,10].map(v=>`<option value="${v}"${v===st.n?' selected':''}>${v} dãy</option>`).join('')}</select><span class="lbl">· mỗi kỳ cần ít nhất 1 dãy trúng từ</span><select id="sgYsel">${Array.from({length:C-1},(_,i)=>i+2).map(k=>`<option value="${k}"${k===yv?' selected':''}>${k}/${C}</option>`).join('')}</select><span class="lbl">số trở lên, ở ít nhất</span><select id="sgGoalSel">${[70,80,90,100].map(v=>`<option value="${v}"${v===sgGoal()?' selected':''}>${v}%</option>`).join('')}</select><span class="lbl">số kỳ</span>${g.LN?`<label class="lbl"><input type="checkbox" id="l5LkChk"${S.l5Lk?' checked':''}> dãy đạt phải trúng cả số may mắn</label>`:''}<button class="btn" id="sgTuneRun" style="border-color:var(--accent);">Tự học</button><button class="btn" id="sgTuneReset">Về mặc định</button></div><div class="row" style="margin:4px 0 6px;"><span class="lbl">Kiểm chứng: học trên x kỳ trước, rồi thử trên</span><select id="vfKSel">${[1,3,5,10,20].map(v=>`<option value="${v}"${v===(S.vfK||5)?' selected':''}>${v}</option>`).join('')}</select><span class="lbl">kỳ mới nhất (app không được nhìn các kỳ này lúc học)</span><button class="btn" id="vfRun">Kiểm chứng</button></div><div class="foot" style="margin:0 0 6px;">Số dãy mỗi kỳ đồng bộ với ô Số vé ở mục Gợi ý vé; cách lọc pool theo mục Lọc pool. Cách đã học được dùng luôn cho các dãy ở mục Gợi ý vé.</div>`;
   const tk=[g.meta.game,Wn,yv,st.n,S.lo,S.hi].join('|');
   $('sgTuneOut').innerHTML=S.sgTuneMsg&&S.sgTuneMsg.key===tk?S.sgTuneMsg.html:`<div class="foot" style="margin:0 0 6px;">Bấm <b>Tự học</b>: app lọc pool (đủ ≥${yv} số trúng ở mọi kỳ), rồi tự dò cho mỗi dãy một nhóm phương pháp riêng sao cho càng nhiều kỳ trong ${Wn} kỳ có ít nhất 1 dãy trúng ≥${yv} số càng tốt (mục tiêu ≥${sgGoal()}%). App dựng lời giải đầu tiên rồi <b>mài tiếp</b> (mỗi bước đổi thử vài phương pháp của một dãy, tốt hơn hoặc bằng thì giữ). App <b>học đến khi đạt mục tiêu ${sgGoal()}% thì dừng</b>; nếu ${Math.round(Math.max(120,l5AutoSec(Wn))*Math.max(1,5/st.n)/60)} phút liền không khớp thêm được kỳ nào thì dừng và báo chưa đạt (mục tiêu có thể quá cao). Có thể bấm Dừng bất cứ lúc nào. Học lâu hơn thường khớp thêm được vài kỳ. Trang vẫn cuộn bình thường trong lúc học.</div>`;
   const box=$('sgBtCtl'),again=()=>{renderPastCtl();renderSuggest();};
   box.querySelectorAll('[data-w2]').forEach(c=>c.onclick=()=>{S.win=+c.dataset.w2;S.page=0;S.open.clear();if(S.cmpN>S.win)S.cmpN=S.win;S.drawIdx=null;refresh();});   // dong bo voi hang chon so ky o dau trang
   $('sgYsel').onchange=()=>{st.y=+$('sgYsel').value;again();};
   if($('l5LkChk'))$('l5LkChk').onchange=()=>{S.l5Lk=$('l5LkChk').checked;again();};
+  $('vfKSel').onchange=()=>{S.vfK=+$('vfKSel').value;};$('vfRun').onclick=l5Verify;
   $('sgNsel').onchange=()=>{st.n=+$('sgNsel').value;again();};   // dong bo voi o So ve o muc Goi y ve
   $('sgGoalSel').onchange=()=>{S.sgGoal=+$('sgGoalSel').value;again();};
   $('sgTuneRun').onclick=()=>l5Run(false);if($('l5Resume'))$('l5Resume').onclick=()=>l5Run(true);$('sgTuneReset').onclick=()=>{S.l5=null;S.sgSc='w';S.sgK=0;st.f=true;S.sgTuneMsg=null;again();};
@@ -836,6 +838,27 @@ function sgApplyNote(g,l5){   // dong xac nhan: dang dung cach goi y nao cho cac
     `· Yêu cầu: mỗi kỳ có ít nhất 1 trong <b>${l5.n} dãy</b> trúng <b>≥${l5.y}/${C} số</b>${l5.nlk?' <b>+ số may mắn</b>':''}, ở <b>≥${l5.goal}%</b> số kỳ<br>`+
     `· Kết quả lúc học: <b class="hit-txt">${l5.pass}/${l5.Wn} kỳ (${pct1(l5.pass/l5.Wn)})</b> ${l5.pass>=Math.ceil(l5.goal/100*l5.Wn)?'– đạt mục tiêu':'– <span class="lk-txt">chưa đạt mục tiêu</span>'}<br>`+
     `· Pool: <b>${l5.M.length} phương pháp</b>, khớp ≥${l5.need} số mỗi kỳ${l5.prune?', đã bỏ phương pháp thừa':''} · ${l5.n} dãy do ${l5.n} nhóm phương pháp tạo (${l5.rules.map(r=>r.length).join(', ')} phương pháp)${g.LN?`; số may mắn mỗi dãy = số được chính nhóm đó bầu nhiều nhất${S.lkP?`, chỉ chọn trong ${S.lkP} số may mắn của pool thu hẹp`:''}`:''}. Lọc chẵn:lẻ + tổng không áp dụng.</div>`;
+}
+function l5Verify(){   // kiem chung: hoc tren x ky TRUOC k ky moi nhat (khong nhin k ky do), roi thu cach da hoc tren k ky moi nhat
+  const g=G[S.game],L=g.L,st=sgState(g),C=g.C,K=S.vfK||5,Wn=Math.min(S.win,L-K),y=sgY(g),n=st.n,goal=Math.ceil(sgGoal()/100*Wn),nlk=l5Nlk(g),box=$('sgVerifyOut'),T0=Date.now();
+  if(Wn<5){box.innerHTML='<div class="foot">Không đủ dữ liệu.</div>';return;}
+  S.poolNeed=y;const t1=L-K,live={},gen=l5Learn(g,t1,Wn,y,n,Wn>50?2500:4000,4241,live,nlk),STALL=Math.max(120,l5AutoSec(Wn))*Math.max(1,5/n);let lastPass=-1,lastUp=Date.now(),lastUi=0;S.vfStop=false;
+  const ui=()=>{box.innerHTML=`<div class="loading">Kiểm chứng: đang học trên ${Wn} kỳ (${fmtDraw(g.meta.dates[t1-Wn])} → ${fmtDraw(g.meta.dates[t1-1])}), chưa nhìn ${K} kỳ mới nhất… ${live.rules?`tốt nhất ${live.pass}/${Wn}`:'đang dựng lời giải'} · ${((Date.now()-T0)/1000).toFixed(0)} giây <button class="btn" id="vfStop">Dừng, thử luôn</button></div>`;$('vfStop').onclick=()=>{S.vfStop=true;};};
+  const step=()=>{const t0=performance.now();do{gen.next();}while(performance.now()-t0<12);
+    const has=!!live.rules;if(has&&live.pass>lastPass){lastPass=live.pass;lastUp=Date.now();}
+    if(!has||(!S.vfStop&&live.pass<goal&&live.pass<Wn&&Date.now()-lastUp<STALL*1000)){if(Date.now()-lastUi>500){lastUi=Date.now();ui();}setTimeout(step,0);return;}
+    // thu tren K ky moi nhat
+    const rows=[];let ok=0,hitsAll=[];
+    for(let t=L-1;t>=t1;t--){const PL=l5Pool(g,live.M,t),H=new Set(g.meta.results[t]),lr=g.LN?g.meta.luckyRes[t]:null;
+      const out=live.rules.map(R=>({nums:l5Ticket(g,R,live.M,t,PL),lk:l5Lucky(g,R,live.M,t)})),hits=out.map(o=>o.nums.filter(x=>H.has(x)).length),okr=out.some((o,j)=>hits[j]>=y&&(!nlk||o.lk===lr));
+      if(okr)ok++;hitsAll.push(...hits);rows.push({t,F:{out,full:PL.o},hits,best:Math.max(...hits),ok:okr,nlk,ip:PL.o.filter(x=>H.has(x)).length});}
+    const rnd=pAtLeast(g,y,n)*K*(nlk?1/g.LN:1),avg=hitsAll.reduce((a,x)=>a+x,0)/hitsAll.length;
+    box.innerHTML=`<div class="sum" style="border-left:3px solid var(--accent);line-height:1.6;"><b>Kết quả kiểm chứng với ${K} kỳ mới nhất</b> (${fmtDraw(g.meta.dates[t1])} → ${fmtDraw(g.meta.dates[L-1])})<br>`+
+      `· Lúc học (${Wn} kỳ trước đó, ${((Date.now()-T0)/1000).toFixed(0)} giây): khớp <b>${live.pass}/${Wn}</b> kỳ (${pct1(live.pass/Wn)})<br>`+
+      `· Thử trên ${K} kỳ mới (lúc học chưa biết kết quả): <b class="${ok/K>=live.pass/Wn?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${ok}/${K}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số${nlk?' + số may mắn':''} (${pct1(ok/K)})<br>`+
+      `· Trúng TB mỗi dãy: <b>${avg.toFixed(2)}</b> số · ${n} dãy chọn ngẫu nhiên: ≈${rnd.toFixed(2)} kỳ đạt, TB ${(C*C/g.N).toFixed(2)} số/dãy</div>`+sgPastHtml(g,{rows},y,n);
+  };
+  ui();setTimeout(step,20);
 }
 function renderScope(){
   document.querySelectorAll('.scopeBtns').forEach(el=>{
