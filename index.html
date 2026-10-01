@@ -747,7 +747,7 @@ function l5Ticket(g,S,M,d,PL){   // day cua nhom S o ky d (chi lay so trong pool
   for(const x of PL.o){if(o.length>=g.C)break;if(!v.has(x))o.push(x);}
   return o.slice(0,g.C).sort((a,b)=>a-b);
 }
-function* l5Learn(g,t1,Wn,y,n,iters,seed){   // hoc tren Wn ky truoc t1 (app biet ket qua cac ky nay); la generator: 'yield' de nhuong trinh duyet, tranh dung trang
+function* l5Learn(g,t1,Wn,y,n,iters,seed,live){   // live: neu co, sau khi hoc xong se mai tiep loi giai mai mai, ghi ket qua tot nhat vao live   // hoc tren Wn ky truoc t1 (app biet ket qua cac ky nay); la generator: 'yield' de nhuong trinh duyet, tranh dung trang
   const C=g.C,ts=Array.from({length:Wn},(_,i)=>t1-Wn+i),M=sgFitPool(g,t1,Wn,y).chosen,cand=poolCands(g,t1);
   const PL=ts.map(t=>l5Pool(g,M,t)),H=ts.map(t=>new Set(g.meta.results[t]));
   const SG=new Map(cand.map(m=>[m,ts.map((t,i)=>okCnt(g,m,t)?setOf(g,m,t).filter(x=>PL[i].set.has(x)):[])]));
@@ -767,7 +767,14 @@ function* l5Learn(g,t1,Wn,y,n,iters,seed){   // hoc tren Wn ky truoc t1 (app bie
   const covEx=(rules,ex)=>{const c=new Array(Wn).fill(false);rules.forEach((S,j)=>{if(j===ex)return;for(let i=0;i<Wn;i++)if(hitsOf(S,i)>=y)c[i]=true;});return c;};
   const rules=[];for(let j=0;j<n;j++){yield;rules.push(yield* opt([pick()],covEx(rules,-1)));}
   for(let round=0;round<2;round++)for(let j=0;j<n;j++){yield;rules[j]=yield* opt(rules[j],covEx(rules,j));}
-  const fin=covEx(rules,-1);return {rules,M,pass:fin.filter(Boolean).length};
+  const passOf=rs=>covEx(rs,-1).filter(Boolean).length;
+  const res={rules,M,pass:passOf(rules)};if(!live)return res;
+  // mai tiep: lam nhieu 1 day (doi ngau nhien 1-3 phuong phap) roi do lai; khong kem hon thi giu
+  Object.assign(live,{rules:rules.map(x=>x.slice()),M,pass:res.pass,steps:0});
+  for(;;){const j=Math.floor(rnd()*n),cov=covEx(rules,j);let S2=rules[j].slice();const k=1+Math.floor(rnd()*3);
+    for(let q=0;q<k;q++){if(S2.length>1&&rnd()<0.4)S2.splice(Math.floor(rnd()*S2.length),1);else{const m=pick();if(!S2.includes(m))S2.push(m);if(S2.length>20)S2.splice(Math.floor(rnd()*S2.length),1);}}
+    S2=yield* opt(S2,cov);let p2=0;for(let i=0;i<Wn;i++)if(cov[i]||hitsOf(S2,i)>=y)p2++;
+    live.steps++;if(p2>=live.pass){rules[j]=S2;live.pass=p2;live.rules=rules.map(x=>x.slice());}}
 }
 function l5Key(g){const st=sgState(g);return [g.meta.game,Math.min(S.win,g.L),sgY(g),st.n,S.lo,S.hi,S.poolPrune!==false,S.poolNeed,poolNl(g)].join('|');}
 function l5Now(g){return S.l5&&S.l5.key===l5Key(g)?S.l5:null;}
