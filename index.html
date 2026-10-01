@@ -153,6 +153,7 @@ tr.off .b{opacity:.5;}
   <div class="votes" id="votes"></div>
   <div id="lkBox" style="display:none;margin-top:10px;"><div class="lbl" style="margin-bottom:4px;">Số may mắn (đỏ):</div><div class="votes" id="votesLk"></div></div>
   <details id="voters" style="margin-top:10px;"><summary style="cursor:pointer;color:var(--accent);font-size:.88rem;" id="votersSum">Xem danh sách các phương pháp đã bầu cho kỳ này</summary><div class="tw" style="margin-top:6px;"><table id="votersTbl"></table></div></details>
+  <details class="sub" id="sgCard" style="margin-top:10px;"><summary>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</summary><div id="sgBody"></div></details>
   <details class="sub" id="poolCard" style="margin-top:10px;"><summary>Lọc pool nhỏ nhất (gom phương pháp để kỳ nào cũng đủ số trúng)</summary>
     <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong các phương pháp qua thanh trượt) sao cho trong số kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ. Tự tính lại khi đổi số kỳ, thanh trượt hoặc yêu cầu số trúng.</div>
     <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed"></select><label class="lbl" id="poolLkW" style="display:none;"><input type="checkbox" id="poolLk" checked> và phải trúng cả số may mắn</label></div>
@@ -610,6 +611,60 @@ function runPool(){
   $('poolApply').onclick=()=>{applyPool(chosen);runPool();};
   if($('poolClear'))$('poolClear').onclick=()=>{clearPool();runPool();};
 }
+// ---------- goi y ve: uu tien dang chan:le va khoang tong hay ra trong toi da 500 ky gan nhat ----------
+function sgTrend(g,t,Wn){   // thong ke Wn ky ngay truoc ky t
+  const C=g.C,N=g.N,res=g.meta.results.slice(Math.max(0,t-Wn),t),n=res.length,cnt=Array(C+1).fill(0),ev=Math.floor(N/2),tot=comb(N,C);
+  res.forEach(r=>cnt[r.filter(x=>x%2===0).length]++);
+  const sums=res.map(r=>r.reduce((a,x)=>a+x,0)).sort((a,b)=>a-b);
+  const th=e=>comb(ev,e)*comb(N-ev,C-e)/tot,top=cnt.map((c,e)=>[e,c]).sort((a,b)=>b[1]-a[1]||th(b[0])-th(a[0]));
+  return {n,cnt,th,top,lo:Math.round(quant(sums,0.25)),hi:Math.round(quant(sums,0.75))};
+}
+function sgPick(g,t,par,slo,shi,nT,K=20){   // lay K so nhieu phieu nhat, chon cac bo C so dung dang + tong, uu tien tong phieu cao, cac ve khac nhau it nhat 2 so
+  const C=g.C,{v,l}=votesFor(g,t),pool=sortedVotes(v).slice(0,K),lorder=sortedVotes(l),cand=[],cur=[];
+  (function rec(i,sum,ev,sc){
+    if(cur.length===C){if(par.has(ev)&&sum>=slo&&sum<=shi)cand.push({nums:cur.slice().sort((a,b)=>a-b),sum,ev,sc});return;}
+    for(let j=i;j<=pool.length-(C-cur.length);j++){const x=pool[j];cur.push(x);rec(j+1,sum+x,ev+(x%2===0?1:0),sc+v[x]);cur.pop();}
+  })(0,0,0,0);
+  cand.sort((a,b)=>b.sc-a.sc||a.sum-b.sum);
+  const out=[];for(const c of cand){if(out.length>=nT)break;if(out.every(o=>o.nums.filter(x=>c.nums.includes(x)).length<=C-2))out.push(c);}
+  out.forEach((o,i)=>{o.lk=g.LN&&lorder.length?lorder[i%Math.min(3,lorder.length)]:null;});
+  return {out,pool,nCand:cand.length};
+}
+function sgState(g){   // lua chon cua nguoi dung theo game; null = tu dong theo xu huong
+  const k=g.meta.game;S.sg=S.sg||{};return S.sg[k]=S.sg[k]||{par:null,lo:null,hi:null,n:3};
+}
+function renderSuggest(){
+  const box=$('sgBody');if(!box||!$('sgCard').open){if(box)box.innerHTML='';return;}
+  const g=G[S.game],L=g.L,C=g.C,N=g.N,Wn=Math.min(S.win,500,L),tr=sgTrend(g,L,Wn),st=sgState(g);
+  const par=st.par||new Set(tr.top.slice(0,2).map(x=>x[0])),slo=st.lo??tr.lo,shi=st.hi??tr.hi;
+  const rows=Array.from({length:C+1},(_,i)=>C-i).map(e=>{const pr=tr.cnt[e]/tr.n,th=tr.th(e),up=pr>th;
+    return `<tr${par.has(e)?' style="background:rgba(240,180,41,.10);"':''}><td><input type="checkbox" class="sgP" data-e="${e}"${par.has(e)?' checked':''}></td><td>${e}:${C-e}</td><td>${tr.cnt[e]}</td><td class="rate ${up?'up':'dn'}">${pct1(pr)}</td><td>${pct1(th)}</td></tr>`;}).join('');
+  const {out,pool,nCand}=sgPick(g,L,par,slo,shi,st.n);
+  let h=`<div class="foot" style="margin:0 0 6px;">Lấy 20 số nhiều phiếu nhất cho ${drawLabel(g,L)} (theo các phương pháp đang dùng, kể cả khi áp dụng Lọc pool), rồi chọn các bộ ${C} số có dạng chẵn:lẻ được tích và tổng trong khoảng, ưu tiên tổng phiếu cao. Xu hướng tính trên <b>${Wn}</b> kỳ gần nhất (đổi ở "Số kỳ gần nhất", tối đa 500).</div>`;
+  h+=`<div class="two"><div><div class="tw"><table><thead><tr><th>Ưu tiên</th><th>Chẵn:lẻ</th><th>Số kỳ</th><th>Tỉ lệ ${Wn} kỳ</th><th>Lý thuyết</th></tr></thead><tbody>${rows}</tbody></table></div><div class="foot">Mặc định tích 2 dạng ra nhiều nhất trong ${Wn} kỳ. Tỉ lệ xanh = đang ra nhiều hơn lý thuyết.</div></div>`;
+  h+=`<div><div class="sl" style="margin-bottom:8px;">Tổng ${C} số từ <input type="number" id="sgLo" value="${slo}" style="width:70px;"> đến <input type="number" id="sgHi" value="${shi}" style="width:70px;"> <button class="btn" id="sgAuto">Theo xu hướng (${tr.lo}–${tr.hi})</button></div><div class="foot" style="margin:0 0 8px;">Mặc định: khoảng giữa 50% tổng của ${Wn} kỳ gần nhất.</div>`;
+  h+=`<div class="sl">Số vé: <select id="sgN">${[1,3,5,10].map(n=>`<option${n===st.n?' selected':''}>${n}</option>`).join('')}</select></div></div></div>`;
+  h+=`<div class="lbl" style="margin:10px 0 4px;">20 số nhiều phiếu nhất: ${ballsHtml(pool.slice().sort((a,b)=>a-b),null,null)}</div>`;
+  h+=out.length?`<div class="tw"><table><thead><tr><th>#</th><th class="l">Vé gợi ý</th><th>Chẵn:lẻ</th><th>Tổng</th><th>Tổng phiếu</th></tr></thead><tbody>${out.map((o,i)=>`<tr><td>${i+1}</td><td class="l">${ballsHtml(o.nums,null,null,o.lk?[o.lk]:null)}</td><td>${o.ev}:${C-o.ev}</td><td>${o.sum}</td><td>${o.sc}</td></tr>`).join('')}</tbody></table></div><div class="foot">${nCand.toLocaleString('vi-VN')} bộ thỏa điều kiện trong 20 số trên.${g.LN?' Số may mắn (đỏ) lấy lần lượt từ 3 số may mắn nhiều phiếu nhất.':''}</div>`
+    :'<div class="loading">Không có bộ nào thỏa điều kiện. Hãy tích thêm dạng chẵn:lẻ hoặc nới khoảng tổng.</div>';
+  h+=`<details class="sub" id="sgBt"><summary>Kiểm tra 20 kỳ gần nhất (mở để tính)</summary><div id="sgBtBody"><div class="loading">Đang tính…</div></div></details>`;
+  box.innerHTML=h;
+  box.querySelectorAll('.sgP').forEach(c=>c.onchange=()=>{const p2=new Set(par);if(c.checked)p2.add(+c.dataset.e);else p2.delete(+c.dataset.e);st.par=p2;renderSuggest();});
+  $('sgLo').onchange=()=>{st.lo=+$('sgLo').value;renderSuggest();};$('sgHi').onchange=()=>{st.hi=+$('sgHi').value;renderSuggest();};
+  $('sgAuto').onclick=()=>{st.lo=st.hi=null;renderSuggest();};$('sgN').onchange=()=>{st.n=+$('sgN').value;renderSuggest();};
+  $('sgBt').ontoggle=()=>{if($('sgBt').open&&!$('sgBt').dataset.done){$('sgBt').dataset.done=1;setTimeout(()=>{$('sgBtBody').innerHTML=sgBacktest(g,Wn,st);},20);}};
+}
+function sgBacktest(g,Wn,st){   // moi ky t: xu huong + phieu chi tu du lieu truoc t; so voi cung cach nhung khong loc va voi ve ngau nhien
+  const L=g.L,C=g.C,N=g.N,all=new Set(Array.from({length:C+1},(_,i)=>i));let nT=0,hF=0,hA=0,nA=0,n=0,parOk=0,sumOk=0;const rows=[];
+  for(let k=1;k<=20;k++){const t=L-k;if(t-Wn<0)break;const tr=sgTrend(g,t,Wn),par=st.par||new Set(tr.top.slice(0,2).map(x=>x[0])),slo=st.lo??tr.lo,shi=st.hi??tr.hi;
+    const res=g.meta.results[t],hs=new Set(res),f=sgPick(g,t,par,slo,shi,st.n).out,a=sgPick(g,t,all,0,1e9,st.n).out;
+    const ev=res.filter(x=>x%2===0).length,sm=res.reduce((a,x)=>a+x,0);if(par.has(ev))parOk++;if(sm>=slo&&sm<=shi)sumOk++;n++;
+    const hf=f.map(o=>o.nums.filter(x=>hs.has(x)).length);hf.forEach(x=>{hF+=x;nT++;});a.forEach(o=>{hA+=o.nums.filter(x=>hs.has(x)).length;nA++;});
+    rows.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${ev}:${C-ev} ${par.has(ev)?'<span class="hit-txt">✓</span>':'<span class="lk-txt">✗</span>'}</td><td>${sm} ${sm>=slo&&sm<=shi?'<span class="hit-txt">✓</span>':'<span class="lk-txt">✗</span>'}</td><td>${hf.length?hf.join(', '):'—'}</td></tr>`);}
+  if(!n)return '<div class="foot">Không đủ dữ liệu.</div>';
+  return `<div class="sum" style="border-left:3px solid var(--bad);">Mỗi kỳ chỉ dùng dữ liệu trước nó. Dạng chẵn:lẻ được ưu tiên đúng <b>${parOk}/${n}</b> kỳ · tổng nằm trong khoảng <b>${sumOk}/${n}</b> kỳ.<br>Số trúng TB mỗi vé: <b>${nT?(hF/nT).toFixed(2):'—'}</b> (có lọc) · <b>${nA?(hA/nA).toFixed(2):'—'}</b> (cùng 20 số, không lọc) · <b>${(C*C/N).toFixed(2)}</b> (vé ngẫu nhiên).</div>`+
+    `<div class="tw"><table><thead><tr><th class="l">Kỳ</th><th>Chẵn:lẻ ra</th><th>Tổng ra</th><th>Số trúng từng vé</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
 function renderScope(){
   document.querySelectorAll('.scopeBtns').forEach(el=>{
     el.innerHTML=[[50,'50 phương pháp'],[100,'100 phương pháp'],[0,'Tất cả phương pháp']].map(([n,l])=>`<span class="chip${S.scope===n?' on':''}" data-s="${n}">${l}</span>`).join('');
@@ -635,7 +690,7 @@ function renderVotes(){
     $('voteSum').innerHTML=`Kết quả: ${ballsHtml(res,new Set(order),null,g.LN?[lv]:null,new Set(lorder))} — <b class="hit-txt">${got.length}/${C}</b> số chính ra có ít nhất 1 phiếu · tổng phiếu của ${C} số ra: <b>${tot}</b> · tổng số gợi ý: <b>${order.length}</b>/${g.N} số${g.LN?' chính':''} (do ${nMeth} phương pháp)`+(g.LN?`<br>Số may mắn <span class="b lk hit">${p2(lv)}</span> nhận <b class="lk-txt">${l[lv]||0}</b> phiếu (số may mắn nhiều phiếu nhất: ${lorder.length?p2(lorder[0])+' với '+l[lorder[0]]+' phiếu':'—'}) · tổng số gợi ý: <b>${lorder.length}</b>/${g.LN} số may mắn`:'');
   }else $('voteSum').innerHTML=`Kỳ tới ${fmtDraw(g.meta.nextDates[S.nextIdx])}: ${order.length} số chính${g.LN?` và ${lorder.length} số may mắn`:''} được gợi ý bởi ${nMeth} phương pháp (chưa có kết quả).`;
   $('prevD').disabled=t<=L-S.win;$('nextD').disabled=t>=L;
-  renderVoters();
+  renderVoters();renderSuggest();
 }
 function renderCmp(){
   const g=G[S.game],L=g.L,C=g.C,LN=g.LN;
@@ -727,6 +782,7 @@ function bindSliders(){
   $('expAll').onclick=()=>document.querySelectorAll('details.card,details.sub').forEach(d=>d.open=true);
   $('colAll').onclick=()=>document.querySelectorAll('details.card,details.sub').forEach(d=>d.open=false);
   $('voters').ontoggle=renderVoters;
+  $('sgCard').ontoggle=renderSuggest;
   $('modeB').onchange=()=>{S.modeB=$('modeB').checked;S.fixed=null;renderVotes();renderCmp();};
 }
 bindSliders();refresh();
