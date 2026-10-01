@@ -578,6 +578,7 @@ function runPool(){
   const cov=S.poolCov||100,rkOf=(M,wt,t)=>{const o=sortedVotes(sgScores(g,wt,M,t,Wn).v),H=new Set(g.meta.results[t]);let c=0;for(let i=0;i<o.length;i++)if(H.has(o[i])&&++c===need)return i+1;return 999;};
   const qP=rs=>{const a=rs.slice().sort((x,y)=>x-y);return a[Math.max(0,Math.ceil(cov/100*a.length)-1)];};
   const RK={};for(let t=L-Wn;t<L;t++)RK[t]=rkOf(chosen,L,t);const Pst=qP(Object.values(RK)),pPass=Object.values(RK).filter(r=>r<=Pst).length;
+  let PstL=0,lPass=0,lAvg=0;const RL={};if(LN){for(let t=L-Wn;t<L;t++){const o=sortedVotes(poolLkAt(g,chosen,t));lAvg+=o.length;RL[t]=o.indexOf(g.meta.luckyRes[t])+1||99;}lAvg/=Wn;PstL=qP(Object.values(RL));lPass=Object.values(RL).filter(r=>r<=PstL).length;}   // thu hep pool so may man: giu PstL so may man duoc bau nhieu nhat
   let chk='';if(L-2*Wn>=0){const Mo=sgFitPool(g,L-Wn,Wn,need).chosen,ro=[];for(let t=L-2*Wn;t<L-Wn;t++)ro.push(rkOf(Mo,L-Wn,t));const Po=qP(ro);let f=0;for(let t=L-Wn;t<L;t++)if(rkOf(Mo,L-Wn,t)<=Po)f++;
     let pr=0;if(Po<=N)for(let k=need;k<=C;k++)pr+=comb(C,k)*comb(N-C,Po-k)/comb(N,Po);
     chk=`<div class="foot" style="margin:4px 0 0;"><b>Kiểm tra:</b> học trên ${Wn} kỳ trước đó được P = ${Po} (đạt ${cov}% lúc học); đem dùng cho ${Wn} kỳ gần nhất (lúc học chưa biết kết quả) đạt <b>${f}/${Wn}</b> kỳ; chọn ngẫu nhiên ${Po} số ≈ <b>${(pr*Wn).toFixed(1)}</b> kỳ.</div>`;}
@@ -594,14 +595,14 @@ function runPool(){
   h+=`<div class="row" style="margin:8px 0;"><button class="btn" id="poolApply"${chosen.length?'':' disabled'} style="border-color:var(--accent);">Chỉ dùng ${chosen.length} phương pháp này cho gợi ý số</button>${on?'<button class="btn" id="poolClear">Bỏ, dùng lại tất cả phương pháp</button><span class="foot" style="margin:0;">Đang áp dụng bộ lọc pool.</span>':''}</div>`;
   h+=`<div class="lbl" style="margin:6px 0 4px;">Pool cho ${drawLabel(g,L)}: <b>${nums.length}</b> số${LN?` chính + <b>${lnums.length}</b> số may mắn (đỏ)`:''} (trong ngoặc: số phương pháp đã chọn bầu cho số đó)</div>${ballsHtml(nums,null,vn,LN?lnums:null,null,vln)}`;
   const shr=sortedVotes(sgScores(g,L,chosen,d,Wn).v).slice(0,Pst).sort((a,b)=>a-b);
-  h+=`<div class="sum" style="margin-top:10px;border-left:3px solid var(--accent);"><b>Thu hẹp pool:</b> mỗi kỳ chỉ giữ các số điểm cao nhất (điểm = cộng hệ số tin cậy của các phương pháp đã chọn bầu cho số đó). <div class="row" style="margin:6px 0;"><span class="lbl">Đảm bảo đủ ${need} số trúng ở</span>${[100,90,80].map(c=>`<span class="chip${c===cov?' on':''}" data-cov="${c}">${c}% số kỳ</span>`).join('')}</div>→ chỉ cần giữ <b class="hit-txt" style="font-size:1.1rem;">${Pst>N?'—':Pst} số</b>/kỳ (pool đầy đủ TB ${(ps/Wn).toFixed(1)} số) · đạt <b>${pPass}/${Wn}</b> kỳ.${Pst>N||Pst>=ps/Wn?` <span class="lk-txt">Ở mức ${cov}% không thu hẹp được so với pool đầy đủ; thử 90% hoặc 80%.</span>`:` Bớt được khoảng <b>${(ps/Wn-Pst).toFixed(1)}</b> số so với pool đầy đủ.`}<div class="lbl" style="margin:6px 0 4px;">Pool thu hẹp cho ${drawLabel(g,L)} (${shr.length} số):</div>${ballsHtml(shr,null,null)}<div class="row" style="margin-top:6px;"><button class="btn" id="poolShrApply"${Pst>N?' disabled':''}>Dùng pool thu hẹp (${Pst} số) cho mục Gợi ý vé</button></div>${chk}</div>`;
+  h+=`<div class="sum" style="margin-top:10px;border-left:3px solid var(--accent);"><b>Thu hẹp pool:</b> mỗi kỳ chỉ giữ các số điểm cao nhất (điểm = cộng hệ số tin cậy của các phương pháp đã chọn bầu cho số đó). <div class="row" style="margin:6px 0;"><span class="lbl">Đảm bảo đủ ${need} số trúng ở</span>${[100,90,80].map(c=>`<span class="chip${c===cov?' on':''}" data-cov="${c}">${c}% số kỳ</span>`).join('')}</div>→ chỉ cần giữ <b class="hit-txt" style="font-size:1.1rem;">${Pst>N?'—':Pst} số</b>/kỳ (pool đầy đủ TB ${(ps/Wn).toFixed(1)} số) · đạt <b>${pPass}/${Wn}</b> kỳ.${Pst>N||Pst>=ps/Wn?` <span class="lk-txt">Ở mức ${cov}% không thu hẹp được so với pool đầy đủ; thử 90% hoặc 80%.</span>`:` Bớt được khoảng <b>${(ps/Wn-Pst).toFixed(1)}</b> số so với pool đầy đủ.`}<div class="lbl" style="margin:6px 0 4px;">Pool thu hẹp cho ${drawLabel(g,L)} (${shr.length} số):</div>${ballsHtml(shr,null,null)}${LN?`<div style="margin-top:8px;"><b>Số may mắn:</b> giữ <b class="hit-txt">${PstL>g.LN?'—':PstL} số</b>/kỳ (pool số may mắn đầy đủ TB ${lAvg.toFixed(1)}/${g.LN}) · số may mắn trúng nằm trong đó ở <b>${lPass}/${Wn}</b> kỳ.${PstL>=lAvg?` <span class="lk-txt">Ở mức ${cov}% không thu hẹp được.</span>`:` Bớt được khoảng <b>${(lAvg-PstL).toFixed(1)}</b> số.`}<div class="lbl" style="margin:6px 0 4px;">Số may mắn thu hẹp cho ${drawLabel(g,L)}:</div>${ballsHtml([],null,null,sortedVotes(poolLkAt(g,chosen,d)).slice(0,Math.min(PstL,g.LN)).sort((x,y)=>x-y),null)}</div>`:''}<div class="row" style="margin-top:6px;"><button class="btn" id="poolShrApply"${Pst>N?' disabled':''}>Dùng pool thu hẹp (${Pst} số${LN&&PstL<lAvg?` + ${PstL} số may mắn`:''}) cho mục Gợi ý vé</button></div>${chk}</div>`;
   h+=`<h3 style="margin:12px 0 6px;font-size:.95rem;">Kiểm tra quá khứ (${Wn} kỳ)</h3><div class="tw" style="max-height:420px;overflow-y:auto;"><table><thead><tr><th class="l">Kỳ</th><th>Số phương pháp</th><th>Số trúng</th><th>Pool${LN?' (chính + MM)':''}</th><th title="Hạng (theo điểm) của số trúng thứ ${need} trong pool; ✓ = nằm trong top ${Pst}">Pool thu hẹp (top ${Pst})</th><th class="l">Kết quả (${LN?'xanh/đỏ đậm':'xanh'} = có trong pool)</th></tr></thead><tbody>${past.join('')}</tbody></table></div>`;
   h+=`<details class="sub" id="poolBt"><summary>Kiểm tra trên kỳ sau (20 kỳ gần nhất, mở để tính)</summary><div id="poolBtBody"><div class="loading">Đang tính…</div></div></details>`;
   h+=`<details class="sub"><summary>Các phương pháp được chọn (${chosen.length})</summary><div class="foot">${chosen.map(m=>`<b>${g.meta.methods[m].n}</b>`).join(' · ')||'—'}</div></details>`;
   $('poolOut').innerHTML=h;
   $('poolBt').ontoggle=()=>{if($('poolBt').open&&!$('poolBt').dataset.done){$('poolBt').dataset.done=1;setTimeout(()=>{$('poolBtBody').innerHTML=poolBacktest(g,Wn,need,dIn);},20);}};
   $('poolOut').querySelectorAll('[data-cov]').forEach(c=>c.onclick=()=>{S.poolCov=+c.dataset.cov;runPool();});
-  $('poolShrApply').onclick=()=>{S.sgK=Pst;renderSuggest();$('poolShrApply').textContent=`Đã dùng ${Pst} số cho mục Gợi ý vé ✓`;};
+  $('poolShrApply').onclick=()=>{S.sgK=Pst;S.lkP=LN&&PstL<lAvg?PstL:0;renderSuggest();renderPastCtl();$('poolShrApply').textContent=`Đã dùng ${Pst} số${LN&&S.lkP?` + ${S.lkP} số may mắn`:''} cho mục Gợi ý vé và Tự học ✓`;};
   $('poolApply').onclick=()=>{applyPool(chosen);runPool();};
   if($('poolClear'))$('poolClear').onclick=()=>{clearPool();runPool();};
 }
@@ -746,18 +747,19 @@ function l5Ticket(g,S,M,d,PL){   // day cua nhom S o ky d (chi lay so trong pool
   for(const x of PL.o){if(o.length>=g.C)break;if(!v.has(x))o.push(x);}
   return o.slice(0,g.C).sort((a,b)=>a-b);
 }
+function lkPNow(){return S.lkP||0;}   // doc S.lkP o noi tham so 'S' bi trung ten
 function l5Lucky(g,S,M,d){   // so may man cua nhom S o ky d: so duoc nhom bau nhieu nhat; neu nhom khong bau thi lay so may man duoc pool bau nhieu nhat
   if(!g.LN)return null;const v=new Map();for(const m of S)if(okCnt(g,m,d))for(const x of lkOf(g,m,d))v.set(x,(v.get(x)||0)+1);
-  const pl=poolLkAt(g,M,d),o=[...v.keys()].sort((a,b)=>v.get(b)-v.get(a)||(pl[b]||0)-(pl[a]||0)||a-b);if(o.length)return o[0];const q=sortedVotes(pl);return q.length?q[0]:null;
+  const pl=poolLkAt(g,M,d),allow=lkPNow()?new Set(sortedVotes(pl).slice(0,lkPNow())):null,o=[...v.keys()].filter(x=>!allow||allow.has(x)).sort((a,b)=>v.get(b)-v.get(a)||(pl[b]||0)-(pl[a]||0)||a-b);if(o.length)return o[0];const q=sortedVotes(pl);return q.length?q[0]:null;   // S.lkP: chi chon trong pool so may man da thu hep
 }
 function* l5Learn(g,t1,Wn,y,n,iters,seed,live,nlk){   // nlk: day dat phai trung ca so may man (Loto)   // live: neu co, sau khi hoc xong se mai tiep loi giai mai mai, ghi ket qua tot nhat vao live   // hoc tren Wn ky truoc t1 (app biet ket qua cac ky nay); la generator: 'yield' de nhuong trinh duyet, tranh dung trang
   const C=g.C,ts=Array.from({length:Wn},(_,i)=>t1-Wn+i),M=sgFitPool(g,t1,Wn,y).chosen,cand=poolCands(g,t1);
   const PL=ts.map(t=>l5Pool(g,M,t)),H=ts.map(t=>new Set(g.meta.results[t]));
   const SG=new Map(cand.map(m=>[m,ts.map((t,i)=>okCnt(g,m,t)?setOf(g,m,t).filter(x=>PL[i].set.has(x)):[])]));
   const RK=PL.map(p=>{const r={};p.o.forEach((x,i)=>r[x]=i);return r;});
-  nlk=!!(nlk&&g.LN);const LR=nlk?ts.map(t=>g.meta.luckyRes[t]):null,PLK=nlk?ts.map(t=>poolLkAt(g,M,t)):null,SGL=nlk?new Map(cand.map(m=>[m,ts.map(t=>okCnt(g,m,t)?lkOf(g,m,t):[])])):null;
+  nlk=!!(nlk&&g.LN);const LR=nlk?ts.map(t=>g.meta.luckyRes[t]):null,PLK=nlk?ts.map(t=>{const pl=poolLkAt(g,M,t);if(!S.lkP)return pl;const k=new Set(sortedVotes(pl).slice(0,S.lkP)),o={};for(const x in pl)if(k.has(+x))o[x]=pl[x];return o;}):null,SGL=nlk?new Map(cand.map(m=>[m,ts.map(t=>okCnt(g,m,t)?lkOf(g,m,t):[])])):null;
   const luckyHit=(S,i)=>{const v=new Map();for(const m of S)for(const x of SGL.get(m)[i])v.set(x,(v.get(x)||0)+1);let b=null,bv=-1;
-    if(v.size){for(const [x,c] of v){const sc=c*100+(PLK[i][x]||0);if(sc>bv||(sc===bv&&x<b)){bv=sc;b=x;}}}else{for(const x in PLK[i])if(PLK[i][x]>bv){bv=PLK[i][x];b=+x;}}return b===LR[i];};
+    if(v.size){for(const [x,c] of v){if(lkPNow()&&!(x in PLK[i]))continue;const sc=c*100+(PLK[i][x]||0);if(sc>bv||(sc===bv&&x<b)){bv=sc;b=x;}}}if(b===null){for(const x in PLK[i])if(PLK[i][x]>bv){bv=PLK[i][x];b=+x;}}return b===LR[i];};
   const okT=(S,i,k)=>k>=y&&(!nlk||luckyHit(S,i));
   const hitsOf=(S,i)=>{const v=new Map();for(const m of S)for(const x of SG.get(m)[i])v.set(x,(v.get(x)||0)+1);
     const o=[...v.keys()].sort((a,b)=>v.get(b)-v.get(a)||RK[i][a]-RK[i][b]);for(const x of PL[i].o){if(o.length>=C)break;if(!v.has(x))o.push(x);}
@@ -784,7 +786,7 @@ function* l5Learn(g,t1,Wn,y,n,iters,seed,live,nlk){   // nlk: day dat phai trung
     live.steps++;if(p2>=live.pass){rules[j]=S2;live.pass=p2;live.rules=rules.map(x=>x.slice());}}
 }
 function l5Nlk(g){return !!(g.LN&&S.l5Lk);}
-function l5Key(g){const st=sgState(g);return [l5Nlk(g),g.meta.game,Math.min(S.win,g.L),sgY(g),st.n,S.lo,S.hi,S.poolPrune!==false,S.poolNeed,poolNl(g)].join('|');}
+function l5Key(g){const st=sgState(g);return [S.lkP||0,l5Nlk(g),g.meta.game,Math.min(S.win,g.L),sgY(g),st.n,S.lo,S.hi,S.poolPrune!==false,S.poolNeed,poolNl(g)].join('|');}
 function l5Now(g){return S.l5&&S.l5.key===l5Key(g)?S.l5:null;}
 function l5AutoSec(Wn){return Wn<=20?60:Wn<=50?180:Wn<=100?300:600;}
 function l5Run(){   // hoc 1 luot roi mai tiep loi giai tot nhat cho den het thoi gian / bam Dung / da dat het x ky
@@ -831,7 +833,7 @@ function sgApplyNote(g,l5){   // dong xac nhan: dang dung cach goi y nao cho cac
     `· Trò chơi <b>${g.meta.label}</b> · học trên <b>${l5.Wn} kỳ</b> (${fmtDraw(l5.from)} → ${fmtDraw(l5.to)})<br>`+
     `· Yêu cầu: mỗi kỳ có ít nhất 1 trong <b>${l5.n} dãy</b> trúng <b>≥${l5.y}/${C} số</b>${l5.nlk?' <b>+ số may mắn</b>':''}, ở <b>≥${l5.goal}%</b> số kỳ<br>`+
     `· Kết quả lúc học: <b class="hit-txt">${l5.pass}/${l5.Wn} kỳ (${pct1(l5.pass/l5.Wn)})</b> ${l5.pass>=Math.ceil(l5.goal/100*l5.Wn)?'– đạt mục tiêu':'– <span class="lk-txt">chưa đạt mục tiêu</span>'}<br>`+
-    `· Pool: <b>${l5.M.length} phương pháp</b>, khớp ≥${l5.need} số mỗi kỳ${l5.prune?', đã bỏ phương pháp thừa':''} · ${l5.n} dãy do ${l5.n} nhóm phương pháp tạo (${l5.rules.map(r=>r.length).join(', ')} phương pháp)${g.LN?'; số may mắn mỗi dãy = số được chính nhóm đó bầu nhiều nhất':''}. Lọc chẵn:lẻ + tổng không áp dụng.</div>`;
+    `· Pool: <b>${l5.M.length} phương pháp</b>, khớp ≥${l5.need} số mỗi kỳ${l5.prune?', đã bỏ phương pháp thừa':''} · ${l5.n} dãy do ${l5.n} nhóm phương pháp tạo (${l5.rules.map(r=>r.length).join(', ')} phương pháp)${g.LN?`; số may mắn mỗi dãy = số được chính nhóm đó bầu nhiều nhất${S.lkP?`, chỉ chọn trong ${S.lkP} số may mắn của pool thu hẹp`:''}`:''}. Lọc chẵn:lẻ + tổng không áp dụng.</div>`;
 }
 function renderScope(){
   document.querySelectorAll('.scopeBtns').forEach(el=>{
