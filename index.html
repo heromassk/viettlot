@@ -623,14 +623,17 @@ function sgTrend(g,t,Wn){   // thong ke Wn ky ngay truoc ky t
   res.forEach(r=>cnt[r.filter(x=>x%2===0).length]++);
   const sums=res.map(r=>r.reduce((a,x)=>a+x,0)).sort((a,b)=>a-b);
   const th=e=>comb(ev,e)*comb(N-ev,C-e)/tot,top=cnt.map((c,e)=>[e,c]).sort((a,b)=>b[1]-a[1]||th(b[0])-th(a[0]));
-  return {n,cnt,th,top,lo:Math.round(quant(sums,0.25)),hi:Math.round(quant(sums,0.75))};
+  let lo=0,hi=0,cov=0;if(n){const k=Math.ceil(n*0.5),med=sums[n>>1];let bw=Infinity;   // khoang tong hep nhat chua it nhat 50% so ky
+    for(let i=0;i+k<=n;i++){const w=sums[i+k-1]-sums[i],c=Math.abs((sums[i]+sums[i+k-1])/2-med);if(w<bw||(w===bw&&c<Math.abs((lo+hi)/2-med))){bw=w;lo=sums[i];hi=sums[i+k-1];}}
+    cov=sums.filter(x=>x>=lo&&x<=hi).length;}
+  return {n,cnt,th,top,lo,hi,cov};
 }
 function poolFor(g,t){   // pool rut gon cho ky t: bo phuong phap chon chi bang S.win ky truoc t (dung yeu cau cua muc Loc pool)
   const L=g.L,Wn=Math.min(S.win,L),need=S.poolNeed||g.C,nl=poolNl(g),d=t===L?L+S.nextIdx:t;
   const key=[g.meta.game,t,d,Wn,need,nl,S.lo,S.hi].join('|');S.pfC=S.pfC||{};if(S.pfC[key])return S.pfC[key];
   if(t-Wn<0)return null;
   const r=greedyPool(g,poolCands(g,t),Array.from({length:Wn},(_,i)=>t-Wn+i),need,nl);
-  return S.pfC[key]={v:poolAt(g,r.chosen,d),l:poolLkAt(g,r.chosen,d),nM:r.chosen.length,ok:r.ok,need,nl,Wn};
+  return S.pfC[key]={ms:r.chosen,v:poolAt(g,r.chosen,d),l:poolLkAt(g,r.chosen,d),nM:r.chosen.length,ok:r.ok,need,nl,Wn};
 }
 function countCombos(nums,C,par,slo,shi){   // dem chinh xac so bo C so trong nums thoa dang chan:le + tong (quy hoach dong)
   const M=nums.reduce((a,x)=>a+x,0)+1;let dp=Array.from({length:C+1},()=>Array.from({length:C+1},()=>new Float64Array(M)));dp[0][0][0]=1;
@@ -638,38 +641,55 @@ function countCombos(nums,C,par,slo,shi){   // dem chinh xac so bo C so trong nu
   let tot=0,ok=0;for(let j=0;j<=C;j++)for(let s2=0;s2<M;s2++){const c=dp[C][j][s2];if(!c)continue;tot+=c;if(par.has(j)&&s2>=slo&&s2<=shi)ok+=c;}
   return {tot,ok};
 }
-function sgPick(g,t,par,slo,shi,nT,src){   // nguon: pool rut gon (src='pool') hoac 20 so nhieu phieu nhat; chon cac bo dung dang + tong, uu tien diem cao, cac ve khac nhau it nhat 2 so
-  const C=g.C;let v,l,P=null,K=20;
-  if(src==='pool'){P=poolFor(g,t);if(!P)return {out:[],pool:[],full:[],nCand:0,P};v=P.v;l=P.l;K=22;}else({v,l}=votesFor(g,t));
-  const full=sortedVotes(v),pool=full.slice(0,K),lorder=sortedVotes(l),cand=[],cur=[];
-  (function rec(i,sum,ev,sc){
-    if(cur.length===C){if(par.has(ev)&&sum>=slo&&sum<=shi)cand.push({nums:cur.slice().sort((a,b)=>a-b),sum,ev,sc});return;}
-    for(let j=i;j<=pool.length-(C-cur.length);j++){const x=pool[j];cur.push(x);rec(j+1,sum+x,ev+(x%2===0?1:0),sc+v[x]);cur.pop();}
+function relW(g,m,t,Wn){   // he so tin cay: ti le trung tren moi so goi y / muc ngau nhien, co keo ve 1 khi it du lieu (them 20 so "ao" o muc ngau nhien); 1 = ngang ngau nhien
+  const s=stat(g,m,t,Wn),k=20;if(!s.sug||!s.base)return 0;return ((s.hits+k*s.base)/(s.sug+k))/s.base;
+}
+function sgScores(g,t,ms,d,Wn){   // diem moi so = tong he so tin cay cua cac phuong phap cung chon so do (doi chieu cheo giua cac phuong phap)
+  const v={},l={},cnt={},info=[];
+  ms.forEach(m=>{if(!okCnt(g,m,d))return;const w=relW(g,m,t,Wn),ns=setOf(g,m,d),ls=g.LN?lkOf(g,m,d):[];if(!ns.length&&!ls.length)return;
+    info.push({m,w,ns,ls});ns.forEach(x=>{v[x]=(v[x]||0)+w;cnt[x]=(cnt[x]||0)+1;});ls.forEach(x=>{l[x]=(l[x]||0)+w;});});
+  return {v,l,cnt,info};
+}
+function sgPick(g,t,par,slo,shi,nT,src,pw){   // pw: so ky ra cua tung dang chan:le -> chia so ve theo ti le   // nguon: pool rut gon (src='pool') hoac cac phuong phap dang bau phieu; chon cac bo dung dang + tong, uu tien diem tin cay cao, cac ve khac nhau it nhat 2 so
+  const C=g.C,L=g.L,Wn=Math.min(S.win,L),d=t===L?L+S.nextIdx:t;let P=null,K=20,ms;
+  if(src==='pool'){P=poolFor(g,t);if(!P)return {out:[],pool:[],full:[],nCand:0,P,sc:{v:{},l:{},cnt:{},info:[]}};ms=P.ms;K=22;}else ms=baseList(g,t,S.scope).map(r=>r.m);
+  const sc=sgScores(g,t,ms,d,Wn),v=sc.v,full=sortedVotes(v),pool=full.slice(0,K),lorder=sortedVotes(sc.l),cand=[],cur=[];
+  (function rec(i,sum,ev,s2){
+    if(cur.length===C){if(par.has(ev)&&sum>=slo&&sum<=shi)cand.push({nums:cur.slice().sort((a,b)=>a-b),sum,ev,sc:s2});return;}
+    for(let j=i;j<=pool.length-(C-cur.length);j++){const x=pool[j];cur.push(x);rec(j+1,sum+x,ev+(x%2===0?1:0),s2+v[x]);cur.pop();}
   })(0,0,0,0);
   cand.sort((a,b)=>b.sc-a.sc||a.sum-b.sum);
-  const out=[];for(const c of cand){if(out.length>=nT)break;if(out.every(o=>o.nums.filter(x=>c.nums.includes(x)).length<=C-2))out.push(c);}
+  const ps=[...par],q={};let tw=0;ps.forEach(e=>tw+=(pw?pw[e]:1)||0);   // chia ve: dang ra nhieu hon trong x ky thi nhieu ve hon (phan du chia theo phan le lon nhat)
+  if(ps.length>1&&tw>0){let used=0;const fr=ps.map(e=>{const x=nT*((pw?pw[e]:1)||0)/tw;q[e]=Math.floor(x);used+=q[e];return [e,x-q[e]];}).sort((a,b)=>b[1]-a[1]);for(let i=0;used<nT&&i<fr.length;i++,used++)q[fr[i][0]]++;}
+  const out=[],div=c=>out.every(o=>o.nums.filter(x=>c.nums.includes(x)).length<=C-2),has={};
+  if(Object.keys(q).length)for(const c of cand){if(out.length>=nT)break;if((has[c.ev]||0)<q[c.ev]&&div(c)){out.push(c);has[c.ev]=(has[c.ev]||0)+1;}}
+  for(const c of cand){if(out.length>=nT)break;if(!out.includes(c)&&div(c))out.push(c);}   // thieu bo o dang nao thi bu tu dang khac
+  out.sort((a,b)=>b.sc-a.sc);
   out.forEach((o,i)=>{o.lk=g.LN&&lorder.length?lorder[i%Math.min(3,lorder.length)]:null;});
-  return {out,pool,full,nCand:cand.length,P,lorder};
+  return {out,pool,full,nCand:cand.length,P,lorder,sc,q};
 }
 function sgState(g){   // lua chon cua nguoi dung theo game; null = tu dong theo xu huong
-  const k=g.meta.game;S.sg=S.sg||{};return S.sg[k]=S.sg[k]||{par:null,lo:null,hi:null,n:5,src:'pool',bt:20};
+  const k=g.meta.game;S.sg=S.sg||{};return S.sg[k]=S.sg[k]||{par:null,lo:null,hi:null,n:7,src:'pool',bt:20};
 }
 function renderSuggest(){
   const box=$('sgBody');if(!box||!$('sgCard').open){if(box)box.innerHTML='';return;}
   const g=G[S.game],L=g.L,C=g.C,N=g.N,Wn=Math.min(S.win,500,L),tr=sgTrend(g,L,Wn),st=sgState(g);
-  const par=st.par||new Set(tr.top.slice(0,2).map(x=>x[0])),slo=st.lo??tr.lo,shi=st.hi??tr.hi;
+  const par=st.par||new Set(tr.top.slice(0,3).map(x=>x[0])),slo=st.lo??tr.lo,shi=st.hi??tr.hi;
   const rows=Array.from({length:C+1},(_,i)=>C-i).map(e=>{const pr=tr.cnt[e]/tr.n,th=tr.th(e),up=pr>th;
     return `<tr${par.has(e)?' style="background:rgba(240,180,41,.10);"':''}><td><input type="checkbox" class="sgP" data-e="${e}"${par.has(e)?' checked':''}></td><td>${e}:${C-e}</td><td>${tr.cnt[e]}</td><td class="rate ${up?'up':'dn'}">${pct1(pr)}</td><td>${pct1(th)}</td></tr>`;}).join('');
-  const {out,pool,full,nCand,P}=sgPick(g,L,par,slo,shi,st.n,st.src),isP=st.src==='pool';
-  const srcBtns=`<div class="row" style="margin-bottom:6px;"><span class="lbl">Nguồn số:</span>${[['pool','Pool rút gọn (bước Lọc pool)'],['vote','20 số nhiều phiếu nhất']].map(([k,t])=>`<span class="chip${st.src===k?' on':''}" data-src="${k}">${t}</span>`).join('')}</div>`;
-  let h=srcBtns+`<div class="foot" style="margin:0 0 6px;">${isP?`<b>Bước 1</b> – lọc pool: chọn ít phương pháp nhất để ${Wn} kỳ gần nhất kỳ nào cũng trúng ${P?poolRng(g,P.need,P.nl):''} (đổi ở ô "Pool phải khớp quá khứ" ngay trên). <b>Bước 2</b> – bỏ các số không nằm trong pool cho ${drawLabel(g,L)}. <b>Bước 3</b> – trong pool, chỉ giữ các bộ ${C} số có dạng chẵn:lẻ được tích và tổng trong khoảng, ưu tiên số được nhiều phương pháp bầu.`:`Lấy 20 số nhiều phiếu nhất cho ${drawLabel(g,L)} (theo các phương pháp đang dùng), rồi chọn các bộ ${C} số có dạng chẵn:lẻ được tích và tổng trong khoảng, ưu tiên tổng phiếu cao.`} Xu hướng chẵn:lẻ và tổng tính trên <b>${Wn}</b> kỳ gần nhất (đổi ở "Số kỳ gần nhất", tối đa 500).</div>`;
+  const {out,pool,full,nCand,P,sc}=sgPick(g,L,par,slo,shi,st.n,st.src,tr.cnt),isP=st.src==='pool';
+  const srcBtns=`<div class="row" style="margin-bottom:6px;"><span class="lbl">Nguồn số:</span>${[['pool','Pool rút gọn (bước Lọc pool)'],['vote','Các phương pháp đang bầu phiếu']].map(([k,t])=>`<span class="chip${st.src===k?' on':''}" data-src="${k}">${t}</span>`).join('')}</div>`;
+  let h=srcBtns+`<div class="foot" style="margin:0 0 6px;">${isP?`<b>Bước 1</b> – lọc pool: chọn ít phương pháp nhất để ${Wn} kỳ gần nhất kỳ nào cũng trúng ${P?poolRng(g,P.need,P.nl):''} (đổi ở ô "Pool phải khớp quá khứ" ngay trên). <b>Bước 2</b> – bỏ các số không nằm trong pool cho ${drawLabel(g,L)}. <b>Bước 3</b> – trong pool, chỉ giữ các bộ ${C} số có dạng chẵn:lẻ được tích và tổng trong khoảng, ưu tiên số có điểm tin cậy cao.`:`Lấy 20 số có điểm tin cậy cao nhất cho ${drawLabel(g,L)} từ các phương pháp đang bầu phiếu ở trên, rồi chọn các bộ ${C} số có dạng chẵn:lẻ được tích và tổng trong khoảng.`} <b>Điểm tin cậy</b> của một số = cộng <b>hệ số tin cậy</b> của mọi phương pháp cùng chọn số đó; hệ số = tỉ lệ trúng trên mỗi số đã gợi ý trong ${Wn} kỳ ÷ mức ngẫu nhiên (1 = ngang ngẫu nhiên; gợi ý ít số mà trúng nhiều thì hệ số cao; phương pháp ít dữ liệu bị kéo về 1). Xu hướng chẵn:lẻ và tổng tính trên <b>${Wn}</b> kỳ gần nhất (đổi ở "Số kỳ gần nhất", tối đa 500).</div>`;
   if(isP&&P){const cc=countCombos(full,C,par,slo,shi);
-    h+=`<div class="sum">Pool rút gọn: <b>${full.length}</b>/${g.N} số (từ <b>${P.nM}</b> phương pháp${P.ok?'':', <span class="lk-txt">chưa đạt yêu cầu ở mọi kỳ</span>'})${g.LN?` + <b>${Object.keys(P.l).length}</b>/${g.LN} số may mắn`:''} · cả pool có <b>${Math.round(cc.tot).toLocaleString('vi-VN')}</b> bộ ${C} số → sau lọc chẵn:lẻ + tổng còn <b class="hit-txt">${Math.round(cc.ok).toLocaleString('vi-VN')}</b> bộ (${cc.tot?pct1(cc.ok/cc.tot):'—'}).${full.length>22?` Vé được chọn trong 22 số nhiều phương pháp bầu nhất của pool.`:''}</div>`;}
-  h+=`<div class="two"><div><div class="tw"><table><thead><tr><th>Ưu tiên</th><th>Chẵn:lẻ</th><th>Số kỳ</th><th>Tỉ lệ ${Wn} kỳ</th><th>Lý thuyết</th></tr></thead><tbody>${rows}</tbody></table></div><div class="foot">Mặc định tích 2 dạng ra nhiều nhất trong ${Wn} kỳ. Tỉ lệ xanh = đang ra nhiều hơn lý thuyết.</div></div>`;
-  h+=`<div><div class="sl" style="margin-bottom:8px;">Tổng ${C} số từ <input type="number" id="sgLo" value="${slo}" style="width:70px;"> đến <input type="number" id="sgHi" value="${shi}" style="width:70px;"> <button class="btn" id="sgAuto">Theo xu hướng (${tr.lo}–${tr.hi})</button></div><div class="foot" style="margin:0 0 8px;">Mặc định: khoảng giữa 50% tổng của ${Wn} kỳ gần nhất.</div>`;
-  h+=`<div class="sl">Số vé: <select id="sgN">${[1,3,5,10].map(n=>`<option${n===st.n?' selected':''}>${n}</option>`).join('')}</select></div></div></div>`;
-  h+=`<div class="lbl" style="margin:10px 0 4px;">${isP?`Pool rút gọn (${full.length} số, trong ngoặc: số phương pháp bầu)`:'20 số nhiều phiếu nhất'}: ${ballsHtml(full.slice(0,isP?99:20).sort((a,b)=>a-b),null,isP&&P?P.v:null)}</div>`;
-  h+=out.length?`<div class="tw"><table><thead><tr><th>#</th><th class="l">Vé gợi ý</th><th>Chẵn:lẻ</th><th>Tổng</th><th>${isP?'Điểm (số PP bầu)':'Tổng phiếu'}</th></tr></thead><tbody>${out.map((o,i)=>`<tr><td>${i+1}</td><td class="l">${ballsHtml(o.nums,null,null,o.lk?[o.lk]:null)}</td><td>${o.ev}:${C-o.ev}</td><td>${o.sum}</td><td>${o.sc}</td></tr>`).join('')}</tbody></table></div><div class="foot">${nCand.toLocaleString('vi-VN')} bộ thỏa điều kiện trong ${pool.length} số được xét.${g.LN?' Số may mắn (đỏ) lấy lần lượt từ 3 số may mắn nhiều phiếu nhất.':''}</div>`
+    h+=`<div class="sum">Pool rút gọn: <b>${full.length}</b>/${g.N} số (từ <b>${P.nM}</b> phương pháp${P.ok?'':', <span class="lk-txt">chưa đạt yêu cầu ở mọi kỳ</span>'})${g.LN?` + <b>${Object.keys(P.l).length}</b>/${g.LN} số may mắn`:''} · cả pool có <b>${Math.round(cc.tot).toLocaleString('vi-VN')}</b> bộ ${C} số → sau lọc chẵn:lẻ + tổng còn <b class="hit-txt">${Math.round(cc.ok).toLocaleString('vi-VN')}</b> bộ (${cc.tot?pct1(cc.ok/cc.tot):'—'}).${full.length>22?` Vé được chọn trong 22 số có điểm tin cậy cao nhất của pool.`:''}</div>`;}
+  h+=`<div class="two"><div><div class="tw"><table><thead><tr><th>Ưu tiên</th><th>Chẵn:lẻ</th><th>Số kỳ</th><th>Tỉ lệ ${Wn} kỳ</th><th>Lý thuyết</th></tr></thead><tbody>${rows}</tbody></table></div><div class="foot">Mặc định tích 3 dạng ra nhiều nhất trong ${Wn} kỳ; số vé chia cho các dạng được tích theo tỉ lệ ra của chúng. Tỉ lệ xanh = đang ra nhiều hơn lý thuyết.</div></div>`;
+  h+=`<div><div class="sl" style="margin-bottom:8px;">Tổng ${C} số từ <input type="number" id="sgLo" value="${slo}" style="width:70px;"> đến <input type="number" id="sgHi" value="${shi}" style="width:70px;"> <button class="btn" id="sgAuto">Theo xu hướng (${tr.lo}–${tr.hi})</button></div><div class="foot" style="margin:0 0 8px;">Mặc định: khoảng tổng <b>hẹp nhất</b> chứa ít nhất 50% số kỳ trong ${Wn} kỳ gần nhất (${tr.lo}–${tr.hi}, rộng ${tr.hi-tr.lo}, chứa ${tr.cov}/${tr.n} kỳ). Khoảng đang dùng chứa <b>${g.meta.results.slice(L-Wn,L).filter(r=>{const t2=r.reduce((a,x)=>a+x,0);return t2>=slo&&t2<=shi;}).length}</b>/${tr.n} kỳ.</div>`;
+  h+=`<div class="sl">Số vé: <select id="sgN">${[1,3,5,7,10].map(n=>`<option${n===st.n?' selected':''}>${n}</option>`).join('')}</select></div></div></div>`;
+  const r1=o=>Object.fromEntries(Object.entries(o).map(([k,x])=>[k,x.toFixed(1)]));
+  h+=`<div class="lbl" style="margin:10px 0 4px;">${isP?`Pool rút gọn (${full.length} số)`:'20 số điểm cao nhất'}, trong ngoặc là điểm tin cậy: ${ballsHtml(full.slice(0,isP?99:20).sort((a,b)=>a-b),null,r1(sc.v))}</div>`;
+  const nO=out.length,lv=i=>i<Math.ceil(nO/3)?['★★★','Cao','hit-txt']:i<Math.ceil(2*nO/3)?['★★','Trung bình','']:['★','Thấp','lk-txt'];
+  h+=out.length?`<div class="tw"><table><thead><tr><th>#</th><th>Mức ưu tiên</th><th class="l">Vé gợi ý</th><th>Chẵn:lẻ</th><th>Tổng</th><th>Điểm tin cậy</th></tr></thead><tbody>${out.map((o,i)=>{const L2=lv(i);return `<tr><td>${i+1}</td><td class="${L2[2]}" title="Xếp theo điểm tin cậy trong nhóm vé gợi ý">${L2[0]} ${L2[1]}</td><td class="l">${ballsHtml(o.nums,null,null,o.lk?[o.lk]:null)}</td><td>${o.ev}:${C-o.ev}</td><td>${o.sum}</td><td>${o.sc.toFixed(1)}</td></tr>`;}).join('')}</tbody></table></div><div class="foot">Mức ưu tiên chia 3 nhóm theo điểm tin cậy (tính từ quá khứ), không phải xác suất trúng. ${nCand.toLocaleString('vi-VN')} bộ thỏa điều kiện trong ${pool.length} số được xét.${g.LN?' Số may mắn (đỏ) lấy lần lượt từ 3 số may mắn điểm cao nhất.':''}</div>`+
+    `<details class="sub"><summary>Độ tin cậy của ${sc.info.length} phương pháp đang dùng</summary><div class="tw" style="max-height:420px;overflow-y:auto;"><table><thead><tr><th class="l">Phương pháp</th><th>Gợi ý TB</th><th>Đã trúng / đã gợi ý</th><th>Tỉ lệ trúng</th><th>Mức ngẫu nhiên</th><th>Hệ số tin cậy</th><th class="l">Gợi ý kỳ tới</th></tr></thead><tbody>${sc.info.slice().sort((a,b)=>b.w-a.w).map(r=>{const st2=stat(g,r.m,L,Wn);return `<tr><td class="l"><b>${g.meta.methods[r.m].n}</b></td><td>${fmtAvg(st2.avg)}</td><td>${st2.hits}/${st2.sug}</td><td class="rate ${st2.rate>=st2.base?'up':'dn'}">${pct1(st2.rate)}</td><td>${pct1(st2.base)}</td><td><b>${r.w.toFixed(2)}</b></td><td class="l">${ballsHtml(r.ns,null,null,r.ls)}</td></tr>`;}).join('')}</tbody></table></div></details>`
     :'<div class="loading">Không có bộ nào thỏa điều kiện. Hãy tích thêm dạng chẵn:lẻ hoặc nới khoảng tổng.</div>';
   h+=`<details class="sub" id="sgBt"><summary>Đối chiếu với quá khứ: gợi ý đúng được bao nhiêu (mở để tính)</summary><div class="row" style="margin:4px 0 6px;"><span class="lbl">Số kỳ đối chiếu:</span>${[20,50,100].map(n=>`<span class="chip${st.bt===n?' on':''}" data-bt="${n}">${n} kỳ</span>`).join('')}</div><div id="sgBtBody"><div class="loading">Đang tính…</div></div></details>`;
   box.innerHTML=h;
@@ -684,8 +704,8 @@ function renderSuggest(){
 function sgBacktest(g,Wn,st){   // moi ky t: pool, xu huong va ve chi tu du lieu truoc t; so voi cung nguon nhung khong loc va voi ve ngau nhien
   const L=g.L,C=g.C,N=g.N,all=new Set(Array.from({length:C+1},(_,i)=>i)),isP=st.src==='pool';let nT=0,hF=0,hA=0,nA=0,n=0,parOk=0,sumOk=0,inP=0,pSz=0;const rows=[];
   const dist=Array(C+1).fill(0);let best=0,lkH=0;
-  for(let k=1;k<=(st.bt||20);k++){const t=L-k;if(t-Wn<0)break;const tr=sgTrend(g,t,Wn),par=st.par||new Set(tr.top.slice(0,2).map(x=>x[0])),slo=st.lo??tr.lo,shi=st.hi??tr.hi;
-    const res=g.meta.results[t],hs=new Set(res),F=sgPick(g,t,par,slo,shi,st.n,st.src),a=sgPick(g,t,all,0,1e9,st.n,st.src).out,f=F.out;
+  for(let k=1;k<=(st.bt||20);k++){const t=L-k;if(t-Wn<0)break;const tr=sgTrend(g,t,Wn),par=st.par||new Set(tr.top.slice(0,3).map(x=>x[0])),slo=st.lo??tr.lo,shi=st.hi??tr.hi;
+    const res=g.meta.results[t],hs=new Set(res),F=sgPick(g,t,par,slo,shi,st.n,st.src,tr.cnt),a=sgPick(g,t,all,0,1e9,st.n,st.src).out,f=F.out;
     const ev=res.filter(x=>x%2===0).length,sm=res.reduce((a,x)=>a+x,0),ip=F.full.filter(x=>hs.has(x)).length;if(par.has(ev))parOk++;if(sm>=slo&&sm<=shi)sumOk++;n++;inP+=ip;pSz+=F.full.length;
     const hf=f.map(o=>o.nums.filter(x=>hs.has(x)).length);hf.forEach(x=>{hF+=x;nT++;dist[x]++;if(x>best)best=x;});if(g.LN)f.forEach(o=>{if(o.lk===g.meta.luckyRes[t])lkH++;});a.forEach(o=>{hA+=o.nums.filter(x=>hs.has(x)).length;nA++;});
     rows.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${F.full.length}</td><td>${ip}/${C}</td><td>${ev}:${C-ev} ${par.has(ev)?'<span class="hit-txt">✓</span>':'<span class="lk-txt">✗</span>'}</td><td>${sm} ${sm>=slo&&sm<=shi?'<span class="hit-txt">✓</span>':'<span class="lk-txt">✗</span>'}</td><td>${hf.length?hf.map(x=>x>=3?`<b class="hit-txt">${x}</b>`:x).join(', '):'—'}</td></tr>`);}
