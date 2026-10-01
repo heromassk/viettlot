@@ -153,13 +153,13 @@ tr.off .b{opacity:.5;}
   <div class="votes" id="votes"></div>
   <div id="lkBox" style="display:none;margin-top:10px;"><div class="lbl" style="margin-bottom:4px;">Số may mắn (đỏ):</div><div class="votes" id="votesLk"></div></div>
   <details id="voters" style="margin-top:10px;"><summary style="cursor:pointer;color:var(--accent);font-size:.88rem;" id="votersSum">Xem danh sách các phương pháp đã bầu cho kỳ này</summary><div class="tw" style="margin-top:6px;"><table id="votersTbl"></table></div></details>
-  <details class="sub" id="sgCard" style="margin-top:10px;"><summary>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</summary><div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div><div id="sgBody"></div></details>
   <details class="sub" id="poolCard" style="margin-top:10px;"><summary>Lọc pool nhỏ nhất (gom phương pháp để kỳ nào cũng đủ số trúng)</summary>
     <div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div>
     <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong các phương pháp qua thanh trượt) sao cho trong số kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ. Tự tính lại khi đổi số kỳ, thanh trượt hoặc yêu cầu số trúng.</div>
-    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed"></select><label class="lbl" id="poolLkW" style="display:none;"><input type="checkbox" id="poolLk" checked> và phải trúng cả số may mắn</label></div>
+    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed" class="needSync"></select><label class="lbl lkSyncW" id="poolLkW" style="display:none;"><input type="checkbox" id="poolLk" class="lkSync" checked> và phải trúng cả số may mắn</label></div>
     <div id="poolOut"></div>
   </details>
+  <details class="sub" id="sgCard" style="margin-top:10px;"><summary>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</summary><div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div><div class="row" style="margin-bottom:6px;"><span class="lbl">Pool phải khớp quá khứ: mỗi kỳ trúng</span><select class="needSync"></select><label class="lbl lkSyncW" style="display:none;"><input type="checkbox" class="lkSync" checked> và cả số may mắn</label><span class="foot" style="margin:0;">(đồng bộ với mục Lọc pool; khớp càng cao thì pool càng to, gợi ý càng kém chọn lọc)</span></div><div id="sgBody"></div></details>
 </details>
 
 <details class="card">
@@ -171,13 +171,13 @@ tr.off .b{opacity:.5;}
 </details>
 
 <details class="card">
-  <summary><h2>Tính giá vé (vé thường và vé bao)</h2></summary>
-  <div id="tkBody"></div>
+  <summary><h2>Đề xuất học máy (thử nghiệm)</h2></summary>
+  <div id="lrnBody"></div>
 </details>
 
 <details class="card">
-  <summary><h2>Đề xuất học máy (thử nghiệm)</h2></summary>
-  <div id="lrnBody"></div>
+  <summary><h2>Tính giá vé (vé thường và vé bao)</h2></summary>
+  <div id="tkBody"></div>
 </details>
 </div>
 
@@ -554,10 +554,13 @@ function poolLkAt(g,ms,d){const v={};if(g.LN)ms.forEach(m=>{if(okCnt(g,m,d))lkOf
 function poolNl(g){return g.LN&&S.poolLk!==false?1:0;}
 function poolCands(g,t){return rank(g,t,S.win,S.lo,S.hi,Infinity).map(r=>r.m);}   // moi phuong phap qua thanh truot (khong phu thuoc cot ✓, de nut ap dung khong tu khoa minh)
 function renderPoolCtl(){
-  const g=G[S.game],sel=$('poolNeed');if(S.poolNeed==null||S.poolNeed>g.C)S.poolNeed=g.C;
-  sel.innerHTML=Array.from({length:g.C},(_,i)=>g.C-i).map(k=>`<option value="${k}"${k===S.poolNeed?' selected':''}>${k===g.C?`đủ ${k} số`:`từ ${k} đến ${g.C} số`}</option>`).join('');
-  sel.onchange=()=>{S.poolNeed=+sel.value;schedulePool();};
-  $('poolLkW').style.display=g.LN?'':'none';$('poolLk').checked=S.poolLk!==false;$('poolLk').onchange=()=>{S.poolLk=$('poolLk').checked;schedulePool();};
+  const g=G[S.game];if(S.poolNeed==null||S.poolNeed>g.C)S.poolNeed=g.C;   // o chon muc khop + so may man co o ca muc Loc pool va Goi y ve, dong bo voi nhau
+  const opts=Array.from({length:g.C},(_,i)=>g.C-i).map(k=>`<option value="${k}">${k===g.C?`đủ ${k}/${k} số`:`từ ${k} đến ${g.C} số`}</option>`).join('');
+  const sync=()=>{document.querySelectorAll('.needSync').forEach(e=>e.value=S.poolNeed);document.querySelectorAll('.lkSync').forEach(e=>e.checked=S.poolLk!==false);};
+  document.querySelectorAll('.needSync').forEach(e=>{e.innerHTML=opts;e.onchange=()=>{S.poolNeed=+e.value;sync();schedulePool();renderSuggest();};});
+  document.querySelectorAll('.lkSyncW').forEach(e=>e.style.display=g.LN?'':'none');
+  document.querySelectorAll('.lkSync').forEach(e=>e.onchange=()=>{S.poolLk=e.checked;sync();schedulePool();renderSuggest();});
+  sync();
   $('poolCard').ontoggle=()=>{if($('poolCard').open)schedulePool();};
   schedulePool();
 }
@@ -659,7 +662,7 @@ function renderSuggest(){
     return `<tr${par.has(e)?' style="background:rgba(240,180,41,.10);"':''}><td><input type="checkbox" class="sgP" data-e="${e}"${par.has(e)?' checked':''}></td><td>${e}:${C-e}</td><td>${tr.cnt[e]}</td><td class="rate ${up?'up':'dn'}">${pct1(pr)}</td><td>${pct1(th)}</td></tr>`;}).join('');
   const {out,pool,full,nCand,P}=sgPick(g,L,par,slo,shi,st.n,st.src),isP=st.src==='pool';
   const srcBtns=`<div class="row" style="margin-bottom:6px;"><span class="lbl">Nguồn số:</span>${[['pool','Pool rút gọn (bước Lọc pool)'],['vote','20 số nhiều phiếu nhất']].map(([k,t])=>`<span class="chip${st.src===k?' on':''}" data-src="${k}">${t}</span>`).join('')}</div>`;
-  let h=srcBtns+`<div class="foot" style="margin:0 0 6px;">${isP?`<b>Bước 1</b> – lọc pool: chọn ít phương pháp nhất để ${Wn} kỳ gần nhất kỳ nào cũng trúng ${P?poolRng(g,P.need,P.nl):''} (đổi yêu cầu ở mục "Lọc pool nhỏ nhất" bên dưới). <b>Bước 2</b> – bỏ các số không nằm trong pool cho ${drawLabel(g,L)}. <b>Bước 3</b> – trong pool, chỉ giữ các bộ ${C} số có dạng chẵn:lẻ được tích và tổng trong khoảng, ưu tiên số được nhiều phương pháp bầu.`:`Lấy 20 số nhiều phiếu nhất cho ${drawLabel(g,L)} (theo các phương pháp đang dùng), rồi chọn các bộ ${C} số có dạng chẵn:lẻ được tích và tổng trong khoảng, ưu tiên tổng phiếu cao.`} Xu hướng chẵn:lẻ và tổng tính trên <b>${Wn}</b> kỳ gần nhất (đổi ở "Số kỳ gần nhất", tối đa 500).</div>`;
+  let h=srcBtns+`<div class="foot" style="margin:0 0 6px;">${isP?`<b>Bước 1</b> – lọc pool: chọn ít phương pháp nhất để ${Wn} kỳ gần nhất kỳ nào cũng trúng ${P?poolRng(g,P.need,P.nl):''} (đổi ở ô "Pool phải khớp quá khứ" ngay trên). <b>Bước 2</b> – bỏ các số không nằm trong pool cho ${drawLabel(g,L)}. <b>Bước 3</b> – trong pool, chỉ giữ các bộ ${C} số có dạng chẵn:lẻ được tích và tổng trong khoảng, ưu tiên số được nhiều phương pháp bầu.`:`Lấy 20 số nhiều phiếu nhất cho ${drawLabel(g,L)} (theo các phương pháp đang dùng), rồi chọn các bộ ${C} số có dạng chẵn:lẻ được tích và tổng trong khoảng, ưu tiên tổng phiếu cao.`} Xu hướng chẵn:lẻ và tổng tính trên <b>${Wn}</b> kỳ gần nhất (đổi ở "Số kỳ gần nhất", tối đa 500).</div>`;
   if(isP&&P){const cc=countCombos(full,C,par,slo,shi);
     h+=`<div class="sum">Pool rút gọn: <b>${full.length}</b>/${g.N} số (từ <b>${P.nM}</b> phương pháp${P.ok?'':', <span class="lk-txt">chưa đạt yêu cầu ở mọi kỳ</span>'})${g.LN?` + <b>${Object.keys(P.l).length}</b>/${g.LN} số may mắn`:''} · cả pool có <b>${Math.round(cc.tot).toLocaleString('vi-VN')}</b> bộ ${C} số → sau lọc chẵn:lẻ + tổng còn <b class="hit-txt">${Math.round(cc.ok).toLocaleString('vi-VN')}</b> bộ (${cc.tot?pct1(cc.ok/cc.tot):'—'}).${full.length>22?` Vé được chọn trong 22 số nhiều phương pháp bầu nhất của pool.`:''}</div>`;}
   h+=`<div class="two"><div><div class="tw"><table><thead><tr><th>Ưu tiên</th><th>Chẵn:lẻ</th><th>Số kỳ</th><th>Tỉ lệ ${Wn} kỳ</th><th>Lý thuyết</th></tr></thead><tbody>${rows}</tbody></table></div><div class="foot">Mặc định tích 2 dạng ra nhiều nhất trong ${Wn} kỳ. Tỉ lệ xanh = đang ra nhiều hơn lý thuyết.</div></div>`;
