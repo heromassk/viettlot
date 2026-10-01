@@ -685,8 +685,8 @@ function renderSuggest(){
   h+=out.length?`<div class="tw"><table><thead><tr><th>#</th><th>Mức ưu tiên</th><th class="l">Vé gợi ý</th><th>Chẵn:lẻ</th><th>Tổng</th><th>${l5?'Nhóm phương pháp':'Điểm tin cậy'}</th></tr></thead><tbody>${out.map((o,i)=>{const L2=lv(i);return `<tr><td>${i+1}</td><td class="${L2[2]}" title="Xếp theo điểm tin cậy trong nhóm vé gợi ý">${L2[0]} ${L2[1]}</td><td class="l">${ballsHtml(o.nums,null,null,o.lk?[o.lk]:null)}</td><td>${o.ev}:${C-o.ev}</td><td>${o.sum}</td><td>${o.l5?o.sc+' PP':o.sc.toFixed(1)}</td></tr>`;}).join('')}</tbody></table></div><div class="foot">Mức ưu tiên chia 3 nhóm theo điểm tin cậy (tính từ quá khứ), không phải xác suất trúng. ${nCand.toLocaleString('vi-VN')} bộ thỏa điều kiện trong ${pool.length} số được xét.${g.LN?' Số may mắn (đỏ) lấy lần lượt từ 3 số may mắn điểm cao nhất.':''}</div>`+
     `<details class="sub"><summary>Độ tin cậy của ${sc.info.length} phương pháp đang dùng</summary><div class="tw" style="max-height:420px;overflow-y:auto;"><table><thead><tr><th class="l">Phương pháp</th><th>Gợi ý TB</th><th>Đã trúng / đã gợi ý</th><th>Tỉ lệ trúng</th><th>Mức ngẫu nhiên</th><th>Hệ số tin cậy</th><th class="l">Gợi ý kỳ tới</th></tr></thead><tbody>${sc.info.slice().sort((a,b)=>b.w-a.w).map(r=>{const st2=stat(g,r.m,L,Wn);return `<tr><td class="l"><b>${g.meta.methods[r.m].n}</b></td><td>${fmtAvg(st2.avg)}</td><td>${st2.hits}/${st2.sug}</td><td class="rate ${st2.rate>=st2.base?'up':'dn'}">${pct1(st2.rate)}</td><td>${pct1(st2.base)}</td><td><b>${r.w.toFixed(2)}</b></td><td class="l">${ballsHtml(r.ns,null,null,r.ls)}</td></tr>`;}).join('')}</tbody></table></div></details>`
     :'<div class="loading">Không có bộ nào thỏa điều kiện. Hãy tích thêm dạng chẵn:lẻ hoặc nới khoảng tổng.</div>';
-  const yv=sgY(g),tk=[g.meta.game,Wn,yv,st.n,S.lo,S.hi].join('|'),msg=S.sgTuneMsg&&S.sgTuneMsg.key===tk?S.sgTuneMsg.html:`<div class="foot" style="margin:0 0 6px;">Bấm <b>Tự học</b>: app lọc pool (đủ ≥${yv} số trúng ở mọi kỳ), rồi tự dò cho mỗi dãy một nhóm phương pháp riêng sao cho càng nhiều kỳ trong ${Wn} kỳ có ít nhất 1 dãy trúng ≥${yv} số càng tốt (mục tiêu ≥80%). Chạy nhiều lượt, giữ lượt tốt nhất; tối đa khoảng 1 phút.</div>`;
-  h+=`<details class="sub" id="sgBt"${S.sgBtOpen?' open':''}><summary>Đối chiếu quá khứ và tự học (${Wn} kỳ · mục tiêu ≥80% số kỳ có ít nhất 1 trong ${st.n} dãy trúng ≥${yv} số)</summary><div class="row" style="margin:4px 0 6px;"><span class="lbl">Mỗi kỳ cần ít nhất 1 dãy trúng từ</span><select id="sgYsel">${Array.from({length:C-1},(_,i)=>i+2).map(k=>`<option value="${k}"${k===yv?' selected':''}>${k}/${C}</option>`).join('')}</select><span class="lbl">số trở lên</span><button class="btn" id="sgTuneRun" style="border-color:var(--accent);">Tự học</button><button class="btn" id="sgTuneReset">Về mặc định</button></div><div id="sgTuneOut">${msg}</div><div id="sgBtBody"><div class="loading">Đang tính…</div></div></details>`;
+  const yv=sgY(g),tk=[g.meta.game,Wn,yv,st.n,S.lo,S.hi].join('|'),msg=S.sgTuneMsg&&S.sgTuneMsg.key===tk?S.sgTuneMsg.html:`<div class="foot" style="margin:0 0 6px;">Bấm <b>Tự học</b>: app lọc pool (đủ ≥${yv} số trúng ở mọi kỳ), rồi tự dò cho mỗi dãy một nhóm phương pháp riêng sao cho càng nhiều kỳ trong ${Wn} kỳ có ít nhất 1 dãy trúng ≥${yv} số càng tốt (mục tiêu ≥${sgGoal()}%). Chạy nhiều lượt, giữ lượt tốt nhất; tối đa khoảng 1 phút.</div>`;
+  h+=`<details class="sub" id="sgBt"${S.sgBtOpen?' open':''}><summary>Đối chiếu quá khứ và tự học (${Wn} kỳ · mục tiêu ≥${sgGoal()}% số kỳ có ít nhất 1 trong ${st.n} dãy trúng ≥${yv} số)</summary><div class="row" style="margin:4px 0 6px;"><span class="lbl">Mỗi kỳ cần ít nhất 1 dãy trúng từ</span><select id="sgYsel">${Array.from({length:C-1},(_,i)=>i+2).map(k=>`<option value="${k}"${k===yv?' selected':''}>${k}/${C}</option>`).join('')}</select><span class="lbl">số trở lên, ở ít nhất</span><select id="sgGoalSel">${[70,80,90,100].map(v=>`<option value="${v}"${v===sgGoal()?' selected':''}>${v}%</option>`).join('')}</select><span class="lbl">số kỳ</span><button class="btn" id="sgTuneRun" style="border-color:var(--accent);">Tự học</button><button class="btn" id="sgTuneReset">Về mặc định</button></div><div id="sgTuneOut">${msg}</div><div id="sgBtBody"><div class="loading">Đang tính…</div></div></details>`;
   box.innerHTML=h;
   box.querySelectorAll('[data-src]').forEach(c=>c.onclick=()=>{st.src=c.dataset.src;renderSuggest();});
   box.querySelectorAll('.sgP').forEach(c=>c.onchange=()=>{const p2=new Set(par);if(c.checked)p2.add(+c.dataset.e);else p2.delete(+c.dataset.e);st.par=p2;renderSuggest();});
@@ -695,9 +695,11 @@ function renderSuggest(){
   const past=()=>{clearTimeout(S.pastT);S.pastT=setTimeout(renderPast,30);};
   $('sgBt').ontoggle=()=>{S.sgBtOpen=$('sgBt').open;if(S.sgBtOpen)past();};if(S.sgBtOpen)past();
   $('sgYsel').onchange=()=>{st.y=+$('sgYsel').value;renderSuggest();};
+  $('sgGoalSel').onchange=()=>{S.sgGoal=+$('sgGoalSel').value;renderSuggest();};
   $('sgTuneRun').onclick=l5Run;$('sgTuneReset').onclick=()=>{S.l5=null;S.sgSc='w';S.sgK=0;st.f=true;S.sgTuneMsg=null;renderSuggest();};
 }
 // ---------- doi chieu qua khu + tu hoc (app duoc biet ket qua x ky de chon phuong phap) ----------
+function sgGoal(){return S.sgGoal||80;}   // muc tieu: % so ky can dat
 function sgY(g){const st=sgState(g);if(st.y==null||st.y>g.C)st.y=Math.min(3,g.C);return st.y;}
 function pAtLeast(g,y,n){   // xac suat it nhat 1 trong n ve ngau nhien trung >= y so chinh
   const C=g.C,N=g.N;let p=0;for(let k=y;k<=C;k++)p+=comb(C,k)*comb(N-C,C-k)/comb(N,C);return 1-Math.pow(1-p,n);
@@ -717,7 +719,6 @@ function sgFitEval(g,c,t1,Wn,y,n,tA,tB){   // dung cau hinh c: chon phuong phap 
 }
 function sgCfgNow(g){const st=sgState(g);return {need:S.poolNeed||g.C,sc:S.sgSc||'w',f:st.f!==false,K:S.sgK||0};}
 function sgCfgTxt(g,c){return `pool khớp ${c.need===g.C?`đủ ${g.C}/${g.C}`:`từ ${c.need}`} số · chấm điểm ${c.sc==='c'?'đếm số phương pháp':'theo độ tin cậy'} · lọc chẵn:lẻ + tổng ${c.f?'bật':'tắt'} · chọn vé trong ${c.K||22} số điểm cao nhất`;}
-function sgTuneCfgs(g,y){const C=g.C,out=[];for(let need=y;need<=C;need++)for(const sc of ['w','c'])for(const f of [true,false])for(const K of [10,16,22])out.push({need,sc,f,K});return out;}
 function sgPastHtml(g,R,y,n){   // bang doi chieu: moi ky hien n day da goi y, so trung in xanh, danh dau dat / khong dat
   const C=g.C,LN=g.LN;
   return `<div class="tw" style="max-height:640px;overflow-y:auto;"><table id="sgBtTbl"><thead><tr><th class="l">Kỳ</th><th class="l">Kết quả (xanh = có trong pool)</th><th class="l">${n} dãy app gợi ý cho kỳ đó (số trùng in xanh)</th></tr></thead><tbody>${R.rows.map(r=>{
@@ -726,34 +727,16 @@ function sgPastHtml(g,R,y,n){   // bang doi chieu: moi ky hien n day da goi y, s
     return `<tr${ok?' style="background:rgba(63,185,80,.07);"':''}><td class="l k" style="vertical-align:top;">${fmtDraw(g.meta.dates[r.t])}<div style="margin:3px 0;font-weight:700;" class="${ok?'hit-txt':'lk-txt'}">${ok?`✓ đạt (dãy tốt nhất ${r.best}/${C})`:`✗ chưa đạt (tốt nhất ${r.best}/${C})`}</div><div class="foot" style="margin:0;">pool ${r.F.full.length} số, chứa ${r.ip}/${C} số ra</div></td><td class="l" data-l="Kết quả" style="vertical-align:top;">${ballsHtml(res,new Set(r.F.full),null,LN?[lres]:null,null)}</td><td class="l" data-l="${n} dãy app gợi ý (số trùng in xanh)">${tks||'—'}</td></tr>`;}).join('')}</tbody></table></div>`;
 }
 function renderPast(){   // ve phan doi chieu theo cau hinh dang dung
-  const g=G[S.game],st=sgState(g),L=g.L,Wn=Math.min(S.win,L),y=sgY(g),n=st.n,need=Math.ceil(0.8*Wn),l5=l5Now(g);
+  const g=G[S.game],st=sgState(g),L=g.L,Wn=Math.min(S.win,L),y=sgY(g),n=st.n,need=Math.ceil(sgGoal()/100*Wn),l5=l5Now(g);
   if(l5){const rows=[];let pass=0,ps=0;
     for(let t=L-1;t>=L-Wn;t--){const PL=l5Pool(g,l5.M,t),H=new Set(g.meta.results[t]),outT=l5.rules.map(R=>({nums:l5Ticket(g,R,l5.M,t,PL),lk:null})),hits=outT.map(o=>o.nums.filter(x=>H.has(x)).length),best=Math.max(...hits);
       if(best>=y)pass++;ps+=PL.o.length;rows.push({t,F:{out:outT,full:PL.o},hits,best,ip:PL.o.filter(x=>H.has(x)).length});}
     const ok=pass>=need;
-    $('sgBtBody').innerHTML=`<div class="sum" style="border-left:3px solid var(--${ok?'good':'bad'});font-size:.95rem;">Theo cách đã học: <b class="${ok?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${pass}/${Wn}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số (${pct1(pass/Wn)}; mục tiêu ≥80% = ${need} kỳ) · pool TB <b>${(ps/Wn).toFixed(1)}</b>/${g.N} số từ ${l5.M.length} phương pháp · ${n} dãy ngẫu nhiên: ≈${(pAtLeast(g,y,n)*Wn).toFixed(1)} kỳ.</div>`+sgPastHtml(g,{rows},y,n);
+    $('sgBtBody').innerHTML=`<div class="sum" style="border-left:3px solid var(--${ok?'good':'bad'});font-size:.95rem;">Theo cách đã học: <b class="${ok?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${pass}/${Wn}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số (${pct1(pass/Wn)}; mục tiêu ≥${sgGoal()}% = ${need} kỳ) · pool TB <b>${(ps/Wn).toFixed(1)}</b>/${g.N} số từ ${l5.M.length} phương pháp · ${n} dãy ngẫu nhiên: ≈${(pAtLeast(g,y,n)*Wn).toFixed(1)} kỳ.</div>`+sgPastHtml(g,{rows},y,n);
     return;}
   const c=sgCfgNow(g),R=sgFitEval(g,c,L,Wn,y,n,L-Wn,L);
   const rnd=pAtLeast(g,y,n)*Wn,ok=R.pass>=need;
-  $('sgBtBody').innerHTML=`<div class="sum" style="border-left:3px solid var(--${ok?'good':'bad'});font-size:.95rem;">Với cách gợi ý đang dùng (${sgCfgTxt(g,c)}): <b class="${ok?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${R.pass}/${Wn}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số (${pct1(R.pass/Wn)}; mục tiêu ≥80% = ${need} kỳ) · cần <b>${R.nM}</b> phương pháp · pool TB <b>${R.pool.toFixed(1)}</b>/${g.N} số · ${n} dãy ngẫu nhiên: ≈${rnd.toFixed(1)} kỳ.</div><div class="foot" style="margin:0 0 6px;">App được biết kết quả ${Wn} kỳ này để chọn phương pháp (giống mục Lọc pool), rồi gợi ý ${n} dãy cho từng kỳ bằng đúng các phương pháp đó.</div>`+sgPastHtml(g,R,y,n);
-}
-function sgTune(){
-  const g=G[S.game],L=g.L,st=sgState(g),Wn=Math.min(S.win,L),y=sgY(g),n=st.n,box=$('sgTuneOut'),cfgs=sgTuneCfgs(g,y),goal=Math.ceil(0.8*Wn);
-  const res=[];let i=0;
-  const better=(a,b)=>{const ga=a.fit.pass>=goal,gb=b.fit.pass>=goal;if(ga!==gb)return ga?-1:1;return b.fit.pass-a.fit.pass||a.fit.pool-b.fit.pool||b.fit.avg-a.fit.avg;};
-  const step=()=>{const t0=Date.now();
-    while(i<cfgs.length&&Date.now()-t0<150){const c=cfgs[i++];const r={c,fit:sgFitEval(g,c,L,Wn,y,n,L-Wn,L)};
-      if(L-2*Wn>=0)r.old=sgFitEval(g,c,L-Wn,Wn,y,n,L-2*Wn,L-Wn);res.push(r);}
-    if(i<cfgs.length){box.innerHTML=`<div class="loading">Đang thử cách gợi ý ${i}/${cfgs.length}…</div>`;setTimeout(step,0);return;}
-    res.sort(better);const b=res[0],okG=b.fit.pass>=goal;
-    S.poolNeed=b.c.need;S.sgSc=b.c.sc;S.sgK=b.c.K;st.f=b.c.f;   // ap dung luon cach tot nhat
-    let chk='';const withOld=res.filter(r=>r.old);
-    if(withOld.length){const bo=withOld.slice().sort((a,b2)=>b2.old.pass-a.old.pass||a.old.pool-b2.old.pool)[0];bo.fwd=sgFitEval(g,bo.c,L-Wn,Wn,y,n,L-Wn,L);   // chi tinh phan 'dung cho ky sau' cho cach tot nhat luc hoc
-      chk=`<div class="sum" style="border-left:3px solid var(--bad);"><b>Kiểm tra:</b> nếu chỉ học trên ${Wn} kỳ <i>trước đó</i> thì cách tốt nhất đạt ${bo.old.pass}/${Wn} kỳ lúc học. Đem đúng bộ phương pháp đó dùng cho ${Wn} kỳ gần nhất (lúc học chưa biết kết quả các kỳ này) chỉ đạt <b>${bo.fwd.pass}/${Wn}</b> kỳ; ${n} dãy ngẫu nhiên ≈${(pAtLeast(g,y,n)*Wn).toFixed(1)} kỳ. Đây là con số gần nhất với điều sẽ xảy ra ở kỳ tới.</div>`;}
-    S.sgTuneMsg={key:[g.meta.game,Wn,y,n,S.lo,S.hi].join('|'),html:`<div class="sum" style="border-left:3px solid var(--${okG?'good':'bad'});">Đã thử <b>${cfgs.length}</b> cách. ${okG?`Cách tốt nhất đạt <b class="hit-txt">${b.fit.pass}/${Wn}</b> kỳ (≥80%)`:`<span class="lk-txt">Không cách nào đạt 80%</span>; tốt nhất <b>${b.fit.pass}/${Wn}</b> kỳ (${pct1(b.fit.pass/Wn)})`} với pool TB <b>${b.fit.pool.toFixed(1)}</b> số, ${b.fit.nM} phương pháp: <b>${sgCfgTxt(g,b.c)}</b>. Đã áp dụng cho gợi ý kỳ tới và bảng bên dưới.</div>${chk}`};
-    renderPoolCtl();renderSuggest();
-  };
-  box.innerHTML='<div class="loading">Đang thử…</div>';setTimeout(step,20);
+  $('sgBtBody').innerHTML=`<div class="sum" style="border-left:3px solid var(--${ok?'good':'bad'});font-size:.95rem;">Với cách gợi ý đang dùng (${sgCfgTxt(g,c)}): <b class="${ok?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${R.pass}/${Wn}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số (${pct1(R.pass/Wn)}; mục tiêu ≥${sgGoal()}% = ${need} kỳ) · cần <b>${R.nM}</b> phương pháp · pool TB <b>${R.pool.toFixed(1)}</b>/${g.N} số · ${n} dãy ngẫu nhiên: ≈${rnd.toFixed(1)} kỳ.</div><div class="foot" style="margin:0 0 6px;">App được biết kết quả ${Wn} kỳ này để chọn phương pháp (giống mục Lọc pool), rồi gợi ý ${n} dãy cho từng kỳ bằng đúng các phương pháp đó.</div>`+sgPastHtml(g,R,y,n);
 }
 // ---------- tu hoc theo nhom phuong phap: moi day = 1 nhom phuong phap, day ky t = C so trong pool(t) duoc nhom do bau nhieu nhat ----------
 function l5Pool(g,M,d){const v={};M.forEach(m=>{if(okCnt(g,m,d))setOf(g,m,d).forEach(x=>v[x]=(v[x]||0)+1);});const o=Object.keys(v).map(Number).sort((a,b)=>v[b]-v[a]||a-b);return {o,set:new Set(o)};}
@@ -789,14 +772,14 @@ function l5Learn(g,t1,Wn,y,n,iters,seed){   // hoc tren Wn ky truoc t1 (app biet
 function l5Key(g){const st=sgState(g);return [g.meta.game,Math.min(S.win,g.L),sgY(g),st.n,S.lo,S.hi,S.poolPrune!==false,S.poolNeed,poolNl(g)].join('|');}
 function l5Now(g){return S.l5&&S.l5.key===l5Key(g)?S.l5:null;}
 function l5Run(){   // chay nhieu luot (moi luot 1 hat giong), giu luot tot nhat; dung khi du tat ca ky hoac het thoi gian
-  const g=G[S.game],L=g.L,st=sgState(g),Wn=Math.min(S.win,L),y=sgY(g),n=st.n,goal=Math.ceil(0.8*Wn),box=$('sgTuneOut'),T0=Date.now(),iters=Wn>50?2500:4000;
+  const g=G[S.game],L=g.L,st=sgState(g),Wn=Math.min(S.win,L),y=sgY(g),n=st.n,goal=Math.ceil(sgGoal()/100*Wn),box=$('sgTuneOut'),T0=Date.now(),iters=Wn>50?2500:4000;
   let best=null,k=0;
   const step=()=>{k++;const R=l5Learn(g,L,Wn,y,n,iters,k*7919);if(!best||R.pass>best.pass)best=R;
     const el=((Date.now()-T0)/1000).toFixed(0);
-    if(best.pass<Wn&&k<12&&Date.now()-T0<60000){box.innerHTML=`<div class="loading">Đang học… lượt ${k}: tốt nhất ${best.pass}/${Wn} kỳ (mục tiêu ≥${goal}) · ${el} giây</div>`;setTimeout(step,0);return;}
+    if(best.pass<Wn&&k<12&&Date.now()-T0<60000){box.innerHTML=`<div class="loading">Đang học… lượt ${k}: tốt nhất ${best.pass}/${Wn} kỳ (mục tiêu ≥${goal} = ${sgGoal()}%) · ${el} giây</div>`;setTimeout(step,0);return;}
     S.poolNeed=y;renderPoolCtl();   // pool cua cach da hoc = pool khop >= y so
     S.l5={key:l5Key(g),rules:best.rules,M:best.M,pass:best.pass};
-    S.sgTuneMsg={key:[g.meta.game,Wn,y,n,S.lo,S.hi].join('|'),html:`<div class="sum" style="border-left:3px solid var(--${best.pass>=goal?'good':'bad'});">Đã học ${k} lượt (${el} giây). Tốt nhất: <b class="${best.pass>=goal?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${best.pass}/${Wn}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số (${pct1(best.pass/Wn)}${best.pass>=goal?', đạt mục tiêu 80%':', chưa đạt 80%'}). Mỗi dãy do một nhóm phương pháp tạo ra (${best.rules.map(r=>r.length).join(', ')} phương pháp), chỉ lấy số trong pool (${best.M.length} phương pháp lọc pool). Đã dùng cách này cho ${n} dãy kỳ tới và bảng bên dưới.</div>`};
+    S.sgTuneMsg={key:[g.meta.game,Wn,y,n,S.lo,S.hi].join('|'),html:`<div class="sum" style="border-left:3px solid var(--${best.pass>=goal?'good':'bad'});">Đã học ${k} lượt (${el} giây). Tốt nhất: <b class="${best.pass>=goal?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${best.pass}/${Wn}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số (${pct1(best.pass/Wn)}${best.pass>=goal?`, đạt mục tiêu ${sgGoal()}%`:`, chưa đạt ${sgGoal()}%`}). Mỗi dãy do một nhóm phương pháp tạo ra (${best.rules.map(r=>r.length).join(', ')} phương pháp), chỉ lấy số trong pool (${best.M.length} phương pháp lọc pool). Đã dùng cách này cho ${n} dãy kỳ tới và bảng bên dưới.</div>`};
     renderSuggest();
   };
   box.innerHTML='<div class="loading">Đang học…</div>';setTimeout(step,20);
