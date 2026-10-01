@@ -156,14 +156,16 @@ tr.off .b{opacity:.5;}
   <div class="votes" id="votes"></div>
   <div id="lkBox" style="display:none;margin-top:10px;"><div class="lbl" style="margin-bottom:4px;">Số may mắn (đỏ):</div><div class="votes" id="votesLk"></div></div>
   <details id="voters" style="margin-top:10px;"><summary style="cursor:pointer;color:var(--accent);font-size:.88rem;" id="votersSum">Xem danh sách các phương pháp đã bầu cho kỳ này</summary><div class="tw" style="margin-top:6px;"><table id="votersTbl"></table></div></details>
-  <details class="sub" id="poolCard" style="margin-top:10px;"><summary>Lọc pool nhỏ nhất (gom phương pháp để kỳ nào cũng đủ số trúng)</summary>
-    <div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div>
-    <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong các phương pháp qua thanh trượt) sao cho trong số kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ. Tự tính lại khi đổi số kỳ, thanh trượt hoặc yêu cầu số trúng.</div>
-    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed" class="needSync"></select><label class="lbl lkSyncW" id="poolLkW" style="display:none;"><input type="checkbox" id="poolLk" class="lkSync" checked> và phải trúng cả số may mắn</label></div>
-    <div id="poolOut"></div>
-  </details>
-  <details class="sub" id="sgCard" style="margin-top:10px;"><summary>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</summary><div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div><div class="row" style="margin-bottom:6px;"><span class="lbl">Pool phải khớp quá khứ: mỗi kỳ trúng</span><select class="needSync"></select><label class="lbl lkSyncW" style="display:none;"><input type="checkbox" class="lkSync" checked> và cả số may mắn</label><span class="foot" style="margin:0;">(đồng bộ với mục Lọc pool; khớp càng cao thì pool càng to, gợi ý càng kém chọn lọc)</span></div><div id="sgBody"></div><details class="sub" id="sgTune"><summary>Tự học: tìm cách gợi ý khớp nhất với các kỳ quá khứ</summary><div id="sgTuneOut"></div></details></details>
 </details>
+
+<details class="card" id="poolCard"><summary><h2>Lọc pool nhỏ nhất (gom phương pháp để kỳ nào cũng đủ số trúng)</h2></summary>
+  <div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div>
+  <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong các phương pháp qua thanh trượt) sao cho trong số kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ. Tự tính lại khi đổi số kỳ, thanh trượt hoặc yêu cầu số trúng.</div>
+  <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed" class="needSync"></select><label class="lbl lkSyncW" id="poolLkW" style="display:none;"><input type="checkbox" id="poolLk" class="lkSync" checked> và phải trúng cả số may mắn</label></div>
+  <div id="poolOut"></div>
+</details>
+
+<details class="card" id="sgCard"><summary><h2>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</h2></summary><div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div><div class="row" style="margin-bottom:6px;"><span class="lbl">Pool phải khớp quá khứ: mỗi kỳ trúng</span><select class="needSync"></select><label class="lbl lkSyncW" style="display:none;"><input type="checkbox" class="lkSync" checked> và cả số may mắn</label><span class="foot" style="margin:0;">(đồng bộ với mục Lọc pool; khớp càng cao thì pool càng to, gợi ý càng kém chọn lọc)</span></div><div id="sgBody"></div><details class="sub" id="sgTune"><summary>Tự học: tìm cách gợi ý khớp nhất với các kỳ quá khứ</summary><div id="sgTuneOut"></div></details></details>
 
 <details class="card">
   <summary><h2>So sánh nhiều kỳ liên tiếp</h2></summary>
