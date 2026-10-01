@@ -165,6 +165,12 @@ tr.off .b{opacity:.5;}
   <div id="poolOut"></div>
 </details>
 
+<details class="card" id="sgBt"><summary><h2 id="sgBtTitle">Đối chiếu quá khứ và tự học</h2></summary>
+  <div id="sgBtCtl"></div>
+  <div id="sgTuneOut"></div>
+  <div id="sgBtBody"></div>
+</details>
+
 <details class="card" id="sgCard"><summary><h2>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</h2></summary><div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div><div class="row" style="margin-bottom:6px;"><span class="lbl">Pool phải khớp quá khứ: mỗi kỳ trúng</span><select class="needSync"></select><label class="lbl lkSyncW" style="display:none;"><input type="checkbox" class="lkSync" checked> và cả số may mắn</label><span class="foot" style="margin:0;">(đồng bộ với mục Lọc pool; khớp càng cao thì pool càng to, gợi ý càng kém chọn lọc)</span></div><div id="sgBody"></div></details>
 
 <details class="card">
@@ -256,7 +262,7 @@ async function refresh(){
   $('cmpFoot').textContent=`Cột 2: tổng hợp gợi ý của 50 phương pháp cho kỳ đó kèm số phiếu, xếp từ nhiều phiếu đến ít. Số trùng với kết quả in xanh${g.LN?', số may mắn in đỏ':''}.`;
   $('nextSel').innerHTML=m.nextDates.map((d,i)=>`<option value="${i}">${fmtDraw(d)} ${i?'':'— kỳ tới'}</option>`).join('');$('nextSel').value=S.nextIdx;setNextNote();
   $('lkBox').style.display=g.LN?'block':'none';
-  renderTop();renderStats();renderVotes();renderCmp();renderTicket();renderPoolCtl();
+  renderTop();renderStats();renderVotes();renderCmp();renderTicket();renderPoolCtl();renderPastCtl();
 }
 // ---------- tinh gia ve: ve thuong 10.000d, ve bao ----------
 S.dopen=S.dopen||{};
@@ -663,7 +669,7 @@ function sgState(g){   // lua chon cua nguoi dung theo game; null = tu dong theo
   const k=g.meta.game;S.sg=S.sg||{};return S.sg[k]=S.sg[k]||{par:null,lo:null,hi:null,n:5,src:'pool'};
 }
 function renderSuggest(){
-  const box=$('sgBody');if(!box||!$('sgCard').open){if(box)box.innerHTML='';return;}
+  const box=$('sgBody');if(!box||!$('sgCard').open){if(box)box.innerHTML='';renderPastCtl();return;}
   const g=G[S.game],L=g.L,C=g.C,N=g.N,Wn=Math.min(S.win,500,L),tr=sgTrend(g,L,Wn),st=sgState(g);
   const {par,slo,shi}=sgCond(g,tr,st);
   const rows=Array.from({length:C+1},(_,i)=>C-i).map(e=>{const pr=tr.cnt[e]/tr.n,th=tr.th(e),up=pr>th;
@@ -685,19 +691,12 @@ function renderSuggest(){
   h+=out.length?`<div class="tw"><table><thead><tr><th>#</th><th>Mức ưu tiên</th><th class="l">Vé gợi ý</th><th>Chẵn:lẻ</th><th>Tổng</th><th>${l5?'Nhóm phương pháp':'Điểm tin cậy'}</th></tr></thead><tbody>${out.map((o,i)=>{const L2=lv(i);return `<tr><td>${i+1}</td><td class="${L2[2]}" title="Xếp theo điểm tin cậy trong nhóm vé gợi ý">${L2[0]} ${L2[1]}</td><td class="l">${ballsHtml(o.nums,null,null,o.lk?[o.lk]:null)}</td><td>${o.ev}:${C-o.ev}</td><td>${o.sum}</td><td>${o.l5?o.sc+' PP':o.sc.toFixed(1)}</td></tr>`;}).join('')}</tbody></table></div><div class="foot">Mức ưu tiên chia 3 nhóm theo điểm tin cậy (tính từ quá khứ), không phải xác suất trúng. ${nCand.toLocaleString('vi-VN')} bộ thỏa điều kiện trong ${pool.length} số được xét.${g.LN?' Số may mắn (đỏ) lấy lần lượt từ 3 số may mắn điểm cao nhất.':''}</div>`+
     `<details class="sub"><summary>Độ tin cậy của ${sc.info.length} phương pháp đang dùng</summary><div class="tw" style="max-height:420px;overflow-y:auto;"><table><thead><tr><th class="l">Phương pháp</th><th>Gợi ý TB</th><th>Đã trúng / đã gợi ý</th><th>Tỉ lệ trúng</th><th>Mức ngẫu nhiên</th><th>Hệ số tin cậy</th><th class="l">Gợi ý kỳ tới</th></tr></thead><tbody>${sc.info.slice().sort((a,b)=>b.w-a.w).map(r=>{const st2=stat(g,r.m,L,Wn);return `<tr><td class="l"><b>${g.meta.methods[r.m].n}</b></td><td>${fmtAvg(st2.avg)}</td><td>${st2.hits}/${st2.sug}</td><td class="rate ${st2.rate>=st2.base?'up':'dn'}">${pct1(st2.rate)}</td><td>${pct1(st2.base)}</td><td><b>${r.w.toFixed(2)}</b></td><td class="l">${ballsHtml(r.ns,null,null,r.ls)}</td></tr>`;}).join('')}</tbody></table></div></details>`
     :'<div class="loading">Không có bộ nào thỏa điều kiện. Hãy tích thêm dạng chẵn:lẻ hoặc nới khoảng tổng.</div>';
-  const yv=sgY(g),tk=[g.meta.game,Wn,yv,st.n,S.lo,S.hi].join('|'),msg=S.sgTuneMsg&&S.sgTuneMsg.key===tk?S.sgTuneMsg.html:`<div class="foot" style="margin:0 0 6px;">Bấm <b>Tự học</b>: app lọc pool (đủ ≥${yv} số trúng ở mọi kỳ), rồi tự dò cho mỗi dãy một nhóm phương pháp riêng sao cho càng nhiều kỳ trong ${Wn} kỳ có ít nhất 1 dãy trúng ≥${yv} số càng tốt (mục tiêu ≥${sgGoal()}%). Chạy nhiều lượt, giữ lượt tốt nhất; tối đa khoảng 1 phút.</div>`;
-  h+=`<details class="sub" id="sgBt"${S.sgBtOpen?' open':''}><summary>Đối chiếu quá khứ và tự học (${Wn} kỳ · mục tiêu ≥${sgGoal()}% số kỳ có ít nhất 1 trong ${st.n} dãy trúng ≥${yv} số)</summary><div class="row" style="margin:4px 0 6px;"><span class="lbl">Số kỳ gần nhất (x):</span>${WINS.map(w=>`<span class="chip${w===S.win?' on':''}" data-w2="${w}">${w}</span>`).join('')}</div><div class="row" style="margin:4px 0 6px;"><span class="lbl">Mỗi kỳ cần ít nhất 1 dãy trúng từ</span><select id="sgYsel">${Array.from({length:C-1},(_,i)=>i+2).map(k=>`<option value="${k}"${k===yv?' selected':''}>${k}/${C}</option>`).join('')}</select><span class="lbl">số trở lên, ở ít nhất</span><select id="sgGoalSel">${[70,80,90,100].map(v=>`<option value="${v}"${v===sgGoal()?' selected':''}>${v}%</option>`).join('')}</select><span class="lbl">số kỳ</span><button class="btn" id="sgTuneRun" style="border-color:var(--accent);">Tự học</button><button class="btn" id="sgTuneReset">Về mặc định</button></div><div id="sgTuneOut">${msg}</div><div id="sgBtBody"><div class="loading">Đang tính…</div></div></details>`;
   box.innerHTML=h;
   box.querySelectorAll('[data-src]').forEach(c=>c.onclick=()=>{st.src=c.dataset.src;renderSuggest();});
   box.querySelectorAll('.sgP').forEach(c=>c.onchange=()=>{const p2=new Set(par);if(c.checked)p2.add(+c.dataset.e);else p2.delete(+c.dataset.e);st.par=p2;renderSuggest();});
   $('sgLo').onchange=()=>{st.lo=+$('sgLo').value;renderSuggest();};$('sgHi').onchange=()=>{st.hi=+$('sgHi').value;renderSuggest();};
   $('sgAuto').onclick=()=>{st.lo=st.hi=null;renderSuggest();};$('sgN').onchange=()=>{st.n=+$('sgN').value;renderSuggest();};
-  const past=()=>{clearTimeout(S.pastT);S.pastT=setTimeout(renderPast,30);};
-  $('sgBt').ontoggle=()=>{S.sgBtOpen=$('sgBt').open;if(S.sgBtOpen)past();};if(S.sgBtOpen)past();
-  $('sgYsel').onchange=()=>{st.y=+$('sgYsel').value;renderSuggest();};
-  box.querySelectorAll('[data-w2]').forEach(c=>c.onclick=()=>{S.win=+c.dataset.w2;S.page=0;S.open.clear();if(S.cmpN>S.win)S.cmpN=S.win;S.drawIdx=null;refresh();});   // dong bo voi hang chon so ky o dau trang
-  $('sgGoalSel').onchange=()=>{S.sgGoal=+$('sgGoalSel').value;renderSuggest();};
-  $('sgTuneRun').onclick=l5Run;$('sgTuneReset').onclick=()=>{S.l5=null;S.sgSc='w';S.sgK=0;st.f=true;S.sgTuneMsg=null;renderSuggest();};
+  renderPastCtl();
 }
 // ---------- doi chieu qua khu + tu hoc (app duoc biet ket qua x ky de chon phuong phap) ----------
 function sgGoal(){return S.sgGoal||80;}   // muc tieu: % so ky can dat
@@ -781,9 +780,23 @@ function l5Run(){   // chay nhieu luot (moi luot 1 hat giong), giu luot tot nhat
     S.poolNeed=y;renderPoolCtl();   // pool cua cach da hoc = pool khop >= y so
     S.l5={key:l5Key(g),rules:best.rules,M:best.M,pass:best.pass};
     S.sgTuneMsg={key:[g.meta.game,Wn,y,n,S.lo,S.hi].join('|'),html:`<div class="sum" style="border-left:3px solid var(--${best.pass>=goal?'good':'bad'});">Đã học ${k} lượt (${el} giây). Tốt nhất: <b class="${best.pass>=goal?'hit-txt':'lk-txt'}" style="font-size:1.1rem;">${best.pass}/${Wn}</b> kỳ có ít nhất 1 trong ${n} dãy trúng ≥${y} số (${pct1(best.pass/Wn)}${best.pass>=goal?`, đạt mục tiêu ${sgGoal()}%`:`, chưa đạt ${sgGoal()}%`}). Mỗi dãy do một nhóm phương pháp tạo ra (${best.rules.map(r=>r.length).join(', ')} phương pháp), chỉ lấy số trong pool (${best.M.length} phương pháp lọc pool). Đã dùng cách này cho ${n} dãy kỳ tới và bảng bên dưới.</div>`};
-    renderSuggest();
+    renderSuggest();renderPastCtl();
   };
   box.innerHTML='<div class="loading">Đang học…</div>';setTimeout(step,20);
+}
+function renderPastCtl(){   // khoi rieng "Doi chieu qua khu va tu hoc": bo loc x, y, %, nut tu hoc
+  const g=G[S.game];if(!g)return;const st=sgState(g),C=g.C,L=g.L,Wn=Math.min(S.win,L),yv=sgY(g);
+  $('sgBtTitle').textContent=`Đối chiếu quá khứ và tự học (${Wn} kỳ · mục tiêu ≥${sgGoal()}% số kỳ có ít nhất 1 trong ${st.n} dãy trúng ≥${yv} số)`;
+  $('sgBtCtl').innerHTML=`<div class="row" style="margin:0 0 6px;"><span class="lbl">Số kỳ gần nhất (x):</span>${WINS.map(w=>`<span class="chip${w===S.win?' on':''}" data-w2="${w}">${w}</span>`).join('')}</div><div class="row" style="margin:4px 0 6px;"><span class="lbl">Mỗi kỳ cần ít nhất 1 dãy trúng từ</span><select id="sgYsel">${Array.from({length:C-1},(_,i)=>i+2).map(k=>`<option value="${k}"${k===yv?' selected':''}>${k}/${C}</option>`).join('')}</select><span class="lbl">số trở lên, ở ít nhất</span><select id="sgGoalSel">${[70,80,90,100].map(v=>`<option value="${v}"${v===sgGoal()?' selected':''}>${v}%</option>`).join('')}</select><span class="lbl">số kỳ</span><button class="btn" id="sgTuneRun" style="border-color:var(--accent);">Tự học</button><button class="btn" id="sgTuneReset">Về mặc định</button></div><div class="foot" style="margin:0 0 6px;">Số dãy mỗi kỳ (${st.n}) và cách lọc pool lấy theo mục Gợi ý vé và Lọc pool. Cách đã học được dùng luôn cho các dãy ở mục Gợi ý vé.</div>`;
+  const tk=[g.meta.game,Wn,yv,st.n,S.lo,S.hi].join('|');
+  $('sgTuneOut').innerHTML=S.sgTuneMsg&&S.sgTuneMsg.key===tk?S.sgTuneMsg.html:`<div class="foot" style="margin:0 0 6px;">Bấm <b>Tự học</b>: app lọc pool (đủ ≥${yv} số trúng ở mọi kỳ), rồi tự dò cho mỗi dãy một nhóm phương pháp riêng sao cho càng nhiều kỳ trong ${Wn} kỳ có ít nhất 1 dãy trúng ≥${yv} số càng tốt (mục tiêu ≥${sgGoal()}%). Chạy nhiều lượt, giữ lượt tốt nhất; tối đa khoảng 1 phút.</div>`;
+  const box=$('sgBtCtl'),again=()=>{renderPastCtl();renderSuggest();};
+  box.querySelectorAll('[data-w2]').forEach(c=>c.onclick=()=>{S.win=+c.dataset.w2;S.page=0;S.open.clear();if(S.cmpN>S.win)S.cmpN=S.win;S.drawIdx=null;refresh();});   // dong bo voi hang chon so ky o dau trang
+  $('sgYsel').onchange=()=>{st.y=+$('sgYsel').value;again();};
+  $('sgGoalSel').onchange=()=>{S.sgGoal=+$('sgGoalSel').value;again();};
+  $('sgTuneRun').onclick=l5Run;$('sgTuneReset').onclick=()=>{S.l5=null;S.sgSc='w';S.sgK=0;st.f=true;S.sgTuneMsg=null;again();};
+  $('sgBt').ontoggle=()=>{if($('sgBt').open){$('sgBtBody').innerHTML='<div class="loading">Đang tính…</div>';clearTimeout(S.pastT);S.pastT=setTimeout(renderPast,30);}};
+  if($('sgBt').open){$('sgBtBody').innerHTML='<div class="loading">Đang tính…</div>';clearTimeout(S.pastT);S.pastT=setTimeout(renderPast,30);}else $('sgBtBody').innerHTML='';
 }
 function renderScope(){
   document.querySelectorAll('.scopeBtns').forEach(el=>{
