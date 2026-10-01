@@ -153,8 +153,9 @@ tr.off .b{opacity:.5;}
   <div class="votes" id="votes"></div>
   <div id="lkBox" style="display:none;margin-top:10px;"><div class="lbl" style="margin-bottom:4px;">Số may mắn (đỏ):</div><div class="votes" id="votesLk"></div></div>
   <details id="voters" style="margin-top:10px;"><summary style="cursor:pointer;color:var(--accent);font-size:.88rem;" id="votersSum">Xem danh sách các phương pháp đã bầu cho kỳ này</summary><div class="tw" style="margin-top:6px;"><table id="votersTbl"></table></div></details>
-  <details class="sub" id="sgCard" style="margin-top:10px;"><summary>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</summary><div id="sgBody"></div></details>
+  <details class="sub" id="sgCard" style="margin-top:10px;"><summary>Gợi ý vé ưu tiên dạng chẵn:lẻ và tổng hay ra gần đây</summary><div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div><div id="sgBody"></div></details>
   <details class="sub" id="poolCard" style="margin-top:10px;"><summary>Lọc pool nhỏ nhất (gom phương pháp để kỳ nào cũng đủ số trúng)</summary>
+    <div class="row" style="margin-bottom:6px;"><span class="lbl">Số kỳ gần nhất:</span><span class="row winMirror"></span></div>
     <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong các phương pháp qua thanh trượt) sao cho trong số kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ. Tự tính lại khi đổi số kỳ, thanh trượt hoặc yêu cầu số trúng.</div>
     <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed"></select><label class="lbl" id="poolLkW" style="display:none;"><input type="checkbox" id="poolLk" checked> và phải trúng cả số may mắn</label></div>
     <div id="poolOut"></div>
@@ -243,7 +244,9 @@ function renderControls(){
   $('gameTabs').innerHTML=GAMES.map(([k,l])=>`<span class="chip${k===S.game?' on':''}" data-g="${k}">${l}</span>`).join('');
   $('gameTabs').querySelectorAll('.chip').forEach(e=>e.onclick=async()=>{S.game=e.dataset.g;S.page=0;S.open.clear();S.drawIdx=null;S.nextIdx=0;S.fixed=null;await refresh();});
   $('winBtns').innerHTML=WINS.map(w=>`<span class="chip${w===S.win?' on':''}" data-w="${w}">${w}</span>`).join('');
-  $('winBtns').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.win=+e.dataset.w;S.page=0;S.open.clear();if(S.cmpN>S.win)S.cmpN=S.win;S.drawIdx=null;refresh();});
+  const wHtml=WINS.map(w=>`<span class="chip${w===S.win?' on':''}" data-w="${w}">${w}</span>`).join('');
+  document.querySelectorAll('.winMirror').forEach(el=>el.innerHTML=wHtml);   // hang chon so ky lap lai trong muc Goi y ve / Loc pool, dung chung S.win
+  document.querySelectorAll('#winBtns .chip,.winMirror .chip').forEach(e=>e.onclick=()=>{S.win=+e.dataset.w;S.page=0;S.open.clear();if(S.cmpN>S.win)S.cmpN=S.win;S.drawIdx=null;refresh();});
 }
 async function refresh(){
   const g=await loadGame(S.game);renderControls();
