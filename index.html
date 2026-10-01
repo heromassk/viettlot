@@ -155,7 +155,7 @@ tr.off .b{opacity:.5;}
   <details id="voters" style="margin-top:10px;"><summary style="cursor:pointer;color:var(--accent);font-size:.88rem;" id="votersSum">Xem danh sách các phương pháp đã bầu cho kỳ này</summary><div class="tw" style="margin-top:6px;"><table id="votersTbl"></table></div></details>
   <details class="sub" id="poolCard" style="margin-top:10px;"><summary>Lọc pool nhỏ nhất (gom phương pháp để kỳ nào cũng đủ số trúng)</summary>
     <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong các phương pháp qua thanh trượt) sao cho trong số kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ. Tự tính lại khi đổi số kỳ, thanh trượt hoặc yêu cầu số trúng.</div>
-    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed"></select></div>
+    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed"></select><label class="lbl" id="poolLkW" style="display:none;"><input type="checkbox" id="poolLk" checked> và phải trúng cả số may mắn</label></div>
     <div id="poolOut"></div>
   </details>
 </details>
@@ -524,33 +524,36 @@ function renderVoters(){
   $('votersTbl').querySelectorAll('th.sortable').forEach(e=>e.onclick=()=>{const k=e.dataset.k;if(S.vsort===k)S.vdir*=-1;else{S.vsort=k;S.vdir=-1;}renderVoters();});
   $('votersTbl').querySelectorAll('.exck').forEach(c=>{c.onchange=()=>setExcl(+c.dataset.m,!c.checked);});
 }
-function sugMask(g,m,d){if(!okCnt(g,m,d))return [0,0];const b=(m*g.D+d)*g.W;return [g.U[b],g.U[b+1]];}   // dung khoang thanh truot nhu phan phieu
-function greedyPool(g,cands,ts,need){   // chon dan phuong phap: nhieu so trung moi nhat tren moi so tang them cua pool
-  const n=ts.length,uLo=new Uint32Array(n),uHi=new Uint32Array(n),chosen=[],used=new Set();
-  const mk=new Map(cands.map(m=>{const lo=new Uint32Array(n),hi=new Uint32Array(n);ts.forEach((t,i)=>{const[x,y]=sugMask(g,m,t);lo[i]=x;hi[i]=y;});return [m,[lo,hi]];}));
-  const hitOf=(lo,hi,t)=>Math.min(need,pop((lo&g.rlo[t])>>>0)+pop((hi&g.rhi[t])>>>0));
+function sugMask(g,m,d){if(!okCnt(g,m,d))return [0,0,0];const b=(m*g.D+d)*g.W;return [g.U[b],g.U[b+1],g.W>2?g.U[b+2]:0];}   // dung khoang thanh truot nhu phan phieu
+function greedyPool(g,cands,ts,need,nl=0){   // chon dan phuong phap: nhieu so trung moi nhat tren moi so tang them cua pool; nl=1: bat buoc trung ca so may man
+  const n=ts.length,uLo=new Uint32Array(n),uHi=new Uint32Array(n),uLk=new Uint32Array(n),chosen=[],used=new Set(),T=need+nl;
+  const mk=new Map(cands.map(m=>{const lo=new Uint32Array(n),hi=new Uint32Array(n),lk=new Uint32Array(n);ts.forEach((t,i)=>{const[x,y,z]=sugMask(g,m,t);lo[i]=x;hi[i]=y;lk[i]=z;});return [m,[lo,hi,lk]];}));
+  const hitOf=(lo,hi,lk,t)=>Math.min(need,pop((lo&g.rlo[t])>>>0)+pop((hi&g.rhi[t])>>>0))+(nl&&(lk&g.rlk[t])?1:0);
   let miss=0;
   for(;;){
-    miss=0;for(let i=0;i<n;i++)miss+=need-hitOf(uLo[i],uHi[i],ts[i]);
+    miss=0;for(let i=0;i<n;i++)miss+=T-hitOf(uLo[i],uHi[i],uLk[i],ts[i]);
     if(!miss)break;
     let best=-1,bs=0;
-    for(const m of cands){if(used.has(m))continue;const[lo,hi]=mk.get(m);let gain=0,cost=0;
-      for(let i=0;i<n;i++){const t=ts[i],ol=uLo[i],oh=uHi[i],nl=(ol|lo[i])>>>0,nh=(oh|hi[i])>>>0;
-        if(nl===ol&&nh===oh)continue;gain+=hitOf(nl,nh,t)-hitOf(ol,oh,t);cost+=pop(nl)+pop(nh)-pop(ol)-pop(oh);}
+    for(const m of cands){if(used.has(m))continue;const[lo,hi,lk]=mk.get(m);let gain=0,cost=0;
+      for(let i=0;i<n;i++){const t=ts[i],ol=uLo[i],oh=uHi[i],ok=uLk[i],nl2=(ol|lo[i])>>>0,nh=(oh|hi[i])>>>0,nk=nl?(ok|lk[i])>>>0:ok;
+        if(nl2===ol&&nh===oh&&nk===ok)continue;gain+=hitOf(nl2,nh,nk,t)-hitOf(ol,oh,ok,t);cost+=pop(nl2)+pop(nh)+pop(nk)-pop(ol)-pop(oh)-pop(ok);}
       if(gain>0){const sc=gain/(cost||1e-9);if(sc>bs){bs=sc;best=m;}}}
     if(best<0)break;
-    chosen.push(best);used.add(best);const[lo,hi]=mk.get(best);
-    for(let i=0;i<n;i++){uLo[i]=(uLo[i]|lo[i])>>>0;uHi[i]=(uHi[i]|hi[i])>>>0;}
+    chosen.push(best);used.add(best);const[lo,hi,lk]=mk.get(best);
+    for(let i=0;i<n;i++){uLo[i]=(uLo[i]|lo[i])>>>0;uHi[i]=(uHi[i]|hi[i])>>>0;if(nl)uLk[i]=(uLk[i]|lk[i])>>>0;}
   }
-  let bad=0;for(let i=0;i<n;i++)if(hitOf(uLo[i],uHi[i],ts[i])<need)bad++;
+  let bad=0;for(let i=0;i<n;i++)if(hitOf(uLo[i],uHi[i],uLk[i],ts[i])<T)bad++;
   return {chosen,ok:miss===0,bad};
 }
 function poolAt(g,ms,d){const v={};ms.forEach(m=>{if(okCnt(g,m,d))setOf(g,m,d).forEach(x=>v[x]=(v[x]||0)+1);});return v;}
+function poolLkAt(g,ms,d){const v={};if(g.LN)ms.forEach(m=>{if(okCnt(g,m,d))lkOf(g,m,d).forEach(x=>v[x]=(v[x]||0)+1);});return v;}
+function poolNl(g){return g.LN&&S.poolLk!==false?1:0;}
 function poolCands(g,t){return rank(g,t,S.win,S.lo,S.hi,Infinity).map(r=>r.m);}   // moi phuong phap qua thanh truot (khong phu thuoc cot ✓, de nut ap dung khong tu khoa minh)
 function renderPoolCtl(){
   const g=G[S.game],sel=$('poolNeed');if(S.poolNeed==null||S.poolNeed>g.C)S.poolNeed=g.C;
   sel.innerHTML=Array.from({length:g.C},(_,i)=>g.C-i).map(k=>`<option value="${k}"${k===S.poolNeed?' selected':''}>${k===g.C?`đủ ${k} số`:`từ ${k} đến ${g.C} số`}</option>`).join('');
   sel.onchange=()=>{S.poolNeed=+sel.value;schedulePool();};
+  $('poolLkW').style.display=g.LN?'':'none';$('poolLk').checked=S.poolLk!==false;$('poolLk').onchange=()=>{S.poolLk=$('poolLk').checked;schedulePool();};
   $('poolCard').ontoggle=()=>{if($('poolCard').open)schedulePool();};
   schedulePool();
 }
@@ -571,32 +574,35 @@ function applyPool(ms){   // chi giu cac phuong phap da chon cho phan goi y so /
 }
 function clearPool(){S.excl[G[S.game].meta.game]=new Set();S.poolOn=null;S.scope=50;S.fixed=null;S.page=0;renderTop();renderVotes();renderCmp();}
 function poolBacktest(g,Wn,need,dIn){   // kiem tra ngoai mau: chon bo phuong phap chi bang du lieu truoc ky t, roi xem ky t
-  const L=g.L,N=g.N,C=g.C,B=Math.min(20,L-Wn),dOut=Array(C+1).fill(0),bt=[],hc=k=>k>=need?'hit-txt':'lk-txt',rng=need===C?`đủ ${C}/${C} số`:`từ ${need} đến ${C} số`;let bp=0,bh=0,bn=0;
+  const L=g.L,N=g.N,C=g.C,LN=g.LN,nl=poolNl(g),B=Math.min(20,L-Wn),dOut=Array(C+1).fill(0),bt=[],rng=poolRng(g,need,nl);let bp=0,bh=0,bn=0,bl=0,blk=0,bok=0;
   for(let k=1;k<=B;k++){const t=L-k,tt=Array.from({length:Wn},(_,i)=>t-Wn+i);if(tt[0]<0)break;
-    const r=greedyPool(g,poolCands(g,t),tt,need),v=poolAt(g,r.chosen,t),p=Object.keys(v).length,w=g.meta.results[t].filter(x=>v[x]).length;
-    bp+=p;bh+=w;dOut[w]++;bn++;bt.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${r.chosen.length}</td><td class="${hc(w)}">${w}/${C}</td><td>${p}</td><td>${(C*p/N).toFixed(2)}</td></tr>`);}
+    const r=greedyPool(g,poolCands(g,t),tt,need,nl),v=poolAt(g,r.chosen,t),vl=poolLkAt(g,r.chosen,t),p=Object.keys(v).length,pl=Object.keys(vl).length,w=g.meta.results[t].filter(x=>v[x]).length,lh=LN?!!vl[g.meta.luckyRes[t]]:true,good=w>=need&&(!nl||lh);
+    bp+=p;bh+=w;bl+=pl;if(LN&&lh)blk++;if(good)bok++;dOut[w]++;bn++;
+    bt.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${r.chosen.length}</td><td class="${good?'hit-txt':'lk-txt'}">${w}/${C}${LN?(lh?' + MM':' · trượt MM'):''}</td><td>${p}${LN?' + '+pl:''}</td><td>${(C*p/N).toFixed(2)}${LN?' · MM '+Math.round(100*pl/LN)+'%':''}</td></tr>`);}
   if(!bn)return '<div class="foot">Không đủ dữ liệu để kiểm tra.</div>';
-  return `<div class="sum" style="border-left:3px solid var(--bad);">Mỗi kỳ chọn lại bộ phương pháp chỉ bằng ${Wn} kỳ trước nó (không nhìn trước kết quả), rồi xem kỳ đó: trúng ${rng} ở <b>${dOut.slice(need).reduce((a,x)=>a+x,0)}/${bn}</b> kỳ · pool TB <b>${(bp/bn).toFixed(1)}</b> số · trúng TB <b>${(bh/bn).toFixed(2)}</b>/${C} · chọn ngẫu nhiên cùng số lượng trúng TB <b>${(C*bp/bn/N).toFixed(2)}</b>. Hai con số gần bằng nhau nghĩa là "luôn trúng" trong quá khứ không mang sang được kỳ mới.</div>`+
+  return `<div class="sum" style="border-left:3px solid var(--bad);">Mỗi kỳ chọn lại bộ phương pháp chỉ bằng ${Wn} kỳ trước nó (không nhìn trước kết quả), rồi xem kỳ đó: trúng ${rng} ở <b>${bok}/${bn}</b> kỳ · pool TB <b>${(bp/bn).toFixed(1)}</b> số${LN?' chính':''} · trúng TB <b>${(bh/bn).toFixed(2)}</b>/${C} · chọn ngẫu nhiên cùng số lượng trúng TB <b>${(C*bp/bn/N).toFixed(2)}</b>`+(LN?`<br>Số may mắn: pool TB <b>${(bl/bn).toFixed(1)}</b>/${LN} số · có trong pool ở <b>${blk}/${bn}</b> kỳ · ngẫu nhiên cùng số lượng ≈ <b>${(bl/LN).toFixed(1)}</b>/${bn} kỳ`:'')+`<br>Hai con số gần bằng nhau nghĩa là "luôn trúng" trong quá khứ không mang sang được kỳ mới.</div>`+
     distTbl(dIn,Wn,dOut,bn,need,C,N,bp/bn)+
-    `<div class="tw" style="margin-top:8px;"><table><thead><tr><th class="l">Kỳ</th><th>Số phương pháp</th><th>Số trúng</th><th>Pool</th><th>Ngẫu nhiên TB</th></tr></thead><tbody>${bt.join('')}</tbody></table></div>`;
+    `<div class="tw" style="margin-top:8px;"><table><thead><tr><th class="l">Kỳ</th><th>Số phương pháp</th><th>Số trúng</th><th>Pool${LN?' (chính + MM)':''}</th><th>Ngẫu nhiên TB</th></tr></thead><tbody>${bt.join('')}</tbody></table></div>`;
 }
+function poolRng(g,need,nl){return (need===g.C?`đủ ${g.C}/${g.C} số`:`từ ${need} đến ${g.C} số`)+(nl?' + số may mắn':'');}
 function runPool(){
   const g=G[S.game],L=g.L,N=g.N,C=g.C,need=S.poolNeed,Wn=Math.min(S.win,L),ts=Array.from({length:Wn},(_,i)=>L-Wn+i);
-  const cands=poolCands(g,L),{chosen,ok,bad}=greedyPool(g,cands,ts,need);S.poolLast=chosen;
+  const LN=g.LN,nl=poolNl(g),cands=poolCands(g,L),{chosen,ok,bad}=greedyPool(g,cands,ts,need,nl);S.poolLast=chosen;
   if(S.poolOn===g.meta.game){const ex=S.excl[g.meta.game]||new Set(),cur=Array.from({length:g.M},(_,m)=>m).filter(m=>!ex.has(m));if(cur.length!==chosen.length||chosen.some(m=>ex.has(m)))applyPool(chosen);}
-  const rng=need===C?`đủ ${C}/${C} số`:`từ ${need} đến ${C} số`,hc=k=>k>=need?'hit-txt':'lk-txt';
-  let ps=0,hs=0;const dIn=Array(C+1).fill(0),dOut=Array(C+1).fill(0),past=[];
-  for(let t=L-1;t>=L-Wn;t--){const v=poolAt(g,chosen,t),p=Object.keys(v).length,w=g.meta.results[t].filter(x=>v[x]).length,act=chosen.filter(m=>okCnt(g,m,t)).length;
-    ps+=p;hs+=w;dIn[w]++;
-    past.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${act}</td><td class="${hc(w)}">${w}/${C}</td><td>${p}</td><td class="l">${ballsHtml(g.meta.results[t],new Set(Object.keys(v).map(Number)))}</td></tr>`);}
-  const d=L+S.nextIdx,vn=poolAt(g,chosen,d),nums=Object.keys(vn).map(Number).sort((a,b)=>a-b);
+  const rng=poolRng(g,need,nl);
+  let ps=0,hs=0,pls=0,lks=0;const dIn=Array(C+1).fill(0),dOut=Array(C+1).fill(0),past=[];
+  for(let t=L-1;t>=L-Wn;t--){const v=poolAt(g,chosen,t),vl=poolLkAt(g,chosen,t),p=Object.keys(v).length,pl=Object.keys(vl).length,w=g.meta.results[t].filter(x=>v[x]).length,act=chosen.filter(m=>okCnt(g,m,t)).length;
+    const lv=LN?g.meta.luckyRes[t]:0,lh=LN?!!vl[lv]:true,good=w>=need&&(!nl||lh);
+    ps+=p;hs+=w;pls+=pl;if(LN&&lh)lks++;dIn[w]++;
+    past.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${act}</td><td class="${good?'hit-txt':'lk-txt'}">${w}/${C}${LN?(lh?' + MM':' · trượt MM'):''}</td><td>${p}${LN?' + '+pl:''}</td><td class="l">${ballsHtml(g.meta.results[t],new Set(Object.keys(v).map(Number)),null,LN?[lv]:null,LN?new Set(Object.keys(vl).map(Number)):null)}</td></tr>`);}
+  const d=L+S.nextIdx,vn=poolAt(g,chosen,d),nums=Object.keys(vn).map(Number).sort((a,b)=>a-b),vln=poolLkAt(g,chosen,d),lnums=Object.keys(vln).map(Number).sort((a,b)=>a-b);
   const on=S.poolOn===g.meta.game;
   let h=`<div class="foot" style="margin:0 0 4px;">Tính với: ${g.meta.label} · ${Wn} kỳ gần nhất · phương pháp gợi ý ${S.lo}–${S.hi} số · yêu cầu trúng ${rng} mỗi kỳ</div>`;
-  h+=ok?`<div class="sum" style="border-left:3px solid var(--good);font-size:.95rem;">✔ Để <b>tất cả ${Wn} kỳ</b> đều trúng <b>${rng}</b> cần <b class="hit-txt" style="font-size:1.1rem;">${chosen.length} phương pháp</b> · pool trung bình <b>${(ps/Wn).toFixed(1)}</b>/${N} số mỗi kỳ.</div>`
+  h+=ok?`<div class="sum" style="border-left:3px solid var(--good);font-size:.95rem;">✔ Để <b>tất cả ${Wn} kỳ</b> đều trúng <b>${rng}</b> cần <b class="hit-txt" style="font-size:1.1rem;">${chosen.length} phương pháp</b> · pool trung bình <b>${(ps/Wn).toFixed(1)}</b>/${N} số${LN?` chính + <b>${(pls/Wn).toFixed(1)}</b>/${LN} số may mắn`:''} mỗi kỳ.${LN&&!nl?` <span class="foot">(Không yêu cầu số may mắn: có trong pool ${lks}/${Wn} kỳ.)</span>`:''}</div>`
        :`<div class="sum" style="border-left:3px solid var(--bad);font-size:.95rem;">✘ Không đạt: dùng ${chosen.length} phương pháp vẫn còn <b class="lk-txt">${bad}</b>/${Wn} kỳ chưa trúng ${rng} (các phương pháp trong khoảng thanh trượt không bao giờ gợi ý đủ). Thử nới thanh trượt hoặc hạ yêu cầu.</div>`;
   h+=`<div class="row" style="margin:8px 0;"><button class="btn" id="poolApply"${chosen.length?'':' disabled'} style="border-color:var(--accent);">Chỉ dùng ${chosen.length} phương pháp này cho gợi ý số</button>${on?'<button class="btn" id="poolClear">Bỏ, dùng lại tất cả phương pháp</button><span class="foot" style="margin:0;">Đang áp dụng bộ lọc pool.</span>':''}</div>`;
-  h+=`<div class="lbl" style="margin:6px 0 4px;">Pool cho ${drawLabel(g,L)}: <b>${nums.length}</b> số (trong ngoặc: số phương pháp đã chọn bầu cho số đó)</div>${ballsHtml(nums,null,vn)}`;
-  h+=`<h3 style="margin:12px 0 6px;font-size:.95rem;">Kiểm tra quá khứ (${Wn} kỳ)</h3><div class="tw" style="max-height:420px;overflow-y:auto;"><table><thead><tr><th class="l">Kỳ</th><th>Số phương pháp</th><th>Số trúng</th><th>Pool</th><th class="l">Kết quả (xanh = có trong pool)</th></tr></thead><tbody>${past.join('')}</tbody></table></div>`;
+  h+=`<div class="lbl" style="margin:6px 0 4px;">Pool cho ${drawLabel(g,L)}: <b>${nums.length}</b> số${LN?` chính + <b>${lnums.length}</b> số may mắn (đỏ)`:''} (trong ngoặc: số phương pháp đã chọn bầu cho số đó)</div>${ballsHtml(nums,null,vn,LN?lnums:null,null,vln)}`;
+  h+=`<h3 style="margin:12px 0 6px;font-size:.95rem;">Kiểm tra quá khứ (${Wn} kỳ)</h3><div class="tw" style="max-height:420px;overflow-y:auto;"><table><thead><tr><th class="l">Kỳ</th><th>Số phương pháp</th><th>Số trúng</th><th>Pool${LN?' (chính + MM)':''}</th><th class="l">Kết quả (${LN?'xanh/đỏ đậm':'xanh'} = có trong pool)</th></tr></thead><tbody>${past.join('')}</tbody></table></div>`;
   h+=`<details class="sub" id="poolBt"><summary>Kiểm tra trên kỳ sau (20 kỳ gần nhất, mở để tính)</summary><div id="poolBtBody"><div class="loading">Đang tính…</div></div></details>`;
   h+=`<details class="sub"><summary>Các phương pháp được chọn (${chosen.length})</summary><div class="foot">${chosen.map(m=>`<b>${g.meta.methods[m].n}</b>`).join(' · ')||'—'}</div></details>`;
   $('poolOut').innerHTML=h;
