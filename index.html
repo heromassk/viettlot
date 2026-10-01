@@ -98,6 +98,9 @@ tr.off .b{opacity:.5;}
   #cmp tr{display:block;border-bottom:1px solid var(--border);padding:6px 0;}
   #cmp td{display:block;border:0;padding:3px 2px;text-align:left;}
   #cmp td.k{font-weight:700;color:var(--accent);}
+  #sgBtTbl,#sgBtTbl tbody{display:block;width:100%;} #sgBtTbl thead{display:none;}
+  #sgBtTbl tr{display:block;border-bottom:1px solid var(--border);padding:6px 0;} #sgBtTbl td{display:block;border:0;padding:3px 2px;}
+  #sgBtTbl td.k{font-weight:700;color:var(--accent);} #sgBtTbl td[data-l]::before{content:attr(data-l);display:block;color:var(--muted);font-size:.68rem;margin-bottom:2px;}
   #cmp td[data-l]::before{content:attr(data-l);display:block;color:var(--muted);font-size:.68rem;margin-bottom:2px;}
   .vote{min-width:0;flex:1 1 46%;}
   .two{grid-template-columns:1fr;}
@@ -708,12 +711,14 @@ function sgBacktest(g,Wn,st){   // moi ky t: pool, xu huong va ve chi tu du lieu
     const res=g.meta.results[t],hs=new Set(res),F=sgPick(g,t,par,slo,shi,st.n,st.src,tr.cnt),a=sgPick(g,t,all,0,1e9,st.n,st.src).out,f=F.out;
     const ev=res.filter(x=>x%2===0).length,sm=res.reduce((a,x)=>a+x,0),ip=F.full.filter(x=>hs.has(x)).length;if(par.has(ev))parOk++;if(sm>=slo&&sm<=shi)sumOk++;n++;inP+=ip;pSz+=F.full.length;
     const hf=f.map(o=>o.nums.filter(x=>hs.has(x)).length);hf.forEach(x=>{hF+=x;nT++;dist[x]++;if(x>best)best=x;});if(g.LN)f.forEach(o=>{if(o.lk===g.meta.luckyRes[t])lkH++;});a.forEach(o=>{hA+=o.nums.filter(x=>hs.has(x)).length;nA++;});
-    rows.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${F.full.length}</td><td>${ip}/${C}</td><td>${ev}:${C-ev} ${par.has(ev)?'<span class="hit-txt">✓</span>':'<span class="lk-txt">✗</span>'}</td><td>${sm} ${sm>=slo&&sm<=shi?'<span class="hit-txt">✓</span>':'<span class="lk-txt">✗</span>'}</td><td>${hf.length?hf.map(x=>x>=3?`<b class="hit-txt">${x}</b>`:x).join(', '):'—'}</td></tr>`);}
+    const lres=g.LN?g.meta.luckyRes[t]:null,ok2=(b2)=>b2?'<span class="hit-txt">✓</span>':'<span class="lk-txt">✗</span>',fs=new Set(F.full);
+    const tks=f.map((o,j)=>`<div style="display:flex;align-items:center;gap:6px;margin:2px 0;"><span class="foot" style="margin:0;min-width:16px;">${j+1}</span>${ballsHtml(o.nums,hs,null,o.lk?[o.lk]:null,g.LN?new Set([lres]):null)}<b class="${hf[j]>=3?'hit-txt':''}" style="min-width:34px;">${hf[j]}/${C}${g.LN&&o.lk===lres?' +MM':''}</b></div>`).join('');
+    rows.push(`<tr><td class="l k" style="vertical-align:top;">${fmtDraw(g.meta.dates[t])}<div class="foot" style="margin:3px 0 0;line-height:1.5;">${isP?'pool':'nguồn'} ${F.full.length} số, chứa ${ip}/${C} số ra<br>chẵn:lẻ ${ev}:${C-ev} ${ok2(par.has(ev))} · tổng ${sm} ${ok2(sm>=slo&&sm<=shi)}</div></td><td class="l" data-l="Kết quả (xanh = có trong ${isP?'pool':'nguồn'})" style="vertical-align:top;">${ballsHtml(res,fs,null,g.LN?[lres]:null,g.LN?new Set(f.map(o=>o.lk)):null)}</td><td class="l" data-l="Các dãy app đã gợi ý cho kỳ này (số trùng in xanh)">${tks||'—'}</td></tr>`);}
   if(!n)return '<div class="foot">Không đủ dữ liệu.</div>';
   const pk=x=>comb(C,x)*comb(N-C,C-x)/comb(N,C);
   const dTbl=`<div class="tw" style="margin:8px 0;"><table><thead><tr><th>Mỗi vé trúng</th><th>Số vé gợi ý (${nT} vé / ${n} kỳ)</th><th>Vé ngẫu nhiên cùng số lượng (kỳ vọng)</th></tr></thead><tbody>${Array.from({length:C+1},(_,i)=>C-i).map(x=>`<tr${x>=3?' style="background:rgba(63,185,80,.08);"':''}><td>${x} số</td><td>${dist[x]}</td><td>${(pk(x)*nT).toFixed(1)}</td></tr>`).join('')}<tr><td class="hit-txt">Từ 3 số trở lên</td><td><b>${dist.slice(3).reduce((a,x)=>a+x,0)}</b></td><td><b>${(Array.from({length:C-2},(_,i)=>pk(i+3)).reduce((a,x)=>a+x,0)*nT).toFixed(1)}</b></td></tr></tbody></table></div><div class="foot">Vé tốt nhất trúng <b>${best}</b>/${C} số.${g.LN?` Số may mắn đúng ở <b>${lkH}</b>/${nT} vé (ngẫu nhiên ≈ ${(nT/g.LN).toFixed(1)}).`:''}</div>`;
   return `<div class="sum" style="border-left:3px solid var(--bad);">Mỗi kỳ chỉ dùng dữ liệu trước nó. ${isP?`Pool TB <b>${(pSz/n).toFixed(1)}</b> số, chứa TB <b>${(inP/n).toFixed(2)}</b>/${C} số trúng (ngẫu nhiên cùng số lượng: ${(C*pSz/n/N).toFixed(2)}) · `:''}dạng chẵn:lẻ được ưu tiên đúng <b>${parOk}/${n}</b> kỳ · tổng nằm trong khoảng <b>${sumOk}/${n}</b> kỳ.<br>Số trúng TB mỗi vé: <b>${nT?(hF/nT).toFixed(2):'—'}</b> (có lọc) · <b>${nA?(hA/nA).toFixed(2):'—'}</b> (cùng nguồn, không lọc) · <b>${(C*C/N).toFixed(2)}</b> (vé ngẫu nhiên).</div>`+dTbl+
-    `<div class="tw"><table><thead><tr><th class="l">Kỳ</th><th>Cỡ ${isP?'pool':'nguồn'}</th><th>Số trúng trong ${isP?'pool':'nguồn'}</th><th>Chẵn:lẻ ra</th><th>Tổng ra</th><th>Số trúng từng vé</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+    `<div class="tw" style="max-height:640px;overflow-y:auto;"><table id="sgBtTbl"><thead><tr><th class="l">Kỳ</th><th class="l">Kết quả (xanh = có trong ${isP?'pool':'nguồn'})</th><th class="l">Các dãy app đã gợi ý cho kỳ này (số trùng in xanh) · số trúng</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
 }
 function renderScope(){
   document.querySelectorAll('.scopeBtns').forEach(el=>{
