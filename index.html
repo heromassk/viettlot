@@ -155,7 +155,7 @@ tr.off .b{opacity:.5;}
   <details id="voters" style="margin-top:10px;"><summary style="cursor:pointer;color:var(--accent);font-size:.88rem;" id="votersSum">Xem danh sách các phương pháp đã bầu cho kỳ này</summary><div class="tw" style="margin-top:6px;"><table id="votersTbl"></table></div></details>
   <details class="sub" id="poolCard" style="margin-top:10px;"><summary>Lọc pool nhỏ nhất (gom phương pháp để kỳ nào cũng đủ số trúng)</summary>
     <div class="foot" style="margin:0 0 6px;">Chọn ít phương pháp nhất có thể (trong danh sách đang lọc theo thanh trượt và cột ✓) sao cho trong các kỳ quá khứ đang chọn ở trên, dãy số gộp của chúng kỳ nào cũng chứa đủ số trúng yêu cầu, ưu tiên pool nhỏ.</div>
-    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải chứa ít nhất</span><select id="poolNeed"></select><span class="lbl">số trúng</span><button class="btn" id="poolRun">Tìm bộ phương pháp</button></div>
+    <div class="row" style="margin-bottom:6px;"><span class="lbl">Mỗi kỳ phải trúng</span><select id="poolNeed"></select><button class="btn" id="poolRun">Tìm bộ phương pháp</button></div>
     <div id="poolOut"></div>
   </details>
 </details>
@@ -546,24 +546,31 @@ function poolAt(g,ms,d){const v={};ms.forEach(m=>setOf(g,m,d).forEach(x=>v[x]=(v
 function poolCands(g,t){const ex=S.excl[g.meta.game]||new Set();return rank(g,t,S.win,S.lo,S.hi,Infinity).filter(r=>!ex.has(r.m)).map(r=>r.m);}
 function renderPoolCtl(){
   const g=G[S.game],sel=$('poolNeed');if(S.poolNeed==null||S.poolNeed>g.C)S.poolNeed=g.C;
-  sel.innerHTML=Array.from({length:g.C},(_,i)=>g.C-i).map(k=>`<option value="${k}"${k===S.poolNeed?' selected':''}>${k}</option>`).join('');
+  sel.innerHTML=Array.from({length:g.C},(_,i)=>g.C-i).map(k=>`<option value="${k}"${k===S.poolNeed?' selected':''}>${k===g.C?`đủ ${k} số`:`từ ${k} đến ${g.C} số`}</option>`).join('');
   sel.onchange=()=>{S.poolNeed=+sel.value;};
   $('poolOut').innerHTML='<div class="foot">Bấm "Tìm bộ phương pháp" để tính (dùng đúng trò chơi, số kỳ, thanh trượt và cột ✓ hiện tại).</div>';
   $('poolRun').onclick=()=>{$('poolOut').innerHTML='<div class="loading">Đang tính…</div>';setTimeout(runPool,20);};
 }
+function distTbl(dIn,nIn,dOut,nOut,need,C,N,pool){   // phan bo so trung moi ky: trong mau / ky sau / ngau nhien (sieu boi) cung kich thuoc pool
+  const P=Math.round(pool),rnd=k=>comb(C,k)*comb(N-C,P-k)/comb(N,P);
+  const row=k=>`<tr${k>=need?' style="background:rgba(63,185,80,.08);"':''}><td>${k} số</td><td>${dIn[k]}</td><td>${dOut[k]}</td><td>${(rnd(k)*nOut).toFixed(1)}</td></tr>`;
+  const ge=(d)=>d.slice(need).reduce((a,x)=>a+x,0);let rg=0;for(let k=need;k<=C;k++)rg+=rnd(k)*nOut;
+  return `<div class="tw" style="margin-top:8px;"><table><thead><tr><th>Số trúng mỗi kỳ</th><th>Quá khứ (${nIn} kỳ)</th><th>Kỳ sau (${nOut} kỳ)</th><th>Ngẫu nhiên ${P} số (${nOut} kỳ)</th></tr></thead><tbody>${Array.from({length:C+1},(_,i)=>C-i).map(row).join('')}<tr><td class="hit-txt">Từ ${need} đến ${C}</td><td><b>${ge(dIn)}</b></td><td><b>${ge(dOut)}</b></td><td><b>${rg.toFixed(1)}</b></td></tr></tbody></table></div>`;
+}
 function runPool(){
   const g=G[S.game],L=g.L,N=g.N,C=g.C,need=S.poolNeed,Wn=Math.min(S.win,L),ts=Array.from({length:Wn},(_,i)=>L-Wn+i);
   const cands=poolCands(g,L),{chosen,ok}=greedyPool(g,cands,ts,need);
-  let ps=0,hs=0,full=0;ts.forEach(t=>{const v=poolAt(g,chosen,t),w=g.meta.results[t].filter(x=>v[x]).length;ps+=Object.keys(v).length;hs+=w;if(w===C)full++;});
+  let ps=0,hs=0,full=0;const dIn=Array(C+1).fill(0),dOut=Array(C+1).fill(0);ts.forEach(t=>{const v=poolAt(g,chosen,t),w=g.meta.results[t].filter(x=>v[x]).length;ps+=Object.keys(v).length;hs+=w;dIn[w]++;if(w===C)full++;});
   const d=L+S.nextIdx,vn=poolAt(g,chosen,d),nums=Object.keys(vn).map(Number).sort((a,b)=>a-b);
   // kiem tra ngoai mau: chon bo phuong phap chi bang du lieu truoc ky t, roi xem ky t
   const B=Math.min(20,L-Wn);let bp=0,bh=0,bf=0,bn=0;const bt=[];
   for(let k=1;k<=B;k++){const t=L-k,tt=Array.from({length:Wn},(_,i)=>t-Wn+i);if(tt[0]<0)break;
     const r=greedyPool(g,poolCands(g,t),tt,need),v=poolAt(g,r.chosen,t),p=Object.keys(v).length,res=g.meta.results[t],h=res.filter(x=>v[x]).length;
-    bp+=p;bh+=h;if(h===C)bf++;bn++;bt.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${r.chosen.length}</td><td>${p}</td><td class="${h===C?'hit-txt':''}">${h}/${C}</td><td>${(C*p/N).toFixed(2)}</td></tr>`);}
-  let h=`<div class="foot" style="margin:0 0 4px;">Tính với: ${g.meta.label} · ${Wn} kỳ · phương pháp gợi ý ${S.lo}–${S.hi} số · yêu cầu ≥${need} số trúng mỗi kỳ</div><div class="sum">Trong ${Wn} kỳ quá khứ: chọn được <b>${chosen.length}</b> phương pháp (từ ${cands.length} ứng viên) · pool TB <b>${(ps/Wn).toFixed(1)}</b>/${N} số · trúng TB <b>${(hs/Wn).toFixed(2)}</b>/${C} · kỳ đủ ${C}/${C}: <b>${full}</b>/${Wn}${ok?'':` · <span class="lk-txt">không thể đảm bảo ${need} số trúng ở mọi kỳ với các phương pháp hiện có</span>`}</div>`;
+    bp+=p;bh+=h;dOut[h]++;if(h===C)bf++;bn++;bt.push(`<tr><td class="l">${fmtDraw(g.meta.dates[t])}</td><td>${r.chosen.length}</td><td>${p}</td><td class="${h===C?'hit-txt':''}">${h}/${C}</td><td>${(C*p/N).toFixed(2)}</td></tr>`);}
+  let h=`<div class="foot" style="margin:0 0 4px;">Tính với: ${g.meta.label} · ${Wn} kỳ · phương pháp gợi ý ${S.lo}–${S.hi} số · yêu cầu trúng từ ${need} đến ${C} số mỗi kỳ</div><div class="sum">Trong ${Wn} kỳ quá khứ: chọn được <b>${chosen.length}</b> phương pháp (từ ${cands.length} ứng viên) · pool TB <b>${(ps/Wn).toFixed(1)}</b>/${N} số · trúng TB <b>${(hs/Wn).toFixed(2)}</b>/${C} · kỳ đủ ${C}/${C}: <b>${full}</b>/${Wn}${ok?'':` · <span class="lk-txt">không thể đảm bảo ${need} số trúng ở mọi kỳ với các phương pháp hiện có</span>`}</div>`;
   h+=`<div class="lbl" style="margin:6px 0 4px;">Pool cho ${drawLabel(g,L)}: <b>${nums.length}</b> số (trong ngoặc: số phương pháp đã chọn bầu cho số đó)</div>${ballsHtml(nums,null,vn)}`;
   if(bn)h+=`<div class="sum" style="border-left:3px solid var(--bad);margin-top:10px;"><b>Kiểm tra trên kỳ sau (${bn} kỳ gần nhất):</b> mỗi kỳ chọn lại bộ phương pháp chỉ bằng ${Wn} kỳ trước nó, rồi xem kỳ đó. Pool TB <b>${(bp/bn).toFixed(1)}</b> số · trúng TB <b>${(bh/bn).toFixed(2)}</b>/${C} · chọn ngẫu nhiên cùng số lượng trúng TB <b>${(C*bp/bn/N).toFixed(2)}</b> · đủ ${C}/${C}: <b>${bf}</b>/${bn} kỳ. Nếu hai con số trúng TB gần bằng nhau thì việc "luôn đủ số" trong quá khứ không mang sang được kỳ mới.</div>`+
+    distTbl(dIn,Wn,dOut,bn,need,C,N,bp/bn)+
     `<details class="sub"><summary>Chi tiết từng kỳ kiểm tra</summary><div class="tw"><table><thead><tr><th class="l">Kỳ</th><th>Số PP</th><th>Pool</th><th>Trúng</th><th>Ngẫu nhiên TB</th></tr></thead><tbody>${bt.join('')}</tbody></table></div></details>`;
   h+=`<details class="sub"><summary>Các phương pháp được chọn (${chosen.length})</summary><div class="foot">${chosen.map(m=>`<b>${g.meta.methods[m].n}</b>`).join(' · ')||'—'}</div></details>`;
   $('poolOut').innerHTML=h;
