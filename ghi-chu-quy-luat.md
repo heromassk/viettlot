@@ -166,3 +166,66 @@
 - Kiểm 300 kỳ: 2 dãy xếp đầu trúng TB gần bằng 3 dãy còn lại ở cả 3 game (Loto 0.74–0.76 vs 0.74–0.76, Mega 0.76–0.83 vs 0.82–0.86, Power 0.60–0.76 vs 0.59–0.75);
   tương quan từng tiêu chí với số trúng ≈ 0 (−0.06…+0.03). → điểm xếp hạng chỉ để cân nhắc; lợi ích chắc chắn là 2 dãy ít trùng → phủ nhiều số hơn.
 - App ghi lý do chọn / phản biện cho từng số của 2 dãy ★, tự kiểm cách xếp hạng trên 60 kỳ; nhật ký có cột "2 dãy ★".
+
+## Gợi ý V2 (02/10/2026) — nghiên cứu riêng từng game, kiểm 400–500 kỳ
+- Chọn pp pool tổng theo 50/100/200/300/500 kỳ: không cửa sổ nào thắng đều (chênh ±0.1 số). App tự đo 4 cửa sổ 100/200/300/500 trên 300 kỳ gần nhất của từng game và dùng cửa sổ tốt nhất
+  (hiện: Loto 200, Mega 100, Power 300). Pp bền nhất cả 3 game: Gan (Loto gan/chu kỳ 2.31 cả 2 nửa).
+- Pool riêng từng vị trí: tốt nhất = các số hay ra nhất ở vị trí đó trong 500 kỳ (hơn biên độ, theo mức kỳ trước, ghép, hay ghép pool tổng).
+  Số lượng cần để đúng ≥60%: Loto u7 v11 w13 x12 y6; Mega u7 v12 w14 x13 y12 z7; Power u9 v15 w17 x17 y15 z8. Vị trí giữa luôn rộng.
+- Tổng: kỳ trước ở 1/3 thấp → kỳ sau tăng 78–86%; 1/3 cao → giảm 81–83% (cả 3 game). Tổng 80%: Loto 62–116, Mega 97–172, Power 131–224.
+- Số lẻ hay gặp: Loto 1–3 lẻ 80%; Mega 2–4 lẻ 83%; Power 2–4 lẻ 81%.
+- Biên độ 70% từng vị trí: Loto u −7..+6, y −6..+5; Mega u −9..+5, z −8..+6; Power u −10..+7, z −8..+9 (giữa rộng hơn).
+- V2 tạo 5 dãy: mỗi số từ pool riêng vị trí (mức 60/70/80%), cộng điểm nếu có trong pool tổng/hợp hướng, tổng 80% + tăng/giảm theo mức tổng kỳ trước, số lẻ nhóm ≥75%, 5 dãy phủ nhiều số nhất.
+- So V1 → V2 làm lại 100 kỳ: dãy tốt nhất trong 5: Loto 1.20 → 1.70, Mega 1.33 → 1.82, Power 1.17 → 1.59; có dãy ≥2 số: 30→60, 43→69, 30→55 kỳ.
+  NHƯNG trung bình mỗi dãy gần như không đổi (0.73→0.73, 0.72→0.81, 0.67→0.67): phần tăng đến từ việc 5 dãy phủ 25–30 số khác nhau thay vì 9–12.
+
+## Thu hẹp pool nhỏ nhất với xác suất trúng ≥ 70% (02/10/2026)
+- Pool tổng: mỗi pp tìm K nhỏ nhất mà pool chứa ≥ h số trúng ở ≥ X% số kỳ; chọn pp có K nhỏ nhất.
+  Đặt đúng 70% (đo 300 kỳ) → 200 kỳ sau chỉ đạt 62–72% (chọn trúng pp "gặp may"). Đặt 75% đo trên 500 kỳ → 200 kỳ sau đạt 72–80% ở cả 3 game × 3 mức. → app dùng 75%/500.
+  Cỡ pool: Loto ≥1 số 8, ≥2 số 15, ≥3 số 22 · Mega 8 / 16–17 / 24 · Power 11 / 21 / 30.
+- Pool riêng vị trí: đặt đúng mức → Power y, z tụt 65–66%; cộng 5% (đặt 75%) → mọi vị trí cả 3 game đạt 71–83% ở 200 kỳ sau.
+  Cỡ (mức 70% thật): Loto u 9–10, v 14, w 16, x 15, y 8; Mega u 10, v 17, w 19, x 18, y 16, z 10; Power u 12, v 19, w 24, x 22, y 19, z 12.
+- Bắt buộc 5 dãy chỉ dùng số trong pool tổng: kém hơn (dãy tốt nhất giảm 0.1–0.3 số) → không dùng, chỉ cộng điểm.
+
+## So 9 cách tạo dãy từ pool (tk_eval.py, Loto 319 kỳ, Mega/Power 400 kỳ, mỗi kỳ chỉ dùng dữ liệu trước nó)
+- Cách: ngẫu nhiên trong pool, theo điểm chia liên tiếp, phủ đều pool (vòng quay), tập trung top số, vị trí (app), vị trí ∩ pool tổng,
+  pool tổng + tần suất vị trí, cặp hay đi cùng, lọc hình dạng + điểm vị trí.
+- Mỗi dãy TB: Loto 0.69–0.72, Mega 0.75–0.82, Power 0.64–0.68 với MỌI cách (= C×C/N: 0.71 / 0.80 / 0.65). Không cách nào làm từng dãy đúng hơn.
+- 2 dãy (tốt hơn): 1.0–1.2 số mọi cách (trừ tập trung 0.8–0.86).
+- 5 dãy: app hiện tại tốt nhất ở cả 3 game: Loto 1.68 (≥2: 60%, ≥3: 7.8%), Mega 1.79 (69%, 10.2%), Power 1.62 (56%, 7.0%),
+  vì phủ 3.4–3.9 số trúng (lấy cả số ngoài pool tổng); các cách chỉ trong pool tổng phủ tối đa ~2.1–2.3 (= số trúng có trong pool).
+- Tập trung top số kém nhất (5 dãy gần giống nhau).
+
+## Cho máy học 300 kỳ biết trước → kiểm 200 kỳ sau (learn.py, 02/10/2026)
+- 30 đặc điểm mỗi số: 24 pp pool, trong pool tổng / hạng, tần suất vị trí, hợp biên độ, xác suất biên độ, hợp hướng tăng/giảm (theo mức kỳ trước),
+  trong phạm vi 70% vị trí, tổng tăng/giảm × số lớn/nhỏ, vừa ra kỳ trước, cách số kỳ trước.
+- Cách học: từng đặc điểm, hồi quy logistic (3 mức), cộng hạng top 2/3/5 đặc điểm, tìm trọng số (300 lần thử). 6 lần tách (Loto 2, Mega 2, Power 2).
+- Top 10 số (học → kiểm): logistic Loto 1.69→1.41, 1.68→1.45; Mega 1.54→1.40, 1.54→1.45; Power 1.23→1.02, 1.31→1.03.
+  Mức chung 10 số bất kỳ: Loto 1.43, Mega 1.33, Power 1.09. Mọi cách học đều đẹp ở 300 kỳ học rồi rơi về mức chung ở 200 kỳ kiểm;
+  không cách nào thắng đều qua các lần tách. Học càng phức tạp càng tụt mạnh (học thuộc đúng 300 kỳ đó).
+- Kết luận: đặc điểm tăng/giảm, phạm vi, biên độ, vị trí trong pool không giúp đoán SỐ NÀO sẽ ra; chỉ giúp mô tả hình dạng kết quả (tổng, số lẻ, khoảng).
+
+## Cây chia nhỏ từng vị trí (02/10/2026)
+- Từ khoảng 80% chia đôi liên tục; tỉ lệ ổn định (học 300 → kiểm 200 lệch 0–4%).
+  Loto u: 01–11 88% → 01–04 47% → 01–02 25%. Loto y: 27–35 85% → 33–35 44% → 33–34 27%.
+  Mega z: 35–45 83% → 43–45 37% → 45 15%. Power z: 43–55 81% → 52–55 38% → 55 12%.
+- Mỗi lần chia đôi, xác suất giảm khoảng một nửa. Dựa vào kỳ trước để chọn nhánh: lệch ±3–6%, không ổn định → không dùng.
+- App: mục ③ "Chia nhỏ từng vị trí", đường vàng theo nhánh có xác suất trên mỗi số cao hơn.
+
+## Ghép dãy bảo đảm (wheel) + kết quả Loto 02/10/2026 13h: 06 23 30 32 34, MM 09
+- Wheel đã kiểm hết trường hợp: Loto 10 số/2 dãy, 12 số/4 dãy (≥3 trúng trong nhóm → 1 dãy ≥2), 7 số/5 dãy (→ 1 dãy đủ 3);
+  Mega/Power 12 số/2 dãy, 14 số/4 dãy (→ ≥2), 8 số/4 dãy (→ đủ 3). Số lấy = top v của pp pool tổng.
+- 200 kỳ: điều kiện xảy ra Loto 13% (10 số) / 25% (12) / 3% (7); Mega 17% / 28% / 3%; Power 14% / 21% / 4%; bảo đảm đúng 100% khi điều kiện xảy ra.
+  Dãy tốt nhất ≥2 số: Loto 26% / 45% / 27%; Mega 32% / 50% / 32%; Power 22% / 39% / 25% — thấp hơn 5 dãy phủ rộng (55–76%) vì ít dãy hơn và chỉ dùng số trong pool.
+- Kỳ 02/10 13h: gợi ý đã lưu (bản sáng, PP17): pool trúng 06, 30; các dãy trúng tối đa 1 số; MM 09 đúng ở dãy 1.
+  Bản hiện tại làm lại: pool (PP18) chỉ trúng 23; dãy ★1 trúng 34 + MM 09; các dãy tối đa 1 số; wheel 10/12/7 số: tối đa 1 số (điều kiện không xảy ra).
+
+## 2 phương án pool (02/10/2026)
+- Chọn cặp trên 200 kỳ A → kiểm 200 kỳ B: cặp tốt nhất giữ được (Loto 74→75%, Mega 76→76%, Power 82→77% "ít nhất 1 pool ≥3 số"); 1 pool ~41–46%.
+  Cặp tốt luôn là 1 pool nguội (gan) + 1 pool nóng/chu kỳ. 4 dãy ghép bảo đảm từ 2 pool ≈ ngang 5 dãy hiện tại → giữ 5 dãy.
+- App: mỗi kỳ tự chọn cặp trong 16 pp theo 200 kỳ trước. Hiện cả 3 game: Gan (PP16) + Chu kỳ hay gặp (PP17b), gần như không trùng
+  (hợp lại Loto 30/35, Mega 34/45, Power 42/55 số). Kiểm 200 kỳ (chọn cặp mỗi kỳ bằng 200 kỳ trước): ≥3 số 72–78%, ≥2 số 99% (1 pool: 41–44%, 74–77%).
+- Kỳ 02/10 13h: Pool A (gan) trúng 23, 30; Pool B (chu kỳ hay gặp) trúng 06, 32, 34.
+- SỬA LẠI (người dùng chỉ ra đúng): 2 pool gần như không trùng phủ 30/35 số → "1 pool ≥3 số" gần như do phép đếm (5 số chia 2 nhóm).
+  So công bằng cùng tổng số lượng (300 kỳ): Loto cặp ≤20 số 55% vs 1 pool 20 số 61%; ≤23: 60% vs 76%; Mega ≤22: 59% vs 65%; Power ≤26: 53% vs 61%.
+  → nhiều pool KÉM hơn 1 pool cùng cỡ. Đã gỡ phần "2 phương án pool" khỏi app.
