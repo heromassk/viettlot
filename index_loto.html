@@ -136,8 +136,15 @@ input.n{width:52px;text-align:center;}
   <div id="ttOut"></div>
 </details>
 
+<details class="card" id="trCard">
+  <summary><h2>⑦ Kiểm tra dấu vết (<span id="trKind">bi lệch</span>)</h2></summary>
+  <div class="foot" style="margin-top:0;" id="trIntro"></div>
+  <div class="row" style="margin:6px 0;"><span class="lbl">Kiểm trên</span><span id="trN" class="row"></span><input id="trIn" type="number" min="50" placeholder="số kỳ khác" style="width:96px;"><button class="btn pri" id="trGo">Chạy kiểm tra</button></div>
+  <div id="trOut"></div>
+</details>
+
 <details class="card" id="advCard">
-  <summary><h2>⑦ Nghiên cứu chi tiết</h2></summary>
+  <summary><h2>⑧ Nghiên cứu chi tiết</h2></summary>
   <div class="foot" style="margin-top:0;">Các bảng nghiên cứu phía sau gợi ý (pool từng phương pháp, quy luật hướng, khoảng vị trí…). Không cần xem để dùng app.</div>
   <div class="card">
   <div class="row"><span class="lbl">Số kỳ nghiên cứu</span><span id="winBtns" class="row"></span></div>
@@ -351,7 +358,7 @@ function renderAll(){
   $('status').textContent=`Dữ liệu ${M.all.length} kỳ (${M.all[0].date} → ${M.all[M.all.length-1].date}) · đang nghiên cứu ${M.W} kỳ gần nhất · kỳ tới: ${fmt(M.nd)}`;
   $('winBtns').innerHTML=[100,200,300,500,1000].map(n=>`<span class="chip${n===S.win?' on':''}" data-n="${n}">${n>=M.all.length&&n===1000?'tất cả':n}</span>`).join('');
   $('winBtns').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.win=+e.dataset.n;renderAll();});
-  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();
+  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
 }
 function renderAdd(){
   const a=ex();$('addList').innerHTML=a.length?`<div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ đã thêm</th><th class="l">Số</th><th></th></tr></thead><tbody>${a.map((e,i)=>`<tr><td class="l">${e.date}</td><td class="l">${e.r.map(n=>`<span class="b">${p2(n)}</span>`).join('')}${GC.extra&&e.lk!=null?` <span class="b lk">${p2(e.lk)}</span>`:''}</td><td><button class="btn" data-del="${i}">Xóa</button></td></tr>`).join('')}</tbody></table></div>`:'';
@@ -859,6 +866,47 @@ function renderPoolHist(sel,K){
   $('phIn').querySelectorAll('tr[data-k]').forEach(e=>e.onclick=()=>{const k=+e.dataset.k;if(k===K)return;S.sgM=sel;S.sgKman=k;S.whSel={};renderSuggest();});
   $('phList').addEventListener('toggle',e=>{S.phOpen=e.target.open;});
 }
+// ---------- KIEM TRA DAU VET: bi lech (Mega/Power) / bo sinh so may tinh (Loto) ----------
+function trSetup(){const loto=GAME==='loto535';$('trKind').textContent=loto?'bộ sinh số máy tính':'bi và lồng quay';
+  $('trIntro').innerHTML=loto?'Loto 5/35 quay bằng máy tính. Nếu bộ sinh số kém, kết quả sẽ để lại dấu vết: số ra lệch, cặp hay đi cùng, kỳ sau dính kỳ trước… Mỗi phép kiểm so kết quả thật với 300 lần cho máy bốc ngẫu nhiên cùng số kỳ.':'Nếu một quả bi nặng/mòn hoặc lồng quay lệch, số đó sẽ ra nhiều (hoặc ít) đều đặn và lâu dài. Mỗi phép kiểm so kết quả thật với 300 lần cho máy bốc ngẫu nhiên cùng số kỳ.';
+  if(S.trN==null)S.trN=500;const L=S.M.all.length;
+  $('trN').innerHTML=[100,200,300,500,0].map(n=>`<span class="chip${n===S.trN?' on':''}" data-n="${n}">${n?n+' kỳ':'tất cả ('+L+')'}</span>`).join('');
+  $('trN').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.trN=+e.dataset.n;$('trIn').value='';trSetup();});
+  $('trGo').onclick=trRun;$('trIn').onchange=e=>{const v=Math.round(+e.target.value);if(v>=50){S.trN=v;trSetup();}};
+  $('trOut').innerHTML=S.trRes&&S.trRes.key===GAME+'|'+L+'|'+S.trN?S.trRes.html:'<div class="foot">Bấm "Chạy kiểm tra" để chạy (mất vài giây).</div>';}
+function trStats(D,X){const n=D.length,N=NM,C=CC,o={},f=new Float64Array(N+1);D.forEach(r=>r.forEach(v=>f[v]++));
+  const ef=n*C/N;let c2=0;for(let v=1;v<=N;v++)c2+=(f[v]-ef)**2/ef;o.freq=c2;
+  let rep=0;for(let t=1;t<n;t++)rep+=D[t].filter(v=>D[t-1].includes(v)).length;o.rep=rep/(n-1);
+  const corr=(a,b)=>{const m=a.length,ma=a.reduce((s,x)=>s+x,0)/m,mb=b.reduce((s,x)=>s+x,0)/m;let sab=0,sa=0,sb=0;for(let i=0;i<m;i++){sab+=(a[i]-ma)*(b[i]-mb);sa+=(a[i]-ma)**2;sb+=(b[i]-mb)**2;}return sa&&sb?sab/Math.sqrt(sa*sb):0;};
+  const sm=D.map(r=>r.reduce((s,x)=>s+x,0)),od=D.map(r=>r.filter(x=>x%2).length);o.sum=corr(sm.slice(1),sm.slice(0,-1));o.odd=corr(od.slice(1),od.slice(0,-1));
+  const pc=new Float64Array(N*N);D.forEach(r=>{for(let i=0;i<C;i++)for(let j=i+1;j<C;j++)pc[r[i]*N+r[j]-N-1]++;});const np=N*(N-1)/2,ep=n*C*(C-1)/2/np;let p2=0,pm=0,pi=0;
+  for(let a=1;a<=N;a++)for(let b=a+1;b<=N;b++){const c=pc[a*N+b-N-1];p2+=(c-ep)**2/ep;if(c>pm){pm=c;pi=a*100+b;}}o.pair=p2;
+  const h=Math.floor(n/2),fa=new Array(N).fill(0),fb=new Array(N).fill(0);D.forEach((r,t)=>r.forEach(v=>(t<h?fa:fb)[v-1]++));o.half=corr(fa,fb);
+  o.cons=D.reduce((s,r)=>{let c=0;for(let i=1;i<C;i++)if(r[i]-r[i-1]===1)c++;return s+c;},0)/n;
+  const st=GC.extraN;if(X){const fx=new Float64Array(st+1);X.forEach(v=>fx[v]++);const ex=X.length/st;let c=0;for(let v=1;v<=st;v++)c+=(fx[v]-ex)**2/ex;o.ext=c;o._fx=fx;}
+  o._f=f;o._pm=pm;o._pi=pi;o._ef=ef;o._ep=ep;return o;}
+function trSim(n,m){const N=NM,C=CC,D=[],X=m?[]:null;for(let t=0;t<n;t++){const s=new Set();while(s.size<C)s.add(1+Math.floor(Math.random()*N));const r=[...s].sort((a,b)=>a-b);D.push(r);
+  if(X&&t<m){let x;if(GC.extraN===N){do{x=1+Math.floor(Math.random()*N);}while(s.has(x));}else x=1+Math.floor(Math.random()*GC.extraN);X.push(x);}}return [D,X];}
+function trRun(){const all=S.M.all,L=all.length,n=S.trN?Math.min(S.trN,L):L,sl=all.slice(L-n),D=sl.map(e=>e.r.slice().sort((a,b)=>a-b)),xs=GC.extra?sl.map(e=>e.lk).filter(v=>v):[],m=xs.length>=50?xs.length:0;
+  const real=trStats(D,m?xs:null),key=GAME+'|'+L+'|'+S.trN,g0=GAME,sims=[],NS=300,btn=$('trGo');btn.disabled=true;
+  const step=()=>{if(GAME!==g0){btn.disabled=false;return;}const t1=performance.now();while(sims.length<NS&&performance.now()-t1<25){const [a,b]=trSim(n,m);sims.push(trStats(a,b));}
+    $('trOut').innerHTML=`<div class="foot">Đang bốc ngẫu nhiên để so: ${sims.length}/${NS}…</div>`;if(sims.length<NS){setTimeout(step,0);return;}btn.disabled=false;
+    const T=[['freq','Tần suất từng số có đều không','chỉ số lệch (chi²)',1],['pair','Có cặp số nào hay đi cùng nhau','chỉ số lệch cặp (chi²)',1],['rep','Số kỳ trước lặp lại ở kỳ sau','số/kỳ',2],
+      ['sum','Tổng kỳ này dính tổng kỳ trước','tương quan',2],['odd','Số lẻ kỳ này dính kỳ trước','tương quan',2],['half','Số ra nhiều nửa đầu còn nhiều ở nửa sau','tương quan',1],['cons','Số liền nhau trong một kỳ (vd 10-11)','cặp/kỳ',2]];
+    if(real.ext!=null)T.push(['ext',`${GC.extraName[0].toUpperCase()+GC.extraName.slice(1)} có đều không`,`chỉ số lệch (chi²)${m<n?`, ${m} kỳ có ${GC.extraName}`:''}`,1]);
+    const fx=x=>Math.abs(x)>=10?x.toFixed(1):x.toFixed(3),q=(a,p)=>a[Math.min(a.length-1,Math.floor(p*a.length))];let nBad=0;
+    const rows=T.map(([k,lab,unit,side])=>{const a=sims.map(s=>s[k]).sort((x,y)=>x-y),v=real[k],ge=a.filter(x=>x>=v).length/NS,le=a.filter(x=>x<=v).length/NS,p=side===1?ge:Math.min(1,2*Math.min(ge,le));
+      const cls=p<0.01?'no':p<0.05?'':'ok',vd=p<0.01?'đáng chú ý':p<0.05?'hơi lệch':'bình thường';if(p<0.05)nBad++;
+      return `<tr><td class="l">${lab}<div class="foot" style="margin:0;">${unit}</div></td><td><b>${fx(v)}</b></td><td>${fx(q(a,.025))} – ${fx(q(a,.975))}</td><td class="${cls}"><b>${p<0.005?'< 0.005':p.toFixed(2)}</b><div style="font-size:.75rem;white-space:nowrap;">${vd}</div></td></tr>`;}).join('');
+    const f=real._f,ids=[...Array(NM).keys()].map(i=>i+1),hi=ids.slice().sort((a,b)=>f[b]-f[a]).slice(0,5),lo=ids.slice().sort((a,b)=>f[a]-f[b]).slice(0,5),pp=real._pi;
+    const html=`<div class="sum" style="margin-top:6px;"><b>${n} kỳ gần nhất</b> (${sl[0].date} → ${sl[n-1].date}) · ${nBad} / ${T.length} phép kiểm có p < 0.05. Bốc ngẫu nhiên thì trung bình cũng có ${(T.length*0.05).toFixed(1)} phép như vậy, nên chỉ đáng chú ý khi p < 0.01 (đỏ) <b>và</b> lặp lại khi kiểm trên các khoảng kỳ khác.</div>
+     <div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Phép kiểm</th><th>Thật</th><th>Ngẫu nhiên (95%)</th><th>p</th></tr></thead><tbody>${rows}</tbody></table></div>
+     <div class="foot">p = tỉ lệ số lần bốc ngẫu nhiên lệch bằng hoặc hơn kết quả thật. p càng nhỏ càng khó là ngẫu nhiên.</div>
+     <div style="margin-top:8px;"><span class="lbl">Ra nhiều nhất</span> ${hi.map(v=>`<span class="b" style="background:var(--good);color:#04200a;">${p2(v)}</span><span class="foot" style="margin:0 6px 0 0;">${f[v]}</span>`).join('')}</div>
+     <div style="margin-top:4px;"><span class="lbl">Ra ít nhất</span> ${lo.map(v=>`<span class="b">${p2(v)}</span><span class="foot" style="margin:0 6px 0 0;">${f[v]}</span>`).join('')}</div>
+     <div class="foot">Kỳ vọng mỗi số ${real._ef.toFixed(1)} lần. Cặp đi cùng nhiều nhất: <b>${p2(Math.floor(pp/100))}-${p2(pp%100)}</b> ${real._pm} lần (trung bình mỗi cặp ${real._ep.toFixed(1)} lần; nhưng có ${NM*(NM-1)/2} cặp nên bốc ngẫu nhiên thì cặp nhiều nhất cũng thường ra khoảng ${Math.round(sims.reduce((s,x)=>s+x._pm,0)/NS)} lần).</div>`;
+    S.trRes={key,html};if(GAME===g0)$('trOut').innerHTML=html;};
+  setTimeout(step,30);}
 // ---------- POOL GON 7 / 9 SO + KIEM SO NGUOI DUNG CAN NHAC ----------
 function smallStats(sel,K,span){const {out,N,R}=S.PS,d=[0,0,0];let n=0;for(let t=N-span;t<N;t++){if(!out[sel][t])continue;const h=topK(out[sel][t],K).filter(v=>R[t].includes(v)).length;n++;if(h>=1)d[0]++;if(h>=2)d[1]++;if(h>=3)d[2]++;}return d.map(x=>x/n);}
 function renderSmall(){
