@@ -235,3 +235,7 @@
 - 7 phép kiểm trên 921 kỳ (lặp lại kỳ trước, tương quan tổng, chẵn lẻ, tần suất cặp, tần suất đơn, nửa đầu/nửa sau, số liền nhau) so với 300 lần bốc ngẫu nhiên: cả 7 đều nằm trong khoảng 95% của bốc ngẫu nhiên. Số may mắn cũng đều.
 - Gần ngưỡng nhất: tần suất đơn (p≈0.08, số 34 ra 161 lần so với kỳ vọng 132). Với 7 phép kiểm thì có 1 phép gần ngưỡng là bình thường. Kiểm lại sau 200 kỳ nữa.
 - Mega/Power (có bi): tần suất đều (p 0.89 / 0.49), không thấy bi lệch.
+
+## Thiên văn / lịch (02/10/2026)
+- Đã kiểm 6 cách chia theo lịch (pha mặt trăng 8 nhóm, ngày âm, thứ, tháng dương, ngày trong tháng, mùa) × 3 game. Với mỗi cách chia: số ra có lệch theo nhóm không, tổng có lệch theo nhóm không, và pool "cùng nhóm" có trúng hơn ngẫu nhiên không (300 kỳ cuối). Kết quả gần như toàn bộ ngang ngẫu nhiên. Pha mặt trăng và ngày âm: p 0.40–0.94.
+- Ứng viên duy nhất cần theo dõi: Power, ngày 21–31 tổng thấp hơn (163.6 so với 171–173). Nửa đầu dữ liệu p=0.01; nửa sau (hướng đã biết trước) p=0.03 một phía. Mức tác động rất nhỏ: thêm khoảng +0.14 số ≤27 mỗi kỳ. Đã làm 36 phép kiểm nên vẫn có thể là tình cờ. Kiểm lại trên các kỳ từ 03/10/2026 trở đi.
