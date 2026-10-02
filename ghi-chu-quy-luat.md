@@ -244,3 +244,8 @@
 - Đã đưa vào app (mục ⑥) và kiểm trên toàn bộ các kỳ: Tiểu Lục Nhâm, Đại Lục Nhâm (rút gọn), Thái Ất (rút gọn), Huyền Không Phi Tinh, Nhị thập bát tú, Hoàng đạo/Hắc đạo, Nạp âm, Bóng âm dương, Bạc nhớ, Chạm, Tổng chạm, Lộn + kép, Thần số học, Tử vi (Mệnh/Cục/Tử Vi), Xin xăm, Bát trạch.
 - Tỉ số so với chọn bừa: 0.94–1.08 ở cả 3 game. Không có phép nào p < 0.01.
 - Gần ngưỡng: "Lộn + kép" ở Loto (1.08, p 0.04) và Power (1.07, p 0.02). Tách riêng thì phần đóng góp là các số kép cố định (11, 22, 33…): Loto 1.11 (nửa đầu 1.13, nửa sau 1.10), Power 1.08. Thực chất đây là tần suất của vài số cố định, cùng loại với tín hiệu "Loto tần suất lệch p≈0.08". Theo dõi tiếp.
+
+## Khoanh vùng từng bi (02/10/2026)
+- Power (1001 kỳ): 12/55 bi lệch cùng chiều ở cả 4 giai đoạn (ngẫu nhiên 3–12, p≈0.04). Bi 22 (z +2.51) và 41 (+2.21) ra nhiều ở cả 4 đoạn. Bi 15, 35, 50 ra ít ở cả 4 đoạn. Chưa bi nào đạt ngưỡng chắc chắn |z| ≥ 3.1.
+- Mega (1001 kỳ): chỉ 4/45 bi bền, ngang ngẫu nhiên. Không có dấu hiệu.
+- Theo dõi Power 22, 41 trên các kỳ mới.
