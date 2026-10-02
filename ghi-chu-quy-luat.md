@@ -229,3 +229,9 @@
 - SỬA LẠI (người dùng chỉ ra đúng): 2 pool gần như không trùng phủ 30/35 số → "1 pool ≥3 số" gần như do phép đếm (5 số chia 2 nhóm).
   So công bằng cùng tổng số lượng (300 kỳ): Loto cặp ≤20 số 55% vs 1 pool 20 số 61%; ≤23: 60% vs 76%; Mega ≤22: 59% vs 65%; Power ≤26: 53% vs 61%.
   → nhiều pool KÉM hơn 1 pool cùng cỡ. Đã gỡ phần "2 phương án pool" khỏi app.
+
+## Loto 5/35 quay bằng máy tính (không có bi vật lý), kiểm tra 02/10/2026
+- Loto 5/35 không quay bi mà máy tính sinh số, nên giả thuyết "bi lệch" không áp dụng. Câu hỏi đúng là bộ sinh số có để lại dấu vết không.
+- 7 phép kiểm trên 921 kỳ (lặp lại kỳ trước, tương quan tổng, chẵn lẻ, tần suất cặp, tần suất đơn, nửa đầu/nửa sau, số liền nhau) so với 300 lần bốc ngẫu nhiên: cả 7 đều nằm trong khoảng 95% của bốc ngẫu nhiên. Số may mắn cũng đều.
+- Gần ngưỡng nhất: tần suất đơn (p≈0.08, số 34 ra 161 lần so với kỳ vọng 132). Với 7 phép kiểm thì có 1 phép gần ngưỡng là bình thường. Kiểm lại sau 200 kỳ nữa.
+- Mega/Power (có bi): tần suất đều (p 0.89 / 0.49), không thấy bi lệch.
