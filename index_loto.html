@@ -134,6 +134,9 @@ input.n{width:52px;text-align:center;}
   <h3 style="margin-top:16px;">Tứ trụ (Bát tự) người rút</h3>
   <div class="row" style="margin-bottom:6px;"><span class="lbl">Ngày sinh</span><input type="date" id="ttDate"><select id="ttCal"><option value="am">âm lịch</option><option value="duong">dương lịch</option></select><span class="lbl">Giờ sinh</span><select id="ttHour"></select></div>
   <div id="ttOut"></div>
+  <h3 style="margin-top:16px;">16 phương pháp khác (Lục Nhâm, Thái Ất, Phi Tinh, bóng, bạc nhớ, thần số học, tử vi…)</h3>
+  <div class="row" style="margin-bottom:6px;"><span class="lbl">Họ tên</span><input type="text" id="kxName" placeholder="để tính thần số học" style="width:200px;max-width:100%;"><span class="lbl">Giới tính</span><select id="kxSex"><option value="nam">Nam</option><option value="nu">Nữ</option></select></div>
+  <div id="kxOut"></div>
 </details>
 
 <details class="card" id="trCard">
@@ -1093,7 +1096,7 @@ function renderTarot(){
   for(let t=0;t<ALL.length;t++){const ds=ALL[t].date.slice(0,10),X=seen[ds]||(seen[ds]=tqDraw(who,ds,0,N,hm)),res=ALL[t].r,hh=res.filter(x=>X.nums.includes(x)).length;hit+=hh;exp+=X.nums.length*C/N;if(!hh)z++;if(LN&&X.lucky===ALL[t].lk)lh++;nd2++;}
   $('tqBt').innerHTML=`<div class="sum" style="margin-top:10px;"><b>Kiểm tra trên ${nd2} kỳ đã quay</b> (cùng người rút, lần rút đầu của mỗi ngày quay${hm?`, quẻ Mai Hoa lập lúc ${hm} của ngày quay`:''}): lá số trúng TB <b>${(hit/nd2).toFixed(2)}</b> số/kỳ, chọn bừa cùng số lượng thì TB <b>${(exp/nd2).toFixed(2)}</b> → tỉ số <b class="${hit/exp>1?'hit-txt':''}">${(hit/exp).toFixed(3)}</b> · ${(z/nd2*100).toFixed(1)}% kỳ không trúng số nào${LN?` · số may mắn trúng ${lh}/${nd2} kỳ (${pct1(lh/nd2)}, chọn bừa ${pct1(1/12)})`:''}. Tỉ số khoảng 1 nghĩa là lá số không hơn chọn bừa.</div>`;
   $('tqFoot').textContent=`Cách lấy số: lá ẩn (Major) lấy số lá (Chàng Khờ = 22); lá thường lấy số hạng (Át = 1 … Vua = 14) và số thứ tự trong bộ 78 lá (Gậy 23–36, Cốc 37–50, Kiếm 51–64, Tiền 65–78). Quẻ lấy số quẻ (1–64), ghép số Tiên thiên của thượng và hạ quái, và số quẻ biến nếu có hào động. Số lớn hơn ${N} bị bỏ${LN?'; số may mắn = số quẻ chủ quay vòng về 1–12':''}. Cùng người rút và cùng ngày thì luôn ra cùng kết quả; "Rút lại" đổi sang lần rút khác${hm?' (chỉ đổi lá Tarot; quẻ Mai Hoa chỉ phụ thuộc ngày và giờ động tâm)':''}.`;
-  renderKM(date,$('tqHour').value||(()=>{const n=new Date();return p2(n.getHours())+':'+p2(n.getMinutes());})(),N,LN);renderTT(date,N);
+  renderKM(date,$('tqHour').value||(()=>{const n=new Date();return p2(n.getHours())+':'+p2(n.getMinutes());})(),N,LN);renderTT(date,N);renderKX();
 }
 // ================= LICH PHAP: can chi, tiet khi =================
 const NH=['Mộc','Hỏa','Thổ','Kim','Thủy'],CHI_EL=[4,2,0,0,2,1,1,2,3,3,2,4],HADO={0:[3,8],1:[2,7],2:[5,0],3:[4,9],4:[1,6]};
@@ -1204,6 +1207,98 @@ function bindTarot(){
   $('ttDate').onchange=ttSave;$('ttCal').onchange=ttSave;$('ttHour').onchange=ttSave;
 }
 
+// ================= CAC PHUONG PHAP TAM LINH KHAC (14 cach) + KIEM TRA TREN CAC KY DA QUAY =================
+const KX_TLN=[['Đại An',[1,5,7]],['Lưu Niên',[2,8,0]],['Tốc Hỷ',[3,6,9]],['Xích Khẩu',[4,7,0]],['Tiểu Cát',[1,5,7]],['Không Vong',[3,6,9]]];
+const KX_KY=[2,4,5,7,5,7,8,10,11,1];   // can ky cung (Giap->Dan ...)
+const KX_TU=['Giác','Cang','Đê','Phòng','Tâm','Vĩ','Cơ','Đẩu','Ngưu','Nữ','Hư','Nguy','Thất','Bích','Khuê','Lâu','Vị','Mão','Tất','Chủy','Sâm','Tỉnh','Quỷ','Liễu','Tinh','Trương','Dực','Chẩn'];
+const KX_HD=['Thanh Long','Minh Đường','Thiên Hình','Chu Tước','Kim Quỹ','Bảo Quang','Bạch Hổ','Ngọc Đường','Thiên Lao','Huyền Vũ','Tư Mệnh','Câu Trần'],KX_HDOK=[1,1,0,0,1,1,0,1,0,0,1,0];
+const KX_NA=['Hải Trung Kim','Lô Trung Hỏa','Đại Lâm Mộc','Lộ Bàng Thổ','Kiếm Phong Kim','Sơn Đầu Hỏa','Giản Hạ Thủy','Thành Đầu Thổ','Bạch Lạp Kim','Dương Liễu Mộc','Tuyền Trung Thủy','Ốc Thượng Thổ','Tích Lịch Hỏa','Tùng Bách Mộc','Trường Lưu Thủy','Sa Trung Kim','Sơn Hạ Hỏa','Bình Địa Mộc','Bích Thượng Thổ','Kim Bạch Kim','Phú Đăng Hỏa','Thiên Hà Thủy','Đại Trạch Thổ','Thoa Xuyến Kim','Tang Đố Mộc','Đại Khê Thủy','Sa Trung Thổ','Thiên Thượng Hỏa','Thạch Lựu Mộc','Đại Hải Thủy'];
+const KX_NAEL=[3,1,0,2,3,1,4,2,3,0,4,2,1,0,4,3,1,0,2,3,1,4,2,3,0,4,2,1,0,4];   // chi so NH
+const KX_TA=[1,2,3,4,6,7,8,9],KX_QUAI={1:'Khảm',2:'Khôn',3:'Chấn',4:'Tốn',6:'Càn',7:'Đoài',8:'Cấn',9:'Ly'},KX_BT={1:[4,3],2:[8,7],3:[9,1],4:[1,9],6:[7,8],7:[6,2],8:[2,6],9:[3,4]};
+const kxNa=(s,b)=>{const i=((6*s-5*b)%60+60)%60;return Math.floor(i/2);};
+const kxDr=n=>1+(n-1)%9;
+const kxTails=(ds,N)=>{const o=[];for(let v=1;v<=N;v++)if(ds.includes(v%10))o.push(v);return o;};
+const kxMod12=(cs,N)=>{const o=[];for(let v=1;v<=N;v++)if(cs.includes((v-1)%12))o.push(v);return o;};
+const kxRoot=(rs,N)=>{const o=[];for(let v=1;v<=N;v++)if(rs.includes(kxDr(v)))o.push(v);return o;};
+const kxU=(...a)=>[...new Set(a.flat())].sort((x,y)=>x-y);
+const KX_SOL={};
+function kxSolst(y,deg){const k=y+'|'+deg;if(KX_SOL[k]==null){const m=deg===270?12:6;let j=lnJd(15,m,y);while(true){const a=sunLong(j-0.5+(12-7)/24),b=sunLong(j+0.5+(12-7)/24);if(((b-deg+360)%360)<((a-deg+360)%360)){KX_SOL[k]=j+1;break;}j++;if(j>lnJd(28,m,y)){KX_SOL[k]=j;break;}}}return KX_SOL[k];}
+function kxGT(s){let g=s-(((s-11)%60)+60)%60;if(s-g>30)g+=60;return g;}   // ngay Giap Ty gan ngay s nhat (jdn = 11 mod 60)
+function kxHK(jdn,y){const st=[];[y-1,y].forEach(Y=>{st.push([kxGT(kxSolst(Y,270)),1]);st.push([kxGT(kxSolst(Y,90)),-1]);});
+  const s=st.filter(x=>x[0]<=jdn).sort((a,b)=>b[0]-a[0])[0];const k=(jdn-s[0])%9;return s[1]===1?1+k:9-k;}
+// ngu canh cua 1 ky: ngay gio quay + can chi + am lich
+function kxCtx(date){const [dd,mm,yy]=date.slice(0,10).split('/').map(Number),hh=/13h/.test(date)?13:/21h/.test(date)?21:18;
+  const cc=canChi(dd,mm,yy,hh,0),L=solar2lunar(dd,mm,yy),jdn=cc.jdn;let Y=yy;if(mm<=2&&cc.lam<315&&cc.lam>=270)Y--;
+  return {dd,mm,yy,hh,cc,L,jdn,Y};}
+function kxPerson(){const P={name:($('kxName')&&$('kxName').value||'').trim(),sex:$('kxSex')?$('kxSex').value:'nam'};
+  const v=$('ttDate').value||ttBirth().d,[Y,Mo,D]=v.split('-').map(Number),cal=$('ttCal').value||'am';P.hb=+($('ttHour').value||0);
+  const sol=cal==='am'?lunar2solar(D,Mo,Y):[D,Mo,Y];if(!sol)return null;P.sol=sol;P.lun=cal==='am'?{d:D,m:Mo,y:Y}:(()=>{const L=solar2lunar(D,Mo,Y);return {d:L.d,m:L.m,y:L.y};})();return P;}
+function kxNum(name){const s=name.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/gi,'d').toUpperCase().replace(/[^A-Z]/g,'');let ex=0,so=0;for(const ch of s){const v=((ch.charCodeAt(0)-65)%9)+1;ex+=v;if('AEIOU'.includes(ch))so+=v;}return {ex,so};}
+function kxRed(n){while(n>9&&![11,22,33].includes(n))n=String(n).split('').reduce((a,b)=>a+ +b,0);return n;}
+function kxHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+// 14 phuong phap: f(ctx, prev(ket qua ky truoc), st(trang thai bac nho), P(nguoi), N) -> {why, nums}
+const KX_M=[
+ ['tln','Tiểu Lục Nhâm','A',(c,pv,st,P,N)=>{const h=Math.floor((c.hh+1)/2)%12,i=((c.L.m-1)+(c.L.d-1)+h)%6,x=KX_TLN[i];return {why:`tháng ${c.L.m} · ngày ${c.L.d} âm · giờ ${CHI[h]} → <b>${x[0]}</b> (đuôi ${x[1].join(', ')})`,nums:kxTails(x[1],N)};}],
+ ['dln','Đại Lục Nhâm (rút gọn)','A',(c,pv,st,P,N)=>{const hc=c.cc.h[1],tg=(11-Math.floor((((c.cc.lam-330)%360)+360)%360/30)+12)%12,T=b=>((b-hc+tg)%12+12)%12,s=c.cc.d[0],db=c.cc.d[1],ce=Math.floor(s/2),E=b=>CHI_EL[b],kh=(a,b)=>b===(a+2)%5;
+   const u1=T(KX_KY[s]),u2=T(u1),u3=T(db),u4=T(u3),K=[[ce,u1],[E(u1),u2],[E(db),u3],[E(u3),u4]];
+   const pick=l=>{const u=[...new Set(l)];if(u.length===1)return u[0];const y=u.filter(b=>b%2===s%2);return (y.length?y:u)[0];};
+   let so,how;const tac=K.filter(([le,u])=>kh(le,E(u))).map(k=>k[1]),khac=K.filter(([le,u])=>kh(E(u),le)).map(k=>k[1]);
+   if(tac.length){so=pick(tac);how='tặc khắc';}else if(khac.length){so=pick(khac);how='khắc';}else{const d1=K.map(k=>k[1]).filter(u=>kh(E(u),ce)),d2=K.map(k=>k[1]).filter(u=>kh(ce,E(u)));
+     if(d1.length||d2.length){so=pick(d1.length?d1:d2);how='dao khắc';}else{so=s%2===0?T(9):[...Array(12).keys()].find(b=>T(b)===9);how='mão tinh';}}
+   const tr=T(so),mat=T(tr);return {why:`nguyệt tướng ${CHI[tg]} gia giờ ${CHI[hc]} · ${how} · 3 truyền <b>${CHI[so]} → ${CHI[tr]} → ${CHI[mat]}</b>`,nums:kxMod12([so,tr,mat],N)};}],
+ ['ta','Thái Ất (thời kế, rút gọn)','A',(c,pv,st,P,N)=>{const cnt=(c.jdn-11)*12+c.cc.h[1],ju=((cnt%72)+72)%72+1,g=KX_TA[Math.floor(((ju-1)%24)/3)];return {why:`cục ${ju} · Thái Ất ở cung <b>${g}</b>`,nums:kxU(kxRoot([g],N),kxTails([g%10],N))};}],
+ ['hk','Huyền Không Phi Tinh','A',(c,pv,st,P,N)=>{const ds=kxHK(c.jdn,c.yy),yb=c.cc.y[1],mi=(c.cc.m[1]-2+12)%12,m0=[0,6,3,9].includes(yb)?8:[4,10,1,7].includes(yb)?5:2,ms=(((m0-1-mi)%9)+9)%9+1,ys=((11-c.Y%9)%9)||9;
+   return {why:`sao năm ${ys} · sao tháng <b>${ms}</b> · sao ngày <b>${ds}</b>`,nums:kxRoot([ds,ms],N)};}],
+ ['tu','Nhị thập bát tú','A',(c,pv,st,P,N)=>{const i=(c.jdn+11)%28,m=i+1;return {why:`sao <b>${KX_TU[i]}</b> (thứ ${m}/28)`,nums:kxU(kxTails([m%10],N),m<=N?[m]:[])};}],
+ ['hd','Hoàng đạo / Hắc đạo','A',(c,pv,st,P,N)=>{const mb=c.cc.m[1],db=c.cc.d[1],s0=(((mb-2+12)%12)%6)*2,th=(db-s0+12)%12;return {why:`ngày <b>${KX_HD[th]}</b> (${KX_HDOK[th]?'hoàng đạo':'hắc đạo'})`,nums:kxMod12([th],N)};}],
+ ['na','Ngũ hành nạp âm','A',(c,pv,st,P,N)=>{const i=kxNa(c.cc.d[0],c.cc.d[1]),el=KX_NAEL[i];return {why:`ngày ${ccTxt(c.cc.d)} · <b>${KX_NA[i]}</b> → Hà Đồ đuôi ${HADO[el].join(', ')}`,nums:kxTails(HADO[el],N)};}],
+ ['bong','Bóng âm dương','B',(c,pv,st,P,N)=>{if(!pv)return null;const D=[5,6,7,8,9,0,1,2,3,4],A=[7,4,9,6,1,8,3,0,5,2],o=[];pv.forEach(n=>{const a=Math.floor(n/10),b=n%10;o.push(D[a]*10+D[b],A[a]*10+A[b],a*10+D[b],a*10+A[b]);});
+   return {why:`bóng dương, bóng âm của kỳ trước (${pv.map(p2).join(' ')}), cả số và riêng chữ số đuôi`,nums:kxU(o.filter(v=>v>=1&&v<=N))};}],
+ ['bac','Bạc nhớ','B',(c,pv,st,P,N)=>{if(!pv||!st.n)return null;const sc=new Float64Array(N+1);pv.forEach(x=>{if(st.cnt[x])for(let y=1;y<=N;y++)sc[y]+=st.T[x*(N+1)+y]/st.cnt[x]/((st.f[y]+1)/(st.n+1));});
+   const K=Math.round(N*0.3),nums=[...Array(N).keys()].map(i=>i+1).sort((a,b)=>sc[b]-sc[a]||a-b).slice(0,K);return {why:`${K} số hay ra ở kỳ ngay sau khi các số kỳ trước xuất hiện`,nums:nums.sort((a,b)=>a-b)};}],
+ ['cham','Chạm đầu đuôi','B',(c,pv,st,P,N)=>{if(!pv)return null;const k=new Array(10).fill(0);pv.forEach(n=>{k[Math.floor(n/10)]++;k[n%10]++;});const top=[...k.keys()].sort((a,b)=>k[b]-k[a]||a-b).slice(0,2);
+   return {why:`chữ số hay gặp nhất kỳ trước: <b>${top.join(', ')}</b>`,nums:[...Array(N).keys()].map(i=>i+1).filter(v=>top.includes(v%10)||top.includes(Math.floor(v/10)))};}],
+ ['tong','Tổng chạm','B',(c,pv,st,P,N)=>{if(!pv)return null;const k=new Array(10).fill(0);pv.forEach(n=>k[(Math.floor(n/10)+n%10)%10]++);const t=[...k.keys()].sort((a,b)=>k[b]-k[a]||a-b)[0];
+   return {why:`tổng hai chữ số hay gặp nhất kỳ trước: <b>${t}</b>`,nums:[...Array(N).keys()].map(i=>i+1).filter(v=>(Math.floor(v/10)+v%10)%10===t)};}],
+ ['lon','Lộn + kép','B',(c,pv,st,P,N)=>{if(!pv)return null;const o=pv.map(n=>(n%10)*10+Math.floor(n/10));for(let d=1;d<=9;d++)o.push(d*11);return {why:`số lộn của kỳ trước + các số kép`,nums:kxU(o.filter(v=>v>=1&&v<=N))};}],
+ ['tsh','Thần số học','C',(c,pv,st,P,N)=>{if(!P)return null;const lp=kxRed([...`${P.sol[0]}${P.sol[1]}${P.sol[2]}`].reduce((a,b)=>a+ +b,0)),nm=P.name?kxNum(P.name):null,ex=nm?kxRed(nm.ex):null,so=nm?kxRed(nm.so):null;
+   const core=[lp,ex,so].filter(x=>x),rs=core.map(x=>kxDr(x));return {why:`số chủ đạo <b>${lp}</b>${nm?` · số sứ mệnh <b>${ex}</b> · số linh hồn <b>${so}</b>`:' (nhập họ tên để có thêm số sứ mệnh, linh hồn)'}`,nums:kxU(kxRoot(rs,N),core.filter(x=>x>9&&x<=N))};}],
+ ['tv','Tử vi (Mệnh, Cục, sao Tử Vi)','C',(c,pv,st,P,N)=>{if(!P)return null;const L=P.lun,ys=((L.y-4)%10+10)%10,menh=((2+(L.m-1)-P.hb)%12+12)%12,dc=((ys%5)*2+2)%10,cs=(dc+((menh-2+12)%12))%10,el=KX_NAEL[kxNa(cs,menh)],cuc=[3,6,5,4,2][el];
+   let x=0;while((L.d+x)%cuc)x++;const q=(L.d+x)/cuc;let pos=2+q-1;pos=x%2?pos-x:pos+x;pos=((pos%12)+12)%12;
+   return {why:`Mệnh ở <b>${CHI[menh]}</b> · <b>${['','','Thủy nhị','Mộc tam','Kim tứ','Thổ ngũ','Hỏa lục'][cuc]} cục</b> · sao Tử Vi ở <b>${CHI[pos]}</b>`,nums:kxU(kxTails([cuc],N),kxMod12([menh,pos],N))};}],
+ ['xam','Xin xăm (100 quẻ)','C',(c,pv,st,P,N)=>{const q=kxHash((P&&P.name||'')+'|'+(P?P.sol.join('-'):'')+'|'+c.dd+'/'+c.mm+'/'+c.yy+'|'+c.hh)%100+1,r=q<100?(q%10)*10+Math.floor(q/10):1;const w=v=>((v-1)%N)+1;
+   return {why:`rút được quẻ số <b>${q}</b>`,nums:kxU([w(q),w(r)],kxTails([q%10],N))};}],
+ ['bt','Bát trạch (cung mệnh)','C',(c,pv,st,P,N)=>{if(!P)return null;const s=kxDr(String(P.lun.y).split('').reduce((a,b)=>a+ +b,0));let k=P.sex==='nu'?(4+s)%9:(11-s)%9;k=k||9;if(k===5)k=P.sex==='nu'?8:2;const [sk,ty]=KX_BT[k];
+   return {why:`${P.sex==='nu'?'nữ':'nam'} sinh năm ${P.lun.y} → cung <b>${KX_QUAI[k]}</b> · Sinh khí ${sk}, Thiên y ${ty}`,nums:kxTails([sk,ty],N)};}]];
+function kxRun(cb){const all=S.M.all,L=all.length,N=NM,C=CC,P=kxPerson(),key=[GAME,L,P?P.sol.join('-')+P.hb+P.name+P.sex:''].join('|');
+  if(S.kx&&S.kx.key===key){cb(S.kx);return;}
+  const st={T:new Float64Array((N+1)*(N+1)),cnt:new Float64Array(N+1),f:new Float64Array(N+1),n:0},acc=KX_M.map(()=>({n:0,h:0,e:0,v:0,k:0,n2:0,h2:0,e2:0,any:0,eany:0}));
+  const hyp0=(K)=>{let p=1;for(let i=0;i<C;i++)p*=(N-K-i)/(N-i);return p;};
+  let t=0;const g0=GAME,step=()=>{if(GAME!==g0)return;const t1=performance.now();
+    while(t<L&&performance.now()-t1<20){const ctx=kxCtx(all[t].date),pv=t?all[t-1].r:null,r=all[t].r;
+      if(t>=30)KX_M.forEach((m,i)=>{let o=null;try{o=m[3](ctx,pv,st,P,N);}catch(e){}if(!o||!o.nums.length)return;const K=o.nums.length,h=r.filter(v=>o.nums.includes(v)).length,e=K*C/N,va=e*(N-C)/N*(N-K)/(N-1),a=acc[i];
+        a.n++;a.h+=h;a.e+=e;a.v+=va;a.k+=K;a.any+=h>0?1:0;a.eany+=1-hyp0(K);if(t>=L-200){a.n2++;a.h2+=h;a.e2+=e;}});
+      if(pv){pv.forEach(x=>{st.cnt[x]++;r.forEach(y=>st.T[x*(N+1)+y]++);});}r.forEach(y=>st.f[y]++);st.n++;t++;}
+    if(t<L){setTimeout(step,0);return;}
+    const nx=kxCtx(S.M.nd),last=all[L-1].r,now=KX_M.map(m=>{try{return m[3](nx,last,st,P,N);}catch(e){return null;}});
+    S.kx={key,acc,now,P};cb(S.kx);};
+  setTimeout(step,20);}
+function renderKX(){const box=$('kxOut');if(!box)return;
+  try{const v=JSON.parse(localStorage.getItem('vt_kx')||'{}');if(!$('kxName').value&&v.name)$('kxName').value=v.name;if(v.sex&&!S.kxSexSet){$('kxSex').value=v.sex;S.kxSexSet=1;}}catch(e){}
+  const save=()=>{try{localStorage.setItem('vt_kx',JSON.stringify({name:$('kxName').value,sex:$('kxSex').value}));}catch(e){}S.kx=null;renderKX();};$('kxName').onchange=save;$('kxSex').onchange=save;
+  if(!(S.kx&&S.kx.key))box.innerHTML='<div class="foot">Đang tính 16 phương pháp trên toàn bộ các kỳ đã quay…</div>';
+  kxRun(R=>{if(!$('kxOut'))return;const pc=x=>(x*100).toFixed(0)+'%',erf=x=>{const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));};
+    const grp={A:'Theo ngày giờ quay',B:'Bắt số dân gian (theo kỳ trước)',C:'Theo người chơi'};let html='',nBetter=0,nTot=0,best=null;
+    ['A','B','C'].forEach(G=>{const rows=KX_M.map((m,i)=>[m,i]).filter(([m])=>m[2]===G).map(([m,i])=>{const a=R.acc[i],o=R.now[i];if(!a.n)return `<div style="padding:8px 0;border-top:1px solid var(--border);"><b>${m[1]}</b> <span class="foot">Chưa đủ dữ liệu (cần ngày sinh ở mục Tứ trụ phía trên).</span></div>`;
+      const z=(a.h-a.e)/Math.sqrt(a.v),p=1-erf(Math.abs(z)/Math.SQRT2),rt=a.h/a.e,rt2=a.n2?a.h2/a.e2:null;nTot++;if(rt>1)nBetter++;if(!best||p<best.p)best={nm:m[1],p,rt};
+      return `<div style="padding:8px 0;border-top:1px solid var(--border);"><div class="row" style="justify-content:space-between;gap:6px;"><b>${m[1]}</b><span class="${p<0.01?'no':p<0.05?'':'ok'}" style="font-size:.85rem;">tỉ số <b>${rt.toFixed(2)}</b>${rt2!=null?` · 200 kỳ ${rt2.toFixed(2)}`:''} · p ${p<0.005?'< 0.005':p.toFixed(2)}</span></div>
+       ${o?`<div class="foot" style="margin:2px 0 4px;">${o.why}</div><div>${o.nums.map(v=>`<span class="b" style="font-size:.78rem;">${p2(v)}</span>`).join('')}</div>`:'<div class="foot">Kỳ tới không ra số nào.</div>'}
+       <div class="foot" style="margin:2px 0 0;">Pool TB ${(a.k/a.n).toFixed(1)} số · trúng TB ${(a.h/a.n).toFixed(2)} số/kỳ, chọn bừa cùng số lượng ${(a.e/a.n).toFixed(2)}</div></div>`;}).join('');
+      html+=`<h4 style="margin:14px 0 4px;">${grp[G]} <span class="foot" style="margin:0;">· số cho kỳ tới ${fmt(S.M.nd)}</span></h4>${rows}`;});
+    const n=R.acc.reduce((m,a)=>Math.max(m,a.n),0);
+    box.innerHTML=`<div class="sum" style="margin-top:6px;"><b>Kiểm trên ${n} kỳ đã quay</b> (mỗi kỳ lập đúng ngày giờ quay${GC.hours?' 13h / 21h':' 18h'}, chỉ dùng kết quả trước kỳ đó): ${nBetter}/${nTot} phương pháp có tỉ số > 1. Tỉ số = số trúng thật ÷ số trúng nếu chọn bừa cùng số lượng; 1.00 = ngang chọn bừa. ${best?`Lệch nhiều nhất: <b>${best.nm}</b> (tỉ số ${best.rt.toFixed(2)}, p = ${best.p.toFixed(2)}).`:''} Làm ${nTot} phép kiểm thì thường có 1–2 phép p < 0.1 do tình cờ; chỉ đáng tin khi p < 0.01 và giữ được ở 200 kỳ gần nhất.</div>${html}
+     <div class="foot">Cách quy ra số: đuôi = chữ số hàng đơn vị; "chi" = số chia 12 dư theo địa chi (Tý = 1, 13, 25…); "gốc" = tổng chữ số rút về 1–9. Đại Lục Nhâm và Thái Ất là bản rút gọn (Lục Nhâm bỏ các khóa đặc biệt phục ngâm, phản ngâm, bát chuyên; Thái Ất dùng mốc tính rút gọn). Phương pháp theo người chơi lấy ngày giờ sinh ở mục Tứ trụ.</div>`;});
+}
 // ---------- KIEM TRA KET QUA CU: lam lai goi y tai ky tt chi bang du lieu truoc do ----------
 function simHit(id,j,K){const c=S.simC||(S.simC={}),k=id+'|'+j+'|'+K;if(c[k]===undefined){const {out,R}=S.PS;c[k]=out[id]&&out[id][j]?topK(out[id][j],K).filter(v=>R[j].includes(v)).length:-1;}return c[k];}
 function simAt(tt,K,lvl){

@@ -239,3 +239,8 @@
 ## Thiên văn / lịch (02/10/2026)
 - Đã kiểm 6 cách chia theo lịch (pha mặt trăng 8 nhóm, ngày âm, thứ, tháng dương, ngày trong tháng, mùa) × 3 game. Với mỗi cách chia: số ra có lệch theo nhóm không, tổng có lệch theo nhóm không, và pool "cùng nhóm" có trúng hơn ngẫu nhiên không (300 kỳ cuối). Kết quả gần như toàn bộ ngang ngẫu nhiên. Pha mặt trăng và ngày âm: p 0.40–0.94.
 - Ứng viên duy nhất cần theo dõi: Power, ngày 21–31 tổng thấp hơn (163.6 so với 171–173). Nửa đầu dữ liệu p=0.01; nửa sau (hướng đã biết trước) p=0.03 một phía. Mức tác động rất nhỏ: thêm khoảng +0.14 số ≤27 mỗi kỳ. Đã làm 36 phép kiểm nên vẫn có thể là tình cờ. Kiểm lại trên các kỳ từ 03/10/2026 trở đi.
+
+## 16 phương pháp tâm linh / dân gian (02/10/2026)
+- Đã đưa vào app (mục ⑥) và kiểm trên toàn bộ các kỳ: Tiểu Lục Nhâm, Đại Lục Nhâm (rút gọn), Thái Ất (rút gọn), Huyền Không Phi Tinh, Nhị thập bát tú, Hoàng đạo/Hắc đạo, Nạp âm, Bóng âm dương, Bạc nhớ, Chạm, Tổng chạm, Lộn + kép, Thần số học, Tử vi (Mệnh/Cục/Tử Vi), Xin xăm, Bát trạch.
+- Tỉ số so với chọn bừa: 0.94–1.08 ở cả 3 game. Không có phép nào p < 0.01.
+- Gần ngưỡng: "Lộn + kép" ở Loto (1.08, p 0.04) và Power (1.07, p 0.02). Tách riêng thì phần đóng góp là các số kép cố định (11, 22, 33…): Loto 1.11 (nửa đầu 1.13, nửa sau 1.10), Power 1.08. Thực chất đây là tần suất của vài số cố định, cùng loại với tín hiệu "Loto tần suất lệch p≈0.08". Theo dõi tiếp.
