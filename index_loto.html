@@ -1284,7 +1284,7 @@ function kxRun(cb){const all=S.M.all,L=all.length,N=NM,C=CC,P=kxPerson(),key=[GA
     S.kx={key,acc,now,P};cb(S.kx);};
   setTimeout(step,20);}
 function renderKX(){const box=$('kxOut');if(!box)return;
-  try{const v=JSON.parse(localStorage.getItem('vt_kx')||'{}');if(!$('kxName').value&&v.name)$('kxName').value=v.name;if(v.sex&&!S.kxSexSet){$('kxSex').value=v.sex;S.kxSexSet=1;}}catch(e){}
+  try{const v=JSON.parse(localStorage.getItem('vt_kx')||'{}');if(!$('kxName').value&&!S.kxNameSet){$('kxName').value=v.name!=null?v.name:'Nguyễn Thành Luân';S.kxNameSet=1;}if(v.sex&&!S.kxSexSet){$('kxSex').value=v.sex;S.kxSexSet=1;}}catch(e){}
   const save=()=>{try{localStorage.setItem('vt_kx',JSON.stringify({name:$('kxName').value,sex:$('kxSex').value}));}catch(e){}S.kx=null;renderKX();};$('kxName').onchange=save;$('kxSex').onchange=save;
   if(!(S.kx&&S.kx.key))box.innerHTML='<div class="foot">Đang tính 16 phương pháp trên toàn bộ các kỳ đã quay…</div>';
   kxRun(R=>{if(!$('kxOut'))return;const pc=x=>(x*100).toFixed(0)+'%',erf=x=>{const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));};
