@@ -249,3 +249,7 @@
 - Power (1001 kỳ): 12/55 bi lệch cùng chiều ở cả 4 giai đoạn (ngẫu nhiên 3–12, p≈0.04). Bi 22 (z +2.51) và 41 (+2.21) ra nhiều ở cả 4 đoạn. Bi 15, 35, 50 ra ít ở cả 4 đoạn. Chưa bi nào đạt ngưỡng chắc chắn |z| ≥ 3.1.
 - Mega (1001 kỳ): chỉ 4/45 bi bền, ngang ngẫu nhiên. Không có dấu hiệu.
 - Theo dõi Power 22, 41 trên các kỳ mới.
+
+## Ghi chú về máy quay
+- Mega 6/45 và Power 6/55: quay bằng **lồng quay** (bi vật lý, rơi tự do, không thổi khí). Bi lệch (nặng, nhẹ, mòn, méo) có thể làm số đó dễ ra hoặc khó ra; nhìn kết quả chỉ biết dễ/khó ra, không biết chắc nặng hay nhẹ.
+- Loto 5/35: quay bằng **máy tính** (bộ sinh số), không có bi. Dấu vết, nếu có, là của bộ sinh số.
