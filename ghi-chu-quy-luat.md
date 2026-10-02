@@ -253,3 +253,4 @@
 ## Ghi chú về máy quay
 - Mega 6/45 và Power 6/55: quay bằng **lồng quay** (bi vật lý, rơi tự do, không thổi khí). Bi lệch (nặng, nhẹ, mòn, méo) có thể làm số đó dễ ra hoặc khó ra; nhìn kết quả chỉ biết dễ/khó ra, không biết chắc nặng hay nhẹ.
 - Loto 5/35: quay bằng **máy tính** (bộ sinh số), không có bi. Dấu vết, nếu có, là của bộ sinh số.
+- Đã thêm "Theo dõi vết qua các đoạn liên tiếp" (đoạn 25/50/100 kỳ, chuỗi cùng chiều, đường tích lũy). 500 kỳ gần nhất, đoạn 50 kỳ: Mega có bi 21, 40 ra ít 7 đoạn liên tiếp; Power có bi 49 ra ít 7 đoạn liên tiếp. Số bi có chuỗi ≥ 4 vẫn ngang ngẫu nhiên (Mega p 0.85, Power p 0.93).
