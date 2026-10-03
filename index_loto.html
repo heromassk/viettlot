@@ -142,7 +142,7 @@ input.n{width:52px;text-align:center;}
   <h3 style="margin-top:16px;">Tứ trụ (Bát tự) người rút</h3>
   <div class="row" style="margin-bottom:6px;"><span class="lbl">Ngày sinh</span><input type="date" id="ttDate"><select id="ttCal"><option value="am">âm lịch</option><option value="duong">dương lịch</option></select><span class="lbl">Giờ sinh</span><select id="ttHour"></select></div>
   <div id="ttOut"></div>
-  <h3 style="margin-top:16px;">16 phương pháp khác (Lục Nhâm, Thái Ất, Phi Tinh, bóng, bạc nhớ, thần số học, tử vi…)</h3>
+  <h3 style="margin-top:16px;">Tổng hợp 20 phương pháp (16 phương pháp mới + Tarot, Mai Hoa, Kỳ Môn, Tứ trụ ở trên)</h3>
   <div class="row" style="margin-bottom:6px;"><span class="lbl">Họ tên</span><input type="text" id="kxName" placeholder="để tính thần số học" style="width:200px;max-width:100%;"><span class="lbl">Giới tính</span><select id="kxSex"><option value="nam">Nam</option><option value="nu">Nữ</option></select></div>
   <div id="kxOut"></div>
 </details>
@@ -1514,9 +1514,14 @@ const KX_M=[
    return {why:`Mệnh ở <b>${CHI[menh]}</b> · <b>${['','','Thủy nhị','Mộc tam','Kim tứ','Thổ ngũ','Hỏa lục'][cuc]} cục</b> · sao Tử Vi ở <b>${CHI[pos]}</b>`,nums:kxU(kxTails([cuc],N),kxMod12([menh,pos],N))};}],
  ['xam','Xin xăm (100 quẻ)','C',(c,pv,st,P,N)=>{const q=kxHash((P&&P.name||'')+'|'+(P?P.sol.join('-'):'')+'|'+c.dd+'/'+c.mm+'/'+c.yy+'|'+c.hh)%100+1,r=q<100?(q%10)*10+Math.floor(q/10):1;const w=v=>((v-1)%N)+1;
    return {why:`rút được quẻ số <b>${q}</b>`,nums:kxU([w(q),w(r)],kxTails([q%10],N))};}],
+ ['tarot','Tarot (3 lá)','D',(c,pv,st,P,N)=>{const X=kxTq(c,N);return X?{why:`${X.cards.map(k=>k.name).join(' · ')}`,nums:kxU(X.cards.flatMap(k=>k.nums).filter(v=>v>=1&&v<=N))}:null;}],
+ ['mh','Mai Hoa (giờ quay)','D',(c,pv,st,P,N)=>{const X=kxTq(c,N);return X&&X.qn.length?{why:`lập quẻ lúc ${p2(c.hh)}:00 ngày quay`,nums:kxU(X.qn.filter(v=>v>=1&&v<=N))}:null;}],
+ ['km','Kỳ Môn Độn Giáp','D',(c,pv,st,P,N)=>{const K=kmNums(kmBoard(c.dd,c.mm,c.yy,c.hh,0),N);return {why:`3 cung tốt: ${K.best.map(x=>x.p).join(', ')}`,nums:K.nums};}],
+ ['tt','Tứ trụ (dụng thần)','D',(c,pv,st,P,N)=>{if(!P)return null;const T=ttChart(canChi(P.sol[0],P.sol[1],P.sol[2],(P.hb*2)%24,0));return {why:`dụng thần ${NH[T.dung]} → đuôi ${HADO[T.dung].join(', ')}`,nums:kxTails(HADO[T.dung],N)};}],
  ['bt','Bát trạch (cung mệnh)','C',(c,pv,st,P,N)=>{if(!P)return null;const s=kxDr(String(P.lun.y).split('').reduce((a,b)=>a+ +b,0));let k=P.sex==='nu'?(4+s)%9:(11-s)%9;k=k||9;if(k===5)k=P.sex==='nu'?8:2;const [sk,ty]=KX_BT[k];
    return {why:`${P.sex==='nu'?'nữ':'nam'} sinh năm ${P.lun.y} → cung <b>${KX_QUAI[k]}</b> · Sinh khí ${sk}, Thiên y ${ty}`,nums:kxTails([sk,ty],N)};}]];
-function kxRun(cb){const all=S.M.all,L=all.length,N=NM,C=CC,P=kxPerson(),key=[GAME,L,P?P.sol.join('-')+P.hb+P.name+P.sex:''].join('|');
+function kxTq(c,N){const who=($('tqWho')&&$('tqWho').value)||tqWhoGet()||'16/06/1991 âm lịch, giờ Sửu',k=who+'|'+c.dd+'/'+c.mm+'/'+c.yy+'|'+c.hh+'|'+N;S.kxTqC=S.kxTqC||{};if(!S.kxTqC[k]){try{S.kxTqC[k]=tqDraw(who,`${p2(c.dd)}/${p2(c.mm)}/${c.yy}`,0,N,`${p2(c.hh)}:00`);}catch(e){S.kxTqC[k]=null;}}return S.kxTqC[k];}
+function kxRun(cb){const all=S.M.all,L=all.length,N=NM,C=CC,P=kxPerson(),key=[GAME,L,P?P.sol.join('-')+P.hb+P.name+P.sex:'',($('tqWho')&&$('tqWho').value)||''].join('|');
   if(S.kx&&S.kx.key===key){cb(S.kx);return;}
   const st={T:new Float64Array((N+1)*(N+1)),cnt:new Float64Array(N+1),f:new Float64Array(N+1),n:0},acc=KX_M.map(()=>({n:0,h:0,e:0,v:0,k:0,n2:0,h2:0,e2:0,any:0,eany:0})),VL=[...Array(KX_M.length+1)].map(()=>({c:0,h:0,c2:0,h2:0})),KV=Math.round(N*0.3),VT={n:0,h:0,n2:0,h2:0};let lastV=null;
   const hyp0=(K)=>{let p=1;for(let i=0;i<C;i++)p*=(N-K-i)/(N-i);return p;};
@@ -1534,10 +1539,10 @@ function kxRun(cb){const all=S.M.all,L=all.length,N=NM,C=CC,P=kxPerson(),key=[GA
 function renderKX(){const box=$('kxOut');if(!box)return;
   try{const v=JSON.parse(localStorage.getItem('vt_kx')||'{}');if(!$('kxName').value&&!S.kxNameSet){$('kxName').value=v.name!=null?v.name:'Nguyễn Thành Luân';S.kxNameSet=1;}if(v.sex&&!S.kxSexSet){$('kxSex').value=v.sex;S.kxSexSet=1;}}catch(e){}
   const save=()=>{try{localStorage.setItem('vt_kx',JSON.stringify({name:$('kxName').value,sex:$('kxSex').value}));}catch(e){}S.kx=null;renderKX();};$('kxName').onchange=save;$('kxSex').onchange=save;
-  if(!(S.kx&&S.kx.key))box.innerHTML='<div class="foot">Đang tính 16 phương pháp trên toàn bộ các kỳ đã quay…</div>';
+  if(!(S.kx&&S.kx.key))box.innerHTML='<div class="foot">Đang tính 20 phương pháp trên toàn bộ các kỳ đã quay…</div>';
   kxRun(R=>{if(!$('kxOut'))return;const pc=x=>(x*100).toFixed(0)+'%',erf=x=>{const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));};
-    const grp={A:'Theo ngày giờ quay',B:'Bắt số dân gian (theo kỳ trước)',C:'Theo người chơi'};let html='',nBetter=0,nTot=0,best=null;
-    ['A','B','C'].forEach(G=>{const rows=KX_M.map((m,i)=>[m,i]).filter(([m])=>m[2]===G).map(([m,i])=>{const a=R.acc[i],o=R.now[i];if(!a.n)return `<div style="padding:8px 0;border-top:1px solid var(--border);"><b>${m[1]}</b> <span class="foot">Chưa đủ dữ liệu (cần ngày sinh ở mục Tứ trụ phía trên).</span></div>`;
+    const grp={A:'Theo ngày giờ quay',B:'Bắt số dân gian (theo kỳ trước)',C:'Theo người chơi',D:'4 phương pháp ở trên (Tarot, Mai Hoa, Kỳ Môn, Tứ trụ), lập theo đúng ngày giờ quay mỗi kỳ'};let html='',nBetter=0,nTot=0,best=null;
+    ['A','B','C','D'].forEach(G=>{const rows=KX_M.map((m,i)=>[m,i]).filter(([m])=>m[2]===G).map(([m,i])=>{const a=R.acc[i],o=R.now[i];if(!a.n)return `<div style="padding:8px 0;border-top:1px solid var(--border);"><b>${m[1]}</b> <span class="foot">Chưa đủ dữ liệu (cần ngày sinh ở mục Tứ trụ phía trên).</span></div>`;
       const z=(a.h-a.e)/Math.sqrt(a.v),p=1-erf(Math.abs(z)/Math.SQRT2),rt=a.h/a.e,rt2=a.n2?a.h2/a.e2:null;nTot++;if(rt>1)nBetter++;if(!best||p<best.p)best={nm:m[1],p,rt};
       return `<div style="padding:8px 0;border-top:1px solid var(--border);"><div class="row" style="justify-content:space-between;gap:6px;"><b>${m[1]}</b><span class="${p<0.01?'no':p<0.05?'':'ok'}" style="font-size:.85rem;">tỉ số <b>${rt.toFixed(2)}</b>${rt2!=null?` · 200 kỳ ${rt2.toFixed(2)}`:''} · p ${p<0.005?'< 0.005':p.toFixed(2)}</span></div>
        ${o?`<div class="foot" style="margin:2px 0 4px;">${o.why}</div><div>${o.nums.map(v=>`<span class="b" style="font-size:.78rem;">${p2(v)}</span>`).join('')}</div>`:'<div class="foot">Kỳ tới không ra số nào.</div>'}
@@ -1549,7 +1554,7 @@ function renderKX(){const box=$('kxOut');if(!box)return;
       const zero=ids.filter(v=>!nv[v]);
       const L=R.lastV,lastHtml=L?`<div style="margin-top:8px;"><b>Kỳ vừa rồi ${L.date}</b>: kết quả ${L.r.map(v=>`<span class="b" style="${L.top.includes(v)?'background:var(--good);color:#04200a;':''}">${p2(v)}</span><span class="foot" style="margin:0 6px 0 0;">${L.vt[v]} phiếu</span>`).join('')} · ${KV} số nhiều phiếu nhất trúng <b>${L.r.filter(v=>L.top.includes(v)).length}</b> số (chọn bừa ${(KV*CC/N).toFixed(2)}).</div>`:'';
       const rowsV=R.VL.map((o,k)=>[o,k]).filter(([o])=>o.c>=200).map(([o,k])=>{const rr=o.h/o.c,r2=o.c2>=50?o.h2/o.c2:null;return `<tr><td>${k}</td><td>${(o.c/R.VT.n).toFixed(1)}</td><td><b>${(rr*100).toFixed(1)}%</b></td><td>${r2!=null?(r2*100).toFixed(1)+'%':'—'}</td><td class="${rr/base>=1.1?'ok':rr/base<=0.9?'no':''}">${(rr/base).toFixed(2)}</td></tr>`;}).join('');
-      return `<div class="sum" style="margin-top:6px;border-left:3px solid var(--accent);"><b>Bảng tổng hợp phiếu</b> <span class="foot" style="margin:0;">(mỗi phương pháp chọn một nhóm số; mỗi số được bao nhiêu phương pháp chọn = bấy nhiêu phiếu)</span>
+      return `<div class="sum" style="margin-top:6px;border-left:3px solid var(--accent);"><b>Bảng tổng hợp phiếu của ${KX_M.length} phương pháp</b> <span class="foot" style="margin:0;">(mỗi phương pháp chọn một nhóm số; mỗi số được bao nhiêu phương pháp chọn = bấy nhiêu phiếu)</span>
        <div style="margin-top:6px;"><b>Kỳ tới ${fmt(S.M.nd)}</b> · vàng = ${KV} số nhiều phiếu nhất:</div>${lv.join('')}${zero.length?`<div class="foot" style="margin:2px 0 0;">0 phiếu: ${zero.map(p2).join(' ')}</div>`:''}
        ${lastHtml}
        <div style="margin-top:8px;"><b>Độ chính xác của phiếu</b> (kiểm trên ${R.VT.n} kỳ đã quay, mỗi kỳ chỉ dùng dữ liệu trước nó): ${KV} số nhiều phiếu nhất trúng TB <b>${(R.VT.h/R.VT.n).toFixed(2)}</b> số/kỳ (200 kỳ gần nhất ${R.VT.n2?(R.VT.h2/R.VT.n2).toFixed(2):'—'}), chọn bừa ${(KV*CC/N).toFixed(2)}.</div>
