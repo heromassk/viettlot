@@ -259,3 +259,9 @@
 - Toàn bộ 1001 kỳ: tương quan +0.04 (p 0.2), bình thường. Từng đoạn 200 kỳ: −0.01 đến +0.085.
 - Gần đây bất thường: 100 kỳ +0.21 (p 0.03); 50 kỳ (09/06–01/10/2026) +0.37 (p 0.006). Trong 50 kỳ đó, tổng nằm cùng phía trung vị (168) với kỳ trước ở 76% số kỳ (bình thường 50%). Chỉ có 13 chuỗi so với kỳ vọng ~25 (runs test z≈−3.6). Tổng TB 50 kỳ là 157 (chung 169).
 - Đã thử 6 khoảng nên vẫn có thể là tình cờ (p 50 kỳ sau khi tính 6 lần thử ≈ 0.04). Giả thuyết: thay bộ bi hoặc lồng quay đổi trạng thái. Kiểm tiếp trên các kỳ từ 03/10/2026: quy tắc "tổng kỳ trước dưới 168 thì kỳ sau dưới 168", ghi đúng/sai.
+
+## Sổ chấm phương pháp Power (bắt đầu 03/10/2026)
+Nguyên tắc (theo yêu cầu của anh): phương pháp có cơ sở, cố định qua các kỳ, chấm bằng kết quả của chính nó; không so với ngẫu nhiên.
+| Kỳ | Kết quả | Bỏ vắng≥20 (12 20 30 50) | Bỏ khó ra (04 06 37 49 12 50) | Số nóng ★ (01 05 07 11 18 25) | Kề ±1 kỳ trước | Đà tổng thấp | Pool dấu vết 15 | Tâm linh pool 12 | Dãy tốt nhất |
+|---|---|---|---|---|---|---|---|---|---|
+| 03/10 | 07 11 13 16 18 54 · ĐB 41 | 4/4 bỏ đúng | 6/6 bỏ đúng | 3 trúng (07 11 18) | 1 (54) | đúng (tổng 119) | 4 trúng (07 11 18 54) | 3 (07 13 54) | 01 07 11 22 43 54 → 3 số |
