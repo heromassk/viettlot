@@ -291,7 +291,7 @@ async function connectDb(){
         const sig=JSON.stringify(rows.map(x=>[x.date,x.r,x.lk]).sort());if(sig===st.dbSig)return;st.dbSig=sig;st.dbRows=rows;if(g===GAME)renderAll();
       },err=>{if(g===GAME)$('addMsg').textContent='Không đọc được dữ liệu đã lưu. Tải lại trang để thử lại.';});
       if(cfg.mcoll)db.collection(cfg.mcoll).onSnapshot(snap=>{st.mineDb=snap.docs.map(d=>d.data()).filter(x=>x&&x.date&&Array.isArray(x.tickets));if(g===GAME&&S.M&&!S.myLoaded){S.myLoaded=1;S.myFor=null;renderMine();}else if(g===GAME&&$('myHist'))myHistShow();},()=>{});
-      db.collection(cfg.pcoll).onSnapshot(snap=>{st.preds=snap.docs.map(d=>d.data()).filter(x=>x&&x.date&&Array.isArray(x.tickets));if(g===GAME&&S.M)renderSgLog();},()=>{});}
+      db.collection(cfg.pcoll).onSnapshot(snap=>{st.preds=snap.docs.map(d=>d.data()).filter(x=>x&&x.date&&Array.isArray(x.tickets));if(g===GAME&&S.M){renderSgLog();if($('myHist'))myHistShow();}},()=>{});}
     if(S&&S.M){renderSuggest();renderSgLog();}
   }catch(e){}
 }
@@ -789,14 +789,15 @@ function renderSuggest(){
   sgSavePred();renderMine();
   const bk=[GAME,S.PS.N,pkKey(),lvl].join('|');if(S.btKey!==bk){S.btKey=bk;S.eff=null;effShow();S.needSim=true;kickSim();}else effShow();
 }
-async function sgSavePred(){   // luu goi y cua ky toi len trang (1 lan moi ky), de doi chieu that ve sau
-  if(!DB||!S.sg||!S.sg.G)return;const nd=S.M.nd,id=docId(nd);S.predSaved=S.predSaved||{};if(S.predSaved[id])return;S.predSaved[id]=1;
-  try{const ref=DB.collection(GC.pcoll).doc(id),g=await ref.get();if(g.exists)return;
-    await ref.set({date:nd,pool:S.sg.pool.slice().sort((a,b)=>a-b),K:S.sg.K,method:S.sg.sel,tickets:(S.sg.G.ranked||S.sg.G.tickets).map(t=>t.x),lucky:GC.extra?(S.sg.G.ranked||S.sg.G.tickets).map(t=>t.lk):[],pick:S.sg.G.ranked?2:0,wheel:S.wheel?{v:S.wheel.v,t:S.wheel.t,top:S.wheel.top,tickets:S.wheel.tickets,lk:GC.extra?S.wheel.lk:[]}:null,at:new Date().toISOString()});}catch(e){S.predSaved[id]=0;}
+function predsGet(){if(DB)return S.preds||[];try{const a=JSON.parse(localStorage.getItem('vt_pred_'+GAME)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
+async function sgSavePred(){   // luu goi y cua ky toi (1 lan moi ky, truoc khi co ket qua), de doi chieu that ve sau
+  if(!S.sg||!S.sg.G)return;const nd=S.M.nd,id=docId(nd);S.predSaved=S.predSaved||{};if(S.predSaved[id])return;S.predSaved[id]=1;
+  const T=S.sg.G.ranked||S.sg.G.tickets,body={date:nd,pool:S.sg.pool.slice().sort((a,b)=>a-b),K:S.sg.K,method:S.sg.sel,tickets:T.map(t=>t.x),lucky:GC.extra?T.map(t=>t.lk):[],pick:S.sg.G.ranked?2:0,wheel:S.wheel?{v:S.wheel.v,t:S.wheel.t,top:S.wheel.top,tickets:S.wheel.tickets,lk:GC.extra?S.wheel.lk:[]}:null,at:new Date().toISOString()};
+  if(!DB){const a=predsGet();if(a.some(x=>x.date===nd))return;a.push(body);try{localStorage.setItem('vt_pred_'+GAME,JSON.stringify(a.slice(-400)));}catch(e){}S.preds=a;return;}
+  try{const ref=DB.collection(GC.pcoll).doc(id),g=await ref.get();if(g.exists)return;await ref.set(body);}catch(e){S.predSaved[id]=0;}
 }
 function renderSgLog(){
-  const rows=(S.preds||[]).slice().sort((a,b)=>key(b.date)-key(a.date)),res=new Map(S.M.all.map(d=>[d.date,d]));
-  if(!DB){$('sgLogSum').textContent='Nhật ký chỉ có khi mở trang qua link (dữ liệu lưu trên trang).';$('sgLog').innerHTML='';return;}
+  const rows=predsGet().slice().sort((a,b)=>key(b.date)-key(a.date)),res=new Map(S.M.all.map(d=>[d.date,d]));
   if(!rows.length){$('sgLogSum').textContent='Chưa có gợi ý nào được lưu. Gợi ý của kỳ tới sẽ được lưu tự động; khi nhập kết quả kỳ đó, bảng sẽ đối chiếu.';$('sgLog').innerHTML='';return;}
   let n=0,pH=0,best=0,b3=0,lkH=0;
   const tr=rows.map(p=>{const d=res.get(p.date);if(!d)return `<tr><td class="l">${p.date}</td><td class="l" colspan="${GC.extra?5:4}"><span class="foot">chờ kết quả · pool ${p.K} số · ${p.tickets.length} dãy đã lưu</span></td></tr>`;
@@ -956,7 +957,7 @@ function myGet(){if(DB)return S.mineDb||[];try{const a=JSON.parse(localStorage.g
 function mySaveNow(){const nd=S.M.nd,doc={date:nd,tickets:(S.myT||[]).filter(t=>t.x.length).map(t=>({x:t.x.slice().sort((a,b)=>a-b),lk:t.lk||null,sc:t.sc==null?null:t.sc,pt:t.pt==null?null:t.pt})),at:new Date().toISOString()};
   const sig=GAME+nd+JSON.stringify(doc.tickets);if(sig===S.mySig)return;S.mySig=sig;
   if(DB){const ref=DB.collection(GC.mcoll).doc(docId(nd));(doc.tickets.length?ref.set(doc):ref.delete()).catch(()=>{});return;}
-  const a=myGet().filter(d=>d.date!==nd);if(doc.tickets.length)a.push(doc);try{localStorage.setItem('vt_mine_'+GAME,JSON.stringify(a));}catch(e){}}
+  const a=myGet().filter(d=>d.date!==nd);if(doc.tickets.length)a.push(doc);try{localStorage.setItem('vt_mine_'+GAME,JSON.stringify(a));}catch(e){}if($('myHist'))myHistShow();}
 function mySave(){clearTimeout(S.mySaveT);S.mySaveT=setTimeout(mySaveNow,700);}
 // dac trung hinh dang cua moi ky (cache theo so ky)
 function myFeat(){const all=S.M.all,L=all.length;if(S.myF&&S.myF.L===L)return S.myF;const h=Math.floor(NM/2);
@@ -1048,15 +1049,29 @@ function myEvalShow(){const el=$('myEval'),W=Math.min(S.myW,S.M.all.length-1),L=
      <div style="margin-top:2px;">Theo số trong pool: ${l.byP.map(([p,a,c])=>`${p} số → ${a.toFixed(2)}`).join(' · ')}.</div>
      <div class="foot">"Tiềm năng" của từng dãy = số trúng dự kiến theo công thức máy học được: ${l.beta[0].toFixed(3)} ${l.beta[1]>=0?'+':'−'} ${Math.abs(l.beta[1]).toFixed(3)} × điểm/100 ${l.beta[2]>=0?'+':'−'} ${Math.abs(l.beta[2]).toFixed(3)} × số trong pool. Mỗi khi có kết quả mới, máy học lại. Nếu hai hệ số gần 0 thì hình dạng và pool chưa giúp trúng thêm; mọi dãy đều quanh mức chung ${base.toFixed(2)} số.</div>`;};
   lb();if(!learn)myLearn(W,()=>{if($('myEval'))myEvalShow();});}
-function myHistShow(){const el=$('myHist'),res=new Map(S.M.all.map(d=>[d.date,d])),docs=myGet().filter(d=>res.has(d.date)).sort((a,b)=>key(b.date)-key(a.date));
-  if(!docs.length){el.innerHTML=`<div class="foot" style="margin-top:6px;">Dãy của anh được lưu theo từng kỳ${DB?' trên trang':' trong trình duyệt này'}. Khi có kết quả kỳ đó, app tự dò và ghi vào nhật ký ở đây.</div>`;return;}
-  let n=0,h=0,hi=[],lo=[];const base=CC*CC/NM;
-  const rows=docs.map(d=>{const r=res.get(d.date);return d.tickets.map((t,i)=>{const k=t.x.filter(v=>r.r.includes(v)).length;n++;h+=k;if(t.sc!=null)(t.sc>=60?hi:lo).push(k);
-    return `<tr><td class="l">${i?'':d.date}</td><td class="l">${t.x.map(v=>`<span class="b" style="${r.r.includes(v)?'background:var(--good);color:#04200a;':''}">${p2(v)}</span>`).join('')}${t.lk?` <span class="b" style="${r.lk===t.lk?'background:'+MY_LK+';color:#1a0e00;':''}">${p2(t.lk)}</span>`:''}</td><td>${t.sc!=null?t.sc:'—'}</td><td><b>${k}</b>/${CC}</td></tr>`;}).join('');}).join('');
-  const av=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2):'—';
-  el.innerHTML=`<details style="margin-top:8px;"><summary class="lbl" style="cursor:pointer;">Nhật ký dãy của anh: ${n} dãy đã dò · trúng TB ${(h/n).toFixed(2)} số/dãy (chung ${base.toFixed(2)})</summary>
-   <div class="foot">Dãy điểm hình dạng ≥ 60: trúng TB ${av(hi)} (${hi.length} dãy) · dưới 60: ${av(lo)} (${lo.length} dãy).</div>
-   <div class="tw"><table><thead><tr><th class="l">Kỳ</th><th class="l">Dãy (xanh = trúng)</th><th>Điểm</th><th>Trúng</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;}
+function myHistShow(){const el=$('myHist');if(!el)return;const res=new Map(S.M.all.map(d=>[d.date,d])),mine=new Map(myGet().map(d=>[d.date,d])),preds=new Map(predsGet().map(d=>[d.date,d])),LN=GC.extra==='MM',base=CC*CC/NM,nd=S.M.nd;
+  const cur=mine.get(nd),pc=preds.get(nd),saved=`<div class="sum" style="margin-top:8px;"><b>Lưu để đối chiếu</b> · kỳ tới ${fmt(nd)}: ${cur&&cur.tickets.length?`✓ đã lưu <b>${cur.tickets.length}</b> dãy của anh`:'chưa có dãy nào của anh'} · ${pc?`✓ đã lưu gợi ý của app (pool ${pc.K} số, ${pc.tickets.length} dãy)`:'gợi ý của app sẽ được lưu khi mở mục này'}.
+    <div class="foot" style="margin:2px 0 0;">Tự lưu ngay khi chọn số${DB?', lưu trên trang nên mở ở máy nào cũng có':', lưu trong trình duyệt này (mở qua link thì lưu trên trang, máy nào cũng có)'}. Gợi ý của app được chốt lần đầu mở trước kỳ quay, không bị sửa sau. Khi nhập kết quả kỳ đó, bảng dưới tự dò.</div></div>`;
+  const dates=[...new Set([...mine.keys(),...preds.keys()])].filter(d=>res.has(d)).sort((a,b)=>key(b)-key(a));
+  if(!dates.length){el.innerHTML=saved+`<div class="foot">Chưa có kỳ nào vừa có dãy đã lưu vừa có kết quả.</div>`;return;}
+  const A={me:[],star:[],all:[],pool:[],meLk:0,meLkN:0,apLk:0,apLkN:0},hit=(x,r)=>x.filter(v=>r.r.includes(v)).length;
+  const chips=(x,r,lk)=>x.map(v=>`<span class="b" style="font-size:.75rem;${r.r.includes(v)?'background:var(--good);color:#04200a;':''}">${p2(v)}</span>`).join('')+(lk?` <span class="b" style="font-size:.75rem;${r.lk===lk?`background:${MY_LK};color:#1a0e00;`:`border:1px solid ${MY_LK};`}">${p2(lk)}</span>`:'');
+  const rows=dates.map(d=>{const r=res.get(d),m=mine.get(d),p=preds.get(d);
+    const me=m?m.tickets.map(t=>{const h=hit(t.x,r);A.me.push(h);if(LN&&t.lk){A.meLkN++;if(t.lk===r.lk)A.meLk++;}return `<div>${chips(t.x,r,LN?t.lk:null)} <b>${h}</b></div>`;}).join(''):'<span class="foot">—</span>';
+    let ap='<span class="foot">—</span>';if(p){const n=p.pick?2:p.tickets.length;p.tickets.forEach((x,i)=>{const h=hit(x,r);A.all.push(h);if(i<n)A.star.push(h);});A.pool.push(hit(p.pool,r));
+      if(LN)(p.lucky||[]).slice(0,p.pick?2:5).forEach(l=>{A.apLkN++;if(l===r.lk)A.apLk++;});
+      ap=p.tickets.slice(0,p.pick?2:5).map((x,i)=>`<div>${p.pick?'★':''}${chips(x,r,LN?(p.lucky||[])[i]:null)} <b>${hit(x,r)}</b></div>`).join('')+`<div class="foot" style="margin:2px 0 0;">5 dãy tốt nhất trúng ${Math.max(...p.tickets.map(x=>hit(x,r)))} · pool ${p.K} số trúng ${hit(p.pool,r)}</div>`;}
+    return `<tr><td class="l" style="vertical-align:top;white-space:nowrap;">${d}<div style="margin-top:3px;">${r.r.map(v=>`<span class="b" style="font-size:.72rem;">${p2(v)}</span>`).join('')}${LN&&r.lk?` <span class="b lk" style="font-size:.72rem;">${p2(r.lk)}</span>`:''}</div></td><td class="l" style="vertical-align:top;">${me}</td><td class="l" style="vertical-align:top;">${ap}</td></tr>`;}).join('');
+  const cb=(n,k)=>{let r=1;for(let i=0;i<k;i++)r=r*(n-i)/(i+1);return r;},hy=k=>cb(CC,k)*cb(NM-CC,CC-k)/cb(NM,CC);
+  const av=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2):'—',ge=(a,k)=>a.length?Math.round(a.filter(x=>x>=k).length/a.length*100)+'%':'—';
+  const sum=`<div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Trung bình mỗi dãy</th><th>Số dãy</th><th>Trúng TB</th><th>≥ 2 số</th><th>≥ 3 số</th>${LN?'<th>Trúng MM</th>':''}</tr></thead><tbody>
+    <tr><td class="l"><b>Dãy của anh</b></td><td>${A.me.length}</td><td><b>${av(A.me)}</b></td><td>${ge(A.me,2)}</td><td>${ge(A.me,3)}</td>${LN?`<td>${A.meLk}/${A.meLkN}</td>`:''}</tr>
+    <tr><td class="l"><b>App: 2 dãy ★</b></td><td>${A.star.length}</td><td><b>${av(A.star)}</b></td><td>${ge(A.star,2)}</td><td>${ge(A.star,3)}</td>${LN?`<td>${A.apLk}/${A.apLkN}</td>`:''}</tr>
+    <tr><td class="l">App: cả 5 dãy</td><td>${A.all.length}</td><td>${av(A.all)}</td><td>${ge(A.all,2)}</td><td>${ge(A.all,3)}</td>${LN?'<td></td>':''}</tr>
+    <tr><td class="l foot" style="margin:0;">Chọn bừa (lý thuyết)</td><td></td><td>${base.toFixed(2)}</td><td>${Math.round((1-hy(0)-hy(1))*100)}%</td><td>${Math.round((1-hy(0)-hy(1)-hy(2))*100)}%</td>${LN?`<td>1/${GC.extraN}</td>`:''}</tr></tbody></table></div>`;
+  el.innerHTML=saved+`<details style="margin-top:8px;" open><summary class="lbl" style="cursor:pointer;">Đối chiếu dãy của anh và gợi ý của app: ${dates.length} kỳ đã có kết quả</summary>${sum}
+    <div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ · kết quả</th><th class="l">Dãy của anh (xanh = trúng)</th><th class="l">Gợi ý của app</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="foot">Số đậm cuối mỗi dãy = số trúng. ${A.me.length<30?'Cần khoảng 30 dãy trở lên mới so được ai chọn tốt hơn; ít hơn thì chênh lệch chủ yếu do may rủi.':''}</div></details>`;}
 // ---------- POOL GON 7 / 9 SO + KIEM SO NGUOI DUNG CAN NHAC ----------
 function smallStats(sel,K,span){const {out,N,R}=S.PS,d=[0,0,0];let n=0;for(let t=N-span;t<N;t++){if(!out[sel][t])continue;const h=topK(out[sel][t],K).filter(v=>R[t].includes(v)).length;n++;if(h>=1)d[0]++;if(h>=2)d[1]++;if(h>=3)d[2]++;}return d.map(x=>x/n);}
 function renderSmall(){
