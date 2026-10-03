@@ -91,6 +91,10 @@ input.n{width:52px;text-align:center;}
   <div id="addMsg" class="foot"></div>
   <div id="addList"></div>
   <div class="foot" id="storeNote"></div>
+  <h3 style="margin-top:14px;">Sao lưu / Khôi phục</h3>
+  <div class="foot" style="margin-top:0;">Sao lưu toàn bộ dữ liệu của cả 3 game (kết quả nhập thêm, gợi ý app đã chốt, dãy của anh) thành 1 file .json. Trên iPhone file nằm trong app Tệp → Tải về, trên Android trong thư mục Download; có thể gửi qua Zalo, email hoặc để lên Google Drive.</div>
+  <div class="row" style="margin-top:6px;"><button class="btn pri" id="bkGo">Sao lưu</button><label class="btn" style="cursor:pointer;">Khôi phục từ file<input type="file" id="bkFile" accept=".json,application/json" style="display:none;"></label></div>
+  <div id="bkMsg" class="foot"></div>
 </details><details class="card" id="whyCard">
   <summary><h2>③ Vị trí và cách tạo dãy</h2></summary>
   <div class="foot" style="margin-top:0;">Pool riêng, khoảng thường gặp và hướng tăng/giảm của từng vị trí; cách máy ghép 5 dãy.</div>
@@ -1072,6 +1076,32 @@ function myHistShow(){const el=$('myHist');if(!el)return;const res=new Map(S.M.a
   el.innerHTML=saved+`<details style="margin-top:8px;" open><summary class="lbl" style="cursor:pointer;">Đối chiếu dãy của anh và gợi ý của app: ${dates.length} kỳ đã có kết quả</summary>${sum}
     <div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ · kết quả</th><th class="l">Dãy của anh (xanh = trúng)</th><th class="l">Gợi ý của app</th></tr></thead><tbody>${rows}</tbody></table></div>
     <div class="foot">Số đậm cuối mỗi dãy = số trúng. ${A.me.length<30?'Cần khoảng 30 dãy trở lên mới so được ai chọn tốt hơn; ít hơn thì chênh lệch chủ yếu do may rủi.':''}</div></details>`;}
+// ================= SAO LUU / KHOI PHUC toan bo du lieu nguoi dung (3 game) =================
+function bkLs(k){try{const a=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
+function bkCollect(){const out={app:'vietlott-nghien-cuu',ver:1,at:new Date().toISOString(),games:{},prefs:{}};
+  Object.keys(GAMES).forEach(g=>{const st=getS(g),c=GAMES[g];out.games[g]={draws:DB?(st.dbRows||[]):bkLs(c.ls),preds:DB?(st.preds||[]):bkLs('vt_pred_'+g),mine:DB?(st.mineDb||[]):bkLs('vt_mine_'+g)};});
+  ['vt_tt','vt_kx','vt_tq_who'].forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null)out.prefs[k]=v;}catch(e){}});return out;}
+function bkCount(o){let d=0,p=0,m=0;Object.values(o.games||{}).forEach(x=>{d+=(x.draws||[]).length;p+=(x.preds||[]).length;m+=(x.mine||[]).length;});return {d,p,m};}
+async function bkSave(){const o=bkCollect(),c=bkCount(o),name=`vietlott-saoluu-${new Date().toISOString().slice(0,10)}.json`,txt=JSON.stringify(o);
+  $('bkMsg').textContent='Đang chuẩn bị file…';
+  try{const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;if(dl){await dl.save({filename:name,data:txt});$('bkMsg').innerHTML=`✓ Đã lưu file <b>${name}</b>: ${c.d} kết quả nhập thêm, ${c.p} gợi ý app, ${c.m} kỳ có dãy của anh.`;return;}}
+  catch(e){if(e&&e.code==='declined'){$('bkMsg').textContent='Đã hủy lưu file.';return;}if(e&&e.code==='rate_limited'){$('bkMsg').textContent='Đang có một hộp thoại lưu file mở, thử lại sau giây lát.';return;}}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);
+    $('bkMsg').innerHTML=`✓ Đã tải file <b>${name}</b>: ${c.d} kết quả nhập thêm, ${c.p} gợi ý app, ${c.m} kỳ có dãy của anh.`;}catch(e){$('bkMsg').textContent='Không lưu được file ở chế độ xem này.';}}
+function bkPick(f){const r=new FileReader();r.onload=()=>{let o;try{o=JSON.parse(r.result);}catch(e){$('bkMsg').innerHTML='<span class="no">File không đọc được (không phải file sao lưu).</span>';return;}
+    if(!o||o.app!=='vietlott-nghien-cuu'||!o.games){$('bkMsg').innerHTML='<span class="no">Đây không phải file sao lưu của app này.</span>';return;}
+    const c=bkCount(o);S.bkPend=o;$('bkMsg').innerHTML=`File sao lưu lúc <b>${o.at?new Date(o.at).toLocaleString('vi-VN'):'?'}</b>: ${c.d} kết quả nhập thêm, ${c.p} gợi ý app, ${c.m} kỳ có dãy của anh.<br>Khôi phục sẽ <b>thêm</b> các mục này vào dữ liệu hiện có (kỳ trùng ngày thì lấy theo file; gợi ý app đã chốt thì giữ nguyên). Không xóa gì.
+      <div class="row" style="margin-top:6px;"><button class="btn" id="bkYes" style="border-color:var(--bad);color:var(--bad);">Chắc chắn khôi phục</button><button class="btn" id="bkNo">Không</button></div>`;
+    $('bkYes').onclick=bkRestore;$('bkNo').onclick=()=>{S.bkPend=null;$('bkMsg').textContent='Đã hủy khôi phục.';$('bkFile').value='';};};r.readAsText(f);}
+async function bkRestore(){const o=S.bkPend;if(!o)return;S.bkPend=null;$('bkMsg').textContent='Đang khôi phục…';let n=0,fail=0;
+  for(const g of Object.keys(GAMES)){const c=GAMES[g],x=o.games[g]||{},D=(x.draws||[]).filter(e=>e&&e.date&&Array.isArray(e.r)),P=(x.preds||[]).filter(e=>e&&e.date&&Array.isArray(e.tickets)),M=(x.mine||[]).filter(e=>e&&e.date&&Array.isArray(e.tickets));
+    if(DB){const put=async(col,e,keep)=>{try{const ref=DB.collection(col).doc(docId(e.date));if(keep){const s=await ref.get();if(s.exists)return;}await ref.set(e);n++;}catch(er){fail++;}};
+      for(const e of D)await put(c.coll,{date:e.date,r:e.r,...(e.lk!=null?{lk:e.lk}:{}),at:e.at||new Date().toISOString()},false);
+      for(const e of P)await put(c.pcoll,e,true);if(c.mcoll)for(const e of M)await put(c.mcoll,e,false);}
+    else{const mg=(k,arr,keep)=>{const cur=bkLs(k),m=new Map(cur.map(e=>[e.date,e]));arr.forEach(e=>{if(keep&&m.has(e.date))return;m.set(e.date,e);n++;});try{localStorage.setItem(k,JSON.stringify([...m.values()]));}catch(er){fail++;}};
+      mg(c.ls,D.map(e=>({date:e.date,r:e.r,lk:e.lk})),false);mg('vt_pred_'+g,P,true);mg('vt_mine_'+g,M,false);}}
+  Object.entries(o.prefs||{}).forEach(([k,v])=>{try{if(localStorage.getItem(k)==null)localStorage.setItem(k,v);}catch(e){}});
+  $('bkMsg').innerHTML=`✓ Đã khôi phục ${n} mục${fail?`, <span class="no">${fail} mục lỗi</span>`:''}.`;$('bkFile').value='';S.myFor=null;S.preds=null;if(!DB)renderAll();}
 // ---------- POOL GON 7 / 9 SO + KIEM SO NGUOI DUNG CAN NHAC ----------
 function smallStats(sel,K,span){const {out,N,R}=S.PS,d=[0,0,0];let n=0;for(let t=N-span;t<N;t++){if(!out[sel][t])continue;const h=topK(out[sel][t],K).filter(v=>R[t].includes(v)).length;n++;if(h>=1)d[0]++;if(h>=2)d[1]++;if(h>=3)d[2]++;}return d.map(x=>x/n);}
 function renderSmall(){
@@ -1530,7 +1560,7 @@ $('addGo').onclick=addResult;$('simGo').onclick=simOne;$('simRun').onclick=()=>s
 $('narAuto').onclick=narAuto;$('narClear').onclick=()=>{S.cons=new Set();renderNarrow();};$('narTop').onclick=narTop;$('narDir').onchange=narCalc;
 $('intraCard').ontoggle=renderIntra;$('narCard').ontoggle=()=>{if($('narCard').open)narCalc();};
 let tab0='loto535';try{const v=localStorage.getItem('xs_tab');if(GAMES[v])tab0=v;}catch(e){}
-setGame(tab0);connectDb();
+setGame(tab0);connectDb();$('bkGo').onclick=bkSave;$('bkFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)bkPick(f);};
 </script>
 </body>
 </html>
