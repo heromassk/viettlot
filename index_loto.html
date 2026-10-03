@@ -75,6 +75,7 @@ input.n{width:52px;text-align:center;}
     <div class="row" style="margin:6px 0 0;"><span class="lbl">Pool riêng từng vị trí đúng:</span><span id="sgLv" class="row"></span></div>
   </div>
   <div id="effLine" class="sum" style="margin-top:6px;"></div>
+  <details id="r10" style="margin:6px 0 0;"><summary class="lbl" style="cursor:pointer;">Lịch sử 10 kỳ gần nhất</summary><div id="r10In"></div></details>
   <div id="sgHead" class="sum"></div>
   <div id="myBox" class="sum"></div>
   <div id="phBox" class="sum" style="border-left:3px solid var(--good);"><div id="phIn"></div><div id="oosBox"></div></div>
@@ -790,7 +791,7 @@ function renderSuggest(){
    (3) <b>số lẻ</b> ${SH.oddSet.join(', ')} số (${pc(SH.oddP)} số kỳ); (4) 5 dãy cố phủ nhiều số khác nhau.
    ${G.lev?`<br><span class="no">Không đủ dãy thỏa hết điều kiện nên đã nới ${G.lev>=2?'bỏ điều kiện hình dạng':'bỏ điều kiện tăng/giảm của tổng'} ở một số dãy.</span>`:''}
    <br><span class="foot">Xác suất số lẻ (500 kỳ): ${SH.odd.map((x,k)=>`${k} lẻ ${pc(x)}`).join(' · ')}.</span>`;
-  sgSavePred();renderMine();
+  sgSavePred();renderMine();renderR10(sel,K);
   const bk=[GAME,S.PS.N,pkKey(),lvl].join('|');if(S.btKey!==bk){S.btKey=bk;S.eff=null;effShow();S.needSim=true;kickSim();}else effShow();
 }
 function predsGet(){if(DB)return S.preds||[];try{const a=JSON.parse(localStorage.getItem('vt_pred_'+GAME)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
@@ -1102,6 +1103,11 @@ async function bkRestore(){const o=S.bkPend;if(!o)return;S.bkPend=null;$('bkMsg'
       mg(c.ls,D.map(e=>({date:e.date,r:e.r,lk:e.lk})),false);mg('vt_pred_'+g,P,true);mg('vt_mine_'+g,M,false);}}
   Object.entries(o.prefs||{}).forEach(([k,v])=>{try{if(localStorage.getItem(k)==null)localStorage.setItem(k,v);}catch(e){}});
   $('bkMsg').innerHTML=`✓ Đã khôi phục ${n} mục${fail?`, <span class="no">${fail} mục lỗi</span>`:''}.`;$('bkFile').value='';S.myFor=null;S.preds=null;if(!DB)renderAll();}
+function renderR10(sel,K){const el=$('r10In');if(!el)return;const all=S.M.all,L=all.length,{out}=S.PS,ex=GC.extra,rows=[];
+  $('r10').querySelector('summary').textContent=`Lịch sử 10 kỳ gần nhất (đối chiếu pool ${K} số theo ${sel})`;
+  for(let t=L-1;t>=Math.max(0,L-10);t--){const d=all[t],r=d.r,s=r.reduce((a,b)=>a+b,0),od=r.filter(v=>v%2).length,pool=out[sel]&&out[sel][t]?topK(out[sel][t],K):[],h=r.filter(v=>pool.includes(v)).length;
+    rows.push(`<tr><td class="l" style="white-space:nowrap;">${d.date.slice(0,5)}${d.date.length>10?d.date.slice(10):""}</td><td class="l" style="white-space:nowrap;">${r.map(v=>`<span class="b" style="font-size:.75rem;${pool.includes(v)?'background:var(--good);color:#04200a;':''}">${p2(v)}</span>`).join('')}${ex&&d.lk?` <span class="b lk" style="font-size:.75rem;">${p2(d.lk)}</span>`:''}</td><td>${s}</td><td>${CC-od}:${od}</td><td class="${h>=3?'ok':h<=1?'no':''}"><b>${pool.length?h:'—'}</b></td></tr>`);}
+  el.innerHTML=`<div class="tw" style="margin-top:4px;"><table><thead><tr><th class="l">Kỳ</th><th class="l">Kết quả${ex?` · ${ex}`:''}</th><th>Tổng</th><th>C:L</th><th>Pool</th></tr></thead><tbody>${rows.join('')}</tbody></table></div><div class="foot" style="margin:2px 0 0;">Xanh = số nằm trong pool ${K} số mà cùng phương pháp đã gợi ý cho kỳ đó (tính chỉ từ các kỳ trước).</div>`;}
 // ---------- POOL GON 7 / 9 SO + KIEM SO NGUOI DUNG CAN NHAC ----------
 function smallStats(sel,K,span){const {out,N,R}=S.PS,d=[0,0,0];let n=0;for(let t=N-span;t<N;t++){if(!out[sel][t])continue;const h=topK(out[sel][t],K).filter(v=>R[t].includes(v)).length;n++;if(h>=1)d[0]++;if(h>=2)d[1]++;if(h>=3)d[2]++;}return d.map(x=>x/n);}
 function renderSmall(){
