@@ -72,6 +72,7 @@ input.n{width:52px;text-align:center;}
     <div class="row" style="margin:6px 0 0;"><span class="lbl">Phương pháp thu hẹp:</span><select id="sgMs" style="background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:5px 6px;max-width:100%;"></select></div>
     <div class="row" style="margin:6px 0 0;"><span class="lbl">Pool tổng chứa ít nhất (đạt ≥ 70% số kỳ, khi để Tự động):</span><span id="sgK" class="row"></span></div>
     <div class="row" style="margin:6px 0 0;"><span class="lbl">Cỡ pool tổng:</span><span id="sgKm" class="row"></span></div>
+    <div class="row" style="margin:6px 0 0;"><span class="lbl">Bỏ số đang vắng ≥:</span><span id="sgVg" class="row"></span></div>
     <div class="row" style="margin:6px 0 0;"><span class="lbl">Pool riêng từng vị trí đúng:</span><span id="sgLv" class="row"></span></div>
   </div>
   <div id="effLine" class="sum" style="margin-top:6px;"></div>
@@ -697,14 +698,14 @@ function shapeInfo(ga){const all=S.M.all,lo=Math.max(0,ga-500),sums=[],odd=new A
   const ord=[...Array(CC+1).keys()].sort((x,y)=>odd[y]-odd[x]),oddSet=[];let acc=0;for(const k of ord){if(acc>=0.75*n)break;oddSet.push(k);acc+=odd[k];}
   return {n,sr,srP:sh/n,sp,lv,lvN:['thấp','trung bình','cao'][lv],dir:lv===0?'tăng':lv===2?'giảm':'',dirP:b?a/b:0,dirN:b,q1,q2,odd:odd.map(x=>x/n),oddSet:oddSet.sort((a,b)=>a-b),oddP:acc/n};}
 function sgMake2(ga,poolT,pred,target){
-  const all=S.M.all,PP=posPool(ga,target),SH=shapeInfo(ga),pt=new Set(poolT),n=Math.min(500,ga);
+  const VX=vangSet(ga),all=S.M.all,PP=posPool(ga,target),SH=shapeInfo(ga),pt=new Set(poolT),n=Math.min(500,ga);
   const lg=PN.map((k,i)=>{const c=PP[k].cnt,a=new Float64Array(NM+1);for(let v=1;v<=NM;v++)a[v]=Math.log((c[v]+.5)/n);return a;});
   const ok=(x,lev)=>{const s=x.reduce((a,b)=>a+b,0),od=x.filter(v=>v%2).length;if(lev>=2)return true;if(s<SH.sr.lo||s>SH.sr.hi||!SH.oddSet.includes(od))return false;if(lev===1||!SH.dir)return true;return SH.dir==='tăng'?s>SH.sp:s<SH.sp;};
   const used=new Float64Array(NM+1),tickets=[],seen=new Set();let lev0=0;
   for(let j=0;j<5;j++){
     let beam=[{x:[],s:0}];
     PN.forEach((k,i)=>{const p=pred&&pred[k],in2=S.sgIn?PP[k].set.filter(v=>pt.has(v)):[],cand=in2.length?in2:PP[k].set;let nb=[];
-      const ext=list=>{for(const b of beam){const last=b.x.length?b.x[b.x.length-1]:0;for(const v of list){if(v<=last||v>NM-(CC-1-i))continue;
+      const ext=list=>{for(const b of beam){const last=b.x.length?b.x[b.x.length-1]:0;for(const v of list){if(v<=last||v>NM-(CC-1-i)||(VX&&VX.has(v)))continue;
         const s=b.s+lg[i][v]+(pt.has(v)?0.4:0)-1.5*used[v]+(p&&p.rng&&p.diff>=5&&v>=p.rng.lo&&v<=p.rng.hi?0.3:0);nb.push({x:b.x.concat(v),s});}}};
       ext(cand);if(!nb.length)ext(PP[k].ord.slice(0,Math.min(NM,PP[k].m*2)));if(!nb.length)ext(PP[k].ord);
       nb.sort((a,b)=>b.s-a.s);beam=nb.slice(0,600);});
@@ -734,7 +735,12 @@ function pickAtK(ga,K,h){const tbl=[];PM.forEach(([id])=>{let n=0,c=0;for(let t=
 function poolChoose(ga){const h=S.sgH||2;
   if(S.sgM){if(S.sgKman)return {sel:S.sgM,K:S.sgKman,rate:null,tbl:[],man:true,mm:true};const m=minK(S.sgM,ga,h,S.sgT||0.75,500);return {sel:S.sgM,K:m?m.K:15,rate:m?m.rate:0,tbl:[],mm:true};}
   return S.sgKman?pickAtK(ga,S.sgKman,h):poolPick2(ga,h);}
-function pkKey(){return [S.sgH,S.sgKman||0,S.sgM||''].join('|');}
+function pkKey(){return [S.sgH,S.sgKman||0,S.sgM||'',S.sgVang||0].join('|');}
+// so dang vang >= G ky tinh tai ky ga (chi dung cac ky truoc ga)
+function vangSet(ga,G){G=G==null?S.sgVang:G;if(!G)return null;const R=S.M.all,seen=new Set();for(let t=ga-1;t>=Math.max(0,ga-G);t--)R[t].r.forEach(v=>seen.add(v));const ex=new Set();for(let v=1;v<=NM;v++)if(!seen.has(v))ex.add(v);return ex;}
+function gapNow(v){const R=S.M.all;for(let t=R.length-1;t>=0;t--)if(R[t].r.includes(v))return R.length-1-t;return R.length;}
+function hotNow(){const R=S.M.all,L=R.length,c=h=>{const a=new Int16Array(NM+1);for(let t=Math.max(0,L-h);t<L;t++)R[t].r.forEach(v=>a[v]++);return a;},c10=c(10),c20=c(20),c50=c(50),c100=c(100),e=h=>h*CC/NM,o=[];
+  for(let v=1;v<=NM;v++){const all4=c10[v]>e(10)&&c20[v]>=e(20)*1.5&&c50[v]>e(50)&&c100[v]>e(100),burst=c10[v]>=3||c20[v]>=Math.ceil(e(20)*2);if(all4||burst)o.push({v,c10:c10[v],c20:c20[v],c50:c50[v],all4,burst});}return o;}
 // kiem khach quan: moi ky trong 200 ky moi nhat, chon phuong phap + co pool chi bang 500 ky truoc ky do, roi dem so trung
 function renderOOS(){const box=$('oosBox');if(!box)return;const key=[GAME,S.PS.N,pkKey()].join('|');
   if(S.oos&&S.oos.key===key){box.innerHTML=S.oos.html;return;}
@@ -758,16 +764,20 @@ function renderSuggest(){
   $('sgKm').innerHTML=[0,12,15,17,18,20,21,22,24,28,31,35,38].filter(n=>n<NM).map(n=>`<span class="chip${n===(S.sgKman||0)?' on':''}" data-n="${n}">${n?n+' số':'Tự động'}</span>`).join('')+`<span class="lbl">hoặc</span><input id="sgKin" type="number" min="5" max="${NM-1}" placeholder="số khác" value="${S.sgKman&&![12,15,17,18,20,21,22,24,28,31,35,38].includes(S.sgKman)?S.sgKman:''}" style="width:84px;">`;
   $('sgKm').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.sgKman=+e.dataset.n||0;S.whSel={};renderSuggest();});
   $('sgKin').onchange=e=>{const v=Math.round(+e.target.value);if(v>=5&&v<NM){S.sgKman=v;S.whSel={};renderSuggest();}};
+  $('sgVg').innerHTML=[0,5,10,15,20,25,30].map(n=>`<span class="chip${n===(S.sgVang||0)?' on':''}" data-n="${n}">${n?n+' kỳ':'Không bỏ'}</span>`).join('');
+  $('sgVg').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.sgVang=+e.dataset.n||0;S.whSel={};renderSuggest();});
   $('sgLv').innerHTML=[60,70,80].map(n=>`<span class="chip${n===lvl?' on':''}" data-n="${n}">${n}%</span>`).join('');
   $('sgLv').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.sgLv=+e.dataset.n;renderSuggest();});
-  const {out,N}=S.PS,sel=PK.sel,pool=topK(out[sel][N],K);
+  const {out,N}=S.PS,sel=PK.sel,pool0=topK(out[sel][N],K),VX=vangSet(N),pool=VX?pool0.filter(v=>!VX.has(v)):pool0;
   // ty le pool K so (tinh tren cac ky truoc)
   const G=sgMake2(N,pool,S.pred,lvl/100);S.sg={G,pool,K,sel};const pc=x=>(x*100).toFixed(0)+'%';
   const auto=poolPick2(S.PS.N,S.sgH),ms=$('sgMs');
   ms.innerHTML=`<option value="">Tự động (pool nhỏ nhất đạt ≥ 75%)</option>`+PM.map(([id,nm])=>{const o=auto.tbl.find(x=>x.id===id);return `<option value="${id}"${id===S.sgM?' selected':''}>${id} ${nm}${o?` — ${o.K} số (${pc(o.rate)})`:''}</option>`;}).join('');
   ms.onchange=e=>{S.sgM=e.target.value||'';S.whSel={};renderSuggest();};
   const mode=PK.mm?(PK.man?`chọn tay: ${sel}, ${K} số`:`chọn tay ${sel}, cỡ nhỏ nhất đạt ≥ 75%`):PK.man?`cỡ chọn tay ${K} số, phương pháp tốt nhất ở cỡ này`:`tự động: pool nhỏ nhất chứa ≥ ${S.sgH} số trúng ở ≥ 75% số kỳ`;
-  $('sgHead').innerHTML=`Kỳ tới <b>${fmt(M.nd)}</b> · âm ${M.ni.ld}/${M.ni.lm}<br><b>Pool ${K} số</b> theo <b>${sel}</b> ${(PM.find(p=>p[0]===sel)||['',''])[1]} <span class="foot" style="margin:0;">(${mode})</span>: <div style="margin:6px 0;">${pool.slice().sort((a,b)=>a-b).map(v=>`<span class="b" style="background:var(--accent);color:#1a1200;">${p2(v)}</span>`).join('')}</div>
+  $('sgHead').innerHTML=`Kỳ tới <b>${fmt(M.nd)}</b> · âm ${M.ni.ld}/${M.ni.lm}<br><b>Pool ${K} số</b> theo <b>${sel}</b> ${(PM.find(p=>p[0]===sel)||['',''])[1]} <span class="foot" style="margin:0;">(${mode})</span>: <div style="margin:6px 0;">${(()=>{const hot=new Set(hotNow().map(o=>o.v));return pool0.slice().sort((a,b)=>a-b).map(v=>VX&&VX.has(v)?`<span class="b" style="text-decoration:line-through;opacity:.45;" title="đang vắng ${gapNow(v)} kỳ">${p2(v)}</span>`:`<span class="b" style="background:var(--accent);color:#1a1200;${hot.has(v)?'box-shadow:0 0 0 2px var(--bad);':''}">${p2(v)}</span>`).join('');})()}</div>
+   ${VX&&pool.length<pool0.length?`<div class="foot" style="margin:0 0 4px;">Đã bỏ ${pool0.length-pool.length} số đang vắng ≥ ${S.sgVang} kỳ (gạch ngang) → còn <b>${pool.length} số</b>. Các dãy gợi ý cũng không dùng số đang vắng.</div>`:''}
+   ${(()=>{const H=hotNow(),out2=H.filter(o=>!pool.includes(o.v));return H.length?`<div style="margin:2px 0 4px;"><span class="lbl">Số nóng gần đây</span> ${H.map(o=>`<span class="b" style="border:2px solid var(--bad);${pool.includes(o.v)?'':'opacity:.85;'}" title="ra ${o.c10}/10 · ${o.c20}/20 · ${o.c50}/50 kỳ">${p2(o.v)}</span>`).join('')}${out2.length?` <span class="no" style="font-size:.85rem;">⚠ ngoài pool: <b>${out2.map(o=>p2(o.v)).join(' ')}</b></span>`:''}<div class="foot" style="margin:0;">Viền đỏ = ra ≥ 3 lần trong 10 kỳ, ≥ 2 lần mức trung bình trong 20 kỳ, hoặc ra nhiều hơn trung bình ở cả 10 · 20 · 50 · 100 kỳ.</div></div>`:'';})()}
    <details class="foot" style="margin:2px 0 0;"><summary style="cursor:pointer;">ⓘ Cách thu hẹp</summary>Với mỗi phương pháp, máy tìm pool <b>nhỏ nhất</b> mà trong 500 kỳ gần nhất vẫn chứa ≥ ${S.sgH} số trúng ở ≥ 75% số kỳ, rồi chọn phương pháp cho pool nhỏ nhất. Đặt 75% (dư 5%) vì phương pháp được chọn thường kém đi ở các kỳ sau: kiểm trên 200 kỳ chưa dùng để chọn, cách này vẫn đạt 72–80% ở cả 3 game. Muốn dùng phương pháp hoặc cỡ pool khác thì chọn ở ô Tùy chỉnh phía trên; phần đối chiếu ngay dưới sẽ tính lại theo lựa chọn đó.
    <div style="margin-top:4px;">Pool nhỏ nhất của từng phương pháp: ${auto.tbl.map(o=>`${o.id===sel?'<b>':''}${o.id} ${o.K} số (${pc(o.rate)})${o.id===sel?'</b>':''}`).join(' · ')}</div></details>`;
   // phan tich tung vi tri: pool rieng + bien do + huong
@@ -864,15 +874,23 @@ function renderPoolHist(sel,K){
   // hang cua cac so trung -> tinh nhanh moi do lon pool
   const rk=ts.map(t=>{const ord=topK(out[sel][t],NM),pos=new Int16Array(NM+1);ord.forEach((v,i)=>pos[v]=i);return R[t].map(v=>pos[v]).sort((a,b)=>a-b);});
   const rate=(k,h)=>rk.filter(r=>r[h-1]<k).length/rk.length,tb=k=>rk.reduce((s,r)=>s+r.filter(x=>x<k).length,0)/rk.length;
-  ts.forEach(t=>{const pool=topK(out[sel][t],K).sort((a,b)=>a-b),r=R[t],h=pool.filter(v=>r.includes(v));
+  ts.forEach(t=>{const VX=vangSet(t),pool=topK(out[sel][t],K).filter(v=>!VX||!VX.has(v)).sort((a,b)=>a-b),r=R[t],h=pool.filter(v=>r.includes(v));
     rows.push(`<tr><td class="l" style="white-space:nowrap;vertical-align:top;">${all[t].date}<div style="margin-top:4px;"><b class="${h.length>=3?'ok':h.length>=2?'':'no'}">trúng ${h.length}/${CC}</b></div></td><td class="l"><div><span class="foot" style="margin:0;">Kết quả </span>${r.map(v=>`<span class="b" style="${pool.includes(v)?'background:var(--good);color:#04200a;':''}">${p2(v)}</span>`).join('')}</div><div style="margin-top:4px;"><span class="foot" style="margin:0;">Pool </span>${pool.map(v=>`<span class="b" style="font-size:.78rem;${r.includes(v)?'background:var(--good);color:#04200a;':''}">${p2(v)}</span>`).join('')}</div></td></tr>`);});
   const Hs=[];for(let h=1;h<=Math.min(CC,4);h++)Hs.push(h);
   const sizes=[...new Set([5,7,9,10,12,15,17,20,22,25,28,30,33,35,40,45,50].filter(x=>x<NM).concat([K]))].sort((a,b)=>a-b);
   const hd=`<thead><tr><th>Độ lớn pool</th>${Hs.map(h=>`<th>≥ ${h} số</th>`).join('')}<th>TB trúng</th></tr></thead>`,
     tr=k=>`<tr data-k="${k}" style="cursor:pointer;${k===K?'background:rgba(240,180,41,.12);':''}"><td><b>${k}</b> số</td>${Hs.map(h=>{const x=rate(k,h);return `<td class="${x>=0.7?'ok':''}">${pc(x)}</td>`;}).join('')}<td>${tb(k).toFixed(2)}</td></tr>`;
-  const sp=[100,200,500].map(n=>{let c=0,m=0;for(let t=N-1;t>=Math.max(S.PS.t0,N-n);t--){if(!out[sel][t])continue;m++;if(topK(out[sel][t],K).filter(v=>R[t].includes(v)).length>=S.sgH)c++;}return `${n} kỳ <b class="${c/m>=0.7?'ok':''}">${pc(c/m)}</b>`;}).join(' · ');
+  const sp=[100,200,500].map(n=>{let c=0,m=0;for(let t=N-1;t>=Math.max(S.PS.t0,N-n);t--){if(!out[sel][t])continue;m++;const VX=vangSet(t);if(topK(out[sel][t],K).filter(v=>(!VX||!VX.has(v))&&R[t].includes(v)).length>=S.sgH)c++;}return `${n} kỳ <b class="${c/m>=0.7?'ok':''}">${pc(c/m)}</b>`;}).join(' · ');
+  const vg=(()=>{const n=Math.min(S.phN<100?500:S.phN,N-S.PS.t0-1),lv=[0,5,10,15,20,25,30],A=lv.map(()=>({ex:0,lost:0,z0:0,z1:0,ps:0,ph:0,m:0}));const all=S.M.all;
+    for(let t=N-n;t<N;t++){if(!out[sel][t])continue;const last=new Int32Array(NM+1).fill(-1);for(let s=t-1;s>=Math.max(0,t-31);s--)all[s].r.forEach(v=>{if(last[v]<0)last[v]=t-1-s;});const P0=topK(out[sel][t],K),r=R[t];
+      lv.forEach((G,i)=>{const ex=G?v=>last[v]<0||last[v]>=G:()=>false;let k=0,lo=0;for(let v=1;v<=NM;v++)if(ex(v)){k++;if(r.includes(v))lo++;}const a=A[i];a.m++;a.ex+=k;a.lost+=lo;if(!lo)a.z0++;if(lo<=1)a.z1++;const p=P0.filter(v=>!ex(v));a.ps+=p.length;a.ph+=p.filter(v=>r.includes(v)).length;});}
+    const pc2=x=>Math.round(x*100)+'%',now=lv.map(G=>G?[...vangSet(N,G)].length:0);
+    return `<details style="margin-top:8px;"${S.vgOpen?' open':''} id="vgDet"><summary class="lbl" style="cursor:pointer;">Bộ lọc "bỏ số đang vắng": đối chiếu ${A[0].m} kỳ (bấm một dòng để dùng mức đó)</summary>
+     <div class="tw" style="margin-top:4px;"><table><thead><tr><th>Vắng ≥</th><th>Bỏ/kỳ</th><th>Mất TB</th><th>≤1 mất</th><th>Pool còn</th><th>Trúng</th></tr></thead><tbody>
+     ${A.map((a,i)=>`<tr data-vg="${lv[i]}" style="cursor:pointer;${lv[i]===(S.sgVang||0)?'background:rgba(240,180,41,.12);':''}"><td><b>${lv[i]?lv[i]:'—'}</b>${lv[i]?`<div class="foot" style="margin:0;">kỳ tới bỏ ${now[i]}</div>`:''}</td><td>${(a.ex/a.m).toFixed(1)}</td><td>${(a.lost/a.m).toFixed(2)}</td><td class="${a.z1/a.m>=0.85?'ok':''}">${pc2(a.z1/a.m)}</td><td>${(a.ps/a.m).toFixed(1)}</td><td>${(a.ph/a.m).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>
+     <div class="foot" style="margin:2px 0 0;">Mỗi kỳ: bỏ các số đã không ra từ ≥ X kỳ trước đó, rồi xem có lỡ bỏ số trúng không. "Mất ≤ 1" = tỉ lệ kỳ chỉ lỡ bỏ tối đa 1 số trúng. "Pool còn / Trúng" = pool ${K} số của ${sel} sau khi bỏ: còn bao nhiêu số và trúng TB bao nhiêu.</div></details>`;})();
   $('phIn').innerHTML=`<b>Đối chiếu quá khứ: pool ${K} số theo ${sel}</b> <span class="foot" style="margin:0;">(mỗi kỳ, pool chỉ tính từ các kỳ trước nó)</span>
-   <div style="margin:6px 0;">Chứa ≥ ${S.sgH} số trúng: ${sp}</div>
+   <div style="margin:6px 0;">Chứa ≥ ${S.sgH} số trúng: ${sp}${S.sgVang?` <span class="foot" style="margin:0;">(đã bỏ số vắng ≥ ${S.sgVang} kỳ ở từng kỳ)</span>`:''}</div>${vg}
    <div class="row" style="margin:6px 0;"><span class="lbl">Xem</span>${[10,30,100,200,500].map(x=>`<span class="chip${x===S.phN?' on':''}" data-n="${x}">${x} kỳ</span>`).join('')}</div>
    <div class="foot" style="margin-top:0;">${ts.length} kỳ gần nhất: chứa ≥ 1 số <b>${pc(rate(K,1))}</b> · ≥ 2 số <b>${pc(rate(K,2))}</b> · ≥ 3 số <b>${pc(rate(K,3))}</b>${CC>=4?` · ≥ 4 số <b>${pc(rate(K,4))}</b>`:''} · TB <b>${tb(K).toFixed(2)}</b> số/kỳ.</div>
    <div class="tw" style="margin-top:6px;"><table>${hd}<tbody>${tr(K)}</tbody></table></div>
@@ -881,6 +899,8 @@ function renderPoolHist(sel,K){
   $('phIn').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.phN=+e.dataset.n;renderPoolHist(sel,K);});
   $('phIn').querySelectorAll('tr[data-k]').forEach(e=>e.onclick=()=>{const k=+e.dataset.k;if(k===K)return;S.sgM=sel;S.sgKman=k;S.whSel={};renderSuggest();});
   $('phList').addEventListener('toggle',e=>{S.phOpen=e.target.open;});
+  $('vgDet').addEventListener('toggle',e=>{S.vgOpen=e.target.open;});
+  $('phIn').querySelectorAll('tr[data-vg]').forEach(e=>e.onclick=()=>{S.sgVang=+e.dataset.vg||0;S.whSel={};renderSuggest();});
 }
 // ---------- KIEM TRA DAU VET: bi lech (Mega/Power) / bo sinh so may tinh (Loto) ----------
 function trSetup(){const loto=GAME==='loto535';$('trKind').textContent=loto?'bộ sinh số máy tính':'bi và lồng quay';
