@@ -1072,7 +1072,7 @@ function myDa(){const all=S.M.all,L=all.length,mid=CC*(NM+1)/2,w=Math.min(50,L-1
   const m=s.reduce((a,b)=>a+b,0)/w,a=s.slice(1),b=s.slice(0,-1),ma=a.reduce((x,y)=>x+y,0)/a.length,mb=b.reduce((x,y)=>x+y,0)/b.length;let sab=0,sa=0,sb=0;for(let i=0;i<a.length;i++){sab+=(a[i]-ma)*(b[i]-mb);sa+=(a[i]-ma)**2;sb+=(b[i]-mb)**2;}
   const r=sab/Math.sqrt(sa*sb),z=r*Math.sqrt(a.length),erf=x=>{const t=1/(1+0.3275911*Math.abs(x));return 1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);},p=1-erf(Math.abs(z)/Math.SQRT2);
   const same=a.filter((v,i)=>(v>mid)===(b[i]>mid)).length/a.length,lo=s[w-1]<=mid;let run=0;for(let i=w-1;i>=0&&((s[i]<=mid)===lo);i--)run++;
-  const sa=all.map(d=>d.r.reduce((x,y)=>x+y,0)).sort((x,y)=>x-y),q=f=>sa[Math.floor(f*(sa.length-1))],rg=lo?[q(0.2),mid]:[mid+1,q(0.8)];
+  const sAll=all.map(d=>d.r.reduce((x,y)=>x+y,0)).sort((x,y)=>x-y),q=f=>sAll[Math.floor(f*(sAll.length-1))],rg=lo?[q(0.2),mid]:[mid+1,q(0.8)];
   return {mid,w,m,r,p,same,lo,run,last:s[w-1],on:r>0.2&&p<0.05,rg};}
 function myEvalShow(){const el=$('myEval'),W=Math.min(S.myW,S.M.all.length-1),L=S.M.all.length,full=S.myT.filter(t=>t.x.length===CC);
   if(!full.length){el.innerHTML=`<div class="foot">Chọn đủ ${CC} số cho một dãy để app chấm điểm.</div>`;return;}
