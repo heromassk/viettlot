@@ -254,3 +254,8 @@
 - Mega 6/45 và Power 6/55: quay bằng **lồng quay** (bi vật lý, rơi tự do, không thổi khí). Bi lệch (nặng, nhẹ, mòn, méo) có thể làm số đó dễ ra hoặc khó ra; nhìn kết quả chỉ biết dễ/khó ra, không biết chắc nặng hay nhẹ.
 - Loto 5/35: quay bằng **máy tính** (bộ sinh số), không có bi. Dấu vết, nếu có, là của bộ sinh số.
 - Đã thêm "Theo dõi vết qua các đoạn liên tiếp" (đoạn 25/50/100 kỳ, chuỗi cùng chiều, đường tích lũy). 500 kỳ gần nhất, đoạn 50 kỳ: Mega có bi 21, 40 ra ít 7 đoạn liên tiếp; Power có bi 49 ra ít 7 đoạn liên tiếp. Số bi có chuỗi ≥ 4 vẫn ngang ngẫu nhiên (Mega p 0.85, Power p 0.93).
+
+## Power: tổng kỳ này dính tổng kỳ trước, giai đoạn gần (03/10/2026)
+- Toàn bộ 1001 kỳ: tương quan +0.04 (p 0.2), bình thường. Từng đoạn 200 kỳ: −0.01 đến +0.085.
+- Gần đây bất thường: 100 kỳ +0.21 (p 0.03); 50 kỳ (09/06–01/10/2026) +0.37 (p 0.006). Trong 50 kỳ đó, tổng nằm cùng phía trung vị (168) với kỳ trước ở 76% số kỳ (bình thường 50%). Chỉ có 13 chuỗi so với kỳ vọng ~25 (runs test z≈−3.6). Tổng TB 50 kỳ là 157 (chung 169).
+- Đã thử 6 khoảng nên vẫn có thể là tình cờ (p 50 kỳ sau khi tính 6 lần thử ≈ 0.04). Giả thuyết: thay bộ bi hoặc lồng quay đổi trạng thái. Kiểm tiếp trên các kỳ từ 03/10/2026: quy tắc "tổng kỳ trước dưới 168 thì kỳ sau dưới 168", ghi đúng/sai.
