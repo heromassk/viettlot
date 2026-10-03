@@ -29,7 +29,7 @@ th,td{padding:6px 7px;border-bottom:1px solid var(--border);text-align:center;ve
 th{color:var(--muted);font-weight:600;white-space:nowrap;}
 td.l,th.l{text-align:left;}
 .nbg{display:flex;flex-wrap:wrap;gap:6px;}.nb{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:var(--panel2);font-weight:700;font-size:.9rem;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}.nb.on{color:var(--text);}
-.mytk{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:16px;border:2px solid var(--border);background:var(--panel2);cursor:pointer;font-size:.85rem;}.mytk.myadd{font-weight:700;font-size:1.1rem;padding:3px 14px;}.mydel{color:var(--bad);font-weight:700;margin-left:2px;}
+.mytk{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:16px;border:2px solid var(--border);background:var(--panel2);cursor:pointer;font-size:.85rem;}.mytk.myadd{font-weight:700;font-size:1.1rem;padding:3px 14px;}.mydel{color:var(--bad);font-weight:700;margin-left:2px;padding:0 4px;}.myyes{background:var(--bad);color:#fff;border-radius:10px;padding:1px 8px;margin-left:4px;font-weight:700;}.myno{border:1px solid var(--border);border-radius:10px;padding:1px 8px;margin-left:4px;}
 .b{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 4px;border-radius:13px;background:var(--panel2);font-size:.78rem;font-weight:700;margin:1px;}
 .b.lk{background:rgba(226,69,60,.16);color:#ff9d96;border:1px solid var(--bad);}
 .up{color:var(--good);font-weight:700;} .dn{color:#ff9d96;font-weight:700;}
@@ -370,7 +370,9 @@ function renderAll(){
 }
 function renderAdd(){
   const a=ex();$('addList').innerHTML=a.length?`<div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ đã thêm</th><th class="l">Số</th><th></th></tr></thead><tbody>${a.map((e,i)=>`<tr><td class="l">${e.date}</td><td class="l">${e.r.map(n=>`<span class="b">${p2(n)}</span>`).join('')}${GC.extra&&e.lk!=null?` <span class="b lk">${p2(e.lk)}</span>`:''}</td><td><button class="btn" data-del="${i}">Xóa</button></td></tr>`).join('')}</tbody></table></div>`:'';
-  $('addList').querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{const e=ex()[+b.dataset.del];if(!e)return;b.disabled=true;try{await delDraw(e.date);$('addMsg').textContent=`Đã xóa kỳ ${e.date}.`;if(!DB)renderAll();}catch(err){b.disabled=false;$('addMsg').textContent='Không xóa được. Thử lại sau.';}});
+  $('addList').querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{const e=ex()[+b.dataset.del];if(!e)return;
+    if(!b.dataset.ask){b.dataset.ask=1;b.textContent='Chắc chắn xóa?';b.style.borderColor='var(--bad)';b.style.color='var(--bad)';$('addMsg').textContent=`Bấm "Chắc chắn xóa?" lần nữa để xóa kỳ ${e.date}.`;setTimeout(()=>{if(b.isConnected){delete b.dataset.ask;b.textContent='Xóa';b.style.borderColor='';b.style.color='';}},5000);return;}
+    b.disabled=true;try{await delDraw(e.date);$('addMsg').textContent=`Đã xóa kỳ ${e.date}.`;if(!DB)renderAll();}catch(err){b.disabled=false;$('addMsg').textContent='Không xóa được. Thử lại sau.';}});
   storeNote();
   if(!$('addDate').value){const p=pd(S.M.nd);$('addDate').value=`${p.y}-${p2(p.m)}-${p2(p.d)}`;if(GC.hours)$('addHour').value=p.h+'h';}
 }
@@ -1005,7 +1007,7 @@ function renderMine(){const box=$('myBox');if(!box||!S.sg)return;const nd=S.M.nd
   const A=S.myT[S.myA],only=!!S.myOnly;
   const nb=(v,on,ring,inP)=>`<span class="nb${on?' on':''}" data-v="${v}" style="${on?`border-color:${ring};box-shadow:0 0 0 2px ${ring};`:''}${inP?'background:rgba(240,180,41,.22);':''}">${p2(v)}</span>`;
   const nums=[...Array(NM).keys()].map(i=>i+1).filter(v=>!only||pool.has(v)||A.x.includes(v));
-  const tk=S.myT.map((t,i)=>`<span class="mytk${i===S.myA?' on':''}" data-i="${i}" style="${i===S.myA?`border-color:${col};`:''}"><b>${i+1}</b> ${t.x.length?t.x.slice().sort((a,b)=>a-b).map(p2).join(' '):'<span class="foot" style="margin:0;">trống</span>'}${LN&&t.lk?` <span style="color:${MY_LK};font-weight:700;">${p2(t.lk)}</span>`:''}${S.myT.length>1?` <span class="mydel" data-i="${i}" title="Xóa dãy">×</span>`:''}</span>`).join('')+`<span class="mytk myadd" title="Thêm dãy">+</span>`;
+  const tk=S.myT.map((t,i)=>`<span class="mytk${i===S.myA?' on':''}" data-i="${i}" style="${i===S.myA?`border-color:${col};`:''}"><b>${i+1}</b> ${t.x.length?t.x.slice().sort((a,b)=>a-b).map(p2).join(' '):'<span class="foot" style="margin:0;">trống</span>'}${LN&&t.lk?` <span style="color:${MY_LK};font-weight:700;">${p2(t.lk)}</span>`:''}${S.myT.length>1?(S.myAsk===i?` <span class="myyes" data-i="${i}">Xóa dãy ${i+1}?</span><span class="myno">Không</span>`:` <span class="mydel" data-i="${i}" title="Xóa dãy">×</span>`):''}</span>`).join('')+`<span class="mytk myadd" title="Thêm dãy">+</span>`;
   box.innerHTML=`<div class="lbl" style="margin-bottom:4px;"><b style="color:var(--text);">Dãy của anh</b> · bấm 1 lần để chọn, bấm lần nữa để bỏ · nền vàng nhạt = số đang có trong pool ${S.sg.K} số</div>
    <div class="row" style="margin:4px 0 6px;">${tk}</div>
    <div class="row" style="margin:0 0 4px;"><span class="chip${only?' on':''}" id="myOnly">Chỉ hiện số trong pool</span><span class="foot" style="margin:0;">Dãy ${S.myA+1}: ${A.x.length}/${CC} số${LN?` · số may mắn ${A.lk?p2(A.lk):'chưa chọn'}`:''}</span></div>
@@ -1016,7 +1018,8 @@ function renderMine(){const box=$('myBox');if(!box||!S.sg)return;const nd=S.M.nd
    <div id="myEval"></div><div id="myHist"></div>`;
   box.querySelectorAll('.nb[data-v]').forEach(e=>e.onclick=()=>{const v=+e.dataset.v,x=A.x;if(x.includes(v))x.splice(x.indexOf(v),1);else{if(x.length>=CC){$('myMsg').innerHTML=`<span class="no">Dãy đã đủ ${CC} số. Bấm vào một số đã chọn để bỏ trước, hoặc bấm + để thêm dãy mới.</span>`;return;}x.push(v);}mySave();renderMine();});
   box.querySelectorAll('.nb[data-l]').forEach(e=>e.onclick=()=>{const v=+e.dataset.l;A.lk=A.lk===v?null:v;mySave();renderMine();});
-  box.querySelectorAll('.mytk[data-i]').forEach(e=>e.onclick=ev=>{if(ev.target.classList.contains('mydel')){S.myT.splice(+ev.target.dataset.i,1);S.myA=Math.max(0,Math.min(S.myA,S.myT.length-1));mySave();renderMine();return;}S.myA=+e.dataset.i;renderMine();});
+  box.querySelectorAll('.mytk[data-i]').forEach(e=>e.onclick=ev=>{const c=ev.target.classList;if(c.contains('mydel')){S.myAsk=+ev.target.dataset.i;renderMine();return;}if(c.contains('myno')){S.myAsk=null;renderMine();return;}
+    if(c.contains('myyes')){S.myT.splice(+ev.target.dataset.i,1);S.myAsk=null;S.myA=Math.max(0,Math.min(S.myA,S.myT.length-1));mySave();renderMine();return;}S.myAsk=null;S.myA=+e.dataset.i;renderMine();});
   box.querySelector('.myadd').onclick=()=>{S.myT.push({x:[],lk:null});S.myA=S.myT.length-1;mySave();renderMine();};
   $('myOnly').onclick=()=>{S.myOnly=!S.myOnly;renderMine();};
   box.querySelectorAll('.chip[data-w]').forEach(e=>e.onclick=()=>{S.myW=+e.dataset.w;renderMine();});
