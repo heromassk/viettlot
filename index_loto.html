@@ -892,6 +892,43 @@ function trSetup(){const loto=GAME==='loto535';$('trKind').textContent=loto?'b�
   $('trW').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.trW=+e.dataset.w;trSetup();});
   $('trGo').onclick=trRun;$('trIn').onchange=e=>{const v=Math.round(+e.target.value);if(v>=10){S.trN=v;trSetup();}};
   $('trOut').innerHTML=S.trRes&&S.trRes.key===GAME+'|'+L+'|'+S.trN+'|'+S.trW?S.trRes.html:'<div class="foot">Bấm "Chạy kiểm tra" để chạy (mất vài giây).</div>';}
+// giai thich tung phep kiem dau vet (xo ra khi can)
+function trExplain(k,real,D,sl,n,p){const N=NM,C=CC,f=real._f,unit=GAME==='loto535'?'số':'bi',ids=[...Array(N).keys()].map(i=>i+1),ef=n*C/N,sd=Math.sqrt(n*C/N*(1-C/N)),ch=(v,st)=>`<span class="b" style="font-size:.75rem;${st||''}">${p2(v)}</span>`;
+  const bad=p<0.05,why=bad?`<div style="margin-top:4px;"><b class="no">Đang lệch (p = ${p<0.005?'< 0.005':p.toFixed(2)}):</b> `:'<div style="margin-top:4px;"><b>Hiện tại:</b> ';
+  if(k==='freq'){const hi=ids.slice().sort((a,b)=>f[b]-f[a]).slice(0,6),lo=ids.slice().sort((a,b)=>f[a]-f[b]).slice(0,6),z=v=>((f[v]-ef)/sd).toFixed(1);
+    return `Đếm mỗi ${unit} ra bao nhiêu lần trong ${n} kỳ, so với kỳ vọng ${ef.toFixed(1)} lần. Chỉ số lệch là tổng độ chênh của tất cả các ${unit}; càng lớn thì càng có ${unit} ra quá nhiều hoặc quá ít. Nếu lệch thật và kéo dài, nguyên nhân thường là ${GAME==='loto535'?'bộ sinh số':'bi nặng/nhẹ/mòn hoặc lồng quay'}.
+     ${why}ra nhiều: ${hi.map(v=>`${ch(v,'background:var(--good);color:#04200a;')}${f[v]} (z ${z(v)})`).join(' ')}<br>ra ít: ${lo.map(v=>`${ch(v)}${f[v]} (z ${z(v)})`).join(' ')}</div>`;}
+  if(k==='pair'){const pc=new Map();D.forEach(r=>{for(let i=0;i<C;i++)for(let j=i+1;j<C;j++){const kk=r[i]*100+r[j];pc.set(kk,(pc.get(kk)||0)+1);}});const top=[...pc.entries()].sort((a,b)=>b[1]-a[1]).slice(0,6);
+    return `Đếm mỗi cặp hai ${unit} ra cùng một kỳ bao nhiêu lần. Có ${N*(N-1)/2} cặp, trung bình mỗi cặp ${real._ep.toFixed(1)} lần. Nếu có cặp "hay đi cùng nhau" thật (bi dính, bộ sinh số kém) thì chỉ số lệch tăng cao.
+     ${why}cặp ra nhiều nhất: ${top.map(([kk,c])=>`${p2(Math.floor(kk/100))}-${p2(kk%100)} (${c})`).join(' · ')}. Với ${N*(N-1)/2} cặp, ngẫu nhiên thì cặp nhiều nhất cũng thường ra cỡ này.</div>`;}
+  if(k==='rep'){const dist=[0,0,0,0];for(let t=1;t<n;t++){const h=D[t].filter(v=>D[t-1].includes(v)).length;dist[Math.min(3,h)]++;}const cb=(a,b)=>{let r=1;for(let i=0;i<b;i++)r=r*(a-i)/(i+1);return r;},hy=h=>cb(C,h)*cb(N-C,C-h)/cb(N,C),th=[hy(0),hy(1),hy(2),1-hy(0)-hy(1)-hy(2)],m=n-1;
+    return `Mỗi kỳ có bao nhiêu ${unit} của kỳ ngay trước ra lại. Ngẫu nhiên trung bình ${(C*C/N).toFixed(2)} ${unit}/kỳ. Nếu cao hơn rõ: máy "nhớ" kỳ trước; thấp hơn rõ: máy "né" ${unit} vừa ra.
+     ${why}${['0','1','2','3+'].map((l,i)=>`lặp ${l} ${unit}: ${Math.round(dist[i]/m*100)}% (ngẫu nhiên ${Math.round(th[i]*100)}%)`).join(' · ')}</div>`;}
+  if(k==='sum'){const mid=C*(N+1)/2,w=Math.min(n,40),x=D.slice(-w).map(r=>r.reduce((a,b)=>a+b,0)),dd=sl.slice(-w).map(e=>e.date.slice(0,5)),runs=[];let cur=[0];
+    for(let i=1;i<w;i++){if((x[i]>mid)===(x[i-1]>mid))cur.push(i);else{runs.push(cur);cur=[i];}}runs.push(cur);const same=x.slice(1).filter((v,i)=>(v>mid)===(x[i]>mid)).length/(w-1),avg=x.reduce((a,b)=>a+b,0)/w;
+    return `Tổng của kỳ này có bị kéo theo tổng kỳ trước không. Gần 0 = không liên quan (bình thường); dương = có "đà": kỳ trước thấp thì kỳ sau hay thấp theo, các kỳ dồn thành cụm; âm = có "bù trừ". Mức giữa của tổng là ${mid} (= ${C} × (1 + ${N}) ÷ 2): trên mức này gọi là CAO, từ mức này trở xuống là THẤP.
+     ${why}${w} kỳ gần nhất có ${Math.round(same*100)}% kỳ cùng phía mức giữa với kỳ trước (bình thường khoảng 50%), tổng trung bình ${avg.toFixed(0)} (mức giữa ${mid}). Các đợt liên tiếp:</div>
+     <div class="tw" style="margin-top:4px;"><table><tbody>${runs.map(r=>`<tr><td><b class="${x[r[0]]>mid?'ok':'no'}">${x[r[0]]>mid?'CAO':'THẤP'}</b></td><td>${r.length} kỳ</td><td style="white-space:nowrap;">${dd[r[0]]}${r.length>1?' – '+dd[r[r.length-1]]:''}</td><td class="l">${r.map(i=>x[i]).join(' ')}</td></tr>`).join('')}</tbody></table></div>
+     <div class="foot" style="margin:2px 0 0;">Lưu ý: đã kiểm trên toàn bộ lịch sử, những đợt có "đà" như vậy trước đây thường không kéo sang kỳ kế tiếp (đoán theo đà chỉ đúng khoảng 50%). Chỉ coi là nghiêng nhẹ, và theo dõi tiếp.</div>`;}
+  if(k==='odd'){const od=D.slice(-15).map(r=>r.filter(v=>v%2).length);
+    return `Số lượng ${unit} lẻ trong kỳ này có bị kéo theo kỳ trước không (cùng ý như phép kiểm tổng, nhưng với số lẻ). Gần 0 là bình thường.
+     ${why}số lẻ 15 kỳ gần nhất: ${od.join(' → ')}</div>`;}
+  if(k==='half'){const h=Math.floor(n/2),a=new Array(N+1).fill(0),b=new Array(N+1).fill(0);D.forEach((r,t)=>r.forEach(v=>(t<h?a:b)[v]++));const e1=h*C/N,e2=(n-h)*C/N,both=ids.filter(v=>a[v]>e1*1.15&&b[v]>e2*1.15),bothLo=ids.filter(v=>a[v]<e1*0.85&&b[v]<e2*0.85);
+    return `Chia ${n} kỳ làm hai nửa: ${unit} nào ra nhiều ở nửa đầu có còn ra nhiều ở nửa sau không. Nếu có ${unit} lệch thật thì hai nửa giống nhau (tương quan dương rõ); ngẫu nhiên thì gần 0.
+     ${why}ra nhiều ở cả hai nửa: ${both.length?both.map(v=>ch(v,'background:var(--good);color:#04200a;')).join(''):'không có'} · ra ít ở cả hai nửa: ${bothLo.length?bothLo.map(v=>ch(v)).join(''):'không có'}</div>`;}
+  if(k==='cons'){const d=[0,0,0];D.forEach(r=>{let c=0;for(let i=1;i<C;i++)if(r[i]-r[i-1]===1)c++;d[Math.min(2,c)]++;});
+    return `Trung bình mỗi kỳ có bao nhiêu cặp số liền nhau (như 10-11). Bộ sinh số kém hoặc bi dính có thể làm số liền ra quá nhiều hoặc quá ít.
+     ${why}${['0 cặp','1 cặp','2+ cặp'].map((l,i)=>`${l}: ${Math.round(d[i]/n*100)}%`).join(' · ')}</div>`;}
+  if(k==='ext'){const fx=real._fx,id2=[...Array(GC.extraN).keys()].map(i=>i+1),hi=id2.slice().sort((a,b)=>fx[b]-fx[a]).slice(0,4),lo=id2.slice().sort((a,b)=>fx[a]-fx[b]).slice(0,4);
+    return `Đếm ${GC.extraName} ra bao nhiêu lần, xem có đều không.
+     ${why}nhiều nhất: ${hi.map(v=>`${ch(v,'border:1px solid var(--bad);')}${fx[v]}`).join(' ')} · ít nhất: ${lo.map(v=>`${ch(v)}${fx[v]}`).join(' ')}</div>`;}
+  if(k==='q4'){const q=real._qr,b=ids.filter(v=>q[v].every(x=>x>1)),l=ids.filter(v=>q[v].every(x=>x<1));
+    return `Chia ${n} kỳ làm 4 đoạn bằng nhau; một ${unit} "lệch bền" khi ra nhiều (hoặc ít) hơn kỳ vọng ở cả 4 đoạn. Ngẫu nhiên thì khoảng 1/8 số ${unit} cũng bền như vậy (${(N/8).toFixed(0)} ${unit}).
+     ${why}bền phía nhiều: ${b.length?b.map(v=>ch(v,'background:var(--good);color:#04200a;')).join(''):'không có'} · bền phía ít: ${l.length?l.map(v=>ch(v)).join(''):'không có'}. Chi tiết ở bảng "Khoanh vùng từng ${unit}" bên dưới.</div>`;}
+  if(k==='stk'){const st=real._stk,hot=ids.filter(v=>Math.abs(st[v])>=4);
+    return `Chia các kỳ thành đoạn ${S.trW} kỳ liên tiếp; đếm ${unit} nào ra nhiều (↑) hoặc ít (↓) ở ít nhất 4 đoạn liền nhau gần nhất.
+     ${why}${hot.length?hot.map(v=>`${ch(v,st[v]>0?'background:var(--good);color:#04200a;':'')}${st[v]>0?'↑':'↓'}${Math.abs(st[v])}`).join(' '):'không có'}. Chi tiết ở bảng "Theo dõi vết qua các đoạn liên tiếp" bên dưới.</div>`;}
+  return '';}
 function trStats(D,X){const n=D.length,N=NM,C=CC,o={},f=new Float64Array(N+1);D.forEach(r=>r.forEach(v=>f[v]++));
   const ef=n*C/N;let c2=0;for(let v=1;v<=N;v++)c2+=(f[v]-ef)**2/ef;o.freq=c2;
   let rep=0;for(let t=1;t<n;t++)rep+=D[t].filter(v=>D[t-1].includes(v)).length;o.rep=rep/(n-1);
@@ -915,13 +952,14 @@ function trRun(){const all=S.M.all,L=all.length,n=S.trN?Math.min(S.trN,L):L,sl=a
   const step=()=>{if(GAME!==g0){btn.disabled=false;return;}const t1=performance.now();while(sims.length<NS&&performance.now()-t1<25){const [a,b]=trSim(n,m);sims.push(trStats(a,b));}
     $('trOut').innerHTML=`<div class="foot">Đang bốc ngẫu nhiên để so: ${sims.length}/${NS}…</div>`;if(sims.length<NS){setTimeout(step,0);return;}btn.disabled=false;
     const T=[['freq','Tần suất từng số có đều không','chỉ số lệch (chi²)',1],['pair','Có cặp số nào hay đi cùng nhau','chỉ số lệch cặp (chi²)',1],['rep','Số kỳ trước lặp lại ở kỳ sau','số/kỳ',2],
-      ['sum','Tổng kỳ này dính tổng kỳ trước','tương quan',2],['odd','Số lẻ kỳ này dính kỳ trước','tương quan',2],['half','Số ra nhiều nửa đầu còn nhiều ở nửa sau','tương quan',1],['cons','Số liền nhau trong một kỳ (vd 10-11)','cặp/kỳ',2],['q4','Số bi lệch bền (ra nhiều hoặc ít ở cả 4 giai đoạn)','số bi',1]];
+      ['sum','Tổng kỳ này dính tổng kỳ trước','tương quan',2],['odd','Số lẻ kỳ này dính kỳ trước','tương quan',2],['half','Số ra nhiều nửa đầu còn nhiều ở nửa sau','tương quan',1],['cons','Số liền nhau trong một kỳ (vd 10-11)','cặp/kỳ',2],['q4',`Số ${GAME==='loto535'?'số':'bi'} lệch bền (ra nhiều hoặc ít ở cả 4 giai đoạn)`,GAME==='loto535'?'số lượng số':'số bi',1]];
     if(real.stk!=null)T.push(['stk',`Số ${GAME==='loto535'?'số':'bi'} lệch cùng chiều ≥ 4 đoạn ${S.trW} kỳ liên tiếp gần nhất`,GAME==='loto535'?'số lượng số':'số bi',1]);
     if(real.ext!=null)T.push(['ext',`${GC.extraName[0].toUpperCase()+GC.extraName.slice(1)} có đều không`,`chỉ số lệch (chi²)${m<n?`, ${m} kỳ có ${GC.extraName}`:''}`,1]);
     const fx=x=>Number.isInteger(x)?String(x):Math.abs(x)>=10?x.toFixed(1):x.toFixed(3),q=(a,p)=>a[Math.min(a.length-1,Math.floor(p*a.length))];let nBad=0;
     const rows=T.map(([k,lab,unit,side])=>{const a=sims.map(s=>s[k]).sort((x,y)=>x-y),v=real[k],ge=a.filter(x=>x>=v).length/NS,le=a.filter(x=>x<=v).length/NS,p=side===1?ge:Math.min(1,2*Math.min(ge,le));
       const cls=p<0.01?'no':p<0.05?'':'ok',vd=p<0.01?'đáng chú ý':p<0.05?'hơi lệch':'bình thường';if(p<0.05)nBad++;
-      return `<tr><td class="l">${lab}<div class="foot" style="margin:0;">${unit}</div></td><td><b>${fx(v)}</b></td><td>${fx(q(a,.025))} – ${fx(q(a,.975))}</td><td class="${cls}"><b>${p<0.005?'< 0.005':p.toFixed(2)}</b><div style="font-size:.75rem;white-space:nowrap;">${vd}</div></td></tr>`;}).join('');
+      return `<tr><td class="l">${lab}<div class="foot" style="margin:0;">${unit}</div></td><td><b>${fx(v)}</b></td><td>${fx(q(a,.025))} – ${fx(q(a,.975))}</td><td class="${cls}"><b>${p<0.005?'< 0.005':p.toFixed(2)}</b><div style="font-size:.75rem;white-space:nowrap;">${vd}</div></td></tr>
+       <tr><td colspan="4" class="l" style="padding:0 8px 8px;border-top:none;"><details><summary class="foot" style="cursor:pointer;margin:0;${p<0.05?'color:var(--bad);font-weight:700;':''}">${p<0.05?'⚠ Vì sao lệch? Xem chi tiết':'Giải thích phép kiểm này'}</summary><div class="foot" style="margin:4px 0 0;color:var(--text);">${(()=>{try{return trExplain(k,real,D,sl,n,p);}catch(e){return '';}})()}</div></details></td></tr>`;}).join('');
     const f=real._f,ids=[...Array(NM).keys()].map(i=>i+1),hi=ids.slice().sort((a,b)=>f[b]-f[a]).slice(0,5),lo=ids.slice().sort((a,b)=>f[a]-f[b]).slice(0,5),pp=real._pi;
     const html=`<div class="sum" style="margin-top:6px;"><b>${n} kỳ gần nhất</b> (${sl[0].date} → ${sl[n-1].date}) · ${nBad} / ${T.length} phép kiểm có p < 0.05. Bốc ngẫu nhiên thì trung bình cũng có ${(T.length*0.05).toFixed(1)} phép như vậy, nên chỉ đáng chú ý khi p < 0.01 (đỏ) <b>và</b> lặp lại khi kiểm trên các khoảng kỳ khác.</div>
      <div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Phép kiểm</th><th>Thật</th><th>Ngẫu nhiên (95%)</th><th>p</th></tr></thead><tbody>${rows}</tbody></table></div>
@@ -1470,16 +1508,18 @@ const KX_M=[
    return {why:`${P.sex==='nu'?'nữ':'nam'} sinh năm ${P.lun.y} → cung <b>${KX_QUAI[k]}</b> · Sinh khí ${sk}, Thiên y ${ty}`,nums:kxTails([sk,ty],N)};}]];
 function kxRun(cb){const all=S.M.all,L=all.length,N=NM,C=CC,P=kxPerson(),key=[GAME,L,P?P.sol.join('-')+P.hb+P.name+P.sex:''].join('|');
   if(S.kx&&S.kx.key===key){cb(S.kx);return;}
-  const st={T:new Float64Array((N+1)*(N+1)),cnt:new Float64Array(N+1),f:new Float64Array(N+1),n:0},acc=KX_M.map(()=>({n:0,h:0,e:0,v:0,k:0,n2:0,h2:0,e2:0,any:0,eany:0}));
+  const st={T:new Float64Array((N+1)*(N+1)),cnt:new Float64Array(N+1),f:new Float64Array(N+1),n:0},acc=KX_M.map(()=>({n:0,h:0,e:0,v:0,k:0,n2:0,h2:0,e2:0,any:0,eany:0})),VL=[...Array(KX_M.length+1)].map(()=>({c:0,h:0,c2:0,h2:0})),KV=Math.round(N*0.3),VT={n:0,h:0,n2:0,h2:0};let lastV=null;
   const hyp0=(K)=>{let p=1;for(let i=0;i<C;i++)p*=(N-K-i)/(N-i);return p;};
   let t=0;const g0=GAME,step=()=>{if(GAME!==g0)return;const t1=performance.now();
     while(t<L&&performance.now()-t1<20){const ctx=kxCtx(all[t].date),pv=t?all[t-1].r:null,r=all[t].r;
-      if(t>=30)KX_M.forEach((m,i)=>{let o=null;try{o=m[3](ctx,pv,st,P,N);}catch(e){}if(!o||!o.nums.length)return;const K=o.nums.length,h=r.filter(v=>o.nums.includes(v)).length,e=K*C/N,va=e*(N-C)/N*(N-K)/(N-1),a=acc[i];
+      const vt=new Int8Array(N+1);if(t>=30)KX_M.forEach((m,i)=>{let o=null;try{o=m[3](ctx,pv,st,P,N);}catch(e){}if(!o||!o.nums.length)return;o.nums.forEach(v=>vt[v]++);const K=o.nums.length,h=r.filter(v=>o.nums.includes(v)).length,e=K*C/N,va=e*(N-C)/N*(N-K)/(N-1),a=acc[i];
         a.n++;a.h+=h;a.e+=e;a.v+=va;a.k+=K;a.any+=h>0?1:0;a.eany+=1-hyp0(K);if(t>=L-200){a.n2++;a.h2+=h;a.e2+=e;}});
+      if(t>=30){const r2=t>=L-200;for(let v=1;v<=N;v++){const o=VL[vt[v]],hh=r.includes(v)?1:0;o.c++;o.h+=hh;if(r2){o.c2++;o.h2+=hh;}}
+        const top=[...Array(N).keys()].map(i=>i+1).sort((a,b)=>vt[b]-vt[a]||a-b).slice(0,KV),th=r.filter(v=>top.includes(v)).length;VT.n++;VT.h+=th;if(r2){VT.n2++;VT.h2+=th;}if(t===L-1)lastV={vt:Array.from(vt),r,date:all[t].date,lk:all[t].lk,top};}
       if(pv){pv.forEach(x=>{st.cnt[x]++;r.forEach(y=>st.T[x*(N+1)+y]++);});}r.forEach(y=>st.f[y]++);st.n++;t++;}
     if(t<L){setTimeout(step,0);return;}
     const nx=kxCtx(S.M.nd),last=all[L-1].r,now=KX_M.map(m=>{try{return m[3](nx,last,st,P,N);}catch(e){return null;}});
-    S.kx={key,acc,now,P};cb(S.kx);};
+    const nv=new Array(N+1).fill(0);now.forEach(o=>{if(o&&o.nums)o.nums.forEach(v=>nv[v]++);});S.kx={key,acc,now,P,VL,VT,KV,lastV,nv};cb(S.kx);};
   setTimeout(step,20);}
 function renderKX(){const box=$('kxOut');if(!box)return;
   try{const v=JSON.parse(localStorage.getItem('vt_kx')||'{}');if(!$('kxName').value&&!S.kxNameSet){$('kxName').value=v.name!=null?v.name:'Nguyễn Thành Luân';S.kxNameSet=1;}if(v.sex&&!S.kxSexSet){$('kxSex').value=v.sex;S.kxSexSet=1;}}catch(e){}
@@ -1494,7 +1534,18 @@ function renderKX(){const box=$('kxOut');if(!box)return;
        <div class="foot" style="margin:2px 0 0;">Pool TB ${(a.k/a.n).toFixed(1)} số · trúng TB ${(a.h/a.n).toFixed(2)} số/kỳ, chọn bừa cùng số lượng ${(a.e/a.n).toFixed(2)}</div></div>`;}).join('');
       html+=`<h4 style="margin:14px 0 4px;">${grp[G]} <span class="foot" style="margin:0;">· số cho kỳ tới ${fmt(S.M.nd)}</span></h4>${rows}`;});
     const n=R.acc.reduce((m,a)=>Math.max(m,a.n),0);
-    box.innerHTML=`<div class="sum" style="margin-top:6px;"><b>Kiểm trên ${n} kỳ đã quay</b> (mỗi kỳ lập đúng ngày giờ quay${GC.hours?' 13h / 21h':' 18h'}, chỉ dùng kết quả trước kỳ đó): ${nBetter}/${nTot} phương pháp có tỉ số > 1. Tỉ số = số trúng thật ÷ số trúng nếu chọn bừa cùng số lượng; 1.00 = ngang chọn bừa. ${best?`Lệch nhiều nhất: <b>${best.nm}</b> (tỉ số ${best.rt.toFixed(2)}, p = ${best.p.toFixed(2)}).`:''} Làm ${nTot} phép kiểm thì thường có 1–2 phép p < 0.1 do tình cờ; chỉ đáng tin khi p < 0.01 và giữ được ở 200 kỳ gần nhất.</div>${html}
+    const vb=(()=>{const N=NM,base=CC/N,nv=R.nv,KV=R.KV,ids=[...Array(N).keys()].map(i=>i+1),top=ids.slice().sort((a,b)=>nv[b]-nv[a]||a-b).slice(0,KV),mx=Math.max(...nv);
+      const lv=[];for(let k=mx;k>=1;k--){const xs=ids.filter(v=>nv[v]===k);if(xs.length)lv.push(`<div style="margin:2px 0;"><b style="display:inline-block;min-width:62px;">${k} phiếu</b>${xs.map(v=>`<span class="b" style="${top.includes(v)?'background:var(--accent);color:#1a1200;':''}">${p2(v)}</span>`).join('')}</div>`);}
+      const zero=ids.filter(v=>!nv[v]);
+      const L=R.lastV,lastHtml=L?`<div style="margin-top:8px;"><b>Kỳ vừa rồi ${L.date}</b>: kết quả ${L.r.map(v=>`<span class="b" style="${L.top.includes(v)?'background:var(--good);color:#04200a;':''}">${p2(v)}</span><span class="foot" style="margin:0 6px 0 0;">${L.vt[v]} phiếu</span>`).join('')} · ${KV} số nhiều phiếu nhất trúng <b>${L.r.filter(v=>L.top.includes(v)).length}</b> số (chọn bừa ${(KV*CC/N).toFixed(2)}).</div>`:'';
+      const rowsV=R.VL.map((o,k)=>[o,k]).filter(([o])=>o.c>=200).map(([o,k])=>{const rr=o.h/o.c,r2=o.c2>=50?o.h2/o.c2:null;return `<tr><td>${k}</td><td>${(o.c/R.VT.n).toFixed(1)}</td><td><b>${(rr*100).toFixed(1)}%</b></td><td>${r2!=null?(r2*100).toFixed(1)+'%':'—'}</td><td class="${rr/base>=1.1?'ok':rr/base<=0.9?'no':''}">${(rr/base).toFixed(2)}</td></tr>`;}).join('');
+      return `<div class="sum" style="margin-top:6px;border-left:3px solid var(--accent);"><b>Bảng tổng hợp phiếu</b> <span class="foot" style="margin:0;">(mỗi phương pháp chọn một nhóm số; mỗi số được bao nhiêu phương pháp chọn = bấy nhiêu phiếu)</span>
+       <div style="margin-top:6px;"><b>Kỳ tới ${fmt(S.M.nd)}</b> · vàng = ${KV} số nhiều phiếu nhất:</div>${lv.join('')}${zero.length?`<div class="foot" style="margin:2px 0 0;">0 phiếu: ${zero.map(p2).join(' ')}</div>`:''}
+       ${lastHtml}
+       <div style="margin-top:8px;"><b>Độ chính xác của phiếu</b> (kiểm trên ${R.VT.n} kỳ đã quay, mỗi kỳ chỉ dùng dữ liệu trước nó): ${KV} số nhiều phiếu nhất trúng TB <b>${(R.VT.h/R.VT.n).toFixed(2)}</b> số/kỳ (200 kỳ gần nhất ${R.VT.n2?(R.VT.h2/R.VT.n2).toFixed(2):'—'}), chọn bừa ${(KV*CC/N).toFixed(2)}.</div>
+       <div class="tw" style="margin-top:4px;"><table><thead><tr><th>Phiếu</th><th>Số/kỳ</th><th>Tỉ lệ ra</th><th>200 kỳ</th><th>÷ ${(base*100).toFixed(1)}%</th></tr></thead><tbody>${rowsV}</tbody></table></div>
+       <div class="foot" style="margin:2px 0 0;">Nếu phiếu có ý nghĩa thì số càng nhiều phiếu càng hay ra (cột cuối = tỉ lệ ra ÷ tỉ lệ bình thường, tăng dần và trên 1.00). Nếu các mức đều quanh 1.00 thì nhiều phiếu cũng không giúp trúng hơn.</div></div>`;})();
+    box.innerHTML=vb+`<div class="sum" style="margin-top:6px;"><b>Kiểm trên ${n} kỳ đã quay</b> (mỗi kỳ lập đúng ngày giờ quay${GC.hours?' 13h / 21h':' 18h'}, chỉ dùng kết quả trước kỳ đó): ${nBetter}/${nTot} phương pháp có tỉ số > 1. Tỉ số = số trúng thật ÷ số trúng nếu chọn bừa cùng số lượng; 1.00 = ngang chọn bừa. ${best?`Lệch nhiều nhất: <b>${best.nm}</b> (tỉ số ${best.rt.toFixed(2)}, p = ${best.p.toFixed(2)}).`:''} Làm ${nTot} phép kiểm thì thường có 1–2 phép p < 0.1 do tình cờ; chỉ đáng tin khi p < 0.01 và giữ được ở 200 kỳ gần nhất.</div>${html}
      <div class="foot">Cách quy ra số: đuôi = chữ số hàng đơn vị; "chi" = số chia 12 dư theo địa chi (Tý = 1, 13, 25…); "gốc" = tổng chữ số rút về 1–9. Đại Lục Nhâm và Thái Ất là bản rút gọn (Lục Nhâm bỏ các khóa đặc biệt phục ngâm, phản ngâm, bát chuyên; Thái Ất dùng mốc tính rút gọn). Phương pháp theo người chơi lấy ngày giờ sinh ở mục Tứ trụ.</div>`;});
 }
 // ---------- KIEM TRA KET QUA CU: lam lai goi y tai ky tt chi bang du lieu truoc do ----------
