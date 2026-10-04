@@ -290,6 +290,12 @@ Tiêu chí của anh: một cách suy luận đúng ≥70% số kỳ (10 kỳ đ
 - **Loto:** các khẳng định đúng ≈ giữ lại (máy tính quay — không thấy lệch).
 - **Khẳng định theo pool (goiy.py, 200 kỳ):** Power pool 10 có ≥1 số 73%, pool 20 có ≥2 số 71%; Mega pool 10 ≥1 80%, pool 15 ≥2 72%, pool 20 ≥2 86%; Loto pool 15 ≥2 68%, pool 20 ≥2 90%.
 
+## Thử thêm suy luận — 04/10/2026 (`build/thu_them.py`, 600 kỳ, 3 khúc)
+- **Power: số của kỳ cùng thứ tuần trước (cách 3 kỳ) ra lại ít hơn ở cả 3 khúc** (9.9 / 10.4 / 9.6% mỗi số, các số khác ~11%) → đưa vào gợi ý Power −0.5 điểm; pool 15 ở 200 kỳ 1.67 → 1.69 số/kỳ, ≥3 số 20% → 22%.
+- Không thấy "tính cách theo thứ" (T3/T5/T7, T4/T6/CN) — không có dấu hiệu mỗi ngày dùng bộ bi riêng.
+- Số "đến hạn" theo nhịp riêng từng số: không ổn định (Power 2/3 khúc, Mega 1/3).
+- Cặp số hay đi cùng: không lặp lại giữa hai nửa dữ liệu (Power, Mega).
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|

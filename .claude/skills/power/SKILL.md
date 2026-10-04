@@ -19,7 +19,7 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 - **Đà tổng có dấu vết** (tương quan tổng kỳ liền nhau 50 kỳ ≈ +0.36, đang vùng thấp dưới mốc giữa 168) → vé chọn tổng theo khoảng đà.
 - PP26 Bóng đối xứng và PP16 Gan là tốt nhất 50 kỳ gần (tháng 10/2026); bỏ khó ra và bỏ vắng ≥20 đã đúng hoàn toàn ở kỳ 03/10.
 - Vé: rải ≥4 hàng chục (khẳng định 78–80%), ≥2 số >31, không 3 số liên tiếp; nếu phải nới thì script ghi rõ.
-- Luật bổ sung (04/10/2026, `build/loai_tru.py`): số **vắng 11–15 kỳ** +1 điểm ("chín", ra nhiều hơn 3/3 khúc); số **vắng 6–10 kỳ** −0.5.
+- Luật bổ sung (04/10/2026, `build/loai_tru.py`): số **vắng 11–15 kỳ** +1 điểm ("chín", ra nhiều hơn 3/3 khúc); số **vắng 6–10 kỳ** −0.5; số của **kỳ cùng thứ tuần trước** (cách 3 kỳ) −0.5 (ra ít hơn 3/3 khúc, `build/thu_them.py`).
 - Luật loại vé (kỳ thật chỉ vi phạm 1–8%): trùng ≥3 số kỳ trước, toàn chẵn/lẻ, toàn nhỏ/lớn, ≥3 liên tiếp, ≥4 số cùng chục (6 số), không có số ≥2/3 dải. Các luật này giúp vé gọn, tự chúng không tăng trúng.
 - `--cu` chạy cách cũ để so; luật nào làm pool kém đi trên các kỳ đã qua thì bỏ.
 

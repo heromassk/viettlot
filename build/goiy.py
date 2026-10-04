@@ -68,6 +68,7 @@ def signals(t):
         if A.game == 'power':
             sig['chin'] = {n for n, x in f.items() if 11 <= x['gap'] <= 15}
             sig['g610'] = {n for n, x in f.items() if 6 <= x['gap'] <= 10}
+            sig['tuan'] = R[t - 3] - R[t - 1]   # số của kỳ cùng thứ tuần trước: ra lại ít hơn 3/3 khúc (thu_them.py)
         elif A.game == 'mega':
             sig['duoi'] = {n for n in range(1, NB + 1) if n % 10 in {x % 10 for x in last}} - last
         else:
@@ -96,7 +97,7 @@ def score(f, s, extra=None):
         v = 2 * (n in s['hot']) + 1 * (n in s['ke']) + 1 * (n in s['de']) - 1.5 * (n in s['kho'])
         v += 1.5 * (n in s.get('chuyen', ())) + 1 * (n in s.get('phien', ()))
         v += WCHIN * (n in s.get('chin', ())) - WG610 * (n in s.get('g610', ())) \
-            - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ()))
+            - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ()))
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
@@ -111,8 +112,9 @@ def pool_of(sc, s, k):
 
 # ---------- Backtest: tỉ lệ đúng của chính từng tín hiệu ----------
 WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0.5 1').split())
+WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
-        {'power': ('chin', 'g610'), 'mega': ('duoi',), 'loto': ('lap',)}[A.game])
+        {'power': ('chin', 'g610', 'tuan'), 'mega': ('duoi',), 'loto': ('lap',)}[A.game])
 import random
 random.seed(5)
 MC = [set(random.sample(range(1, NB + 1), KB)) for _ in range(300)]
@@ -287,7 +289,7 @@ if A.game == 'loto':
     rows += [('chuyen', 'Chuyển kỳ (số hay theo sau số kỳ trước), top 8', 'tỉ lệ ra/số'),
              ('phien', 'Nóng cùng phiên 100 kỳ, top 8', 'tỉ lệ ra/số')]
 rows += [x for x in (('chin', 'Vắng 11–15 kỳ — "chín" (+điểm)', 'tỉ lệ ra/số'), ('g610', 'Vắng 6–10 kỳ (−điểm)', 'loại đúng'),
-                     ('duoi', 'Cùng đuôi số kỳ trước (−điểm)', 'loại đúng'), ('lap', 'Số vừa ra kỳ trước (−điểm)', 'loại đúng')) if x[0] in SIGS]
+                     ('duoi', 'Cùng đuôi số kỳ trước (−điểm)', 'loại đúng'), ('lap', 'Số vừa ra kỳ trước (−điểm)', 'loại đúng'), ('tuan', 'Số kỳ cùng thứ tuần trước (−điểm)', 'loại đúng')) if x[0] in SIGS]
 print('| Tín hiệu | Số hiện tại | Đo bằng | 10 kỳ | 50 kỳ | 200 kỳ |\n|---|---|---|---|---|---|')
 for k, lab, how in rows:
     print(f'| {lab} | {fm(s[k])} | {how} | ' + ' | '.join(pc(B[W][k][0]) for W in (10, 50, 200)) + ' |')
@@ -301,7 +303,7 @@ if LINH: print(f'\nSố linh cảm của anh: **{fm(LINH)}** (+3 điểm)')
 print(f'\n### Pool {A.k} điểm đồng thuận\n\n**{fm(pool)}**\n')
 print(f"Pool 10: **{fm(rank[:10])}**  ·  Pool 20: {fm(rank[:20])}\n")
 def why(n):
-    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên'), ('chin', 'vắng 11–15'), ('g610', 'vắng 6–10 −'), ('duoi', 'cùng đuôi −'), ('lap', 'vừa ra −')) if n in s.get(k, ())]
+    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên'), ('chin', 'vắng 11–15'), ('g610', 'vắng 6–10 −'), ('duoi', 'cùng đuôi −'), ('lap', 'vừa ra −'), ('tuan', 'cùng thứ tuần trước −')) if n in s.get(k, ())]
     if APP:
         if n in top_v: t.append(f'tâm linh {votes[n]} phiếu')
         if n in APP.get('appPool', []): t.append('pool app')
