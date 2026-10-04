@@ -7,7 +7,7 @@ import json, os, sys, datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 GM = {'power': ('power655', 55, 6), 'mega': ('mega645', 45, 6), 'loto': ('loto535', 35, 5)}
 # Luật đang ÁP DỤNG trong gợi ý (goiy.py) — để app đánh dấu
-APPLIED = {'power': {'vang20', 'it100'}, 'mega': {'vang30', 'lien2', 'lt3', 'zprev'}, 'loto': {'tx15', 'vang1', 'nong35'}}
+APPLIED = {'power': {'vang20', 'it100'}, 'mega': {'vang20', 'thua15', 'lien2', 'lt3', 'zprev'}, 'loto': {'vang20', 'thua15', 'tx15', 'vang1', 'nong35'}}
 FILE = os.path.join(HERE, 'theodoi.json')
 
 def load():
@@ -29,6 +29,7 @@ RULES = [
     ('vang20', 'Bỏ số vắng ≥20 kỳ', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 20}),
     ('vang25', 'Bỏ số vắng ≥25 kỳ', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 25}),
     ('vang30', 'Bỏ số vắng ≥30 kỳ', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 30}),
+    ('thua15', 'Bỏ số "lâu lâu mới ra" (200 kỳ ≤85% kỳ vọng) đang vắng ≥15', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 15 and sum(n in R[u] for u in range(max(0, t - 200), t)) <= 0.85 * min(200, t) * 6 / len(c['gap']) * (5 / 6 if len(c['gap']) == 35 else 1)}),
     ('vang1', 'Bỏ số vắng lâu nhất', lambda R, t, c: topk(c['gap'], 1, True)),
     ('vang2nd', 'Bỏ số vắng lâu nhì', lambda R, t, c: topk(c['gap'], 2, True) - topk(c['gap'], 1, True)),
     ('lien2', 'Bỏ số ra 2 kỳ liền', lambda R, t, c: R[t - 1] & R[t - 2]),

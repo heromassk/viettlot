@@ -27,7 +27,7 @@ ap.add_argument('--json', help='ghi dữ liệu gợi ý dạng JSON (cho bảng
 ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
-G = A.G or (999 if A.game == 'loto' and not A.cu else 15 if A.game == 'loto' else 30 if A.game == 'mega' and not A.cu else 20)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
+G = A.G or (15 if A.cu and A.game == 'loto' else 20)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
 R = [set(r) for r in D['res']]          # cũ -> mới
 SES = ['13' if '13h' in x else '21' for x in D['dates']] + ['13' if '21h' in D['dates'][-1] else '21']
@@ -66,6 +66,9 @@ def signals(t):
         ph = SES[t]
         same = [u for u in range(max(0, t - 200), t) if SES[u] == ph][-100:]
         sig['phien'] = top8({n: sum(n in R[u] for u in same) for n in range(1, NB + 1)})
+    if not A.cu and A.game in ('mega', 'loto'):   # ý anh 04/10: loại trước số "lâu lâu mới ra" (thưa) đang vắng ≥15
+        c200 = {n: sum(n in R[u] for u in range(max(0, t - 200), t)) for n in range(1, NB + 1)}
+        sig['thua'] = {n for n in range(1, NB + 1) if f[n]['gap'] >= 15 and c200[n] <= 0.85 * min(200, t) * P}
     if not A.cu:   # luật loại trừ bổ sung (build/loai_tru.py, 04/10/2026) — chỉ giảm/cộng điểm, không loại hẳn
         if A.game == 'power':
             sig['chin'] = {n for n, x in f.items() if 11 <= x['gap'] <= 15}
@@ -119,7 +122,7 @@ def score(f, s, extra=None):
     return sc
 
 
-LOAI = {'power': ('it100',), 'mega': ('lien2', 'lt3', 'zprev'), 'loto': ('tx15', 'vang1', 'nong35')}
+LOAI = {'power': ('it100',), 'mega': ('lien2', 'lt3', 'zprev', 'thua'), 'loto': ('tx15', 'vang1', 'nong35', 'thua')}
 def loai_of(s):
     out = set()
     for k in LOAI[A.game]: out |= s.get(k, set())
@@ -135,7 +138,7 @@ def pool_of(sc, s, k):
 WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0.5 1').split())
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
-        {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev'), 'loto': ('lap', 'tx15', 'vang1', 'nong35')}[A.game])
+        {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])
 import random
 random.seed(5)
 MC = [set(random.sample(range(1, NB + 1), KB)) for _ in range(300)]
@@ -314,7 +317,7 @@ if A.game == 'loto':
              ('phien', 'Nóng cùng phiên 100 kỳ, top 8', 'tỉ lệ ra/số')]
 rows += [x for x in (('chin', 'Vắng 11–15 kỳ — "chín" (+điểm)', 'tỉ lệ ra/số'), ('g610', 'Vắng 6–10 kỳ (−điểm)', 'loại đúng'),
                      ('duoi', 'Cùng đuôi số kỳ trước (−điểm)', 'loại đúng'), ('lap', 'Số vừa ra kỳ trước (−điểm)', 'loại đúng'), ('tuan', 'Số kỳ cùng thứ tuần trước (−điểm)', 'loại đúng'), ('lien2', 'Ra 2 kỳ liền (bỏ khỏi pool)', 'loại đúng'), ('lt3', 'Ra kỳ trước & kỳ t−3 (bỏ)', 'loại đúng'), ('zprev', 'Số lớn nhất kỳ trước (bỏ)', 'loại đúng'),
-                     ('it100', 'Ra ít nhất 100 kỳ (bỏ)', 'loại đúng'), ('tx15', 'Tái xuất sau vắng ≥15 (bỏ)', 'loại đúng'), ('vang1', 'Vắng lâu nhất (bỏ)', 'loại đúng'), ('nong35', 'Ra 3 lần/5 kỳ (bỏ)', 'loại đúng'), ('ben', 'Ra nhiều cả 4 đoạn 25 kỳ (+điểm)', 'tỉ lệ ra/số')) if x[0] in SIGS]
+                     ('it100', 'Ra ít nhất 100 kỳ (bỏ)', 'loại đúng'), ('tx15', 'Tái xuất sau vắng ≥15 (bỏ)', 'loại đúng'), ('vang1', 'Vắng lâu nhất (bỏ)', 'loại đúng'), ('nong35', 'Ra 3 lần/5 kỳ (bỏ)', 'loại đúng'), ('ben', 'Ra nhiều cả 4 đoạn 25 kỳ (+điểm)', 'tỉ lệ ra/số'), ('thua', 'Lâu lâu mới ra (200 kỳ ≤85% kỳ vọng) & vắng ≥15 (bỏ)', 'loại đúng')) if x[0] in SIGS]
 print('| Tín hiệu | Số hiện tại | Đo bằng | 10 kỳ | 50 kỳ | 200 kỳ |\n|---|---|---|---|---|---|')
 for k, lab, how in rows:
     print(f'| {lab} | {fm(s[k])} | {how} | ' + ' | '.join(pc(B[W][k][0]) for W in (10, 50, 200)) + ' |')
@@ -329,7 +332,7 @@ if BO: print(f'\nSố anh loại tay kỳ này: **{fm(BO)}**')
 print(f'\n### Pool {A.k} điểm đồng thuận\n\n**{fm(pool)}**\n')
 print(f"Pool 10: **{fm(rank[:10])}**  ·  Pool 20: {fm(rank[:20])}\n")
 def why(n):
-    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên'), ('chin', 'vắng 11–15'), ('g610', 'vắng 6–10 −'), ('duoi', 'cùng đuôi −'), ('lap', 'vừa ra −'), ('tuan', 'cùng thứ tuần trước −'), ('lien2', 'ra 2 kỳ liền (loại)'), ('lt3', 'ra kỳ trước & t−3 (loại)'), ('zprev', 'z kỳ trước (loại)'), ('it100', 'ít nhất 100 kỳ (loại)'), ('tx15', 'tái xuất (loại)'), ('vang1', 'vắng lâu nhất (loại)'), ('nong35', '3 lần/5 kỳ (loại)'), ('ben', 'ra đều 4 đoạn')) if n in s.get(k, ())]
+    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên'), ('chin', 'vắng 11–15'), ('g610', 'vắng 6–10 −'), ('duoi', 'cùng đuôi −'), ('lap', 'vừa ra −'), ('tuan', 'cùng thứ tuần trước −'), ('lien2', 'ra 2 kỳ liền (loại)'), ('lt3', 'ra kỳ trước & t−3 (loại)'), ('zprev', 'z kỳ trước (loại)'), ('it100', 'ít nhất 100 kỳ (loại)'), ('tx15', 'tái xuất (loại)'), ('vang1', 'vắng lâu nhất (loại)'), ('nong35', '3 lần/5 kỳ (loại)'), ('ben', 'ra đều 4 đoạn'), ('thua', 'thưa & vắng ≥15 (loại)')) if n in s.get(k, ())]
     if APP:
         if n in top_v: t.append(f'tâm linh {votes[n]} phiếu')
         if n in APP.get('appPool', []): t.append('pool app')
@@ -361,6 +364,37 @@ for W in (10, 50, 200):
     tb, p3, last = B[W]['pool']
     print(f'\nPool {A.k} (không tâm linh/app) chính nó ở {W} kỳ: TB **{tb:.2f}** số/kỳ, ≥3 số {p3:.0f}%' + (f' · 10 kỳ gần: {last}' if W == 10 else '')
           + ('' if W == 10 else ' · kỳ có ≥1/≥2/≥3/≥4 số: ' + ' / '.join(f'{v:.0f}%' for v in B[W]['dist'])))
+# ---------- Bảng số vắng lâu (≥15 kỳ) — để anh tự nhận định ----------
+def gaps_all(n):
+    h = [u for u in range(T) if n in R[u]]
+    return [b - a - 1 for a, b in zip(h, h[1:])]
+GA = {n: gaps_all(n) for n in range(1, NB + 1)}
+def hz(gl, g):   # trong các lần nghỉ đã kéo tới ≥g kỳ, bao nhiêu % ra ngay ở kỳ kế (nghỉ đúng g)
+    reach = [x for x in gl if x >= g]
+    return (sum(x == g for x in reach) / len(reach) * 100 if reach else None), len(reach)
+POOLG = [x for n in GA for x in GA[n]]
+VL = []
+for n in sorted(range(1, NB + 1), key=lambda n: -f[n]['gap']):
+    g = f[n]['gap']
+    if g < 15: continue
+    c100 = sum(n in R[u] for u in range(T - 100, T)); c200 = sum(n in R[u] for u in range(T - 200, T))
+    gl = GA[n]; po, pn = hz(gl, g); pa, _ = hz(POOLG, g)
+    long15 = sum(x >= 15 for x in gl) / max(len(gl), 1) * 100
+    thua = c200 / (200 * P) * 100
+    tl_n = votes[n] if APP else 0
+    if n in s['vang'] or n in s.get('thua', set()) or n in s.get('vang1', set()): verdict = 'Loại'
+    elif n in (rescued if APP else []): verdict = 'Cân nhắc (tâm linh mạnh)'
+    elif thua <= 85 or g >= 20: verdict = 'Nghiêng loại'
+    else: verdict = 'Theo dõi'
+    VL.append(dict(n=n, gap=g, c100=c100, c200=c200, thua=round(thua), long15=round(long15), maxg=max(gl) if gl else None,
+                   po=None if po is None else round(po), pn=pn, pa=None if pa is None else round(pa, 1), tl=tl_n, verdict=verdict))
+if VL:
+    print(f'\n### Số vắng lâu (≥15 kỳ) — bảng để anh tự nhận định\n')
+    print('| Số | Đang vắng | Ra 100 / 200 kỳ (kỳ vọng {:.0f} / {:.0f}) | Mức ra 200 kỳ | % lần nghỉ ≥15 kỳ (lịch sử) | Nghỉ dài nhất | Khi đã vắng tới mức này: ra ngay kỳ kế (của chính số / mọi số) | Tâm linh | Nhận định |'.format(100 * P, 200 * P))
+    print('|---|---|---|---|---|---|---|---|---|')
+    for v in VL:
+        print(f"| **{v['n']:02d}** | {v['gap']} | {v['c100']} / {v['c200']} | {v['thua']}% | {v['long15']}% | {v['maxg']} | {'—' if v['po'] is None else str(v['po']) + '%'} ({v['pn']} lần) / {v['pa']}% | {v['tl']} phiếu | **{v['verdict']}** |")
+
 # ---------- Khẳng định kỳ này (đúng ≥70% ở 200 kỳ) ----------
 CLR = []
 for (lab, st, fn), (lab2, r200, k200), (_, r50, _) in zip(CL_NOW, B[200]['claims'], B[50]['claims']):
@@ -411,7 +445,7 @@ if A.json:
              mmGap={k: mg[k] for k in MM} if MM else {}, linh=sorted(LINH),
              tl=dict(votes=votes, top=top_v, strong=strong, rescued=rescued, out=strong_out,
                      day=day, nm=len(APP.get('methods', []))) if APP else None,
-             sig=[dict(lab=lab, nums=sorted(s[k]), how=how, r=[B[W][k][0] for W in (10, 50, 200)]) for k, lab, how in rows])
+             vl=VL, sig=[dict(lab=lab, nums=sorted(s[k]), how=how, r=[B[W][k][0] for W in (10, 50, 200)]) for k, lab, how in rows])
     json.dump(J, open(A.json, 'w'), ensure_ascii=False)
 
 # Lưu lại gợi ý để chấm sổ khi có kết quả

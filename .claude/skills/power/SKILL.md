@@ -23,6 +23,8 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 - Luật loại vé (kỳ thật chỉ vi phạm 1–8%): trùng ≥3 số kỳ trước, toàn chẵn/lẻ, toàn nhỏ/lớn, ≥3 liên tiếp, ≥4 số cùng chục (6 số), không có số ≥2/3 dải. Các luật này giúp vé gọn, tự chúng không tăng trúng.
 - `--cu` chạy cách cũ để so; luật nào làm pool kém đi trên các kỳ đã qua thì bỏ.
 
+- **Ý anh 04/10/2026 — loại trước:** số **vắng ≥20 kỳ** và số **"lâu lâu mới ra"** (200 kỳ ra ≤85% kỳ vọng) đang **vắng ≥15** (Mega, Loto). Bảng **"Số vắng lâu (≥15 kỳ)"** in trong gợi ý + ảnh: đang vắng, ra 100/200 kỳ, mức ra, % lần nghỉ ≥15, nghỉ dài nhất, % ra ngay kỳ kế khi đã vắng tới mức này (của chính số / mọi số), tâm linh, nhận định (Loại / Nghiêng loại / Cân nhắc / Theo dõi) — để anh tự nhận định.
+
 ## Tâm linh (bắt buộc trình bày)
 - Phiếu từ 20 quẻ (`build/tamlinh.js`). Top 12 phiếu +1 điểm; **tâm linh mạnh ★** (phiếu ≥ mức của số thứ 5) +1.5 điểm.
 - **Số tâm linh mạnh bị luật vắng loại thì không loại hẳn** (được "cứu", để điểm quyết định) — anh: "tâm linh có số bị loại mà phiếu nhiều thì cần cân nhắc".

@@ -50,6 +50,8 @@ function renderBang(J){
     <div class="bg-foot">Thanh = % kỳ đúng trong 200 kỳ. Vạch trắng = phần vé còn giữ lại nếu lọc theo khẳng định đó; thanh vượt qua vạch là có dấu vết thật.</div></div>
   <div class="bg-sec"><h4>Vé gợi ý</h4>${tk}
     <div class="bg-foot">Viền đậm = số lõi · ★ nền tím = tâm linh mạnh · gạch chân = ngoài pool 20. Tổng nên trong ${J.sumRange[0]}–${J.sumRange[1]}${J.da?' (theo đà tổng)':''}.</div></div>
+  ${J.vl&&J.vl.length?`<div class="bg-sec"><h4>Số vắng lâu (≥15 kỳ)</h4><div style="overflow-x:auto;"><table class="bg-vl"><thead><tr><th>Số</th><th>Vắng</th><th>Ra 100/200 kỳ</th><th>Mức ra</th><th>Hay nghỉ ≥15</th><th>Dài nhất</th><th>Ra ngay kỳ kế*</th><th>Nhận định</th></tr></thead><tbody>${J.vl.map(v=>`<tr><td><b>${p2(v.n)}</b>${v.tl>=7?' <span class="bg-st" style="position:static">★</span>':''}</td><td>${v.gap}</td><td>${v.c100}/${v.c200}</td><td>${v.thua}%</td><td>${v.long15}%</td><td>${v.maxg}</td><td>${v.po==null?'—':v.po+'%'} <small>(${v.pn})</small></td><td class="${v.verdict==='Loại'?'vlx':v.verdict.startsWith('Nghiêng')?'vln':'vlt'}">${v.verdict}</td></tr>`).join('')}</tbody></table></div>
+    <div class="bg-foot">Mức ra = số lần ra 200 kỳ so với kỳ vọng (dưới 85% = "lâu lâu mới ra"). Hay nghỉ ≥15 = % số lần nghỉ của chính số đó dài ≥15 kỳ. *Trong lịch sử của chính số, những lần nó đã vắng tới mức hiện tại thì bao nhiêu % ra ngay kỳ kế (trong ngoặc: số lần gặp).</div></div>`:''}
   ${tlH}${mm}
   </div>`;
 }
@@ -106,5 +108,7 @@ const BANG_CSS=`.bg{--ac:#f0b429;color:var(--text,#e8ecf5);font-size:.9rem;}
 .bg-sp small{font-size:.7rem;color:var(--muted,#8b93a7);}
 .bg-chips{gap:5px;} .bg-chip{border:1px solid #7c4dcc;border-radius:12px;padding:2px 8px;font-size:.78rem;}
 .bg-chip.s{background:#7c4dcc;color:#fff;} .bg-chip small{opacity:.8;}
+.bg-vl{width:100%;border-collapse:collapse;font-size:.78rem;}.bg-vl th,.bg-vl td{padding:4px 3px;border-bottom:1px solid var(--border,#2c3550);text-align:center;white-space:nowrap;}.bg-vl th{color:var(--muted,#8b93a7);font-weight:500;}
+.vlx{color:#ff6b6b;font-weight:700;}.vln{color:#f0b429;font-weight:700;}.vlt{color:var(--muted,#8b93a7);}
 .bg-warn{margin-top:6px;padding:6px 8px;border-radius:8px;background:rgba(240,180,41,.12);border:1px solid #f0b429;font-size:.8rem;}`;
 if(typeof module!=='undefined')module.exports={renderBang,BANG_CSS};
