@@ -79,6 +79,7 @@ def signals(t):
         elif A.game == 'mega':
             sig['duoi'] = {n for n in range(1, NB + 1) if n % 10 in {x % 10 for x in last}} - last
             sig['lien2'] = R[t - 1] & R[t - 2]          # ra 2 kỳ liền → loại (đúng 92% kỳ, 100 kỳ gần)
+            if WCHM: sig['chin'] = {n for n, x in f.items() if 11 <= x['gap'] <= 15}   # thử: vắng 11–15 "chín" (04/10: 4/6 số về đều vắng 11–14)
             sig['lt3'] = R[t - 1] & R[t - 3]            # ra kỳ trước VÀ kỳ t−3 → loại (90/90/91%)
             sig['zprev'] = {max(R[t - 1])}              # số lớn nhất kỳ trước → loại (88/86/91%)
             e25 = 25 * P
@@ -136,9 +137,10 @@ def pool_of(sc, s, k):
 
 # ---------- Backtest: tỉ lệ đúng của chính từng tín hiệu ----------
 WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0.5 1').split())
+WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
-        {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])
+        {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua', 'chin'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])
 import random
 random.seed(5)
 MC = [set(random.sample(range(1, NB + 1), KB)) for _ in range(300)]

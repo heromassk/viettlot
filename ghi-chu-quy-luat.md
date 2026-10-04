@@ -356,3 +356,8 @@ Kết luận: luật loại an toàn ≥80% kỳ chỉ bỏ được ~2–3 số
 |---|---|---|---|---|---|---|---|---|---|
 | 03/10 21h | 10 12 29 33 35 · MM 07 | 1/6 (10) | 1/7 (12) | 0/7 | 3/3 bỏ đúng | 5/6 (29 về sau 15+ kỳ) | sai: tổng 119 ngoài 77–105 | 2 (10 12) | 1 số |
 | 04/10 13h | 02 19 22 32 35 · MM 04 | 0/4 | 1/7 (32) | 2/8 (22 35) | 3/3 bỏ đúng | 4/5 (19 về, vắng 15+) | sai: tổng 110 ngoài 77–106 | **3 (22 32 35)**; pool 10: 2 · tâm linh 12: **3 (19 22 32)** | 1 số |
+
+## Sổ chấm phương pháp Mega 6/45 (bắt đầu 04/10/2026; chi tiết từng luật trong app → "Sổ kiểm chứng suy luận")
+| Kỳ | Kết quả | Luật loại (đã áp dụng) | Bị loại | Pool 10 / 15 / 20 | Vé tốt nhất | Tâm linh 12 | Bao 7 anh | Ghi chú |
+|---|---|---|---|---|---|---|---|---|
+| 04/10 | 15 20 29 37 40 45 (tổng 186) | **đúng hết** (8 số bị loại, không số nào về); sổ: 24/25 luật đúng | 02 05 08 19 27 31 41 42 | 1 / 1 / 3 (15; 20 45) | 1 | 0 | 1 (15) | 4/6 số về đang vắng 11–14 kỳ (29 37 40 45) → thêm +1 điểm "vắng 11–15" cho Mega (pool 15 ở 50 kỳ 2.12→2.22). Tổng 186 > 126 đúng xu hướng hồi về trung vị. |
