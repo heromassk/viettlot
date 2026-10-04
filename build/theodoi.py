@@ -69,6 +69,17 @@ def nhip_min(R, t, NB, W, m=5):
         if mg >= 1 and cur < mg: out.add(n)
     return out
 
+def nhip_p(R, t, NB, W=100, P=80):
+    """Ý anh: trong W kỳ gần, ≥P% số lần số đó nghỉ ≥x kỳ mới ra lại (x lớn nhất thỏa, x≥1, ≥4 khoảng nghỉ); hiện mới nghỉ <x."""
+    out = set()
+    for n in range(1, NB + 1):
+        hits = [u for u in range(max(0, t - W), t) if n in R[u]]
+        gaps = sorted(b - a - 1 for a, b in zip(hits, hits[1:]))
+        if len(gaps) < 4: continue
+        x = gaps[int(len(gaps) * (1 - P / 100))]
+        if x >= 1 and t - 1 - hits[-1] < x: out.add(n)
+    return out
+
 # (id, nhãn, hàm(R, t, c, NB, KB) -> (kind, nums, k)) — kind 'atleast': kỳ tới có ≥k số trong nums; 'atmost': ≤k số
 CLAIMS = [
     ('kd_2ky', 'Có ≥1 số của 2 kỳ gần nhất', lambda R, t, c, NB, KB: ('atleast', R[t - 1] | R[t - 2], 1)),
@@ -76,6 +87,7 @@ CLAIMS = [
     ('kd_ke', 'Có ≥1 số trùng hoặc kề ±1 kỳ trước', lambda R, t, c, NB, KB: ('atleast', {m for n in R[t - 1] for m in (n - 1, n, n + 1) if 1 <= m <= NB}, 1)),
     ('kd_trung2', 'Không trùng ≥2 số với kỳ trước', lambda R, t, c, NB, KB: ('atmost', set(R[t - 1]), 1)),
     # nhóm nhiều số: chấm "đúng" khi nhóm ra ÍT hơn bình quân (tỉ lệ trúng/số < KB/NB)
+    ('nhom_nhip80', 'Nhóm "phá nhịp nghỉ" (100 kỳ: ≥80% lần nghỉ ≥x kỳ, mới nghỉ <x) ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_p(R, t, NB), 0)),
     ('nhom_nhip', 'Nhóm nhịp riêng "lúc vắng thế này chưa từng ra" ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_off(R, t, NB), 0)),
 ]
 

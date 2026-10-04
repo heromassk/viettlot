@@ -339,6 +339,9 @@ Trong cửa sổ W kỳ, số đó có ≥5 lần ra và khoảng nghỉ nhỏ n
 - **Power (W=200):** ít hơn 3/3 nhưng rất nhẹ (9.9/10.7/10.0% vs 10.9%); đúng 93/91/90% kỳ, ~0.7 số/kỳ.
 - **Mega:** không ổn định — W=100 gần đây nhóm này lại ra NHIỀU hơn (17%).
 - Thực tế x hầu hết = 1 (số chưa từng ra 2 kỳ liền trong cửa sổ); với 200 kỳ gần như số nào cũng có lúc ra liền nên luật ít khi kích hoạt.
+- **Bản đúng ý anh (không cần 100%): trong 100 kỳ gần, ≥80% số lần số đó nghỉ ≥x kỳ mới ra lại; mới nghỉ <x → kỳ này khó ra.**
+  Loto: nhóm này ra ít hơn ở cả 3 đoạn (13.2/12.9/13.3% vs 14.5–14.6%) ✔; Mega: lại ra NHIỀU hơn (14.9/13.9/13.1% vs 13.0–13.4%) ✘; Power: lẫn lộn ✘.
+  Mỗi kỳ nhóm có ~6–10 số → loại cả nhóm chỉ đúng 25–44% kỳ; từng số thì "không ra" đúng ~86–87% kỳ (Loto) nhưng phần lớn là vì số nào cũng thường không ra; lợi thật ≈ 1.3 điểm %. Dùng làm −điểm cho Loto: pool 15 không tốt hơn (2.42 → 2.34 ở 50 kỳ) → chưa áp dụng, đưa vào sổ kiểm chứng (`nhom_nhip80`).
 Đã đưa vào sổ kiểm chứng (nhipmin100, nhipmin200), chưa áp dụng.
 
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)

@@ -35,3 +35,31 @@ for W in (100, 200):
             k, mg, cur = info(T, n, W)
             if k >= m and mg is not None and mg >= 1 and cur is not None and cur < mg: now.append(f'{n:02d}(x={mg}, nghỉ {cur})')
         print(f'| W={W}, m≥{m} | **{oks[0]:.0f}%** / {oks[1]:.0f}% / {oks[2]:.0f}% | {bo / 100:.1f} | {kp:.0f}% | {" · ".join(rr)} | {", ".join(now) or "—"} |')
+
+
+# ---- Ý anh (bản đúng): không cần 100%. Trong 100 kỳ gần, ≥P% số lần số đó nghỉ ≥x kỳ mới ra lại (x lớn nhất thỏa) ----
+def xp(t, n, W, P):
+    hits = [u for u in range(max(0, t - W), t) if n in R[u]]
+    gaps = sorted(b - a - 1 for a, b in zip(hits, hits[1:]))
+    if len(gaps) < 4: return None, None
+    k = int(len(gaps) * (1 - P / 100))            # bỏ k khoảng nghỉ ngắn nhất → phần còn lại ≥P%
+    return gaps[k], t - 1 - hits[-1]
+print(f'\n## {key} — bản "≥P% số lần nghỉ ≥x kỳ" (100 kỳ gần, x lớn nhất thỏa, cần ≥4 khoảng nghỉ)\n')
+print('| P | Đúng 3 đoạn (gần→xa) | Bỏ TB/kỳ | Vé giữ lại | Tỉ lệ ra nhóm bỏ / còn lại (3 đoạn) | Kỳ tới bỏ (số: x, đang nghỉ) |\n|---|---|---|---|---|---|')
+for P in (70, 80, 90):
+    oks, rr, bo, kp = [], [], 0, 0
+    for i, (a, b) in enumerate(segs):
+        ok = h1 = n1 = h0 = n0 = 0
+        for t in range(a, b):
+            ex = set()
+            for n in range(1, NB + 1):
+                x, cur = xp(t, n, 100, P)
+                if x is not None and x >= 1 and cur < x: ex.add(n)
+            h = len(ex & R[t]); ok += not h; h1 += h; n1 += len(ex); h0 += KB - h; n0 += NB - len(ex)
+            if i == 0: bo += len(ex); kp += comb(NB - len(ex), KB) / comb(NB, KB)
+        oks.append(ok / (b - a) * 100); rr.append(f'{h1 / max(n1, 1) * 100:.1f}/{h0 / n0 * 100:.1f}')
+    now = []
+    for n in range(1, NB + 1):
+        x, cur = xp(T, n, 100, P)
+        if x is not None and x >= 1 and cur < x: now.append(f'{n:02d}({x},{cur})')
+    print(f'| ≥{P}% | **{oks[0]:.0f}%** / {oks[1]:.0f}% / {oks[2]:.0f}% | {bo / 100:.1f} | {kp:.0f}% | {" · ".join(rr)} | {" ".join(now) or "—"} |')
