@@ -38,7 +38,7 @@ function renderBang(J){
   <div class="bg-hd"><div><b>${J.name}</b> · kỳ <b>${J.next}</b></div><div class="bg-foot">Kỳ trước ${J.last}: ${J.lastRes.map(n=>ball(n,'lr')).join('')}</div></div>
   <div class="bg-sec"><h4>Pool số kỳ tới</h4>
     <div class="bg-grid" style="grid-template-columns:repeat(${cols},1fr);">${grid}</div>
-    <div class="bg-leg"><span><i class="bg-sw t10"></i>Pool 10</span><span><i class="bg-sw t15"></i>đến 15</span><span><i class="bg-sw t20"></i>đến 20</span><span><i class="bg-sw tx"></i>bị loại (vắng ≥ ngưỡng)</span><span>★ tâm linh mạnh</span><span>☆ tâm linh</span><span><i class="bg-hot"></i> nóng</span><span><i class="bg-sw lastd"></i>vừa ra</span>${linh.size?'<span>✦ linh cảm</span>':''}</div>
+    <div class="bg-leg"><span><i class="bg-sw t10"></i>Pool 10</span><span><i class="bg-sw t15"></i>đến 15</span><span><i class="bg-sw t20"></i>đến 20</span><span><i class="bg-sw tx"></i>bị loại (vắng lâu / luật loại)</span><span>★ tâm linh mạnh</span><span>☆ tâm linh</span><span><i class="bg-hot"></i> nóng</span><span><i class="bg-sw lastd"></i>vừa ra</span>${linh.size?'<span>✦ linh cảm</span>':''}</div>
     <div class="bg-row bg-pool"><b>Pool 10:</b> ${rk.slice(0,10).map(n=>ball(n,'t10')).join('')}</div>
     <div class="bg-row bg-pool"><b>+ đến 15:</b> ${rk.slice(10,15).map(n=>ball(n,'t15')).join('')}</div>
     <div class="bg-row bg-pool"><b>+ đến 20:</b> ${rk.slice(15,20).map(n=>ball(n,'t20')).join('')}</div>

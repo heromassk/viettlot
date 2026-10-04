@@ -8,7 +8,8 @@ for f in glob.glob(os.path.join(B,'goiy_latest','*.json')):
     j=json.load(open(f,encoding='utf-8'));GO[{'power':'power655','mega':'mega645','loto':'loto535'}[j['game']]]=j
 bj=open(os.path.join(B,'bang.js'),encoding='utf-8').read()
 css=bj[bj.index('const BANG_CSS=`')+16:bj.index('`;',bj.index('const BANG_CSS=`'))]
-t=t.replace('/*GOIY*/',json.dumps(GO,ensure_ascii=False)).replace('/*BANGJS*/',bj).replace('/*BANGCSS*/',css)
+TD=json.load(open(os.path.join(B,'theodoi.json'),encoding='utf-8')) if os.path.exists(os.path.join(B,'theodoi.json')) else {}
+t=t.replace('/*THEODOI*/',json.dumps(TD,ensure_ascii=False)).replace('/*GOIY*/',json.dumps(GO,ensure_ascii=False)).replace('/*BANGJS*/',bj).replace('/*BANGCSS*/',css)
 full=t.replace('/*DATA*/',open(os.path.join(B,'all_data.json')).read()).replace('/*LUNAR*/',open(os.path.join(B,'lunar.js'),encoding='utf-8').read())
 open(os.path.join(ROOT,'index_loto.html'),'w',encoding='utf-8').write(full)
 a=full.replace('<!DOCTYPE html>\n<html lang="vi">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n','').replace('</head>\n<body>\n','').replace('</body>\n</html>\n','')

@@ -29,6 +29,14 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 - Script in bảng **Tâm linh**: số, phiếu, quẻ chọn, trạng thái (trong pool #, hay ngoài pool vì luật nào), **dãy tâm linh** (top phiếu), cảnh báo **tâm linh mạnh ngoài pool**, và thêm **vé 6 "cân nhắc tâm linh"** (vé 1 đổi số điểm thấp sang số tâm linh mạnh ngoài pool).
 - Luôn đưa phần này cho anh cùng pool; khi chấm sổ ghi riêng: tâm linh top 12 trúng mấy, dãy tâm linh trúng mấy, vé 6 trúng mấy.
 
+- Luật loại mới (04/10/2026, `build/loai_nho.py`): bỏ **số ra ít nhất 100 kỳ** (đúng 93/93/91% kỳ).
+
+## Sổ kiểm chứng suy luận (bắt buộc, theo dõi lâu dài)
+- `build/theodoi.py` giữ `build/theodoi.json`: mỗi kỳ **trước khi quay** chụp số mà từng luật loại/khẳng định (cả luật đang áp dụng ● và luật đang theo dõi); **khi có kết quả** chấm đúng/sai từng luật + gợi ý đã đưa (pool 10/15/20, vé tốt nhất, tâm linh, MM).
+- `build/add_result.py` **tự gọi** `theodoi.cham` (trước khi thêm kết quả) rồi `theodoi.snap` (chụp cho kỳ tới) → chỉ cần nhập kết quả như cũ. Kiểm tra dòng in "cham …: x/y luật đúng".
+- App hiện thẻ **"Sổ kiểm chứng suy luận"**: % đúng từng luật, 10 kỳ gần (chấm xanh/đỏ), số bị loại kỳ tới, từng kỳ đã chấm. Khi báo kết quả cho anh, nêu luật nào đúng/sai kỳ này và tỉ lệ tích lũy.
+- Luật mới: thêm vào `RULES`/`CLAIMS` trong `build/theodoi.py` (giữ id cũ), cập nhật `APPLIED` khi đưa luật vào gợi ý, rồi `python3 build/theodoi.py snap <game>`.
+
 ## Quy trình
 1. **Anh báo kết quả** → `python3 build/add_result.py power "dd/mm/yyyy" n1 .. n6 ĐB` (ghi all_data.json, meta index.html, CSV rồi tự build app).
    Rồi **chấm sổ**: đọc dòng `"game": "power"` cuối trong `build/goiy_log.jsonl` (bản đã đưa anh) → so pool 10/15/20, từng tín hiệu, 5 vé, tâm linh top 12, số linh cảm → thêm 1 dòng vào bảng **Sổ chấm phương pháp Power** trong `ghi-chu-quy-luat.md`.

@@ -71,6 +71,10 @@ input.n{width:52px;text-align:center;}
   <summary><h2>Gợi ý kỳ tới</h2></summary>
   <div id="bangIn"></div>
 </details>
+<details class="card" id="tdCard">
+  <summary><h2>Sổ kiểm chứng suy luận</h2></summary>
+  <div id="tdIn"></div>
+</details>
 <details class="card" id="myCard" open>
   <summary><h2>Dãy của anh</h2></summary>
   <div id="myBox" class="sum"></div>
@@ -259,6 +263,23 @@ input.n{width:52px;text-align:center;}
 <script>
 const ALL=/*DATA*/;
 const GOIY=/*GOIY*/;
+const THEODOI=/*THEODOI*/;
+function renderTD(){const el=$('tdIn');if(!el)return;const D=THEODOI[GAME],p2=n=>String(n).padStart(2,'0'),js=a=>a&&a.length?a.map(p2).join(' '):'—';
+  if(!D){el.innerHTML='<div class="foot">Chưa có dữ liệu.</div>';return;}
+  const H=D.hist||[],P=D.pending,ids=[];const by={};
+  H.forEach(h=>h.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[]};ids.push(r.id);}by[r.id].seq.push(r.ok);by[r.id].applied=r.applied;}));
+  if(P)P.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[]};ids.push(r.id);}by[r.id].applied=r.applied;});
+  const dot=ok=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 1px;background:${ok?'var(--good)':'var(--bad)'};"></span>`;
+  const rows=ids.map(id=>{const r=by[id],n=r.seq.length,ok=r.seq.filter(Boolean).length,pc=n?Math.round(ok/n*100):null;
+    const now=P&&P.rules.find(x=>x.id===id);const nowTxt=now?(now.kind==='loai'?(now.nums.length?'bỏ '+js(now.nums):'—'):`${now.nums.length} số`):'—';
+    return `<tr><td class="l">${r.applied?'<b style="color:var(--accent)">●</b> ':''}${r.lab}</td><td>${n?`<b style="color:${pc>=85?'var(--good)':pc>=70?'var(--accent)':'var(--bad)'}">${pc}%</b> <small>(${ok}/${n})</small>`:'<small>chưa chấm</small>'}</td><td class="l">${r.seq.slice(-10).map(dot).join('')}</td><td class="l"><small>${nowTxt}</small></td></tr>`;}).join('');
+  const G=H.filter(h=>h.goiy).map(h=>h.goiy),av=k=>G.length?(G.reduce((a,g)=>a+g[k],0)/G.length).toFixed(2):'—';
+  const gy=G.length?`<div class="sum" style="margin:8px 0;">Gợi ý đã đưa anh · ${G.length} kỳ: pool 10 trúng TB <b>${av('p10')}</b> · pool 15 <b>${av('p15')}</b> · pool 20 <b>${av('p20')}</b> · vé tốt nhất TB <b>${av('best')}</b> (≥3 số: ${G.filter(g=>g.best>=3).length} kỳ) · tâm linh top 12 TB <b>${av('tl')}</b></div>`:'';
+  const det=H.slice().reverse().slice(0,30).map(h=>`<details style="margin:4px 0;"><summary class="lbl" style="cursor:pointer;">${h.date}: <b style="color:var(--text)">${js(h.res)}</b>${h.extra!=null?' · MM '+p2(h.extra):''} — ${h.rules.filter(r=>r.ok).length}/${h.rules.length} luật đúng${h.goiy?` · pool15 ${h.goiy.p15} · vé tốt nhất ${h.goiy.best}`:''}</summary>
+    <div class="foot" style="line-height:1.6;">${h.rules.map(r=>`${r.ok?'✔':'✘'} ${r.lab}${r.kind==='loai'?`: bỏ ${js(r.nums)}${r.hit.length?` → về <b style="color:var(--bad)">${js(r.hit)}</b>`:''}`:` → trúng ${r.hit.length}`}`).join('<br>')}</div></details>`).join('');
+  el.innerHTML=`<div class="foot" style="margin-top:0;">Mỗi kỳ, trước khi quay, app chụp lại số mà từng luật loại (hoặc khẳng định). Khi có kết quả thì chấm đúng/sai và lưu ở đây để theo dõi lâu dài. <b style="color:var(--accent)">●</b> = luật đang áp dụng trong gợi ý. Chấm luật loại: kỳ đúng = không số bị loại nào về.</div>
+    ${gy}<div class="tw"><table><thead><tr><th class="l">Luật</th><th>Đúng</th><th class="l">10 kỳ gần</th><th class="l">Kỳ tới${P?' (sau '+P.after+')':''}</th></tr></thead><tbody>${rows}</tbody></table></div>
+    ${H.length?`<h4 style="margin:10px 0 4px;">Từng kỳ đã chấm</h4>${det}`:`<div class="foot">Chưa có kỳ nào được chấm — sổ bắt đầu từ kỳ tới.</div>`}`;}
 /*BANGJS*/
 function renderBangCard(){const el=$('bangIn');if(!el)return;const J=GOIY[GAME];let h=renderBang(J);
   if(J&&S.M&&S.M.nd&&J.next!==S.M.nd)h=`<div class="bg-warn" style="margin-bottom:8px;">Bảng này cho kỳ ${J.next}; kỳ tới của app là ${S.M.nd}. Bảng sẽ cập nhật khi chạy lại gợi ý.</div>`+h;
@@ -384,7 +405,7 @@ function renderAll(){
   $('status').textContent=`Dữ liệu ${M.all.length} kỳ (${M.all[0].date} → ${M.all[M.all.length-1].date}) · đang nghiên cứu ${M.W} kỳ gần nhất · kỳ tới: ${fmt(M.nd)}`;
   $('winBtns').innerHTML=[100,200,300,500,1000].map(n=>`<span class="chip${n===S.win?' on':''}" data-n="${n}">${n>=M.all.length&&n===1000?'tất cả':n}</span>`).join('');
   $('winBtns').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.win=+e.dataset.n;renderAll();});
-  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
+  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();renderTD();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
 }
 function renderAdd(){
   const a=ex();$('addList').innerHTML=a.length?`<div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ đã thêm</th><th class="l">Số</th><th></th></tr></thead><tbody>${a.map((e,i)=>`<tr><td class="l">${e.date}</td><td class="l">${e.r.map(n=>`<span class="b">${p2(n)}</span>`).join('')}${GC.extra&&e.lk!=null?` <span class="b lk">${p2(e.lk)}</span>`:''}</td><td><button class="btn" data-del="${i}">Xóa</button></td></tr>`).join('')}</tbody></table></div>`:'';

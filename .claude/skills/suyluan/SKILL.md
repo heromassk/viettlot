@@ -58,7 +58,7 @@ Muốn thử ý mới: thêm luật vào `RULES` trong `build/suyluan.py` (hàm 
    - **Không nên loại** gì (luật thất bại, nhóm hay quay lại).
    - **Áp vào kỳ tới**: số cụ thể bị loại / nên giữ; nêu xung đột với lõi vé, với tâm linh mạnh.
    - Đề xuất thay đổi cho skill `power` / `mega` / `loto` (luật, trọng số) + đo pool trước/sau bằng `goiy.py`.
-4. **Chỉ áp vào skill gợi ý khi anh đồng ý.** Khi áp: sửa `build/goiy.py` (tín hiệu + `SIGS`, nhãn trong `rows`/`why`), cập nhật SKILL.md của trò đó, chạy lại gợi ý kỳ đang chờ (thay dòng tương ứng trong `build/goiy_log.jsonl`), `build/chup.js` gửi ảnh bảng, `build/assemble.py` → `build/check_page.js` → đăng app cùng URL.
+4. **Luật mới nào cũng đưa vào sổ kiểm chứng** (`build/theodoi.py`: thêm vào RULES/CLAIMS, `snap`) để chấm dần từ kỳ tới — kể cả luật chưa áp dụng. **Chỉ áp vào skill gợi ý khi anh đồng ý** (và thêm id vào `APPLIED`). Khi áp: sửa `build/goiy.py` (tín hiệu + `SIGS`, nhãn trong `rows`/`why`), cập nhật SKILL.md của trò đó, chạy lại gợi ý kỳ đang chờ (thay dòng tương ứng trong `build/goiy_log.jsonl`), `build/chup.js` gửi ảnh bảng, `build/assemble.py` → `build/check_page.js` → đăng app cùng URL.
 5. Ghi kết quả vào `ghi-chu-quy-luat.md` (mục mới, ngày, script, số liệu, luật dùng/bỏ). Commit + push.
 
 ## Đã biết (cập nhật khi có nghiên cứu mới)
