@@ -22,13 +22,19 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 - Luật loại vé (kỳ thật chỉ vi phạm 1–8%): trùng ≥3 số kỳ trước, toàn chẵn/lẻ, toàn nhỏ/lớn, ≥3 liên tiếp, ≥4 số cùng chục (6 số), không có số ≥2/3 dải. Các luật này giúp vé gọn, tự chúng không tăng trúng.
 - `--cu` chạy cách cũ để so; luật nào làm pool kém đi trên các kỳ đã qua thì bỏ.
 
+## Tâm linh (bắt buộc trình bày)
+- Phiếu từ 20 quẻ (`build/tamlinh.js`). Top 12 phiếu +1 điểm; **tâm linh mạnh ★** (phiếu ≥ mức của số thứ 5) +1.5 điểm.
+- **Số tâm linh mạnh bị luật vắng loại thì không loại hẳn** (được "cứu", để điểm quyết định) — anh: "tâm linh có số bị loại mà phiếu nhiều thì cần cân nhắc".
+- Script in bảng **Tâm linh**: số, phiếu, quẻ chọn, trạng thái (trong pool #, hay ngoài pool vì luật nào), **dãy tâm linh** (top phiếu), cảnh báo **tâm linh mạnh ngoài pool**, và thêm **vé 6 "cân nhắc tâm linh"** (vé 1 đổi số điểm thấp sang số tâm linh mạnh ngoài pool).
+- Luôn đưa phần này cho anh cùng pool; khi chấm sổ ghi riêng: tâm linh top 12 trúng mấy, dãy tâm linh trúng mấy, vé 6 trúng mấy.
+
 ## Quy trình
 1. **Anh báo kết quả** → `python3 build/add_result.py mega "dd/mm/yyyy" n1 .. n6` (ghi all_data.json, meta index.html, CSV rồi tự build app).
    Rồi **chấm sổ**: đọc dòng `"game": "mega"` cuối trong `build/goiy_log.jsonl` (bản đã đưa anh) → so pool 10/15/20, từng tín hiệu, 5 vé, tâm linh top 12, số linh cảm → thêm 1 dòng vào bảng **Sổ chấm phương pháp Mega (tạo bảng nếu chưa có, cùng cột như sổ Power)** trong `ghi-chu-quy-luat.md`.
    Mạng chặn các trang kết quả Vietlott → không tự tra được; nếu anh chưa đưa số thì hỏi anh.
 2. **Phiếu tâm linh + pool app + PP tốt nhất 50 kỳ**: `node build/tamlinh.js mega > <scratchpad>/tl_mega.json` (~30 giây).
 3. **Gợi ý**: `python3 build/goiy.py mega --app <scratchpad>/tl_mega.json --save [--linh ..] [--G 20] [--k 15]`
-4. **Trình bày — LUÔN đưa pool ra**: Pool 10 / 15 / 20, bảng xếp hạng từng số (điểm, cơ sở, c10/c20, vắng), 5 vé (lõi + vệ tinh, trải), số nóng ngoài pool, tỉ lệ của chính pool ở 10/50/200 kỳ. Kèm chấm kỳ vừa rồi nếu có.
+4. **Trình bày — LUÔN đưa pool ra**: Pool 10 / 15 / 20, bảng xếp hạng từng số (điểm, cơ sở, c10/c20, vắng), 5 vé (lõi + vệ tinh, trải) + vé 6 cân nhắc tâm linh, bảng tâm linh, số nóng ngoài pool, tỉ lệ của chính pool ở 10/50/200 kỳ. Kèm chấm kỳ vừa rồi nếu có.
 5. **Đăng lại app** khi dữ liệu đổi: `node build/check_page.js` (phải 0 lỗi) → Artifact publish `build/nghien-cuu-loto.html` lên **cùng URL** https://claude.ai/artifact/X8ZmKZJ3RGDKZF7j8wbxFr (giữ capabilities db + downloads; dữ liệu draws/preds/mine được giữ).
 6. **Commit + push** lên nhánh đang làm.
 

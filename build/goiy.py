@@ -151,6 +151,15 @@ if APP:
     votes = APP['votes']
     top_v = sorted(range(1, NB + 1), key=lambda n: (-votes[n], n))[:12]
     for n in top_v: extra[n] = extra.get(n, 0) + 1
+    v5 = sorted(votes[1:], reverse=True)[4]
+    strong = [n for n in top_v if votes[n] >= v5]            # tâm linh mạnh: phiếu ≥ mức của số thứ 5
+    for n in strong: extra[n] += 0.5
+    # Tâm linh mạnh mà bị luật vắng loại → không loại hẳn, để điểm quyết định (anh: "cần cân nhắc")
+    rescued = sorted(set(strong) & s['vang'])
+    s['vang'] = s['vang'] - set(rescued)
+    by_m = {}
+    for name, nums in APP.get('methods', []):
+        for n in nums: by_m.setdefault(n, []).append(name)
     for n in APP.get('appPool', []): extra[n] = extra.get(n, 0) + 0.5
     b15 = (APP.get('best50') or {}).get('15') or {}
     for n in b15.get('pool', []): extra[n] = extra.get(n, 0) + 0.5
@@ -245,10 +254,34 @@ print('| # | Số | Điểm | Cơ sở | c10/c20 | Vắng |\n|---|---|---|---|--
 for i, n in enumerate(rank, 1):
     print(f"| {i}{' ●' if i <= A.k else ''} | **{n:02d}** | {sc[n]:.1f} | {why(n)} | {f[n]['c10']}/{f[n]['c20']} | {f[n]['gap']} |")
 if hot_out: print(f'\n⚠️ Số nóng nằm ngoài pool: {fm(hot_out)}')
+if APP:
+    print(f'\n### Tâm linh — {len(APP.get("methods", []))} quẻ bỏ phiếu\n')
+    print('| Số | Phiếu | Quẻ chọn (vài quẻ) | Trạng thái |\n|---|---|---|---|')
+    def state(n):
+        if n in pool: return f'trong pool #{pool.index(n) + 1}'
+        why_out = [lab for k, lab in (('kho', 'khó ra'), ('g610', 'vắng 6–10'), ('duoi', 'cùng đuôi kỳ trước'), ('lap', 'vừa ra kỳ trước')) if n in s.get(k, ())]
+        if n in s['vang']: why_out.append(f"bị loại: vắng {f[n]['gap']} kỳ")
+        return '**ngoài pool**' + (f" ({', '.join(why_out)})" if why_out else ' (điểm dấu vết thấp)') + (f' · hạng {rank.index(n) + 1}' if n in rank else '')
+    for n in top_v:
+        tag = ' ★' if n in strong else ''
+        res = ' · *đã cứu khỏi luật vắng*' if n in rescued else ''
+        print(f"| **{n:02d}**{tag} | {votes[n]} | {', '.join(by_m.get(n, [])[:3])}{'…' if len(by_m.get(n, [])) > 3 else ''} | {state(n)}{res} |")
+    day = sorted(sorted(range(1, NB + 1), key=lambda n: (-votes[n], n))[:KB])
+    print(f'\nDãy tâm linh (top {KB} phiếu): **{fm(day)}**  ·  ★ = tâm linh mạnh (phiếu ≥ {v5}), +1.5 điểm; top 12 khác +1 điểm')
+    strong_out = [n for n in strong if n not in pool]
+    if strong_out:
+        print(f'\n⚠️ **Tâm linh mạnh nằm ngoài pool: {fm(strong_out)}** — cần cân nhắc (xem vé thay thế bên dưới).')
 for W in (10, 50, 200):
     tb, p3, last = B[W]['pool']
     print(f'\nPool {A.k} (không tâm linh/app) chính nó ở {W} kỳ: TB **{tb:.2f}** số/kỳ, ≥3 số {p3:.0f}%' + (f' · 10 kỳ gần: {last}' if W == 10 else ''))
-print(f'\n### 5 vé (lõi {fm(core)} + vệ tinh)\n')
+if APP and strong_out:   # vé thay thế: vé 1, đổi số điểm thấp nhất (không phải lõi) bằng tâm linh mạnh ngoài pool
+    alt = list(tickets[0][1])
+    for n in sorted(strong_out, key=lambda n: -votes[n])[:2]:
+        low = min((x for x in alt if x not in core and x not in strong_out), key=lambda x: sc[x], default=None)
+        if low is None: break
+        alt[alt.index(low)] = n
+    tickets.append(('cân nhắc tâm linh (thay thế vé 1)', sorted(alt), 0))
+print(f'\n### {len(tickets)} vé (lõi {fm(core)} + vệ tinh)\n')
 for i, (kind, tk, lv) in enumerate(tickets, 1):
     note = RELAX[lv] if lv < 3 else 'không vé nào hợp lệ, lấy theo điểm'
     out = [n for n in tk if n not in pool]
@@ -270,7 +303,7 @@ if A.game == 'loto':
 # Lưu lại gợi ý để chấm sổ khi có kết quả
 if A.save:
     rec = dict(game=A.game, next=nd, last=D['dates'][-1], pool=sorted(pool), rank=rank, core=core,
-               tickets=[tk for _, tk, _ in tickets], tamlinh=sorted(top_v) if APP else [], linh=sorted(LINH),
+               tickets=[tk for _, tk, _ in tickets], tamlinh=sorted(top_v) if APP else [], tl_strong=sorted(strong) if APP else [], tl_rescued=rescued if APP else [], linh=sorted(LINH),
                signals={k: sorted(v) for k, v in s.items()}, sum_range=[SLO, SHI], mm=MM)
     with open(os.path.join(HERE, 'goiy_log.jsonl'), 'a') as fo:
         fo.write(json.dumps(rec, ensure_ascii=False) + '\n')
