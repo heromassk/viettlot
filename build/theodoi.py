@@ -133,6 +133,11 @@ def cham(game, date, nums, extra=None):
                                best=max((len(set(t) & res) for t in last['tickets']), default=0),
                                tl=len(set(last.get('tamlinh', [])) & res), core=sorted(set(last.get('core', [])) & res),
                                mm=(extra in last.get('mm', [])) if (extra is not None and last.get('mm')) else None)
+    va = os.path.join(HERE, 've_anh.jsonl')   # vé anh đã mua
+    if os.path.exists(va):
+        mine = [json.loads(l) for l in open(va, encoding='utf-8') if l.strip()]
+        mine = [m for m in mine if m['game'] == game and m['date'] == date]
+        if mine: rec['ve_anh'] = [dict(x=m['x'], mm=m.get('mm'), hit=sorted(set(m['x']) & res), mmhit=(m.get('mm') == extra) if m.get('mm') is not None else None) for m in mine]
     g['hist'] = [h for h in g['hist'] if h['date'] != date] + [rec]
     g.pop('pending', None)
     json.dump(db, open(FILE, 'w', encoding='utf-8'), ensure_ascii=False)
