@@ -313,6 +313,13 @@ Cách chấm theo ý anh: mỗi luật loại được chấm theo TỪNG KỲ (
 Không đứng được: số lộn, chạm tổng, ±2, nguyên tố (nhóm số), chia hết 3, cùng vị trí ±1, hàng chục; hồi về trung vị của u, z (≈ vé giữ lại).
 Lưu ý: "hồi về trung vị" phải tính kỳ bằng nhau là SAI, và luôn kèm cột vé giữ lại — nếu không sẽ thấy tỉ lệ cao giả (90%+).
 
+## Luật loại nhỏ kiểu "bỏ số vắng lâu" — 04/10/2026 (`build/loai_nho.py`, 3 đoạn 100 kỳ, chấm theo từng kỳ)
+Mỗi luật chỉ bỏ ~1 số/kỳ. ✔ = đúng ≥85% cả 3 đoạn và ≥ vé giữ lại.
+- **Mega:** ra 2 kỳ liền 92/92/91% (đang dùng); ra kỳ trước VÀ kỳ t−3 90/90/91%; số lớn nhất (z) kỳ trước 88/86/91%; số ra nhiều nhất 100 kỳ 90/87/90% (ngược với cộng điểm "ra đều 4 đoạn" — theo dõi). Theo dõi: số vắng lâu nhất 92/85/90%, ra 3 lần/5 kỳ 92/94/87%.
+- **Power:** số ra ít nhất 100 kỳ 93/93/91% (hợp thuyết bi khó ra). Theo dõi: ra 3 lần/5 kỳ 96/96/91%, ra kỳ trước & t−3 93/90/93%, z kỳ trước 91/89/88%.
+- **Loto:** số "tái xuất" sau vắng ≥15: 96/93/97%, ≥10: 92/88/91%; số vắng lâu nhất 89/90/89%; ra 3 lần/5 kỳ 92/95/91%; u và z kỳ trước 86–91%; ra cả t−3 & t−6 96/97/91%.
+Chênh với vé giữ lại chỉ 1–5 điểm — đúng kiểu "cơ sở nhỏ, ổn định".
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
