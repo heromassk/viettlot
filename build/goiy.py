@@ -27,6 +27,7 @@ key, NB, KB, NAME = GAMES[A.game]
 G = A.G or (15 if A.game == 'loto' else 20)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
 R = [set(r) for r in D['res']]          # cũ -> mới
+SES = ['13' if '13h' in x else '21' for x in D['dates']] + ['13' if '21h' in D['dates'][-1] else '21']
 T = len(R)
 APP = json.load(open(A.app)) if A.app else None
 LINH = {int(x) for x in A.linh.replace(' ', ',').split(',') if x.strip()}
@@ -55,13 +56,35 @@ def signals(t):
     de = {n for n, x in f.items() if x['z'] > 1}
     kho = {n for n, x in f.items() if x['z'] < -1.5}
     vang = {n for n, x in f.items() if x['gap'] >= G}
-    return f, dict(hot=hot, ke=ke, de=de, kho=kho, vang=vang)
+    sig = dict(hot=hot, ke=ke, de=de, kho=kho, vang=vang)
+    if A.game == 'loto':   # dấu vết riêng Loto (máy tính quay): chuyển kỳ + nóng cùng phiên
+        sig['chuyen'] = top8(follow(t))
+        ph = SES[t]
+        same = [u for u in range(max(0, t - 200), t) if SES[u] == ph][-100:]
+        sig['phien'] = top8({n: sum(n in R[u] for u in same) for n in range(1, NB + 1)})
+    return f, sig
+
+
+def top8(c):
+    return set(sorted(c, key=lambda n: (-c[n], n))[:8])
+
+
+def follow(t):
+    """Số a ở kỳ t-1 → các số hay ra ngay sau a trong lịch sử trước t."""
+    c = {n: 0 for n in range(1, NB + 1)}
+    last = R[t - 1]
+    for u in range(1, t):
+        k = len(R[u - 1] & last)
+        if k:
+            for b in R[u]: c[b] += k
+    return c
 
 
 def score(f, s, extra=None):
     sc = {}
     for n in range(1, NB + 1):
         v = 2 * (n in s['hot']) + 1 * (n in s['ke']) + 1 * (n in s['de']) - 1.5 * (n in s['kho'])
+        v += 1.5 * (n in s.get('chuyen', ())) + 1 * (n in s.get('phien', ()))
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
@@ -75,8 +98,9 @@ def pool_of(sc, s, k):
 
 
 # ---------- Backtest: tỉ lệ đúng của chính từng tín hiệu ----------
+SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ())
 def backtest(W):
-    acc = {k: [0, 0] for k in ('hot', 'ke', 'de', 'kho', 'vang')}   # [số trúng / số bị loại đúng, cỡ tập]
+    acc = {k: [0, 0] for k in SIGS}   # [số trúng / số bị loại đúng, cỡ tập]
     pool_h = []
     for t in range(T - W, T):
         f, s = signals(t)
@@ -104,7 +128,7 @@ srt = sorted(sums[-200:])
 q25, q75 = srt[50], srt[150]
 last10 = sums[-10:]; m10 = sum(last10) / 10
 sd10 = math.sqrt(sum((x - m10) ** 2 for x in last10) / 9)
-DA = c50 > 0.2
+DA = c50 > 0.2 and A.game != 'loto'   # Loto: đà tổng không có dấu vết (nghiên cứu 04/10)
 SLO, SHI = (int(m10 - sd10), int(m10 + sd10)) if DA else (q25, q75)
 
 # ---------- Hiện tại ----------
@@ -169,6 +193,9 @@ rows = [('hot', 'Nóng (c10≥3 hoặc c20≥2×kỳ vọng)', 'tỉ lệ ra/s�
         ('de', 'Bóng dễ ra (z200>1)', 'tỉ lệ ra/số'),
         ('kho', 'Bóng khó ra (z200<−1.5)', 'loại đúng'),
         ('vang', f'Vắng ≥{G} kỳ (bỏ khỏi pool)', 'loại đúng')]
+if A.game == 'loto':
+    rows += [('chuyen', 'Chuyển kỳ (số hay theo sau số kỳ trước), top 8', 'tỉ lệ ra/số'),
+             ('phien', 'Nóng cùng phiên 100 kỳ, top 8', 'tỉ lệ ra/số')]
 print('| Tín hiệu | Số hiện tại | Đo bằng | 10 kỳ | 50 kỳ | 200 kỳ |\n|---|---|---|---|---|---|')
 for k, lab, how in rows:
     print(f'| {lab} | {fm(s[k])} | {how} | ' + ' | '.join(pc(B[W][k][0]) for W in (10, 50, 200)) + ' |')
@@ -183,7 +210,7 @@ print(f'\n### Pool {A.k} điểm đồng thuận\n\n**{fm(pool)}**\n')
 rank = pool_of(sc, s, min(20, NB - len(s['vang'])))
 print(f"Pool 10: **{fm(rank[:10])}**  ·  Pool 20: {fm(rank[:20])}\n")
 def why(n):
-    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra')) if n in s[k]]
+    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên')) if n in s.get(k, ())]
     if APP:
         if n in top_v: t.append(f'tâm linh {votes[n]} phiếu')
         if n in APP.get('appPool', []): t.append('pool app')
@@ -203,10 +230,23 @@ for i, (kind, tk, lv) in enumerate(tickets, 1):
     out = [n for n in tk if n not in pool]
     print(f'{i}. **{fm(tk)}** — {kind}, tổng {sum(tk)}' + ('' if lv == 0 else f' _({note}' + (f': {fm(out)}' if out else '') + ')_'))
 
+# Số May Mắn Loto: xu hướng cân bằng → 3 số vắng lâu nhất
+MM = []
+if A.game == 'loto':
+    LK = D['lk']
+    mg = {k: next((g for g in range(len(LK)) if LK[-1 - g] == k), len(LK)) for k in range(1, 13)}
+    MM = sorted(mg, key=lambda k: (-mg[k], k))[:3]
+    hm = []
+    for t in range(len(LK) - 200, len(LK)):
+        g = {k: next((x for x in range(t) if LK[t - 1 - x] == k), t) for k in range(1, 13)}
+        hm.append(LK[t] in sorted(g, key=lambda k: (-g[k], k))[:3])
+    print(f'\n### Số May Mắn (3 số vắng lâu nhất)\n\n**{fm(MM)}** — vắng ' + ', '.join(f'{k:02d}: {mg[k]} kỳ' for k in MM)
+          + f'  ·  chính cách này trúng {sum(hm[-50:]) * 2}% ở 50 kỳ, {sum(hm) / 2:.0f}% ở 200 kỳ')
+
 # Lưu lại gợi ý để chấm sổ khi có kết quả
 if A.save:
     rec = dict(game=A.game, next=nd, last=D['dates'][-1], pool=sorted(pool), rank=rank, core=core,
                tickets=[tk for _, tk, _ in tickets], tamlinh=sorted(top_v) if APP else [], linh=sorted(LINH),
-               signals={k: sorted(v) for k, v in s.items()}, sum_range=[SLO, SHI])
+               signals={k: sorted(v) for k, v in s.items()}, sum_range=[SLO, SHI], mm=MM)
     with open(os.path.join(HERE, 'goiy_log.jsonl'), 'a') as fo:
         fo.write(json.dumps(rec, ensure_ascii=False) + '\n')
