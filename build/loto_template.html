@@ -271,7 +271,7 @@ function renderTD(){const el=$('tdIn');if(!el)return;const D=THEODOI[GAME],p2=n=
   if(P)P.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[]};ids.push(r.id);}by[r.id].applied=r.applied;});
   const dot=ok=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 1px;background:${ok?'var(--good)':'var(--bad)'};"></span>`;
   const rows=ids.map(id=>{const r=by[id],n=r.seq.length,ok=r.seq.filter(Boolean).length,pc=n?Math.round(ok/n*100):null;
-    const now=P&&P.rules.find(x=>x.id===id);const nowTxt=now?(now.kind==='loai'?(now.nums.length?'bỏ '+js(now.nums):'—'):`${now.nums.length} số`):'—';
+    const now=P&&P.rules.find(x=>x.id===id);const nowTxt=now?(now.kind==='loai'?(now.nums.length?'bỏ '+js(now.nums):'—'):now.kind==='nhomit'?`nhóm ${js(now.nums)}`:`${now.nums.length} số`):'—';
     return `<tr><td class="l">${r.applied?'<b style="color:var(--accent)">●</b> ':''}${r.lab}</td><td>${n?`<b style="color:${pc>=85?'var(--good)':pc>=70?'var(--accent)':'var(--bad)'}">${pc}%</b> <small>(${ok}/${n})</small>`:'<small>chưa chấm</small>'}</td><td class="l">${r.seq.slice(-10).map(dot).join('')}</td><td class="l"><small>${nowTxt}</small></td></tr>`;}).join('');
   const G=H.filter(h=>h.goiy).map(h=>h.goiy),av=k=>G.length?(G.reduce((a,g)=>a+g[k],0)/G.length).toFixed(2):'—';
   const gy=G.length?`<div class="sum" style="margin:8px 0;">Gợi ý đã đưa anh · ${G.length} kỳ: pool 10 trúng TB <b>${av('p10')}</b> · pool 15 <b>${av('p15')}</b> · pool 20 <b>${av('p20')}</b> · vé tốt nhất TB <b>${av('best')}</b> (≥3 số: ${G.filter(g=>g.best>=3).length} kỳ) · tâm linh top 12 TB <b>${av('tl')}</b></div>`:'';

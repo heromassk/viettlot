@@ -25,6 +25,12 @@ Việc đầu tiên khi chạy skill: dùng AskUserQuestion hỏi **áp dụng c
 3. **Hình dạng dãy**: to/nhỏ, chẵn/lẻ, tổng, cặp liền nhau, hàng chục, độ trải, khe lớn nhất, AC, cùng đuôi… → tự nghiên cứu, gộp thành **khuôn tối ưu** (đúng nhiều kỳ, vé giữ lại ít).
 Với mỗi mục: đưa con số "đánh đổi" — % kỳ đúng (an toàn) đổi lấy bao nhiêu thu hẹp (số bị bỏ / vé giữ lại). Đề xuất mức em thấy đáng nhất.
 
+## Tự nghĩ thêm (bắt buộc mỗi lần chạy)
+Ngoài các luật có sẵn, tự đặt câu hỏi theo kiểu anh hay nghĩ và thử luôn:
+- **Nhịp riêng từng số** (khoảng cách giữa các lần ra của CHÍNH số đó; ra – vắng k – ra; chu kỳ đều) → kỳ nào nó hay "nghỉ"?
+- **Nhịp của nhóm** (hàng chục, chẵn/lẻ, đuôi) theo kỳ; số vắng/nóng theo từng vị trí u…z.
+- Mỗi suy luận: đổi thành luật cố định, đo **% kỳ đúng** (số bỏ ít thì mới đúng nhiều kỳ) và **tỉ lệ ra của nhóm bị bỏ so với các số còn lại** — đây mới là phần "lợi" thật; loại 1 số bất kỳ vốn đã đúng ~86–89% kỳ.
+
 ## Tìm ý mới từ suy luận dãy số nói chung (không riêng xổ số)
 Được phép (và nên) mượn các cách tìm quy luật / "ẩn số x" của dãy số tổng quát, rồi **kiểm bằng dữ liệu quá khứ, chấm theo từng kỳ** trước khi tin:
 - Sai phân bậc 1–2 (dãy hiệu), tìm công thức truy hồi / hồi quy tuyến tính theo kỳ trước (tự hồi quy AR), trung bình trượt, hồi về trung bình.
@@ -40,6 +46,7 @@ Mỗi ý mới: viết luật cố định → chạy tiến trên 100 kỳ gầ
 | `python3 build/vitri.py <game> [--W 100] [--q 85]` | **Mục tiêu 2.** Khoảng từng vị trí u…z (A: theo giá trị, B: theo chênh lệch so với kỳ trước): % kỳ đúng từng vị trí, đúng CẢ dãy, vé giữ lại, khoảng áp kỳ tới. Đổi `--q` để cân an toàn ↔ gọn. |
 | `python3 build/hinhdang.py <game> [--W 100] [--q 85] [--floor 60]` | **Mục tiêu 3.** Từng đặc trưng hình dạng + gộp tham lam thành khuôn (mỗi bước giảm vé giữ lại nhiều nhất mà % kỳ đúng gộp ≥ floor). In khuôn áp kỳ tới. (~10 giây) |
 | `python3 build/loai_nho.py <game> [--W 100]` | **Luật loại nhỏ kiểu "bỏ số vắng lâu"** (mỗi kỳ bỏ ~1 số có lý do): vắng lâu nhất/nhì, ra 2 kỳ liền, ra 3 lần/5 kỳ, ra kỳ trước & t−3, tái xuất, ra ít/nhiều nhất 100 kỳ, u/z kỳ trước… 3 đoạn 100 kỳ + vé giữ lại + số bị loại kỳ tới. Thêm luật vào `RULES`. |
+| `python3 build/nhip.py <game> [--W 200]` | **Nhịp riêng từng số** (ý anh: số ra kỳ 1, 5, 9… thì kỳ 2, 3, 6, 7, 8 loại đúng): theo lịch sử của chính số đó, ở đúng số kỳ đang vắng hiện tại nó đã gặp ≥m lần mà tỉ lệ ra ≤ ngưỡng → loại. Báo % kỳ đúng, số bỏ/kỳ, tỉ lệ ra nhóm bỏ vs còn lại. |
 | `python3 build/khia_canh.py <game> [--W 100]` | Khía cạnh mới: nhóm số (lộn, chạm tổng, ±2, t−2/t−3, nguyên tố, chia 3, cùng vị trí, tái xuất, hàng chục…) 3 đoạn; hồi về trung vị (tổng, lẻ, u, z, số nhỏ) có cột vé giữ lại; hình dạng (chia 3, nguyên tố, khe nhỏ nhất, tổng đuôi, mod 9, đối xứng). Thêm ý mới vào `GROUPS` / `FEAT` / `SH`. |
 | `python3 build/khang_dinh.py <game>` | Khẳng định về kỳ tới (≥1 số của 2 kỳ gần, ≥1 số nóng, chẵn/lẻ, nhỏ/lớn, hàng chục…): % kỳ đúng 3 khúc + vé giữ lại. |
 | `python3 build/loai_tru.py <game>` | Tỉ lệ ra của nhóm bị loại so với nhóm còn lại (cấp số), luật loại vé (cấp vé). |

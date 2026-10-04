@@ -327,6 +327,12 @@ Chênh với vé giữ lại chỉ 1–5 điểm — đúng kiểu "cơ sở nh�
 - Power: vắng 7–10 rồi ra → kỳ sau ra ít hơn (7.9/6.5/11.0%).
 - "Vắng tiếp ≥3 kỳ sau khi ra" không ổn định ở nhịp nào.
 
+## Nhịp riêng từng số (ý anh: ra kỳ 1, 5, 9… → kỳ 2, 3, 6, 7, 8 loại đúng) — 04/10/2026 (`build/nhip.py`)
+Cách tính: với mỗi số, xem lịch sử 200 kỳ của CHÍNH số đó — mỗi khi nó đã vắng đúng g kỳ (bằng số kỳ đang vắng hiện tại) thì kỳ kế nó có ra không. Đã gặp ≥5 lần mà chưa ra lần nào → loại.
+- **Mega:** nhóm bị loại ra ít hơn ở cả 3 đoạn (10.8/11.7/10.5% so với 13.6–13.8% các số còn lại) → nhịp riêng có dấu vết. Nhưng mỗi kỳ nhóm này ~7 số nên loại cả nhóm chỉ đúng 40–50% kỳ; dùng làm −điểm thì pool 15 không tốt hơn (2.14 → 2.11) → chưa áp dụng, đưa vào sổ kiểm chứng (`nhom_nhip`: đúng khi nhóm ra ít hơn bình quân).
+- **Power:** nhóm bị loại ra NHIỀU hơn ở 2/3 đoạn → không dùng. **Loto:** ít hơn 2/3 đoạn → chưa ổn định.
+- Bài học: loại 1 số bất kỳ vốn đã đúng ~86–89% số kỳ; "lợi" thật nằm ở chỗ nhóm bị loại ra ít hơn các số còn lại.
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|

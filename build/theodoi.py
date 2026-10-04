@@ -43,12 +43,28 @@ RULES = [
     ('uprev', 'Bỏ số nhỏ nhất kỳ trước', lambda R, t, c: {min(R[t - 1])}),
     ('zprev', 'Bỏ số lớn nhất kỳ trước', lambda R, t, c: {max(R[t - 1])}),
 ]
+def nhip_off(R, t, NB, W=200, m=5):
+    """Nhịp riêng từng số: ở đúng số kỳ đang vắng hiện tại, lịch sử W kỳ của chính số đó đã gặp ≥m lần mà chưa ra lần nào."""
+    out = set()
+    for n in range(1, NB + 1):
+        g = 0
+        while g < t and n not in R[t - 1 - g]: g += 1
+        seen = hit = 0; run = None
+        for u in range(max(0, t - W), t):
+            if run is not None and run == g: seen += 1; hit += n in R[u]
+            if n in R[u]: run = 0
+            elif run is not None: run += 1
+        if seen >= m and hit == 0: out.add(n)
+    return out
+
 # (id, nhãn, hàm(R, t, c, NB, KB) -> (kind, nums, k)) — kind 'atleast': kỳ tới có ≥k số trong nums; 'atmost': ≤k số
 CLAIMS = [
     ('kd_2ky', 'Có ≥1 số của 2 kỳ gần nhất', lambda R, t, c, NB, KB: ('atleast', R[t - 1] | R[t - 2], 1)),
     ('kd_nong10', 'Có ≥1 số trong 10 số nóng nhất 20 kỳ', lambda R, t, c, NB, KB: ('atleast', set(sorted(c['c20'], key=lambda n: (-c['c20'][n], c['gap'][n], n))[:10]), 1)),
     ('kd_ke', 'Có ≥1 số trùng hoặc kề ±1 kỳ trước', lambda R, t, c, NB, KB: ('atleast', {m for n in R[t - 1] for m in (n - 1, n, n + 1) if 1 <= m <= NB}, 1)),
     ('kd_trung2', 'Không trùng ≥2 số với kỳ trước', lambda R, t, c, NB, KB: ('atmost', set(R[t - 1]), 1)),
+    # nhóm nhiều số: chấm "đúng" khi nhóm ra ÍT hơn bình quân (tỉ lệ trúng/số < KB/NB)
+    ('nhom_nhip', 'Nhóm nhịp riêng "lúc vắng thế này chưa từng ra" ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_off(R, t, NB), 0)),
 ]
 
 def snap(game):
@@ -73,6 +89,7 @@ def cham(game, date, nums, extra=None):
         hit = sorted(set(r['nums']) & res)
         if r['kind'] == 'loai': ok = not hit
         elif r['kind'] == 'atleast': ok = len(hit) >= r['k']
+        elif r['kind'] == 'nhomit': ok = (len(hit) / len(r['nums']) < KB / NB) if r['nums'] else True
         else: ok = len(hit) <= r['k']
         out.append(dict(id=r['id'], lab=r['lab'], kind=r['kind'], nums=r['nums'], hit=hit, ok=ok, applied=r.get('applied', False)))
     rec = dict(date=date, res=sorted(res), rules=out)
