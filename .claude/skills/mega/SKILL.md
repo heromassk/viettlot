@@ -18,6 +18,9 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 - Lịch quay: Thứ 4, 6, Chủ nhật (18h). Anh chơi **mọi kỳ**.
 - Đà tổng chỉ dùng khi tương quan 50 kỳ > 0.2 (script tự quyết); nếu không thì dùng khoảng tổng thường gặp 200 kỳ.
 - Vé: ≥2 số >31, không 3 số liên tiếp.
+- Luật bổ sung (04/10/2026, `build/loai_tru.py`): số **cùng đuôi với số kỳ trước** −0.5 điểm (ra ít hơn 3/3 khúc).
+- Luật loại vé (kỳ thật chỉ vi phạm 1–8%): trùng ≥3 số kỳ trước, toàn chẵn/lẻ, toàn nhỏ/lớn, ≥3 liên tiếp, ≥4 số cùng chục (6 số), không có số ≥2/3 dải. Các luật này giúp vé gọn, tự chúng không tăng trúng.
+- `--cu` chạy cách cũ để so; luật nào làm pool kém đi trên các kỳ đã qua thì bỏ.
 
 ## Quy trình
 1. **Anh báo kết quả** → `python3 build/add_result.py mega "dd/mm/yyyy" n1 .. n6` (ghi all_data.json, meta index.html, CSV rồi tự build app).

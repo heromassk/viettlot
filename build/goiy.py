@@ -21,10 +21,11 @@ ap = argparse.ArgumentParser()
 ap.add_argument('game', choices=GAMES)
 ap.add_argument('--app'); ap.add_argument('--G', type=int); ap.add_argument('--k', type=int, default=15)
 ap.add_argument('--linh', default='')
+ap.add_argument('--cu', action='store_true', help='cách cũ: tắt các luật loại trừ bổ sung (để so)')
 ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
-G = A.G or (15 if A.game == 'loto' else 20)
+G = A.G or (999 if A.game == 'loto' and not A.cu else 15 if A.game == 'loto' else 20)   # Loto: số vắng lâu không nên loại (04/10)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
 R = [set(r) for r in D['res']]          # cũ -> mới
 SES = ['13' if '13h' in x else '21' for x in D['dates']] + ['13' if '21h' in D['dates'][-1] else '21']
@@ -62,6 +63,14 @@ def signals(t):
         ph = SES[t]
         same = [u for u in range(max(0, t - 200), t) if SES[u] == ph][-100:]
         sig['phien'] = top8({n: sum(n in R[u] for u in same) for n in range(1, NB + 1)})
+    if not A.cu:   # luật loại trừ bổ sung (build/loai_tru.py, 04/10/2026) — chỉ giảm/cộng điểm, không loại hẳn
+        if A.game == 'power':
+            sig['chin'] = {n for n, x in f.items() if 11 <= x['gap'] <= 15}
+            sig['g610'] = {n for n, x in f.items() if 6 <= x['gap'] <= 10}
+        elif A.game == 'mega':
+            sig['duoi'] = {n for n in range(1, NB + 1) if n % 10 in {x % 10 for x in last}} - last
+        else:
+            sig['lap'] = set(last)
     return f, sig
 
 
@@ -85,6 +94,8 @@ def score(f, s, extra=None):
     for n in range(1, NB + 1):
         v = 2 * (n in s['hot']) + 1 * (n in s['ke']) + 1 * (n in s['de']) - 1.5 * (n in s['kho'])
         v += 1.5 * (n in s.get('chuyen', ())) + 1 * (n in s.get('phien', ()))
+        v += WCHIN * (n in s.get('chin', ())) - WG610 * (n in s.get('g610', ())) \
+            - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ()))
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
@@ -98,7 +109,9 @@ def pool_of(sc, s, k):
 
 
 # ---------- Backtest: tỉ lệ đúng của chính từng tín hiệu ----------
-SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ())
+WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0.5 1').split())
+SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
+        {'power': ('chin', 'g610'), 'mega': ('duoi',), 'loto': ('lap',)}[A.game])
 def backtest(W):
     acc = {k: [0, 0] for k in SIGS}   # [số trúng / số bị loại đúng, cỡ tập]
     pool_h = []
@@ -157,7 +170,16 @@ def ok(tk, lv):
     tk = sorted(tk)
     if not SLO <= sum(tk) <= SHI: return False
     if lv == 0 and A.game != 'loto' and sum(x > 31 for x in tk) < 2: return False
+    if not A.cu and lv < 2 and bad_ticket(tk): return False
     return not any(tk[i] + 2 == tk[i + 1] + 1 == tk[i + 2] for i in range(len(tk) - 2))
+
+def bad_ticket(tk):
+    """Luật loại vé — kỳ thật hiếm khi vi phạm (1–8%, ổn định 3 khúc)."""
+    odd = sum(x % 2 for x in tk); low = sum(x <= NB // 2 for x in tk)
+    dec = {}
+    for x in tk: dec[x // 10] = dec.get(x // 10, 0) + 1
+    return (len(set(tk) & R[-1]) >= 3 or odd in (0, KB) or low in (0, KB)
+            or (KB == 6 and max(dec.values()) >= 4) or max(tk) < NB * 2 // 3)
 
 def pick(base, cands, need, used):
     for lv in range(3):
@@ -196,6 +218,8 @@ rows = [('hot', 'Nóng (c10≥3 hoặc c20≥2×kỳ vọng)', 'tỉ lệ ra/s�
 if A.game == 'loto':
     rows += [('chuyen', 'Chuyển kỳ (số hay theo sau số kỳ trước), top 8', 'tỉ lệ ra/số'),
              ('phien', 'Nóng cùng phiên 100 kỳ, top 8', 'tỉ lệ ra/số')]
+rows += [x for x in (('chin', 'Vắng 11–15 kỳ — "chín" (+điểm)', 'tỉ lệ ra/số'), ('g610', 'Vắng 6–10 kỳ (−điểm)', 'loại đúng'),
+                     ('duoi', 'Cùng đuôi số kỳ trước (−điểm)', 'loại đúng'), ('lap', 'Số vừa ra kỳ trước (−điểm)', 'loại đúng')) if x[0] in SIGS]
 print('| Tín hiệu | Số hiện tại | Đo bằng | 10 kỳ | 50 kỳ | 200 kỳ |\n|---|---|---|---|---|---|')
 for k, lab, how in rows:
     print(f'| {lab} | {fm(s[k])} | {how} | ' + ' | '.join(pc(B[W][k][0]) for W in (10, 50, 200)) + ' |')
@@ -210,7 +234,7 @@ print(f'\n### Pool {A.k} điểm đồng thuận\n\n**{fm(pool)}**\n')
 rank = pool_of(sc, s, min(20, NB - len(s['vang'])))
 print(f"Pool 10: **{fm(rank[:10])}**  ·  Pool 20: {fm(rank[:20])}\n")
 def why(n):
-    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên')) if n in s.get(k, ())]
+    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên'), ('chin', 'vắng 11–15'), ('g610', 'vắng 6–10 −'), ('duoi', 'cùng đuôi −'), ('lap', 'vừa ra −')) if n in s.get(k, ())]
     if APP:
         if n in top_v: t.append(f'tâm linh {votes[n]} phiếu')
         if n in APP.get('appPool', []): t.append('pool app')
