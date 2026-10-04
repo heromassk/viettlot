@@ -39,6 +39,7 @@ Mỗi ý mới: viết luật cố định → chạy tiến trên 100 kỳ gầ
 | `python3 build/suyluan.py <game> [--W 100]` | **Mặc định.** Luật loại chấm theo từng kỳ ở W kỳ gần + W kỳ trước (vắng ≥10…30, khó ra, ít ra nhất, ra 2 kỳ liền, quá nóng, lệch bền, các luật gộp), cột Đánh giá ✔/~/✘, hiện trạng (ra ít/nhiều, vắng lâu, lệch bền 4 đoạn 25 kỳ) và **"Áp vào kỳ tới"** (số bị loại theo từng luật). |
 | `python3 build/vitri.py <game> [--W 100] [--q 85]` | **Mục tiêu 2.** Khoảng từng vị trí u…z (A: theo giá trị, B: theo chênh lệch so với kỳ trước): % kỳ đúng từng vị trí, đúng CẢ dãy, vé giữ lại, khoảng áp kỳ tới. Đổi `--q` để cân an toàn ↔ gọn. |
 | `python3 build/hinhdang.py <game> [--W 100] [--q 85] [--floor 60]` | **Mục tiêu 3.** Từng đặc trưng hình dạng + gộp tham lam thành khuôn (mỗi bước giảm vé giữ lại nhiều nhất mà % kỳ đúng gộp ≥ floor). In khuôn áp kỳ tới. (~10 giây) |
+| `python3 build/khia_canh.py <game> [--W 100]` | Khía cạnh mới: nhóm số (lộn, chạm tổng, ±2, t−2/t−3, nguyên tố, chia 3, cùng vị trí, tái xuất, hàng chục…) 3 đoạn; hồi về trung vị (tổng, lẻ, u, z, số nhỏ) có cột vé giữ lại; hình dạng (chia 3, nguyên tố, khe nhỏ nhất, tổng đuôi, mod 9, đối xứng). Thêm ý mới vào `GROUPS` / `FEAT` / `SH`. |
 | `python3 build/khang_dinh.py <game>` | Khẳng định về kỳ tới (≥1 số của 2 kỳ gần, ≥1 số nóng, chẵn/lẻ, nhỏ/lớn, hàng chục…): % kỳ đúng 3 khúc + vé giữ lại. |
 | `python3 build/loai_tru.py <game>` | Tỉ lệ ra của nhóm bị loại so với nhóm còn lại (cấp số), luật loại vé (cấp vé). |
 | `python3 build/thu_them.py <game>` | Theo thứ quay, số "đến hạn", cặp số, số cùng thứ tuần trước. |
@@ -64,4 +65,5 @@ Muốn thử ý mới: thêm luật vào `RULES` trong `build/suyluan.py` (hàm 
 - **Mega (100 kỳ, 04/10/2026):** bỏ vắng ≥30 đúng 94% kỳ; bỏ số ra 2 kỳ liền 92%; gộp 2 luật 87%; bỏ vắng ≥20 chỉ 72%; không nên bỏ số khó ra / ít ra nhất / ít ra cả 4 đoạn (chúng hay quay lại); số nhiều ra cả 4 đoạn 25 kỳ (16 31 36) đáng giữ. Khẳng định có dấu vết: ≥1 số của 2 kỳ gần (86–91%), ≥1 số trong 10 số nóng.
 - **Power:** số vắng 11–15 kỳ ra nhiều hơn; vắng 6–10 ít hơn; số kỳ cùng thứ tuần trước ít hơn; đà tổng có dấu vết; rải ≥4 hàng chục.
 - **Loto:** phiên 13h/21h có tính cách riêng; chuyển kỳ; số vừa ra kỳ trước ít hơn; số vắng lâu không nên loại; số May Mắn cân bằng (chọn vắng lâu).
-- Không có dấu vết: cặp số, theo thứ quay, số "đến hạn", đuôi số (Loto), đà tổng (Loto).
+- **Khía cạnh mới (04/10):** Mega số kỳ t−3 ra ít (3/3), hồi về trung vị của tổng (77/76/71% vs vé giữ 69%), tổng mod 9 (theo dõi); Power tổng mod 9 (theo dõi); Loto số "tái xuất" ra ít (3/3) → loại, hồi về trung vị số nhỏ. Bẫy: "hồi về trung vị" phải tính kỳ bằng nhau là sai + luôn so vé giữ lại.
+- Không có dấu vết: số lộn, chạm tổng, cách ±2, nguyên tố/chia 3 (nhóm số), cùng vị trí ±1, cặp số, theo thứ quay, số "đến hạn", đuôi số (Loto), đà tổng (Loto).

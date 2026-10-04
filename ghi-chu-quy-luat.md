@@ -304,6 +304,15 @@ Cách chấm theo ý anh: mỗi luật loại được chấm theo TỪNG KỲ (
 - KHÔNG nên bỏ: số khó ra 100/200 kỳ (60–68%), 3–5 số ra ít nhất (38–62%), số ít ra cả 4 đoạn 25 kỳ (51% — chúng hay quay lại).
 - Số nhiều ra cả 4 đoạn 25 kỳ (hiện 16 31 36): 36% kỳ có ≥1 số này (nhóm chỉ 2–3 số).
 
+## Khía cạnh mới — 04/10/2026 (`build/khia_canh.py`, 3 đoạn 100 kỳ gần → xa, chạy tiến)
+Đã thử: số lộn (12↔21), chạm tổng, cách ±2, số kỳ t−2/t−3, nguyên tố, chia hết cho 3, cùng vị trí ±1, số ra ≥2 lần/5 kỳ, số "tái xuất", hàng chục nhiều nhất/vắng mặt kỳ trước; hồi về trung vị (tổng, lẻ, u, z, số nhỏ); hình dạng: đếm chia hết 3, nguyên tố, khe nhỏ nhất, tổng đuôi, tổng mod 9, cặp đối xứng, số khe ≤3. (Bóng âm dương +5 không áp được cho số 2 chữ số trong dải này.)
+Đứng được (cùng chiều cả 3 đoạn / đúng > vé giữ lại):
+- **Mega:** số của kỳ t−3 (cùng thứ tuần trước) ra ít hơn 3/3 (12.2/12.9/12.6% vs 13.4%) — giống Power. Hồi về trung vị của TỔNG: đúng 77/76/71% (vé giữ 69%). Tổng mod 9 ∈ {1,3,4,5,6,7,8}: 87/92% (vé giữ 78%) — theo dõi.
+- **Power:** tổng mod 9 (tập gọn 85%): 82/85% (vé giữ 78%) — theo dõi.
+- **Loto:** số "tái xuất" (ra kỳ trước sau vắng ≥10) ra ít hơn 3/3 (10.3/12.5/10.5% vs 14.4%), ~1 số/kỳ → loại. Số ra ≥2 lần trong 5 kỳ ít hơn 3/3 (nhẹ). Hồi về trung vị của số nhỏ (≤17): 73/71/76% (vé giữ 66%).
+Không đứng được: số lộn, chạm tổng, ±2, nguyên tố (nhóm số), chia hết 3, cùng vị trí ±1, hàng chục; hồi về trung vị của u, z (≈ vé giữ lại).
+Lưu ý: "hồi về trung vị" phải tính kỳ bằng nhau là SAI, và luôn kèm cột vé giữ lại — nếu không sẽ thấy tỉ lệ cao giả (90%+).
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
