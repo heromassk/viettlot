@@ -361,3 +361,4 @@ Kết luận: luật loại an toàn ≥80% kỳ chỉ bỏ được ~2–3 số
 | Kỳ | Kết quả | Luật loại (đã áp dụng) | Bị loại | Pool 10 / 15 / 20 | Vé tốt nhất | Tâm linh 12 | Bao 7 anh | Ghi chú |
 |---|---|---|---|---|---|---|---|---|
 | 04/10 | 15 20 29 37 40 45 (tổng 186) | **đúng hết** (8 số bị loại, không số nào về); sổ: 24/25 luật đúng | 02 05 08 19 27 31 41 42 | 1 / 1 / 3 (15; 20 45) | 1 | 0 | 1 (15) | 4/6 số về đang vắng 11–14 kỳ (29 37 40 45) → thêm +1 điểm "vắng 11–15" cho Mega (pool 15 ở 50 kỳ 2.12→2.22). Tổng 186 > 126 đúng xu hướng hồi về trung vị. |
+| 04/10 21h | 07 16 30 31 33 · MM 02 | 0/4 nóng | 2 (31 33) | — | — | luật loại áp dụng đúng hết (bỏ 10 19 26 27 35) | — | pool 10/15/20: 0/2/4 | vé tốt nhất 1; **vé anh** 09 11 19 28 34 mm06 & 11 14 20 28 34 mm10: 0 số, MM trật; sổ 23/25 luật đúng |
