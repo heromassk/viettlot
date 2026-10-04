@@ -426,6 +426,14 @@ if NONG:
     for v in NONG:
         print(f"| **{v['n']:02d}** | {v['c10']} | {v['c20']} | {v['c100']} / {v['c200']} | {v['lr']}% | {'/'.join(map(str, v['q4']))} | {v['gap']} | {'—' if v['nx'] is None else str(v['nx']) + '%'} ({v['ns']} lần) | {v['state']} | {v['kind']} |")
 
+# ---------- Nhịp pool (Loto): 5 kỳ gần pool 15 trúng TB ≥ ngưỡng 1/3 tốt nhất → kỳ tới pool hay trúng hơn (400 kỳ: TB 2.40 vs 1.9–2.2, ≥3 số 51% vs 32%)
+NHIP = None
+if A.game == 'loto':
+    hh = [r['h'][15] for r in RECS]; m5 = sum(hh[-5:]) / 5
+    ths = sorted(sum(hh[i - 5:i]) / 5 for i in range(5, len(hh))); thr = ths[2 * len(ths) // 3]
+    NHIP = dict(m5=round(m5, 2), thr=round(thr, 2), last=hh[-5:], good=m5 >= thr)
+    print(f"\n**Nhịp pool:** 5 kỳ gần pool 15 trúng {hh[-5:]} → TB {m5:.2f} (ngưỡng nhóm tốt {thr:.2f}) → " + ("**ĐANG VÀO NHỊP — kỳ nên đánh mạnh**" if m5 >= thr else "nhịp thường — đánh nhẹ"))
+
 # ---------- Khẳng định kỳ này (đúng ≥70% ở 200 kỳ) ----------
 CLR = []
 for (lab, st, fn), (lab2, r200, k200), (_, r50, _) in zip(CL_NOW, B[200]['claims'], B[50]['claims']):
@@ -476,7 +484,7 @@ if A.json:
              mmGap={k: mg[k] for k in MM} if MM else {}, linh=sorted(LINH),
              tl=dict(votes=votes, top=top_v, strong=strong, rescued=rescued, out=strong_out,
                      day=day, nm=len(APP.get('methods', []))) if APP else None,
-             vl=VL, nong=NONG, sig=[dict(lab=lab, nums=sorted(s[k]), how=how, r=[B[W][k][0] for W in (10, 50, 200)]) for k, lab, how in rows])
+             vl=VL, nong=NONG, nhip=NHIP, sig=[dict(lab=lab, nums=sorted(s[k]), how=how, r=[B[W][k][0] for W in (10, 50, 200)]) for k, lab, how in rows])
     json.dump(J, open(A.json, 'w'), ensure_ascii=False)
 
 # Lưu lại gợi ý để chấm sổ khi có kết quả

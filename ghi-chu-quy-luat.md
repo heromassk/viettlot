@@ -351,6 +351,11 @@ Trong cửa sổ W kỳ, số đó có ≥5 lần ra và khoảng nghỉ nhỏ n
 - Loto: nhịp ra–vắng 2–ra (95/96%) → + tái xuất ≥10 (87/85%) → + vắng lâu nhất (77/76%) → + phá nhịp 100 (68/68%) → + ra 3 lần/5 kỳ (62/64%, bỏ 4.1).
 Kết luận: luật loại an toàn ≥80% kỳ chỉ bỏ được ~2–3 số/kỳ; phần thu hẹp lớn (xuống 15–20 số) vẫn phải nhờ chấm điểm (pool 15 trúng TB ~2.1 số/kỳ).
 
+## Loto — kỳ nào nên đánh mạnh? (04/10/2026, 400 kỳ chạy tiến)
+- Phiên 13h vs 21h: pool 15 trúng TB 2.21 vs 2.18 — như nhau.
+- "Độ đồng thuận" điểm (top 5 vượt xa phần còn lại): KHÔNG giúp (cao: 2.12, thấp: 2.25).
+- **Nhịp pool**: 5 kỳ gần pool 15 trúng TB ≥ ngưỡng 1/3 tốt nhất (~2.4) → kỳ tới TB 2.40/2.41, ≥3 số 51%/52% (hai nửa 200 kỳ) so với 1.9–2.3 và 32–45% lúc khác → dùng làm chỉ báo "kỳ đánh mạnh".
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|

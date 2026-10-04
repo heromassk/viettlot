@@ -44,6 +44,7 @@ function renderBang(J){
     <div class="bg-row bg-pool"><b>+ đến 20:</b> ${rk.slice(15,20).map(n=>ball(n,'t20')).join('')}</div>
     ${J.hotOut&&J.hotOut.length?`<div class="bg-warn">⚠ Số nóng ngoài pool 15: <b>${J.hotOut.map(p2).join(' ')}</b></div>`:''}
   </div>
+  ${J.nhip?`<div class="bg-warn" style="${J.nhip.good?'border-color:#3fb950;background:rgba(63,185,80,.12)':''}">Nhịp pool 5 kỳ gần: ${J.nhip.last.join(', ')} → TB <b>${J.nhip.m5}</b> (ngưỡng tốt ${J.nhip.thr}) → <b>${J.nhip.good?'ĐANG VÀO NHỊP — kỳ nên đánh mạnh':'nhịp thường — đánh nhẹ'}</b></div>`:''}
   <div class="bg-sec"><h4>Pool trúng bao nhiêu (200 kỳ đã qua, chạy lại đúng cách này)</h4>${tierRow(10,'Pool 10')}${tierRow(15,'Pool 15')}${tierRow(20,'Pool 20')}
     <div class="bg-foot" style="margin-top:6px;">Pool 15 trúng mấy số ở 10 kỳ gần nhất:</div><div class="bg-spk">${spark}</div></div>
   <div class="bg-sec"><h4>Khẳng định kỳ này (đúng ≥ 70% số kỳ)</h4>${cl}

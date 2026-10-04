@@ -30,6 +30,8 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 
 - **Bảng "Số ra nhiều gần đây (10/20 kỳ)"** (anh, 04/10/2026): ra 10/20 kỳ, 100/200 kỳ, mức ra 200 kỳ, 4 đoạn 25 kỳ, đang vắng, % ra kỳ kế khi từng nóng tương tự, trạng thái, nhận xét (Nóng bền — có thể bi dễ ra / Nóng, đường dài cũng nhiều / Nóng ngắn hạn / Đang hồi). Luôn nêu cho anh cùng bảng số vắng lâu (Loto: máy tính, không phải bi).
 
+- **Kỳ đánh mạnh (anh, 04/10/2026: "kỳ nào dữ liệu ổn thì đánh mạnh"):** chỉ báo "Nhịp pool" — 5 kỳ gần pool 15 trúng TB ≥ ngưỡng 1/3 tốt nhất (≈2.4) thì kỳ tới pool 15 trúng TB 2.40, ≥3 số 51–52% (cả 2 nửa 400 kỳ) so với 32–45% lúc thường. Độ "đồng thuận điểm" và phiên 13h/21h KHÔNG phân biệt được kỳ tốt. Kỳ đánh mạnh: thêm bộ 10 vé phủ pool 10 (tham lam phủ bộ 3).
+
 ## Tâm linh (bắt buộc trình bày)
 - Phiếu từ 20 quẻ (`build/tamlinh.js`). Top 12 phiếu +1 điểm; **tâm linh mạnh ★** (phiếu ≥ mức của số thứ 5) +1.5 điểm.
 - **Số tâm linh mạnh bị luật vắng loại thì không loại hẳn** (được "cứu", để điểm quyết định) — anh: "tâm linh có số bị loại mà phiếu nhiều thì cần cân nhắc".
