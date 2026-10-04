@@ -124,6 +124,7 @@ def backtest(W):
         pool_h.append(len(set(pool_of(score(f, s), s, A.k)) & R[t]))
     out = {k: (a / b * 100 if b else None, b / W) for k, (a, b) in acc.items()}
     out['pool'] = (sum(pool_h) / W, sum(h >= 3 for h in pool_h) / W * 100, pool_h[-10:])
+    out['dist'] = [sum(h >= j for h in pool_h) / W * 100 for j in range(1, 5)]
     return out
 
 
@@ -273,7 +274,8 @@ if APP:
         print(f'\n⚠️ **Tâm linh mạnh nằm ngoài pool: {fm(strong_out)}** — cần cân nhắc (xem vé thay thế bên dưới).')
 for W in (10, 50, 200):
     tb, p3, last = B[W]['pool']
-    print(f'\nPool {A.k} (không tâm linh/app) chính nó ở {W} kỳ: TB **{tb:.2f}** số/kỳ, ≥3 số {p3:.0f}%' + (f' · 10 kỳ gần: {last}' if W == 10 else ''))
+    print(f'\nPool {A.k} (không tâm linh/app) chính nó ở {W} kỳ: TB **{tb:.2f}** số/kỳ, ≥3 số {p3:.0f}%' + (f' · 10 kỳ gần: {last}' if W == 10 else '')
+          + ('' if W == 10 else ' · kỳ có ≥1/≥2/≥3/≥4 số: ' + ' / '.join(f'{v:.0f}%' for v in B[W]['dist'])))
 if APP and strong_out:   # vé thay thế: vé 1, đổi số điểm thấp nhất (không phải lõi) bằng tâm linh mạnh ngoài pool
     alt = list(tickets[0][1])
     for n in sorted(strong_out, key=lambda n: -votes[n])[:2]:

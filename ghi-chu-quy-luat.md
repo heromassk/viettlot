@@ -283,6 +283,13 @@ Cấp vé (kỳ thật vi phạm, ổn định qua 3 khúc): ≥3 số trùng k�
 Lưu ý: cả bộ luật cấp vé bỏ ~15–20% số vé có thể, và cũng bỏ ~14–20% kỳ thật → là chỗ dựa để gọn vé, không tự làm tăng trúng.
 Bỏ vắng ≥G gần như không đổi pool 15 (số vắng lâu hiếm khi vào top) → luật này chủ yếu dùng khi anh tự chọn số.
 
+## Khẳng định ≥70% về kỳ tới — nghiên cứu 04/10/2026 (`build/khang_dinh.py`, 600 kỳ, 3 khúc)
+Tiêu chí của anh: một cách suy luận đúng ≥70% số kỳ (10 kỳ đúng 7) là tiềm năng. Cột "vé giữ lại" = phần vé còn lại sau khi lọc theo khẳng định đó (đo độ thu hẹp). Đúng cao hơn giữ lại = có dấu vết thật.
+- **Mega (rõ nhất, hợp thuyết bi vật lý):** có ≥1 số của 2 kỳ gần nhất: đúng 86/87/91%, 50 kỳ 92% (giữ 84%). Có ≥1 số trong 10 số nóng nhất 20 kỳ: 88/82/81% (giữ 79%). Gộp 5 khẳng định cấu trúc (≥1 trùng/kề kỳ trước, không trùng ≥2, chẵn/lẻ 3±1, nhỏ/lớn 3±1, ≥4 chục khác nhau): đúng 35/38/50%, 50 kỳ 50%, chỉ giữ 33% vé.
+- **Power:** có số ở ≥4 chục khác nhau: 78/78/80% (giữ 75%); còn lại đúng ≈ giữ lại.
+- **Loto:** các khẳng định đúng ≈ giữ lại (máy tính quay — không thấy lệch).
+- **Khẳng định theo pool (goiy.py, 200 kỳ):** Power pool 10 có ≥1 số 73%, pool 20 có ≥2 số 71%; Mega pool 10 ≥1 80%, pool 15 ≥2 72%, pool 20 ≥2 86%; Loto pool 15 ≥2 68%, pool 20 ≥2 90%.
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
