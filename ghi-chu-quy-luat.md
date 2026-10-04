@@ -364,6 +364,13 @@ Chọn 3 MM (3/12 ⇒ phần giữ lại 25%):
 - **MM hay lặp lại ngay kỳ sau**: 10.0 / 15.3 / 8.7 / 7.3% (bình quân 8.3%) → KHÔNG nên loại MM vừa ra.
 - Luật loại MM: loại MM vừa ra / cùng phiên hôm trước đều kém hơn phần giữ lại → không dùng; loại MM ra ≥2 lần/5 kỳ, ≥3 lần/10 kỳ ≈ ngang → không lợi.
 
+## Loto — dấu vết máy ở khung 100 / 200 kỳ gần (04/10/2026, `build/dauvet_may.py`)
+Mục tiêu: xác suất nghiêng, không cần quy luật 100%.
+- Lặp theo độ trễ: khung 100 kỳ — số của kỳ cách 4 kỳ ra ÍT (12.6/12.2%), cách 7 kỳ ra NHIỀU (16.0/16.0%), cách 9 kỳ NHIỀU (17.0/15.6%) (bình quân 14.3%); khung 200 kỳ không xác nhận → trôi, đưa vào sổ theo dõi (nhom_k7, nhom_k9).
+- Số ra nhiều nhất 200 kỳ → kỳ kế 15.1/14.8% (nhỉnh hơn); ít nhất 200 kỳ → 13.0/14.0% (kém hơn) — lệch dài hạn giữ nhẹ (đang dùng qua tín hiệu "dễ ra").
+- Vị trí u..y dính kỳ trước: không (≈50%). Tính cách theo phiên / phiên×thứ ở 100–200 kỳ gần: không còn (corr ≈0).
+Kết luận: dấu vết máy Loto rất mờ, chỉ ±1–2 điểm % và hay trôi → Loto chơi nhẹ, chỉ đánh mạnh khi "nhịp pool" tốt.
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|

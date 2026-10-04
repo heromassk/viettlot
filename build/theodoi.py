@@ -89,6 +89,8 @@ CLAIMS = [
     ('kd_trung2', 'Không trùng ≥2 số với kỳ trước', lambda R, t, c, NB, KB: ('atmost', set(R[t - 1]), 1)),
     # nhóm nhiều số: chấm "đúng" khi nhóm ra ÍT hơn bình quân (tỉ lệ trúng/số < KB/NB)
     ('nhom_nhip80', 'Nhóm "phá nhịp nghỉ" (100 kỳ: ≥80% lần nghỉ ≥x kỳ, mới nghỉ <x) ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_p(R, t, NB), 0)),
+    ('nhom_k7', 'Nhóm số của kỳ cách 7 kỳ ra NHIỀU hơn bình quân (dấu vết máy, 100 kỳ)', lambda R, t, c, NB, KB: ('nhomnhieu', R[t - 7] - R[t - 1], 0)),
+    ('nhom_k9', 'Nhóm số của kỳ cách 9 kỳ ra NHIỀU hơn bình quân (dấu vết máy, 100 kỳ)', lambda R, t, c, NB, KB: ('nhomnhieu', R[t - 9] - R[t - 1], 0)),
     ('nhom_nhip', 'Nhóm nhịp riêng "lúc vắng thế này chưa từng ra" ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_off(R, t, NB), 0)),
 ]
 
@@ -115,6 +117,7 @@ def cham(game, date, nums, extra=None):
         if r['kind'] == 'loai': ok = not hit
         elif r['kind'] == 'atleast': ok = len(hit) >= r['k']
         elif r['kind'] == 'nhomit': ok = (len(hit) / len(r['nums']) < KB / NB) if r['nums'] else True
+        elif r['kind'] == 'nhomnhieu': ok = (len(hit) / len(r['nums']) > KB / NB) if r['nums'] else False
         else: ok = len(hit) <= r['k']
         out.append(dict(id=r['id'], lab=r['lab'], kind=r['kind'], nums=r['nums'], hit=hit, ok=ok, applied=r.get('applied', False)))
     rec = dict(date=date, res=sorted(res), rules=out)
