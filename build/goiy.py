@@ -26,7 +26,7 @@ ap.add_argument('--json', help='ghi dữ liệu gợi ý dạng JSON (cho bảng
 ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
-G = A.G or (999 if A.game == 'loto' and not A.cu else 15 if A.game == 'loto' else 20)   # Loto: số vắng lâu không nên loại (04/10)
+G = A.G or (999 if A.game == 'loto' and not A.cu else 15 if A.game == 'loto' else 30 if A.game == 'mega' and not A.cu else 20)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
 R = [set(r) for r in D['res']]          # cũ -> mới
 SES = ['13' if '13h' in x else '21' for x in D['dates']] + ['13' if '21h' in D['dates'][-1] else '21']
@@ -71,6 +71,10 @@ def signals(t):
             sig['tuan'] = R[t - 3] - R[t - 1]   # số của kỳ cùng thứ tuần trước: ra lại ít hơn 3/3 khúc (thu_them.py)
         elif A.game == 'mega':
             sig['duoi'] = {n for n in range(1, NB + 1) if n % 10 in {x % 10 for x in last}} - last
+            sig['lien2'] = R[t - 1] & R[t - 2]          # ra 2 kỳ liền → loại (đúng 92% kỳ, 100 kỳ gần)
+            e25 = 25 * P
+            q4 = [{n: sum(n in R[u] for u in range(t - 100 + 25 * i, t - 75 + 25 * i)) for n in range(1, NB + 1)} for i in range(4)]
+            sig['ben'] = {n for n in range(1, NB + 1) if all(x[n] > e25 for x in q4)}   # ra nhiều cả 4 đoạn 25 kỳ → +1
         else:
             sig['lap'] = set(last)
     return f, sig
@@ -97,7 +101,8 @@ def score(f, s, extra=None):
         v = 2 * (n in s['hot']) + 1 * (n in s['ke']) + 1 * (n in s['de']) - 1.5 * (n in s['kho'])
         v += 1.5 * (n in s.get('chuyen', ())) + 1 * (n in s.get('phien', ()))
         v += WCHIN * (n in s.get('chin', ())) - WG610 * (n in s.get('g610', ())) \
-            - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ()))
+            - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ())) \
+            + 1 * (n in s.get('ben', ()))
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
@@ -106,7 +111,7 @@ def score(f, s, extra=None):
 
 
 def pool_of(sc, s, k):
-    cand = [n for n in sc if n not in s['vang']]
+    cand = [n for n in sc if n not in s['vang'] and n not in s.get('lien2', ())]
     return sorted(cand, key=lambda n: (-sc[n], n))[:k]
 
 
@@ -114,7 +119,7 @@ def pool_of(sc, s, k):
 WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0.5 1').split())
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
-        {'power': ('chin', 'g610', 'tuan'), 'mega': ('duoi',), 'loto': ('lap',)}[A.game])
+        {'power': ('chin', 'g610', 'tuan'), 'mega': ('duoi', 'lien2', 'ben'), 'loto': ('lap',)}[A.game])
 import random
 random.seed(5)
 MC = [set(random.sample(range(1, NB + 1), KB)) for _ in range(300)]
@@ -200,8 +205,9 @@ if APP:
     strong = [n for n in top_v if votes[n] >= v5]            # tâm linh mạnh: phiếu ≥ mức của số thứ 5
     for n in strong: extra[n] += 0.5
     # Tâm linh mạnh mà bị luật vắng loại → không loại hẳn, để điểm quyết định (anh: "cần cân nhắc")
-    rescued = sorted(set(strong) & s['vang'])
+    rescued = sorted(set(strong) & (s['vang'] | s.get('lien2', set())))
     s['vang'] = s['vang'] - set(rescued)
+    if 'lien2' in s: s['lien2'] = s['lien2'] - set(rescued)
     by_m = {}
     for name, nums in APP.get('methods', []):
         for n in nums: by_m.setdefault(n, []).append(name)
@@ -226,7 +232,7 @@ for n in pool:   # Mega: lõi không chứa ≥2 số của kỳ trước (khẳ
 sat = [n for n in pool if n not in core]
 
 RELAX = ['đủ ràng buộc', 'bỏ điều kiện ≥2 số >31', 'mượn số ngoài pool (điểm cao kế tiếp)']
-EXT = [n for n in sorted(sc, key=lambda n: (-sc[n], n)) if n not in s['vang'] and n not in pool][:10]
+EXT = [n for n in sorted(sc, key=lambda n: (-sc[n], n)) if n not in s['vang'] and n not in s.get('lien2', ()) and n not in pool][:10]
 
 def ok(tk, lv):
     tk = sorted(tk)
@@ -289,7 +295,7 @@ if A.game == 'loto':
     rows += [('chuyen', 'Chuyển kỳ (số hay theo sau số kỳ trước), top 8', 'tỉ lệ ra/số'),
              ('phien', 'Nóng cùng phiên 100 kỳ, top 8', 'tỉ lệ ra/số')]
 rows += [x for x in (('chin', 'Vắng 11–15 kỳ — "chín" (+điểm)', 'tỉ lệ ra/số'), ('g610', 'Vắng 6–10 kỳ (−điểm)', 'loại đúng'),
-                     ('duoi', 'Cùng đuôi số kỳ trước (−điểm)', 'loại đúng'), ('lap', 'Số vừa ra kỳ trước (−điểm)', 'loại đúng'), ('tuan', 'Số kỳ cùng thứ tuần trước (−điểm)', 'loại đúng')) if x[0] in SIGS]
+                     ('duoi', 'Cùng đuôi số kỳ trước (−điểm)', 'loại đúng'), ('lap', 'Số vừa ra kỳ trước (−điểm)', 'loại đúng'), ('tuan', 'Số kỳ cùng thứ tuần trước (−điểm)', 'loại đúng'), ('lien2', 'Ra 2 kỳ liền (bỏ khỏi pool)', 'loại đúng'), ('ben', 'Ra nhiều cả 4 đoạn 25 kỳ (+điểm)', 'tỉ lệ ra/số')) if x[0] in SIGS]
 print('| Tín hiệu | Số hiện tại | Đo bằng | 10 kỳ | 50 kỳ | 200 kỳ |\n|---|---|---|---|---|---|')
 for k, lab, how in rows:
     print(f'| {lab} | {fm(s[k])} | {how} | ' + ' | '.join(pc(B[W][k][0]) for W in (10, 50, 200)) + ' |')
@@ -303,7 +309,7 @@ if LINH: print(f'\nSố linh cảm của anh: **{fm(LINH)}** (+3 điểm)')
 print(f'\n### Pool {A.k} điểm đồng thuận\n\n**{fm(pool)}**\n')
 print(f"Pool 10: **{fm(rank[:10])}**  ·  Pool 20: {fm(rank[:20])}\n")
 def why(n):
-    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên'), ('chin', 'vắng 11–15'), ('g610', 'vắng 6–10 −'), ('duoi', 'cùng đuôi −'), ('lap', 'vừa ra −'), ('tuan', 'cùng thứ tuần trước −')) if n in s.get(k, ())]
+    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên'), ('chin', 'vắng 11–15'), ('g610', 'vắng 6–10 −'), ('duoi', 'cùng đuôi −'), ('lap', 'vừa ra −'), ('tuan', 'cùng thứ tuần trước −'), ('lien2', 'ra 2 kỳ liền (loại)'), ('ben', 'ra đều 4 đoạn')) if n in s.get(k, ())]
     if APP:
         if n in top_v: t.append(f'tâm linh {votes[n]} phiếu')
         if n in APP.get('appPool', []): t.append('pool app')

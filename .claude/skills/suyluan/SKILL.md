@@ -16,10 +16,29 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 - **Tâm linh / linh cảm được tôn trọng**: số tâm linh mạnh bị luật loại thì nêu ra để cân nhắc, không loại im lặng.
 - Luôn **xác nhận lại ý anh** trước khi kết luận nếu yêu cầu mới; báo kết quả trung thực (luật nào không đứng được thì nói thẳng là bỏ).
 
+## Bắt đầu: HỎI GAME TRƯỚC
+Việc đầu tiên khi chạy skill: dùng AskUserQuestion hỏi **áp dụng cho game nào** (Power 6/55 · Mega 6/45 · Loto 5/35; cho chọn nhiều nếu anh muốn). **Chọn xong mới chạy tiếp.** Nếu anh đã nói rõ game trong câu lệnh thì xác nhận lại 1 câu rồi chạy.
+
+## 3 mục tiêu (luôn làm đủ, mỗi lần tự tìm thêm suy luận mới — xem hiệu quả có đáng đánh đổi không)
+1. **Thu hẹp pool toàn dãy** gọn nhất có thể mà vẫn an toàn trên phần lớn kỳ (luật loại số, khẳng định, tín hiệu cộng/trừ điểm). Kiểm quá khứ để chứng minh.
+2. **Thu hẹp pool từng vị trí** u, v, w, x, y, z (dãy xếp tăng dần): khoảng cho từng vị trí, loại trừ được số nào ở vị trí nào; % kỳ đúng từng vị trí và đúng CẢ dãy.
+3. **Hình dạng dãy**: to/nhỏ, chẵn/lẻ, tổng, cặp liền nhau, hàng chục, độ trải, khe lớn nhất, AC, cùng đuôi… → tự nghiên cứu, gộp thành **khuôn tối ưu** (đúng nhiều kỳ, vé giữ lại ít).
+Với mỗi mục: đưa con số "đánh đổi" — % kỳ đúng (an toàn) đổi lấy bao nhiêu thu hẹp (số bị bỏ / vé giữ lại). Đề xuất mức em thấy đáng nhất.
+
+## Tìm ý mới từ suy luận dãy số nói chung (không riêng xổ số)
+Được phép (và nên) mượn các cách tìm quy luật / "ẩn số x" của dãy số tổng quát, rồi **kiểm bằng dữ liệu quá khứ, chấm theo từng kỳ** trước khi tin:
+- Sai phân bậc 1–2 (dãy hiệu), tìm công thức truy hồi / hồi quy tuyến tính theo kỳ trước (tự hồi quy AR), trung bình trượt, hồi về trung bình.
+- Chuỗi Markov / ma trận chuyển (giá trị hoặc trạng thái kỳ này → kỳ sau), đếm theo đồng dư (mod 2, 3, 5, 9, 10…), chữ số, tổng chữ số.
+- Chu kỳ / tuần hoàn: tự tương quan, phổ tần (FFT), khoảng lặp; phát hiện đổi chế độ (CUSUM, so 2 đoạn); kiểm loạt (runs test), entropy.
+- Cấu trúc tổ hợp: AC (số hiệu khác nhau), khe giữa các số, độ trải, cặp/bộ ba hay đi cùng, đối xứng (n ↔ N+1−n).
+Mỗi ý mới: viết luật cố định → chạy tiến trên 100 kỳ gần + 100 kỳ trước → giữ nếu đứng được, bỏ nếu không (nói thẳng).
+
 ## Công cụ (đều chạy tiến: mỗi kỳ chỉ dùng dữ liệu trước kỳ đó)
 | Script | Dùng để |
 |---|---|
 | `python3 build/suyluan.py <game> [--W 100]` | **Mặc định.** Luật loại chấm theo từng kỳ ở W kỳ gần + W kỳ trước (vắng ≥10…30, khó ra, ít ra nhất, ra 2 kỳ liền, quá nóng, lệch bền, các luật gộp), cột Đánh giá ✔/~/✘, hiện trạng (ra ít/nhiều, vắng lâu, lệch bền 4 đoạn 25 kỳ) và **"Áp vào kỳ tới"** (số bị loại theo từng luật). |
+| `python3 build/vitri.py <game> [--W 100] [--q 85]` | **Mục tiêu 2.** Khoảng từng vị trí u…z (A: theo giá trị, B: theo chênh lệch so với kỳ trước): % kỳ đúng từng vị trí, đúng CẢ dãy, vé giữ lại, khoảng áp kỳ tới. Đổi `--q` để cân an toàn ↔ gọn. |
+| `python3 build/hinhdang.py <game> [--W 100] [--q 85] [--floor 60]` | **Mục tiêu 3.** Từng đặc trưng hình dạng + gộp tham lam thành khuôn (mỗi bước giảm vé giữ lại nhiều nhất mà % kỳ đúng gộp ≥ floor). In khuôn áp kỳ tới. (~10 giây) |
 | `python3 build/khang_dinh.py <game>` | Khẳng định về kỳ tới (≥1 số của 2 kỳ gần, ≥1 số nóng, chẵn/lẻ, nhỏ/lớn, hàng chục…): % kỳ đúng 3 khúc + vé giữ lại. |
 | `python3 build/loai_tru.py <game>` | Tỉ lệ ra của nhóm bị loại so với nhóm còn lại (cấp số), luật loại vé (cấp vé). |
 | `python3 build/thu_them.py <game>` | Theo thứ quay, số "đến hạn", cặp số, số cùng thứ tuần trước. |
@@ -29,9 +48,10 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 Muốn thử ý mới: thêm luật vào `RULES` trong `build/suyluan.py` (hàm `(t, gap, counts) -> tập số bị loại`) hoặc viết script nhỏ cùng khuôn (chạy tiến, chia đoạn, chấm theo từng kỳ).
 
 ## Quy trình
-1. **Xác nhận ý anh** (1–3 câu): trò nào, loại hay khẳng định, khung kỳ (mặc định 100 gần + 100 trước).
-2. Chạy `build/suyluan.py <game>` (+ các script khác nếu cần). Tự nghĩ thêm 2–4 giả thuyết hợp với cách nghĩ của anh và thử luôn.
+1. **Hỏi game** (AskUserQuestion) → chờ anh chọn. Xác nhận khung kỳ (mặc định 100 gần + 100 trước).
+2. Chạy `build/suyluan.py`, `build/vitri.py`, `build/hinhdang.py` cho game đó (+ các script khác nếu cần). Tự nghĩ thêm 2–4 giả thuyết (từ cách nghĩ của anh và từ suy luận dãy số tổng quát) và thử luôn.
 3. Trình bày:
+   - Theo 3 mục tiêu: (1) pool toàn dãy, (2) pool từng vị trí, (3) khuôn hình dạng — mỗi mục có bảng + "áp kỳ tới".
    - Bảng luật: **% kỳ đúng (100 gần / 100 trước)**, số bị bỏ TB/kỳ, vé giữ lại, đánh giá. Nhấn luật ✔ (đúng ≥85% gần, ≥80% trước, ≥ vé giữ lại).
    - **Không nên loại** gì (luật thất bại, nhóm hay quay lại).
    - **Áp vào kỳ tới**: số cụ thể bị loại / nên giữ; nêu xung đột với lõi vé, với tâm linh mạnh.
@@ -40,6 +60,7 @@ Muốn thử ý mới: thêm luật vào `RULES` trong `build/suyluan.py` (hàm 
 5. Ghi kết quả vào `ghi-chu-quy-luat.md` (mục mới, ngày, script, số liệu, luật dùng/bỏ). Commit + push.
 
 ## Đã biết (cập nhật khi có nghiên cứu mới)
+- **Mega vị trí/hình dạng (04/10/2026):** khoảng 85% từng vị trí → đúng cả 6 vị trí 59% kỳ (100 gần) / 51% (100 trước), vé giữ lại 49%. Khuôn hình dạng gộp (số nhỏ 2–4, hàng chục 3–4, cặp liền 0–1, số lẻ 2–4): đúng 70% / 64%, vé giữ lại 52%.
 - **Mega (100 kỳ, 04/10/2026):** bỏ vắng ≥30 đúng 94% kỳ; bỏ số ra 2 kỳ liền 92%; gộp 2 luật 87%; bỏ vắng ≥20 chỉ 72%; không nên bỏ số khó ra / ít ra nhất / ít ra cả 4 đoạn (chúng hay quay lại); số nhiều ra cả 4 đoạn 25 kỳ (16 31 36) đáng giữ. Khẳng định có dấu vết: ≥1 số của 2 kỳ gần (86–91%), ≥1 số trong 10 số nóng.
 - **Power:** số vắng 11–15 kỳ ra nhiều hơn; vắng 6–10 ít hơn; số kỳ cùng thứ tuần trước ít hơn; đà tổng có dấu vết; rải ≥4 hàng chục.
 - **Loto:** phiên 13h/21h có tính cách riêng; chuyển kỳ; số vừa ra kỳ trước ít hơn; số vắng lâu không nên loại; số May Mắn cân bằng (chọn vắng lâu).

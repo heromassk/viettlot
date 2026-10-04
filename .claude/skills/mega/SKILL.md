@@ -14,7 +14,7 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 - Thao tác xoá trong app luôn cần xác nhận.
 
 ## Đặc thù Mega
-- Quay **lồng cầu, bi vật lý** → giả thuyết **trọng lượng bi**: số vắng ≥20 kỳ bị loại khỏi pool (ở Mega, việc bỏ số vắng lâu đúng nhiều hơn trong 200 kỳ gần); ưu tiên 10/20/50 kỳ gần vì bộ bi có thể đổi.
+- Quay **lồng cầu, bi vật lý** → giả thuyết **trọng lượng bi**: số vắng **≥30** kỳ (đúng 94% kỳ) và số **ra 2 kỳ liền** (đúng 92%) bị loại khỏi pool; số ra nhiều cả 4 đoạn 25 kỳ +1 điểm (suyluan 04/10/2026). Trước đây dùng vắng ≥20 (chỉ đúng 72%) (ở Mega, việc bỏ số vắng lâu đúng nhiều hơn trong 200 kỳ gần); ưu tiên 10/20/50 kỳ gần vì bộ bi có thể đổi.
 - Lịch quay: Thứ 4, 6, Chủ nhật (18h). Anh chơi **mọi kỳ**.
 - Đà tổng chỉ dùng khi tương quan 50 kỳ > 0.2 (script tự quyết); nếu không thì dùng khoảng tổng thường gặp 200 kỳ.
 - Vé (khẳng định có dấu vết, 04/10/2026): mỗi vé có ≥1 số của 2 kỳ gần nhất, ≥1 số trong 10 số nóng; ≥1 số trùng/kề kỳ trước; không trùng ≥2 số kỳ trước (lõi cũng không chứa ≥2 số kỳ trước); chẵn/lẻ và nhỏ/lớn 3±1; rải ≥4 hàng chục; không 3 số liên tiếp.
