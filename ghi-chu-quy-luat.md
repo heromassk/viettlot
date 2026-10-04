@@ -271,3 +271,11 @@ Nguyên tắc (theo yêu cầu của anh): phương pháp có cơ sở, cố đ�
 |---|---|---|---|---|---|---|---|---|---|
 | 03/10 21h | 10 12 29 33 35 · MM 07 | 1/6 (10) | 1/7 (12) | 0/7 | 3/3 bỏ đúng | 5/6 (29 về sau 15+ kỳ) | sai: tổng 119 ngoài 77–105 | 2 (10 12) | 1 số |
 | 04/10 13h | 02 19 22 32 35 · MM 04 | 0/4 | 1/7 (32) | 2/8 (22 35) | 3/3 bỏ đúng | 4/5 (19 về, vắng 15+) | sai: tổng 110 ngoài 77–106 | **3 (22 32 35)**; pool 10: 2 · tâm linh 12: **3 (19 22 32)** | 1 số |
+
+## Dấu vết Loto 5/35 (máy tính quay, không bi) — nghiên cứu 04/10/2026, 924 kỳ, `build/loto_dauvet.py`
+Chấm bằng tỉ lệ của chính phương pháp, chạy tiến (chỉ dùng dữ liệu trước kỳ), chia 3 khúc để xem độ ổn định.
+- **Mỗi phiên có "tính cách" riêng**: tần suất từng số ở phiên 13h nửa đầu khớp nửa sau (corr 0.33); 21h yếu hơn (0.22); 13h và 21h không giống nhau (−0.02) → tách phiên khi xét nóng/lạnh.
+- **Chuyển kỳ (số a kỳ trước → số nào hay theo sau a)**, pool 15: TB 2.25 / 2.14 / 2.26 qua 3 khúc, 50 kỳ gần 2.44, ≥3 số 40% — ổn định nhất trong các cách thử. Cùng phiên hôm trước (lag 2): 2.10 / 2.09 / 2.32, 50 kỳ gần 2.40 (đang lên).
+- Nóng cùng phiên 100 kỳ: 2.25 / 2.15 / 2.21, ≥3 số 38%. Lạnh kém hơn nóng ở cả 3 khúc với số chính.
+- **Số May Mắn có xu hướng cân bằng**: số MM ra nhiều khúc này thì khúc sau ra ít (corr giữa các khúc −0.31). MM lạnh (ít ra 300 kỳ) top 3: 28.6% / 24.5% / 23.2%, trong khi MM nóng top 3: 21.2% / 19.5% / 19.5% — lạnh hơn nóng ở mọi khúc. MM vắng lâu nhất top 3: 29.9% / 24.5% / 28.6%, 50 kỳ gần 32%.
+- Không thấy dấu vết: cặp số hay đi cùng (không lặp lại giữa 2 nửa), đà tổng (corr ≈ 0), kề ±1, đuôi số (chỉ do cấu trúc 1–35).
