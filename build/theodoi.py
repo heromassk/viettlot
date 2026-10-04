@@ -40,6 +40,8 @@ RULES = [
     ('it100', 'Bỏ số ra ít nhất 100 kỳ', lambda R, t, c: topk(c['c100'], 1)),
     ('nhieu100', 'Bỏ số ra nhiều nhất 100 kỳ', lambda R, t, c: topk(c['c100'], 1, True)),
     ('nhip2', 'Bỏ số nhịp "ra – vắng 2 – ra" (vừa ra lại sau đúng 2 kỳ vắng)', lambda R, t, c: {n for n in R[t - 1] if n not in R[t - 2] and n not in R[t - 3] and n in R[t - 4]}),
+    ('nhipmin100', 'Bỏ số phá nhịp tối thiểu (100 kỳ: luôn nghỉ ≥x kỳ, mới nghỉ <x)', lambda R, t, c: nhip_min(R, t, len(c['gap']), 100)),
+    ('nhipmin200', 'Bỏ số phá nhịp tối thiểu (200 kỳ)', lambda R, t, c: nhip_min(R, t, len(c['gap']), 200)),
     ('uprev', 'Bỏ số nhỏ nhất kỳ trước', lambda R, t, c: {min(R[t - 1])}),
     ('zprev', 'Bỏ số lớn nhất kỳ trước', lambda R, t, c: {max(R[t - 1])}),
 ]
@@ -55,6 +57,16 @@ def nhip_off(R, t, NB, W=200, m=5):
             if n in R[u]: run = 0
             elif run is not None: run += 1
         if seen >= m and hit == 0: out.add(n)
+    return out
+
+def nhip_min(R, t, NB, W, m=5):
+    """Nhịp tối thiểu: trong W kỳ, số đó luôn nghỉ ≥x kỳ giữa 2 lần ra (x ≥ 1, ≥m lần ra) mà hiện mới nghỉ < x kỳ."""
+    out = set()
+    for n in range(1, NB + 1):
+        hits = [u for u in range(max(0, t - W), t) if n in R[u]]
+        if len(hits) < m: continue
+        mg = min(b - a - 1 for a, b in zip(hits, hits[1:])); cur = t - 1 - hits[-1]
+        if mg >= 1 and cur < mg: out.add(n)
     return out
 
 # (id, nhãn, hàm(R, t, c, NB, KB) -> (kind, nums, k)) — kind 'atleast': kỳ tới có ≥k số trong nums; 'atmost': ≤k số

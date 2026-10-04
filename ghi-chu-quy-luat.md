@@ -333,6 +333,14 @@ Cách tính: với mỗi số, xem lịch sử 200 kỳ của CHÍNH số đó �
 - **Power:** nhóm bị loại ra NHIỀU hơn ở 2/3 đoạn → không dùng. **Loto:** ít hơn 2/3 đoạn → chưa ổn định.
 - Bài học: loại 1 số bất kỳ vốn đã đúng ~86–89% số kỳ; "lợi" thật nằm ở chỗ nhóm bị loại ra ít hơn các số còn lại.
 
+## Nhịp tối thiểu từng số (ý anh: "luôn nghỉ ≥x kỳ mới ra lại" mà vừa ra → kỳ này không ra) — 04/10/2026 (`build/nhip_min.py`)
+Trong cửa sổ W kỳ, số đó có ≥5 lần ra và khoảng nghỉ nhỏ nhất giữa 2 lần ra là x (≥1); hiện mới nghỉ < x → loại.
+- **Loto (W=100):** nhóm bị loại ra ít hơn cả 3 đoạn (12.9/7.4/11.6% vs 14.3–14.6%); đúng 86/89/82% kỳ, ~1.2 số/kỳ.
+- **Power (W=200):** ít hơn 3/3 nhưng rất nhẹ (9.9/10.7/10.0% vs 10.9%); đúng 93/91/90% kỳ, ~0.7 số/kỳ.
+- **Mega:** không ổn định — W=100 gần đây nhóm này lại ra NHIỀU hơn (17%).
+- Thực tế x hầu hết = 1 (số chưa từng ra 2 kỳ liền trong cửa sổ); với 200 kỳ gần như số nào cũng có lúc ra liền nên luật ít khi kích hoạt.
+Đã đưa vào sổ kiểm chứng (nhipmin100, nhipmin200), chưa áp dụng.
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
