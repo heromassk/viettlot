@@ -356,6 +356,14 @@ Kết luận: luật loại an toàn ≥80% kỳ chỉ bỏ được ~2–3 số
 - "Độ đồng thuận" điểm (top 5 vượt xa phần còn lại): KHÔNG giúp (cao: 2.12, thấp: 2.25).
 - **Nhịp pool**: 5 kỳ gần pool 15 trúng TB ≥ ngưỡng 1/3 tốt nhất (~2.4) → kỳ tới TB 2.40/2.41, ≥3 số 51%/52% (hai nửa 200 kỳ) so với 1.9–2.3 và 32–45% lúc khác → dùng làm chỉ báo "kỳ đánh mạnh".
 
+## Số May Mắn Loto — nghiên cứu sâu 04/10/2026 (`build/somayman.py`, đoạn 150 kỳ gần → xa)
+Chọn 3 MM (3/12 ⇒ phần giữ lại 25%):
+- 3 MM vắng lâu nhất (đang dùng): 29 / 27 / 21 / 31%.
+- **MM kỳ trước + 2 MM vắng lâu nhất: 33 / 34 / 23 / 29%** — tốt nhất 2 đoạn gần.
+- MM kỳ trước ±1: 29 / 29 / 24 / 28%. Ít ra nhất 60/120 kỳ, nóng nhất, cùng phiên, tổng mod 12: ≈25% (không dấu vết).
+- **MM hay lặp lại ngay kỳ sau**: 10.0 / 15.3 / 8.7 / 7.3% (bình quân 8.3%) → KHÔNG nên loại MM vừa ra.
+- Luật loại MM: loại MM vừa ra / cùng phiên hôm trước đều kém hơn phần giữ lại → không dùng; loại MM ra ≥2 lần/5 kỳ, ≥3 lần/10 kỳ ≈ ngang → không lợi.
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
