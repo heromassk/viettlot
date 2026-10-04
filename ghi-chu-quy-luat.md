@@ -296,6 +296,14 @@ Tiêu chí của anh: một cách suy luận đúng ≥70% số kỳ (10 kỳ đ
 - Số "đến hạn" theo nhịp riêng từng số: không ổn định (Power 2/3 khúc, Mega 1/3).
 - Cặp số hay đi cùng: không lặp lại giữa hai nửa dữ liệu (Power, Mega).
 
+## Mega — dấu hiệu 100 kỳ gần nhất (04/10/2026, `build/mega100.py`)
+Cách chấm theo ý anh: mỗi luật loại được chấm theo TỪNG KỲ (kỳ đó không số bị loại nào về = đúng). Sai vài kỳ không sao vì chơi lâu dài; quan trọng là đúng nhiều kỳ và ổn định. So 100 kỳ gần với 100 kỳ trước đó.
+- Bỏ số vắng ≥30: đúng 94% kỳ (100 trước: 88%), bỏ ~0.9 số/kỳ. Vắng ≥25: 85% (82%). Vắng ≥20: 72% (67%).
+- Bỏ số ra 2 kỳ liền: 92% (92%). Gộp vắng ≥30 + ra 2 kỳ liền: **87%** (81%), bỏ ~1.6 số/kỳ.
+- Bỏ số quá nóng (≥4/10 kỳ): 84% (81%).
+- KHÔNG nên bỏ: số khó ra 100/200 kỳ (60–68%), 3–5 số ra ít nhất (38–62%), số ít ra cả 4 đoạn 25 kỳ (51% — chúng hay quay lại).
+- Số nhiều ra cả 4 đoạn 25 kỳ (hiện 16 31 36): 36% kỳ có ≥1 số này (nhóm chỉ 2–3 số).
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
