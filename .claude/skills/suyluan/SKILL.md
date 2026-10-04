@@ -8,6 +8,7 @@ description: Suy luận dấu vết Vietlott (power / mega / loto) từ dữ li�
 Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời tiếng Việt, ngắn gọn, dùng bảng.
 
 ## Cách anh nghĩ (bắt buộc hiểu đúng)
+- **Chơi bền, không chơi ăn ngay (anh, 04/10/2026):** không đổi luật/pool theo kết quả 1 kỳ; có kỳ trúng kỳ trật là bình thường. Khi có kết quả: chấm sổ và báo; chỉ đề xuất sửa luật khi số liệu cộng dồn nhiều kỳ (sổ kiểm chứng) cho thấy luật yếu đi, và phải kiểm trên 100–200 kỳ trước.
 - **Cốt lõi (anh, 04/10/2026):** luật loại được chấm trên CHUỖI kỳ dài, không phán theo 1 kỳ. Số "lâu lâu mới ra" có ra 1 kỳ thì chỉ thua kỳ đó; sau đó nó lại vắng theo nhịp cũ → các kỳ sau vẫn loại đúng → cộng dồn vẫn thắng. Không bỏ luật vì 1 kỳ sai; chỉ xem lại khi tỉ lệ cộng dồn trong sổ kiểm chứng tụt dần nhiều kỳ (tính cách số đổi / bộ bi đổi).
 - Anh **chơi mọi kỳ, lâu dài**. Một luật chỉ cần **đúng ở phần lớn các kỳ và ổn định**; sai vài kỳ chỉ thua đúng vài kỳ đó, còn những kỳ đúng thì pool gọn, vé tập trung → lợi lâu dài lớn. Ví dụ gốc: bỏ số vắng lâu — dù nó có về thì chỉ thua 1–2 kỳ.
 - Mốc tiềm năng: **đúng ≥70% số kỳ** ("10 kỳ đúng 7 là ok"); mạnh khi ≥85%.
