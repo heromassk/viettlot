@@ -397,6 +397,35 @@ if VL:
     for v in VL:
         print(f"| **{v['n']:02d}** | {v['gap']} | {v['c100']} / {v['c200']} | {v['thua']}% | {v['long15']}% | {v['maxg']} | {'—' if v['po'] is None else str(v['po']) + '%'} ({v['pn']} lần) / {v['pa']}% | {v['tl']} phiếu | **{v['verdict']}** |")
 
+# ---------- Bảng số ra nhiều gần đây (10/20 kỳ) — có thể liên quan trọng lượng bi ----------
+NONG = []
+e10, e20 = 10 * P, 20 * P
+for n in range(1, NB + 1):
+    c10 = f[n]['c10']; c20 = f[n]['c20']
+    if not (c10 >= 3 or c20 >= max(5, round(2 * e20))): continue
+    c100 = sum(n in R[u] for u in range(T - 100, T)); c200 = sum(n in R[u] for u in range(T - 200, T))
+    q4 = [sum(n in R[u] for u in range(T - 100 + 25 * i, T - 75 + 25 * i)) for i in range(4)]
+    # lịch sử của chính số: những lần nó ra ≥c10 lần trong 10 kỳ thì kỳ kế ra bao nhiêu %
+    seen = hit = 0
+    for t in range(max(10, T - 300), T):
+        if sum(n in R[u] for u in range(t - 10, t)) >= min(c10, 3): seen += 1; hit += n in R[t]
+    lr = c200 / (200 * P) * 100
+    if lr >= 115 and sum(x > 25 * P for x in q4) >= 3: kind = 'Nóng bền — có thể bi dễ ra (nặng/nhẹ lệch)'
+    elif lr >= 100: kind = 'Nóng, đường dài cũng ra nhiều'
+    elif lr >= 85: kind = 'Nóng ngắn hạn (đường dài bình thường)'
+    else: kind = 'Đang hồi sau thời gian ra ít'
+    if A.game == 'loto': kind = kind.replace(' — có thể bi dễ ra (nặng/nhẹ lệch)', ' (máy tính: không phải bi)')
+    NONG.append(dict(n=n, c10=c10, c20=c20, c100=c100, c200=c200, lr=round(lr), q4=q4, gap=f[n]['gap'],
+                     nx=None if not seen else round(hit / seen * 100), ns=seen, kind=kind,
+                     state='bị loại' if n in (s['vang'] | loai_of(s) | BO) else (f'pool #{rank.index(n) + 1}' if n in rank else 'ngoài pool 20')))
+NONG.sort(key=lambda v: (-v['c10'], -v['c20']))
+if NONG:
+    print(f'\n### Số ra nhiều gần đây (10/20 kỳ) — kỳ vọng {e10:.1f} / {e20:.1f} lần\n')
+    print('| Số | Ra 10 kỳ | Ra 20 kỳ | Ra 100 / 200 kỳ | Mức ra 200 kỳ | 4 đoạn 25 kỳ | Đang vắng | Khi nóng thế này, kỳ kế ra (lịch sử của số) | Trạng thái | Nhận xét |')
+    print('|---|---|---|---|---|---|---|---|---|---|')
+    for v in NONG:
+        print(f"| **{v['n']:02d}** | {v['c10']} | {v['c20']} | {v['c100']} / {v['c200']} | {v['lr']}% | {'/'.join(map(str, v['q4']))} | {v['gap']} | {'—' if v['nx'] is None else str(v['nx']) + '%'} ({v['ns']} lần) | {v['state']} | {v['kind']} |")
+
 # ---------- Khẳng định kỳ này (đúng ≥70% ở 200 kỳ) ----------
 CLR = []
 for (lab, st, fn), (lab2, r200, k200), (_, r50, _) in zip(CL_NOW, B[200]['claims'], B[50]['claims']):
@@ -447,7 +476,7 @@ if A.json:
              mmGap={k: mg[k] for k in MM} if MM else {}, linh=sorted(LINH),
              tl=dict(votes=votes, top=top_v, strong=strong, rescued=rescued, out=strong_out,
                      day=day, nm=len(APP.get('methods', []))) if APP else None,
-             vl=VL, sig=[dict(lab=lab, nums=sorted(s[k]), how=how, r=[B[W][k][0] for W in (10, 50, 200)]) for k, lab, how in rows])
+             vl=VL, nong=NONG, sig=[dict(lab=lab, nums=sorted(s[k]), how=how, r=[B[W][k][0] for W in (10, 50, 200)]) for k, lab, how in rows])
     json.dump(J, open(A.json, 'w'), ensure_ascii=False)
 
 # Lưu lại gợi ý để chấm sổ khi có kết quả
