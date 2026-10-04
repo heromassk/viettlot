@@ -56,7 +56,8 @@ input.n{width:52px;text-align:center;}
   #sgPos thead{display:none;} #sgPos,#sgPos tbody{display:block;} #sgPos tr{display:grid;grid-template-columns:40px 36px 1fr 1fr;gap:2px 6px;align-items:center;border-bottom:1px solid var(--border);padding:6px 0;} #sgPos td{border:0;padding:2px;} #sgPos td:nth-child(5){grid-column:3/5;text-align:left;} #sgPos td:nth-child(5)::before{content:'Khoảng chốt: ';color:var(--muted);font-weight:400;font-size:.75rem;} #sgPos td:last-child{grid-column:1/-1;text-align:left;}
   #dirTbl thead{display:none;} #dirTbl,#dirTbl tbody{display:block;} #dirTbl tr{display:grid;grid-template-columns:44px 1fr 1fr 1fr 1fr;align-items:center;border-bottom:1px solid var(--border);padding:6px 0;} #dirTbl td{border:0;} #dirTbl td:last-child{grid-column:1/-1;text-align:left;padding-top:4px;}
 }
-#advCard>.card,#advCard>details.card{background:var(--panel2);margin:10px 0;}
+#advCard>.card,#advCard>details.card,#toolsCard>details.card{background:var(--panel2);margin:10px 0;}
+/*BANGCSS*/
 </style>
 </head>
 <body>
@@ -65,24 +66,13 @@ input.n{width:52px;text-align:center;}
 <h1 id="h1"></h1>
 <div class="sub" id="status"></div>
 
-<details class="card" id="sgCard">
-  <summary><h2>① Kỳ tới: 2 dãy gợi ý</h2></summary>
-  <div class="foot" style="margin-top:0;">Máy thu hẹp còn một pool số, tạo 5 dãy, chọn 2 dãy ★. Dòng "Hiệu quả thật" cho biết cách này đã trúng bao nhiêu khi làm lại trên các kỳ đã qua.</div>
-  <div class="sum" style="margin-top:6px;border:1px solid var(--accent);"><b>Tùy chỉnh</b> <span class="foot" style="margin:0;">(chọn xong, mọi phần bên dưới tự tính lại)</span>
-    <div class="row" style="margin:6px 0 0;"><span class="lbl">Phương pháp thu hẹp:</span><select id="sgMs" style="background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:5px 6px;max-width:100%;"></select></div>
-    <div class="row" style="margin:6px 0 0;"><span class="lbl">Pool tổng chứa ít nhất (đạt ≥ 70% số kỳ, khi để Tự động):</span><span id="sgK" class="row"></span></div>
-    <div class="row" style="margin:6px 0 0;"><span class="lbl">Cỡ pool tổng:</span><span id="sgKm" class="row"></span></div>
-    <div class="row" style="margin:6px 0 0;"><span class="lbl">Bỏ số đang vắng ≥:</span><span id="sgVg" class="row"></span></div>
-    <div class="row" style="margin:6px 0 0;"><span class="lbl">Pool riêng từng vị trí đúng:</span><span id="sgLv" class="row"></span></div>
-  </div>
-  <div id="effLine" class="sum" style="margin-top:6px;"></div>
-  <details id="r10" style="margin:6px 0 0;"><summary class="lbl" style="cursor:pointer;">Lịch sử 10 kỳ gần nhất</summary><div id="r10In"></div></details>
-  <div id="sgHead" class="sum"></div>
+<details class="card" id="bangCard" open>
+  <summary><h2>Gợi ý kỳ tới</h2></summary>
+  <div id="bangIn"></div>
+</details>
+<details class="card" id="myCard" open>
+  <summary><h2>Dãy của anh</h2></summary>
   <div id="myBox" class="sum"></div>
-  <div id="phBox" class="sum" style="border-left:3px solid var(--good);"><div id="phIn"></div><div id="oosBox"></div></div>
-  <div id="spBox" class="sum"></div>
-  <div id="sgTickets"></div>
-  <div id="whBox" style="margin-top:12px;"></div>
 </details>
 <details class="card" id="addCard">
   <summary><h2>② Nhập kết quả mới</h2></summary>
@@ -97,7 +87,29 @@ input.n{width:52px;text-align:center;}
   <div class="foot" style="margin-top:0;">Sao lưu toàn bộ dữ liệu của cả 3 game (kết quả nhập thêm, gợi ý app đã chốt, dãy của anh) thành 1 file .json. Trên iPhone file nằm trong app Tệp → Tải về, trên Android trong thư mục Download; có thể gửi qua Zalo, email hoặc để lên Google Drive.</div>
   <div class="row" style="margin-top:6px;"><button class="btn pri" id="bkGo">Sao lưu</button><label class="btn" style="cursor:pointer;">Khôi phục từ file<input type="file" id="bkFile" accept=".json,application/json" style="display:none;"></label></div>
   <div id="bkMsg" class="foot"></div>
-</details><details class="card" id="whyCard">
+</details>
+<details class="card" id="toolsCard">
+  <summary><h2>Công cụ nghiên cứu (nâng cao)</h2></summary>
+  <div class="foot" style="margin-top:0;">Các phần phân tích chi tiết của app. Bảng "Gợi ý kỳ tới" ở trên đã tổng hợp kết quả chính.</div>
+<details class="card" id="sgCard">
+  <summary><h2>① Kỳ tới: 2 dãy gợi ý</h2></summary>
+  <div class="foot" style="margin-top:0;">Máy thu hẹp còn một pool số, tạo 5 dãy, chọn 2 dãy ★. Dòng "Hiệu quả thật" cho biết cách này đã trúng bao nhiêu khi làm lại trên các kỳ đã qua.</div>
+  <div class="sum" style="margin-top:6px;border:1px solid var(--accent);"><b>Tùy chỉnh</b> <span class="foot" style="margin:0;">(chọn xong, mọi phần bên dưới tự tính lại)</span>
+    <div class="row" style="margin:6px 0 0;"><span class="lbl">Phương pháp thu hẹp:</span><select id="sgMs" style="background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:5px 6px;max-width:100%;"></select></div>
+    <div class="row" style="margin:6px 0 0;"><span class="lbl">Pool tổng chứa ít nhất (đạt ≥ 70% số kỳ, khi để Tự động):</span><span id="sgK" class="row"></span></div>
+    <div class="row" style="margin:6px 0 0;"><span class="lbl">Cỡ pool tổng:</span><span id="sgKm" class="row"></span></div>
+    <div class="row" style="margin:6px 0 0;"><span class="lbl">Bỏ số đang vắng ≥:</span><span id="sgVg" class="row"></span></div>
+    <div class="row" style="margin:6px 0 0;"><span class="lbl">Pool riêng từng vị trí đúng:</span><span id="sgLv" class="row"></span></div>
+  </div>
+  <div id="effLine" class="sum" style="margin-top:6px;"></div>
+  <details id="r10" style="margin:6px 0 0;"><summary class="lbl" style="cursor:pointer;">Lịch sử 10 kỳ gần nhất</summary><div id="r10In"></div></details>
+  <div id="sgHead" class="sum"></div>
+  <div id="phBox" class="sum" style="border-left:3px solid var(--good);"><div id="phIn"></div><div id="oosBox"></div></div>
+  <div id="spBox" class="sum"></div>
+  <div id="sgTickets"></div>
+  <div id="whBox" style="margin-top:12px;"></div>
+</details>
+<details class="card" id="whyCard">
   <summary><h2>③ Vị trí và cách tạo dãy</h2></summary>
   <div class="foot" style="margin-top:0;">Pool riêng, khoảng thường gặp và hướng tăng/giảm của từng vị trí; cách máy ghép 5 dãy.</div>
   <div class="tw"><table id="sgPos"></table></div>
@@ -215,6 +227,7 @@ input.n{width:52px;text-align:center;}
   </div>
 </details>
 </details>
+</details>
 
 
 
@@ -244,6 +257,11 @@ input.n{width:52px;text-align:center;}
 
 <script>
 const ALL=/*DATA*/;
+const GOIY=/*GOIY*/;
+/*BANGJS*/
+function renderBangCard(){const el=$('bangIn');if(!el)return;const J=GOIY[GAME];let h=renderBang(J);
+  if(J&&S.M&&S.M.nd&&J.next!==S.M.nd)h=`<div class="bg-warn" style="margin-bottom:8px;">Bảng này cho kỳ ${J.next}; kỳ tới của app là ${S.M.nd}. Bảng sẽ cập nhật khi chạy lại gợi ý.</div>`+h;
+  el.innerHTML=h;}
 const GAMES={
  loto535:{label:'Loto 5/35',sub:'13h · 21h mỗi ngày',N:35,C:5,extra:'MM',extraName:'số may mắn',extraN:12,hours:true,coll:'draws',pcoll:'preds',ls:'loto_extra_v1',mcoll:'mine'},
  mega645:{label:'Mega 6/45',sub:'T4 · T6 · CN',N:45,C:6,extra:null,days:[3,5,0],coll:'draws_mega645',pcoll:'preds_mega645',ls:'mega_extra_v1',mcoll:'mine_mega645'},
@@ -365,7 +383,7 @@ function renderAll(){
   $('status').textContent=`Dữ liệu ${M.all.length} kỳ (${M.all[0].date} → ${M.all[M.all.length-1].date}) · đang nghiên cứu ${M.W} kỳ gần nhất · kỳ tới: ${fmt(M.nd)}`;
   $('winBtns').innerHTML=[100,200,300,500,1000].map(n=>`<span class="chip${n===S.win?' on':''}" data-n="${n}">${n>=M.all.length&&n===1000?'tất cả':n}</span>`).join('');
   $('winBtns').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.win=+e.dataset.n;renderAll();});
-  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
+  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
 }
 function renderAdd(){
   const a=ex();$('addList').innerHTML=a.length?`<div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ đã thêm</th><th class="l">Số</th><th></th></tr></thead><tbody>${a.map((e,i)=>`<tr><td class="l">${e.date}</td><td class="l">${e.r.map(n=>`<span class="b">${p2(n)}</span>`).join('')}${GC.extra&&e.lk!=null?` <span class="b lk">${p2(e.lk)}</span>`:''}</td><td><button class="btn" data-del="${i}">Xóa</button></td></tr>`).join('')}</tbody></table></div>`:'';

@@ -22,6 +22,7 @@ ap.add_argument('game', choices=GAMES)
 ap.add_argument('--app'); ap.add_argument('--G', type=int); ap.add_argument('--k', type=int, default=15)
 ap.add_argument('--linh', default='')
 ap.add_argument('--cu', action='store_true', help='cách cũ: tắt các luật loại trừ bổ sung (để so)')
+ap.add_argument('--json', help='ghi dữ liệu gợi ý dạng JSON (cho bảng trực quan)')
 ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
@@ -112,19 +113,60 @@ def pool_of(sc, s, k):
 WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0.5 1').split())
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
         {'power': ('chin', 'g610'), 'mega': ('duoi',), 'loto': ('lap',)}[A.game])
-def backtest(W):
-    acc = {k: [0, 0] for k in SIGS}   # [số trúng / số bị loại đúng, cỡ tập]
-    pool_h = []
+import random
+random.seed(5)
+MC = [set(random.sample(range(1, NB + 1), KB)) for _ in range(300)]
+HALF = KB // 2
+
+def claims(t, rk):
+    """Các khẳng định về kỳ t (chỉ dùng dữ liệu trước t). Trả về [(nhãn, tập số hiển thị, hàm kiểm)]."""
+    last, p2 = R[t - 1], R[t - 2]
+    c20 = {n: sum(n in R[u] for u in range(t - 20, t)) for n in range(1, NB + 1)}
+    gp = {}
+    for n in range(1, NB + 1):
+        g = 0
+        while g < t and n not in R[t - 1 - g]: g += 1
+        gp[n] = g
+    hot10 = set(sorted(c20, key=lambda n: (-c20[n], gp[n], n))[:10])
+    ke = {m for n in last for m in (n - 1, n, n + 1) if 1 <= m <= NB}
+    p10, p15, p20 = set(rk[:10]), set(rk[:15]), set(rk[:20])
+    return [
+        ('Pool 10 có ≥1 số', p10, lambda x: len(x & p10) >= 1),
+        ('Pool 15 có ≥2 số', p15, lambda x: len(x & p15) >= 2),
+        ('Pool 20 có ≥2 số', p20, lambda x: len(x & p20) >= 2),
+        ('Pool 20 có ≥3 số', p20, lambda x: len(x & p20) >= 3),
+        ('Có ≥1 số của 2 kỳ gần nhất', last | p2, lambda x: bool(x & (last | p2))),
+        ('Có ≥1 số trong 10 số nóng nhất 20 kỳ', hot10, lambda x: bool(x & hot10)),
+        ('Có ≥1 số trùng hoặc kề ±1 kỳ trước', ke, lambda x: bool(x & ke)),
+        ('Không trùng ≥2 số với kỳ trước', last, lambda x: len(x & last) < 2),
+        (f'Chẵn/lẻ cân ({HALF}±1 số lẻ)', None, lambda x: abs(sum(n % 2 for n in x) - KB / 2) <= 1),
+        (f'Nhỏ/lớn cân ({HALF}±1 số ≤{NB // 2})', None, lambda x: abs(sum(n <= NB // 2 for n in x) - KB / 2) <= 1),
+        (f'Rải ≥{KB - 2} hàng chục', None, lambda x: len({n // 10 for n in x}) >= KB - 2),
+    ]
+
+def backtest(W=200):
+    """Chạy tiến W kỳ: mỗi kỳ ghi số trúng của từng tín hiệu, pool 10/15/20 và từng khẳng định."""
+    recs = []
     for t in range(T - W, T):
         f, s = signals(t)
-        for k in acc:
-            hit = len(s[k] & R[t])
-            acc[k][0] += (len(s[k]) - hit) if k in ('kho', 'vang') else hit
-            acc[k][1] += len(s[k])
-        pool_h.append(len(set(pool_of(score(f, s), s, A.k)) & R[t]))
-    out = {k: (a / b * 100 if b else None, b / W) for k, (a, b) in acc.items()}
-    out['pool'] = (sum(pool_h) / W, sum(h >= 3 for h in pool_h) / W * 100, pool_h[-10:])
-    out['dist'] = [sum(h >= j for h in pool_h) / W * 100 for j in range(1, 5)]
+        rk = pool_of(score(f, s), s, 20)
+        sig = {k: (len(s[k] & R[t]), len(s[k])) for k in SIGS}
+        cl = [(lab, fn(R[t]), sum(fn(m) for m in MC) / len(MC)) for lab, _, fn in claims(t, rk)]
+        recs.append(dict(sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (10, 15, 20)}, cl=cl))
+    return recs
+
+def summ(recs):
+    W = len(recs); out = {}
+    for k in SIGS:
+        a = sum(r['sig'][k][0] for r in recs); b = sum(r['sig'][k][1] for r in recs)
+        if k in ('kho', 'vang'): a = b - a
+        out[k] = (a / b * 100 if b else None, b / W)
+    hs = [r['h'][A.k] if A.k in (10, 15, 20) else r['h'][15] for r in recs]
+    out['pool'] = (sum(hs) / W, sum(h >= 3 for h in hs) / W * 100, hs[-10:])
+    out['dist'] = [sum(h >= j for h in hs) / W * 100 for j in range(1, 5)]
+    out['tiers'] = {k: [sum(r['h'][k] >= j for r in recs) / W * 100 for j in range(1, 5)] + [sum(r['h'][k] for r in recs) / W] for k in (10, 15, 20)}
+    out['claims'] = [(recs[0]['cl'][i][0], sum(r['cl'][i][1] for r in recs) / W * 100, sum(r['cl'][i][2] for r in recs) / W * 100)
+                     for i in range(len(recs[0]['cl']))]
     return out
 
 
@@ -168,10 +210,18 @@ for n in LINH: extra[n] = extra.get(n, 0) + 3
 sc = score(f, s, extra)
 pool = pool_of(sc, s, A.k)
 hot_out = sorted(s['hot'] - set(pool))
+rank = pool_of(sc, s, min(20, NB - len(s['vang'])))
+CL_NOW = claims(T, rank)
+HOT10 = next(c[1] for c in CL_NOW if c[0].startswith('Có ≥1 số trong 10'))
+KE1 = next(c[1] for c in CL_NOW if c[0].startswith('Có ≥1 số trùng'))
 
 # ---------- Vé: lõi + vệ tinh ----------
 NL = 2 if KB == 5 else 3
-core, sat = pool[:NL], pool[NL:]
+core = []
+for n in pool:   # Mega: lõi không chứa ≥2 số của kỳ trước (khẳng định "không trùng ≥2 số" đúng 88%)
+    if len(core) < NL and not (A.game == 'mega' and not A.cu and n in R[-1] and len(set(core) & R[-1]) >= 1):
+        core.append(n)
+sat = [n for n in pool if n not in core]
 
 RELAX = ['đủ ràng buộc', 'bỏ điều kiện ≥2 số >31', 'mượn số ngoài pool (điểm cao kế tiếp)']
 EXT = [n for n in sorted(sc, key=lambda n: (-sc[n], n)) if n not in s['vang'] and n not in pool][:10]
@@ -180,7 +230,7 @@ def ok(tk, lv):
     tk = sorted(tk)
     if not SLO <= sum(tk) <= SHI: return False
     if lv == 0 and A.game != 'loto' and sum(x > 31 for x in tk) < 2: return False
-    if not A.cu and lv < 2 and bad_ticket(tk): return False
+    if not A.cu and bad_ticket(tk): return False
     return not any(tk[i] + 2 == tk[i + 1] + 1 == tk[i + 2] for i in range(len(tk) - 2))
 
 def bad_ticket(tk):
@@ -188,8 +238,15 @@ def bad_ticket(tk):
     odd = sum(x % 2 for x in tk); low = sum(x <= NB // 2 for x in tk)
     dec = {}
     for x in tk: dec[x // 10] = dec.get(x // 10, 0) + 1
-    return (len(set(tk) & R[-1]) >= 3 or odd in (0, KB) or low in (0, KB)
-            or (KB == 6 and max(dec.values()) >= 4) or max(tk) < NB * 2 // 3)
+    x = set(tk)
+    if (len(x & R[-1]) >= 3 or odd in (0, KB) or low in (0, KB)
+            or (KB == 6 and max(dec.values()) >= 4) or max(tk) < NB * 2 // 3):
+        return True
+    if A.game == 'power' and len(dec) < 4: return True          # rải ≥4 hàng chục: 78–80% kỳ thật, giữ 75% vé
+    if A.game == 'mega':                                          # khẳng định Mega có dấu vết (khang_dinh.py)
+        if not x & (R[-1] | R[-2]) or not x & HOT10: return True
+        if not x & KE1 or len(x & R[-1]) >= 2 or abs(odd - 3) > 1 or abs(low - 3) > 1 or len(dec) < 4: return True
+    return False
 
 def pick(base, cands, need, used):
     for lv in range(3):
@@ -197,19 +254,19 @@ def pick(base, cands, need, used):
         best = None
         for c in combinations(cs, need):
             tk = sorted(base + list(c))
-            if not ok(tk, lv): continue
+            if tk in DONE or not ok(tk, lv): continue
             v = (sum(sc[n] for n in c) - 2 * sum(used.get(n, 0) for n in c), [-n for n in c])
             if best is None or v > best[0]: best = (v, tk)
         if best: return best[1], lv
     c = sorted(cands, key=lambda n: (used.get(n, 0), -sc[n]))[:need]
     return sorted(base + c), 3
 
-tickets, used = [], {}
+tickets, used, DONE = [], {}, []
 for i in range(3):
-    tk, lv = pick(core, sat, KB - NL, used); tickets.append(('lõi+vệ tinh', tk, lv))
+    tk, lv = pick(core, sat, KB - NL, used); tickets.append(('lõi+vệ tinh', tk, lv)); DONE.append(tk)
     for n in tk: used[n] = used.get(n, 0) + 1
 for i in range(2):   # 2 vé trải: 1 số lõi + phần pool ít dùng
-    tk, lv = pick([core[i]], [n for n in pool if n not in core], KB - 1, used); tickets.append(('trải', tk, lv))
+    tk, lv = pick([core[i]], [n for n in pool if n not in core], KB - 1, used); tickets.append(('trải', tk, lv)); DONE.append(tk)
     for n in tk: used[n] = used.get(n, 0) + 1
 
 # ---------- In ----------
@@ -218,7 +275,8 @@ nd = APP['next'] if APP else '(kỳ tới)'
 print(f'## Gợi ý {NAME} — kỳ {nd}\n')
 print(f'Kỳ gần nhất {D["dates"][-1]}: **{fm(R[-1])}** (tổng {sums[-1]})\n')
 print('### Tín hiệu dấu vết (cùng một cách tính mọi kỳ)\n')
-B = {W: backtest(W) for W in (10, 50, 200)}
+RECS = backtest(200)
+B = {W: summ(RECS[-W:]) for W in (10, 50, 200)}
 pc = lambda v: '—' if v is None else f'{v:.0f}%'
 rows = [('hot', 'Nóng (c10≥3 hoặc c20≥2×kỳ vọng)', 'tỉ lệ ra/số'),
         ('ke', 'Kề ±1 kỳ trước', 'tỉ lệ ra/số'),
@@ -241,7 +299,6 @@ if APP:
           f'  ·  PP tốt nhất 50 kỳ (K15): {b15.get("id")} TB {b15.get("tb")} → {fm(b15.get("pool", []))}')
 if LINH: print(f'\nSố linh cảm của anh: **{fm(LINH)}** (+3 điểm)')
 print(f'\n### Pool {A.k} điểm đồng thuận\n\n**{fm(pool)}**\n')
-rank = pool_of(sc, s, min(20, NB - len(s['vang'])))
 print(f"Pool 10: **{fm(rank[:10])}**  ·  Pool 20: {fm(rank[:20])}\n")
 def why(n):
     t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra'), ('chuyen', 'chuyển kỳ'), ('phien', 'nóng phiên'), ('chin', 'vắng 11–15'), ('g610', 'vắng 6–10 −'), ('duoi', 'cùng đuôi −'), ('lap', 'vừa ra −')) if n in s.get(k, ())]
@@ -276,6 +333,15 @@ for W in (10, 50, 200):
     tb, p3, last = B[W]['pool']
     print(f'\nPool {A.k} (không tâm linh/app) chính nó ở {W} kỳ: TB **{tb:.2f}** số/kỳ, ≥3 số {p3:.0f}%' + (f' · 10 kỳ gần: {last}' if W == 10 else '')
           + ('' if W == 10 else ' · kỳ có ≥1/≥2/≥3/≥4 số: ' + ' / '.join(f'{v:.0f}%' for v in B[W]['dist'])))
+# ---------- Khẳng định kỳ này (đúng ≥70% ở 200 kỳ) ----------
+CLR = []
+for (lab, st, fn), (lab2, r200, k200), (_, r50, _) in zip(CL_NOW, B[200]['claims'], B[50]['claims']):
+    CLR.append(dict(lab=lab, nums=sorted(st) if st else [], r200=r200, r50=r50, keep=k200, trace=r200 - k200 >= 3))
+print('\n### Khẳng định kỳ này (đúng ≥70% số kỳ trong 200 kỳ)\n')
+print('| Khẳng định | Số liên quan | Đúng 200 kỳ | 50 kỳ gần | Vé giữ lại | Dấu vết |\n|---|---|---|---|---|---|')
+for c in sorted(CLR, key=lambda c: -c['r200']):
+    if c['r200'] < 70: continue
+    print(f"| {c['lab']} | {fm(c['nums']) if c['nums'] and len(c['nums']) <= 20 else '—'} | **{c['r200']:.0f}%** | {c['r50']:.0f}% | {c['keep']:.0f}% | {'✔ đúng > giữ' if c['trace'] else ''} |")
 if APP and strong_out:   # vé thay thế: vé 1, đổi số điểm thấp nhất (không phải lõi) bằng tâm linh mạnh ngoài pool
     alt = list(tickets[0][1])
     for n in sorted(strong_out, key=lambda n: -votes[n])[:2]:
@@ -302,10 +368,29 @@ if A.game == 'loto':
     print(f'\n### Số May Mắn (3 số vắng lâu nhất)\n\n**{fm(MM)}** — vắng ' + ', '.join(f'{k:02d}: {mg[k]} kỳ' for k in MM)
           + f'  ·  chính cách này trúng {sum(hm[-50:]) * 2}% ở 50 kỳ, {sum(hm) / 2:.0f}% ở 200 kỳ')
 
+# Dữ liệu cho bảng trực quan
+if A.json:
+    WHY = {}
+    for n in range(1, NB + 1):
+        WHY[n] = why(n)
+    J = dict(game=A.game, name=NAME, nb=NB, kb=KB, next=nd, last=D['dates'][-1], lastRes=sorted(R[-1]),
+             sc={n: round(sc[n], 2) for n in range(1, NB + 1)}, rank=rank, pool=pool, k=A.k,
+             why=WHY, gap={n: f[n]['gap'] for n in range(1, NB + 1)}, c10={n: f[n]['c10'] for n in range(1, NB + 1)},
+             vang=sorted(s['vang']), hot=sorted(s['hot']), kho=sorted(s['kho']), hotOut=hot_out,
+             tiers={k: v for k, v in B[200]['tiers'].items()}, tiers50={k: v for k, v in B[50]['tiers'].items()},
+             last10=B[10]['pool'][2], claims=CLR, sumRange=[SLO, SHI], da=DA, c50=round(c50, 2),
+             tickets=[dict(kind=k, x=tk, lv=lv, sum=sum(tk)) for k, tk, lv in tickets], core=core, mm=MM,
+             mmGap={k: mg[k] for k in MM} if MM else {}, linh=sorted(LINH),
+             tl=dict(votes=votes, top=top_v, strong=strong, rescued=rescued, out=strong_out,
+                     day=day, nm=len(APP.get('methods', []))) if APP else None,
+             sig=[dict(lab=lab, nums=sorted(s[k]), how=how, r=[B[W][k][0] for W in (10, 50, 200)]) for k, lab, how in rows])
+    json.dump(J, open(A.json, 'w'), ensure_ascii=False)
+
 # Lưu lại gợi ý để chấm sổ khi có kết quả
 if A.save:
     rec = dict(game=A.game, next=nd, last=D['dates'][-1], pool=sorted(pool), rank=rank, core=core,
                tickets=[tk for _, tk, _ in tickets], tamlinh=sorted(top_v) if APP else [], tl_strong=sorted(strong) if APP else [], tl_rescued=rescued if APP else [], linh=sorted(LINH),
-               signals={k: sorted(v) for k, v in s.items()}, sum_range=[SLO, SHI], mm=MM)
+               signals={k: sorted(v) for k, v in s.items()}, sum_range=[SLO, SHI], mm=MM,
+               claims=[dict(lab=c['lab'], nums=c['nums'], r200=round(c['r200'])) for c in CLR if c['r200'] >= 70])
     with open(os.path.join(HERE, 'goiy_log.jsonl'), 'a') as fo:
         fo.write(json.dumps(rec, ensure_ascii=False) + '\n')
