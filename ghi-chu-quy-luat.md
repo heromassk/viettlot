@@ -274,6 +274,15 @@ Chấm bằng tỉ lệ của chính phương pháp, chạy tiến (chỉ dùng 
 - **Số May Mắn có xu hướng cân bằng**: số MM ra nhiều khúc này thì khúc sau ra ít (corr giữa các khúc −0.31). MM lạnh (ít ra 300 kỳ) top 3: 28.6% / 24.5% / 23.2%, trong khi MM nóng top 3: 21.2% / 19.5% / 19.5% — lạnh hơn nóng ở mọi khúc. MM vắng lâu nhất top 3: 29.9% / 24.5% / 28.6%, 50 kỳ gần 32%.
 - Không thấy dấu vết: cặp số hay đi cùng (không lặp lại giữa 2 nửa), đà tổng (corr ≈ 0), kề ±1, đuôi số (chỉ do cấu trúc 1–35).
 
+## Suy luận loại trừ bổ sung — kiểm 04/10/2026 (`build/loai_tru.py`, 600 kỳ gần, 3 khúc)
+Cấp số (chỉ ghi luật đứng vững cả 3 khúc; chênh lệch nhỏ, cỡ 1 điểm %):
+- Power: số **vắng 6–10 kỳ** ra ít hơn nhóm còn lại 3/3 khúc → giảm nhẹ; số **vắng 11–15 kỳ** ra NHIỀU hơn 3/3 → đừng loại, nên ưu tiên. Số vắng ≥31 đang tăng dần (10% → 12% → 14%) → cảnh giác với luật bỏ vắng lâu.
+- Mega: số **cùng đuôi với số kỳ trước** ra ít hơn 3/3 (nhóm lớn ~16 số → chỉ dùng để giảm điểm, không loại). Số quá nóng (≥4/10 kỳ) đang giảm dần 16.5% → 14.2% → 12.4%.
+- Loto: **số vừa ra kỳ trước** ra ít hơn 3/3 (13.5% vs 14.4%) → giảm điểm; số **vắng ≥31** ra nhiều hơn 3/3 → với Loto không nên loại số vắng lâu.
+Cấp vé (kỳ thật vi phạm, ổn định qua 3 khúc): ≥3 số trùng kỳ trước ~1%; toàn chẵn/lẻ ~2–3%; toàn nhỏ/lớn ~1–5%; ≥3 số liên tiếp ~3–6%; ≥4 số cùng chục (Power/Mega) ~3–7%; không có số ≥2/3 dải ~4–8%.
+Lưu ý: cả bộ luật cấp vé bỏ ~15–20% số vé có thể, và cũng bỏ ~14–20% kỳ thật → là chỗ dựa để gọn vé, không tự làm tăng trúng.
+Bỏ vắng ≥G gần như không đổi pool 15 (số vắng lâu hiếm khi vào top) → luật này chủ yếu dùng khi anh tự chọn số.
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
