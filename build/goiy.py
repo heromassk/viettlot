@@ -178,7 +178,7 @@ def backtest(W=200):
         rk = pool_of(score(f, s), s, 20)
         sig = {k: (len(s[k] & R[t]), len(s[k])) for k in SIGS}
         cl = [(lab, fn(R[t]), sum(fn(m) for m in MC) / len(MC)) for lab, _, fn in claims(t, rk)]
-        recs.append(dict(sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (10, 15, 20)}, cl=cl))
+        recs.append(dict(sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 20)}, cl=cl))
     return recs
 
 def summ(recs):
