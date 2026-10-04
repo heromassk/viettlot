@@ -27,7 +27,8 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 2. **Lấy phiếu tâm linh, pool app và PP tốt nhất 50 kỳ** (Playwright, mất khoảng 30 giây):
    `node build/tamlinh.js power > <scratchpad>/tl.json`
 3. **Tính gợi ý**:
-   `python3 build/goiy.py power --app <scratchpad>/tl.json [--linh 54] [--G 20] [--k 15]`
+   `python3 build/goiy.py power --app <scratchpad>/tl.json --save [--linh 54] [--G 20] [--k 15]`
+   (`--save` ghi gợi ý vào `build/goiy_log.jsonl` để kỳ sau chấm sổ đúng bản đã đưa anh)
    Script in ra markdown gồm:
    - Bảng tín hiệu và tỉ lệ đúng của chính từng tín hiệu ở 10/50/200 kỳ. Các tín hiệu: nóng, kề ±1, bóng dễ ra, bóng khó ra, vắng ≥G.
    - Đà tổng (tương quan tổng 50 kỳ), từ đó suy ra khoảng tổng nên chọn.
@@ -36,7 +37,7 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
    - 5 vé: 3 vé lõi + vệ tinh và 2 vé trải.
 
    Ràng buộc vé: tổng nằm trong khoảng đà; Power/Mega có ≥2 số >31; không có 3 số liên tiếp. Ràng buộc nào phải nới thì script ghi rõ cạnh vé.
-4. **Trình bày cho anh**: pool, 5 vé, số cần chú ý. Bảng tín hiệu nêu rõ tỉ lệ của chính nó, không so ngẫu nhiên. Loto chưa có số May Mắn trong script; nếu anh cần thì chọn MM theo phần MM trong app.
+4. **Trình bày cho anh — LUÔN đưa pool ra**: Pool 15 (kèm Pool 10 / Pool 20), bảng xếp hạng từng số (điểm, cơ sở, c10/c20, vắng), 5 vé, số cần chú ý. Bảng tín hiệu nêu rõ tỉ lệ của chính nó, không so ngẫu nhiên. Loto chưa có số May Mắn trong script; nếu anh cần thì chọn MM theo phần MM trong app.
 5. **Đăng lại app** nếu dữ liệu đổi. Publish `build/nghien-cuu-loto.html` lên **cùng URL** https://claude.ai/artifact/X8ZmKZJ3RGDKZF7j8wbxFr và giữ capabilities `{db:{}, downloads:true}`. Trước khi đăng, kiểm tra trang không có pageerror (mở bằng Playwright).
 6. **Commit và push** lên nhánh đang làm việc.
 

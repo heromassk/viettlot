@@ -21,6 +21,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument('game', choices=GAMES)
 ap.add_argument('--app'); ap.add_argument('--G', type=int); ap.add_argument('--k', type=int, default=15)
 ap.add_argument('--linh', default='')
+ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
 G = A.G or (15 if A.game == 'loto' else 20)
@@ -179,7 +180,19 @@ if APP:
           f'  ·  PP tốt nhất 50 kỳ (K15): {b15.get("id")} TB {b15.get("tb")} → {fm(b15.get("pool", []))}')
 if LINH: print(f'\nSố linh cảm của anh: **{fm(LINH)}** (+3 điểm)')
 print(f'\n### Pool {A.k} điểm đồng thuận\n\n**{fm(pool)}**\n')
-print('Điểm cao nhất: ' + ', '.join(f'{n:02d}({sc[n]:.1f})' for n in pool[:6]))
+rank = pool_of(sc, s, min(20, NB - len(s['vang'])))
+print(f"Pool 10: **{fm(rank[:10])}**  ·  Pool 20: {fm(rank[:20])}\n")
+def why(n):
+    t = [lab for k, lab in (('hot', 'nóng'), ('ke', 'kề'), ('de', 'dễ ra'), ('kho', 'khó ra')) if n in s[k]]
+    if APP:
+        if n in top_v: t.append(f'tâm linh {votes[n]} phiếu')
+        if n in APP.get('appPool', []): t.append('pool app')
+        if n in b15.get('pool', []): t.append('PP tốt 50 kỳ')
+    if n in LINH: t.append('linh cảm')
+    return ', '.join(t) or '—'
+print('| # | Số | Điểm | Cơ sở | c10/c20 | Vắng |\n|---|---|---|---|---|---|')
+for i, n in enumerate(rank, 1):
+    print(f"| {i}{' ●' if i <= A.k else ''} | **{n:02d}** | {sc[n]:.1f} | {why(n)} | {f[n]['c10']}/{f[n]['c20']} | {f[n]['gap']} |")
 if hot_out: print(f'\n⚠️ Số nóng nằm ngoài pool: {fm(hot_out)}')
 for W in (10, 50, 200):
     tb, p3, last = B[W]['pool']
@@ -189,3 +202,11 @@ for i, (kind, tk, lv) in enumerate(tickets, 1):
     note = RELAX[lv] if lv < 3 else 'không vé nào hợp lệ, lấy theo điểm'
     out = [n for n in tk if n not in pool]
     print(f'{i}. **{fm(tk)}** — {kind}, tổng {sum(tk)}' + ('' if lv == 0 else f' _({note}' + (f': {fm(out)}' if out else '') + ')_'))
+
+# Lưu lại gợi ý để chấm sổ khi có kết quả
+if A.save:
+    rec = dict(game=A.game, next=nd, last=D['dates'][-1], pool=sorted(pool), rank=rank, core=core,
+               tickets=[tk for _, tk, _ in tickets], tamlinh=sorted(top_v) if APP else [], linh=sorted(LINH),
+               signals={k: sorted(v) for k, v in s.items()}, sum_range=[SLO, SHI])
+    with open(os.path.join(HERE, 'goiy_log.jsonl'), 'a') as fo:
+        fo.write(json.dumps(rec, ensure_ascii=False) + '\n')
