@@ -320,6 +320,13 @@ Mỗi luật chỉ bỏ ~1 số/kỳ. ✔ = đúng ≥85% cả 3 đoạn và ≥
 - **Loto:** số "tái xuất" sau vắng ≥15: 96/93/97%, ≥10: 92/88/91%; số vắng lâu nhất 89/90/89%; ra 3 lần/5 kỳ 92/95/91%; u và z kỳ trước 86–91%; ra cả t−3 & t−6 96/97/91%.
 Chênh với vé giữ lại chỉ 1–5 điểm — đúng kiểu "cơ sở nhỏ, ổn định".
 
+## Nhịp riêng từng số: "ra – vắng k kỳ – ra" → kỳ ngay sau? (04/10/2026, 3 đoạn 100 kỳ)
+Ý anh: số 03 ra, vắng 2 kỳ, ra lại ở kỳ thứ 4 rồi lại vắng vài kỳ.
+- **Vắng đúng 2 kỳ rồi ra → kỳ ngay sau ra ÍT hơn bình quân ở cả 3 trò, cả 3 đoạn:** Mega 11.1/10.2/10.5% (bình quân 13.3%), Power 5.0/9.1/8.0% (10.9%), Loto 8.8/9.3/10.9% (14.3%). Mẫu nhỏ (40–60 lần/đoạn) → đưa vào sổ kiểm chứng (luật `nhip2`), chưa áp dụng.
+- Mega: vắng đúng 3 kỳ rồi ra → kỳ sau ra NHIỀU hơn 3/3 (16.0/15.1/18.0%).
+- Power: vắng 7–10 rồi ra → kỳ sau ra ít hơn (7.9/6.5/11.0%).
+- "Vắng tiếp ≥3 kỳ sau khi ra" không ổn định ở nhịp nào.
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|

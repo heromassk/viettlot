@@ -39,6 +39,7 @@ RULES = [
     ('nong10', 'Bỏ số nóng nhất 10 kỳ (≥4 lần)', lambda R, t, c: {n for n in topk(c['c10'], 1, True) if c['c10'][n] >= 4}),
     ('it100', 'Bỏ số ra ít nhất 100 kỳ', lambda R, t, c: topk(c['c100'], 1)),
     ('nhieu100', 'Bỏ số ra nhiều nhất 100 kỳ', lambda R, t, c: topk(c['c100'], 1, True)),
+    ('nhip2', 'Bỏ số nhịp "ra – vắng 2 – ra" (vừa ra lại sau đúng 2 kỳ vắng)', lambda R, t, c: {n for n in R[t - 1] if n not in R[t - 2] and n not in R[t - 3] and n in R[t - 4]}),
     ('uprev', 'Bỏ số nhỏ nhất kỳ trước', lambda R, t, c: {min(R[t - 1])}),
     ('zprev', 'Bỏ số lớn nhất kỳ trước', lambda R, t, c: {max(R[t - 1])}),
 ]
