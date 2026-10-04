@@ -344,6 +344,13 @@ Trong cửa sổ W kỳ, số đó có ≥5 lần ra và khoảng nghỉ nhỏ n
   Mỗi kỳ nhóm có ~6–10 số → loại cả nhóm chỉ đúng 25–44% kỳ; từng số thì "không ra" đúng ~86–87% kỳ (Loto) nhưng phần lớn là vì số nào cũng thường không ra; lợi thật ≈ 1.3 điểm %. Dùng làm −điểm cho Loto: pool 15 không tốt hơn (2.42 → 2.34 ở 50 kỳ) → chưa áp dụng, đưa vào sổ kiểm chứng (`nhom_nhip80`).
 Đã đưa vào sổ kiểm chứng (nhipmin100, nhipmin200), chưa áp dụng.
 
+## Gộp luật loại để thu hẹp pool — 04/10/2026 (`build/thu_hep.py`)
+"Không mất số" = kỳ đó không số bị loại nào về (100 kỳ gần / 100 kỳ trước). Mỗi số bỏ thêm tốn ~4–8 điểm % an toàn.
+- Mega: ra 3 lần/5 kỳ (92/94%, bỏ 0.9) → + phá nhịp tối thiểu 200 (88/92%) → + vắng ≥30 (84/81%, bỏ 2.2) → + z kỳ trước (77/74%) → … 60% khi bỏ ~4.8 số.
+- Power: nhịp ra–vắng 2–ra (99/96%) → + ra 3 lần/5 kỳ (96/92%) → + ít nhất 100 kỳ (89/85%, bỏ 1.9) → + phá nhịp tối thiểu 100 (63/64%, bỏ 4.8).
+- Loto: nhịp ra–vắng 2–ra (95/96%) → + tái xuất ≥10 (87/85%) → + vắng lâu nhất (77/76%) → + phá nhịp 100 (68/68%) → + ra 3 lần/5 kỳ (62/64%, bỏ 4.1).
+Kết luận: luật loại an toàn ≥80% kỳ chỉ bỏ được ~2–3 số/kỳ; phần thu hẹp lớn (xuống 15–20 số) vẫn phải nhờ chấm điểm (pool 15 trúng TB ~2.1 số/kỳ).
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
