@@ -38,6 +38,7 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 
 ## Quy trình
 1. **Anh báo kết quả** → `python3 build/add_result.py mega "dd/mm/yyyy" n1 .. n6` (ghi all_data.json, meta index.html, CSV rồi tự build app).
+   Anh muốn loại tay số nào kỳ này → `--bo 02,27` (ghi vào bảng + log).
    Rồi **chấm sổ**: đọc dòng `"game": "mega"` cuối trong `build/goiy_log.jsonl` (bản đã đưa anh) → so pool 10/15/20, từng tín hiệu, 5 vé, tâm linh top 12, số linh cảm → thêm 1 dòng vào bảng **Sổ chấm phương pháp Mega (tạo bảng nếu chưa có, cùng cột như sổ Power)** trong `ghi-chu-quy-luat.md`.
    Mạng chặn các trang kết quả Vietlott → không tự tra được; nếu anh chưa đưa số thì hỏi anh.
 2. **Phiếu tâm linh + pool app + PP tốt nhất 50 kỳ**: `node build/tamlinh.js mega > <scratchpad>/tl_mega.json` (~30 giây).

@@ -21,6 +21,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument('game', choices=GAMES)
 ap.add_argument('--app'); ap.add_argument('--G', type=int); ap.add_argument('--k', type=int, default=15)
 ap.add_argument('--linh', default='')
+ap.add_argument('--bo', default='', help='số anh muốn loại tay kỳ này, vd 02,27')
 ap.add_argument('--cu', action='store_true', help='cách cũ: tắt các luật loại trừ bổ sung (để so)')
 ap.add_argument('--json', help='ghi dữ liệu gợi ý dạng JSON (cho bảng trực quan)')
 ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
@@ -33,6 +34,7 @@ SES = ['13' if '13h' in x else '21' for x in D['dates']] + ['13' if '21h' in D['
 T = len(R)
 APP = json.load(open(A.app)) if A.app else None
 LINH = {int(x) for x in A.linh.replace(' ', ',').split(',') if x.strip()}
+BO = {int(x) for x in A.bo.replace(' ', ',').split(',') if x.strip()}
 P = KB / NB
 
 
@@ -124,7 +126,7 @@ def loai_of(s):
     return out
 
 def pool_of(sc, s, k):
-    lo = loai_of(s)
+    lo = loai_of(s) | (BO if s is CUR else set())
     cand = [n for n in sc if n not in s['vang'] and n not in lo]
     return sorted(cand, key=lambda n: (-sc[n], n))[:k]
 
@@ -210,6 +212,7 @@ SLO, SHI = (int(m10 - sd10), int(m10 + sd10)) if DA else (q25, q75)
 
 # ---------- Hiện tại ----------
 f, s = signals(T)
+CUR = s
 extra = {}
 if APP:
     votes = APP['votes']
@@ -247,7 +250,7 @@ for n in pool:   # Mega: lõi không chứa ≥2 số của kỳ trước (khẳ
 sat = [n for n in pool if n not in core]
 
 RELAX = ['đủ ràng buộc', 'bỏ điều kiện ≥2 số >31', 'mượn số ngoài pool (điểm cao kế tiếp)']
-EXT = [n for n in sorted(sc, key=lambda n: (-sc[n], n)) if n not in s['vang'] and n not in loai_of(s) and n not in pool][:10]
+EXT = [n for n in sorted(sc, key=lambda n: (-sc[n], n)) if n not in s['vang'] and n not in loai_of(s) and n not in BO and n not in pool][:10]
 
 def ok(tk, lv):
     tk = sorted(tk)
@@ -322,6 +325,7 @@ if APP:
     print(f'\nPhiếu tâm linh top 12: {fm(top_v)}  ·  Pool app ({APP.get("appMethod")}): {fm(APP.get("appPool", []))}'
           f'  ·  PP tốt nhất 50 kỳ (K15): {b15.get("id")} TB {b15.get("tb")} → {fm(b15.get("pool", []))}')
 if LINH: print(f'\nSố linh cảm của anh: **{fm(LINH)}** (+3 điểm)')
+if BO: print(f'\nSố anh loại tay kỳ này: **{fm(BO)}**')
 print(f'\n### Pool {A.k} điểm đồng thuận\n\n**{fm(pool)}**\n')
 print(f"Pool 10: **{fm(rank[:10])}**  ·  Pool 20: {fm(rank[:20])}\n")
 def why(n):
@@ -400,7 +404,7 @@ if A.json:
     J = dict(game=A.game, name=NAME, nb=NB, kb=KB, next=nd, last=D['dates'][-1], lastRes=sorted(R[-1]),
              sc={n: round(sc[n], 2) for n in range(1, NB + 1)}, rank=rank, pool=pool, k=A.k,
              why=WHY, gap={n: f[n]['gap'] for n in range(1, NB + 1)}, c10={n: f[n]['c10'] for n in range(1, NB + 1)},
-             vang=sorted(s['vang'] | loai_of(s)), hot=sorted(s['hot']), kho=sorted(s['kho']), hotOut=hot_out,
+             vang=sorted(s['vang'] | loai_of(s) | BO), hot=sorted(s['hot']), kho=sorted(s['kho']), hotOut=hot_out,
              tiers={k: v for k, v in B[200]['tiers'].items()}, tiers50={k: v for k, v in B[50]['tiers'].items()},
              last10=B[10]['pool'][2], claims=CLR, sumRange=[SLO, SHI], da=DA, c50=round(c50, 2),
              tickets=[dict(kind=k, x=tk, lv=lv, sum=sum(tk)) for k, tk, lv in tickets], core=core, mm=MM,

@@ -40,6 +40,7 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 
 ## Quy trình
 1. **Anh báo kết quả** → `python3 build/add_result.py loto "dd/mm/yyyy 13h|21h" n1 .. n5 MM` (ghi all_data.json, meta index.html, CSV rồi tự build app).
+   Anh muốn loại tay số nào kỳ này → `--bo 02,27` (ghi vào bảng + log).
    Rồi **chấm sổ**: đọc dòng `"game": "loto"` cuối trong `build/goiy_log.jsonl` (bản đã đưa anh) → so pool 10/15/20, từng tín hiệu, 5 vé, tâm linh top 12, số linh cảm, 3 số May Mắn → thêm 1 dòng vào bảng **Sổ chấm phương pháp Loto 5/35** trong `ghi-chu-quy-luat.md`.
    Mạng chặn các trang kết quả Vietlott → không tự tra được; nếu anh chưa đưa số thì hỏi anh.
 2. **Phiếu tâm linh + pool app + PP tốt nhất 50 kỳ**: `node build/tamlinh.js loto > <scratchpad>/tl_loto.json` (~30 giây).

@@ -39,6 +39,7 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 
 ## Quy trình
 1. **Anh báo kết quả** → `python3 build/add_result.py power "dd/mm/yyyy" n1 .. n6 ĐB` (ghi all_data.json, meta index.html, CSV rồi tự build app).
+   Anh muốn loại tay số nào kỳ này → `--bo 02,27` (ghi vào bảng + log).
    Rồi **chấm sổ**: đọc dòng `"game": "power"` cuối trong `build/goiy_log.jsonl` (bản đã đưa anh) → so pool 10/15/20, từng tín hiệu, 5 vé, tâm linh top 12, số linh cảm → thêm 1 dòng vào bảng **Sổ chấm phương pháp Power** trong `ghi-chu-quy-luat.md`.
    Mạng chặn các trang kết quả Vietlott → không tự tra được; nếu anh chưa đưa số thì hỏi anh.
 2. **Phiếu tâm linh + pool app + PP tốt nhất 50 kỳ**: `node build/tamlinh.js power > <scratchpad>/tl_power.json` (~30 giây).
