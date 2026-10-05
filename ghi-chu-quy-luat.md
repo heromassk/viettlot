@@ -1555,3 +1555,34 @@ Max 3D+ 21/08→05/10: 62 bộ ra ≥2 lần (ngẫu nhiên ~61); 152 và 361 ra
 | ≥4 lần | Chính bộ đó | 77 | 5.19% (×2.62) | 10.4% (×1.09) |
 
 Kết luận: Max 3D+ bộ quanh ra ngang chia đều (kỳ kế ×0,57–1,04, 5 kỳ ×1,00–1,06). Pro, bộ nóng ≥4 lần: bộ quanh kỳ kế ×1,24–1,42 nhưng 5 kỳ ×0,72–1,13 và mẫu nhỏ (kỳ vọng ~9 lần trúng) → chưa chắc, theo dõi trong sổ.
+
+
+# Max 3D ↔ Pro so chéo kỳ liền trước (05/10/2026, anh: 2 game dùng chung bộ quay)
+
+## Max 3D kỳ t ← Max 3D Pro kỳ ngay trước (779 cặp kỳ)
+
+| Nhóm từ kỳ trước | Cả lịch sử | 300 lần gần | So với: cùng game kỳ trước (cả lịch sử) |
+|---|---|---|---|
+| 20 bộ của kỳ trước | ×0.86 | ×0.92 | ×1.03 |
+| 2 bộ ĐB kỳ trước | ×0.58 | ×0.76 | ×0.71 |
+| Lộn 2 bộ ĐB kỳ trước | ×1.01 | ×0.93 | ×0.68 |
+| Quanh (±1 một chữ số) 20 bộ kỳ trước | ×1.03 | ×1.00 | ×0.99 |
+
+- Chữ số theo hàng: tương quan với kỳ trước của Max 3D Pro: +0.012 · với kỳ trước cùng game: -0.006 · quay ngẫu nhiên: +0.005 (±0.014)
+
+## Max 3D Pro kỳ t ← Max 3D kỳ ngay trước (781 cặp kỳ)
+
+| Nhóm từ kỳ trước | Cả lịch sử | 300 lần gần | So với: cùng game kỳ trước (cả lịch sử) |
+|---|---|---|---|
+| 20 bộ của kỳ trước | ×1.09 | ×1.09 | ×1.00 |
+| 2 bộ ĐB kỳ trước | ×1.03 | ×0.76 | ×0.87 |
+| Lộn 2 bộ ĐB kỳ trước | ×1.00 | ×1.13 | ×1.33 |
+| Quanh (±1 một chữ số) 20 bộ kỳ trước | ×1.03 | ×1.01 | ×1.01 |
+
+- Chữ số theo hàng: tương quan với kỳ trước của Max 3D: +0.004 · với kỳ trước cùng game: +0.004 · quay ngẫu nhiên: +0.005 (±0.014)
+
+## Kỳ gần nhất mỗi game
+- Max 3D 05/10/2026: ĐB 546 085 · Nhất 472 486 159 586 · Nhì 525 877 261 110 123 238 · Ba 399 183 166 713 699 490 993 152
+- Max 3D Pro 03/10/2026: ĐB 509 954 · Nhất 467 123 573 811 · Nhì 579 176 078 659 477 730 · Ba 607 598 017 166 408 320 593 633
+
+Kết luận: 20 bộ Pro kỳ trước → Max 3D kỳ sau ×0,86 (ít lặp, ~−2,4 độ lệch chuẩn); 20 bộ Max 3D kỳ trước → Pro kỳ sau ×1,09 (lặp nhiều hơn nhẹ, cả lịch sử và 300 kỳ gần). Hai chiều ngược nhau → chưa kết luận chung bộ quay tạo dấu vết; chữ số theo hàng không liên quan. Theo dõi trong sổ.
