@@ -6,12 +6,20 @@ Chấm trên dữ liệu thật: bộ quẻ chọn ra bao nhiêu % (chia đều 
 import json, os, datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 LUN = json.load(open(os.path.join(HERE, 'max3d_lunar.json')))
+def ensure_lunar(ds):
+    if ds not in LUN:
+        import subprocess
+        dd, mm, yy = map(int, ds.split('/'))
+        js = open(os.path.join(HERE, 'lunar.js'), encoding='utf-8').read() + f';const L=solar2lunar({dd},{mm},{yy});console.log(JSON.stringify([L.d,L.m,L.y]));'
+        LUN[ds] = json.loads(subprocess.run(['node', '-e', js], capture_output=True, text=True, check=True).stdout)
+        json.dump(LUN, open(os.path.join(HERE, 'max3d_lunar.json'), 'w'))
 P = 1 - 0.999 ** 20
 CAN = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý']
 HANH_CAN = ['Mộc', 'Mộc', 'Hỏa', 'Hỏa', 'Thổ', 'Thổ', 'Kim', 'Kim', 'Thủy', 'Thủy']
 HADO = {'Thủy': (1, 6), 'Hỏa': (2, 7), 'Mộc': (3, 8), 'Kim': (4, 9), 'Thổ': (5, 0)}      # Hà Đồ
 jdn = lambda d: d.toordinal() + 1721425
 def info(ds):
+    ensure_lunar(ds)
     d = datetime.datetime.strptime(ds, '%d/%m/%Y').date(); ld, lm, ly = LUN[ds]
     can = (jdn(d) + 9) % 10; hanh = HANH_CAN[can]
     red = lambda n: n if n < 10 else red(sum(map(int, str(n))))
@@ -37,34 +45,39 @@ def digit_methods(ds, prev):
         'Ngày âm (chữ số đuôi + đầu)': {I['ld'] % 10, I['ld'] // 10},
         'Tổng chạm ĐB1 kỳ trước (1 chữ số)': {s},
     }
-for f, nm in (('max3d_data.json', 'Max 3D (3D+)'), ('max3dpro_data.json', 'Max 3D Pro')):
-    D = json.load(open(os.path.join(HERE, f))); R = D['res']; DT = D['dates']; T = len(R)
-    segs = [('100 kỳ gần', T - 100, T), ('100 kỳ giữa', T - 200, T - 100), ('100 kỳ xa', T - 300, T - 200), ('Cả lịch sử', 1, T)]
-    print(f'\n## {nm} — {T} kỳ\n\n### Quẻ chọn BỘ SỐ — mỗi bộ ra kỳ đó (chia đều {P * 100:.2f}%)\n')
-    print('| Quẻ | ' + ' | '.join(s[0] for s in segs) + ' |\n|---|' + '---|' * len(segs))
-    for k in bo_methods(DT[-1], R[-1]):
-        cells = []
-        for _, a, b in segs:
-            h = n = 0
-            for t in range(a, b):
-                g = bo_methods(DT[t], R[t - 1])[k]; h += len(g & set(R[t])); n += len(g)
-            cells.append(f'{h / max(n, 1) * 100:.2f}% (×{h / max(n, 1) / P:.2f})')
-        print(f'| {k} | ' + ' | '.join(cells) + ' |')
-    print('\n### Quẻ chọn CHỮ SỐ — tỉ lệ chiếm trong 60 lần quay chữ số của kỳ (so với chia đều)\n')
-    print('| Quẻ | ' + ' | '.join(s[0] for s in segs) + ' |\n|---|' + '---|' * len(segs))
-    for k in digit_methods(DT[-1], R[-1]):
-        cells = []
-        for _, a, b in segs:
-            h = e = 0
-            for t in range(a, b):
-                g = digit_methods(DT[t], R[t - 1])[k]; h += sum(int(c) in g for s in R[t] for c in s); e += 60 * len(g) / 10
-            cells.append(f'×{h / e:.2f}')
-        print(f'| {k} | ' + ' | '.join(cells) + ' |')
-# quẻ kỳ tới
-print('\n## Quẻ kỳ tới\n')
-for f, nm, nd in (('max3d_data.json', 'Max 3D+', '05/10/2026'), ('max3dpro_data.json', 'Max 3D Pro', '06/10/2026')):
-    D = json.load(open(os.path.join(HERE, f))); prev = D['res'][-1]; I = info(nd)
-    print(f'**{nm} {nd}** (âm {I["ld"]}/{I["lm"]}, ngày {CAN[I["can"]]} – hành {I["hanh"]}, thần số học {I["tsh"]}; ĐB kỳ trước {" ".join(prev[:2])})')
-    for k, v in bo_methods(nd, prev).items(): print(f'- {k}: {" ".join(sorted(v))}')
-    for k, v in digit_methods(nd, prev).items(): print(f'- {k}: {" ".join(map(str, sorted(v)))}')
-    print()
+def main():
+    for f, nm in (('max3d_data.json', 'Max 3D (3D+)'), ('max3dpro_data.json', 'Max 3D Pro')):
+        D = json.load(open(os.path.join(HERE, f))); R = D['res']; DT = D['dates']; T = len(R)
+        segs = [('100 kỳ gần', T - 100, T), ('100 kỳ giữa', T - 200, T - 100), ('100 kỳ xa', T - 300, T - 200), ('Cả lịch sử', 1, T)]
+        print(f'\n## {nm} — {T} kỳ\n\n### Quẻ chọn BỘ SỐ — mỗi bộ ra kỳ đó (chia đều {P * 100:.2f}%)\n')
+        print('| Quẻ | ' + ' | '.join(s[0] for s in segs) + ' |\n|---|' + '---|' * len(segs))
+        for k in bo_methods(DT[-1], R[-1]):
+            cells = []
+            for _, a, b in segs:
+                h = n = 0
+                for t in range(a, b):
+                    g = bo_methods(DT[t], R[t - 1])[k]; h += len(g & set(R[t])); n += len(g)
+                cells.append(f'{h / max(n, 1) * 100:.2f}% (×{h / max(n, 1) / P:.2f})')
+            print(f'| {k} | ' + ' | '.join(cells) + ' |')
+        print('\n### Quẻ chọn CHỮ SỐ — tỉ lệ chiếm trong 60 lần quay chữ số của kỳ (so với chia đều)\n')
+        print('| Quẻ | ' + ' | '.join(s[0] for s in segs) + ' |\n|---|' + '---|' * len(segs))
+        for k in digit_methods(DT[-1], R[-1]):
+            cells = []
+            for _, a, b in segs:
+                h = e = 0
+                for t in range(a, b):
+                    g = digit_methods(DT[t], R[t - 1])[k]; h += sum(int(c) in g for s in R[t] for c in s); e += 60 * len(g) / 10
+                cells.append(f'×{h / e:.2f}')
+            print(f'| {k} | ' + ' | '.join(cells) + ' |')
+    # quẻ kỳ tới
+    print('\n## Quẻ kỳ tới\n')
+    for f, nm, nd in (('max3d_data.json', 'Max 3D+', '05/10/2026'), ('max3dpro_data.json', 'Max 3D Pro', '06/10/2026')):
+        D = json.load(open(os.path.join(HERE, f))); prev = D['res'][-1]; I = info(nd)
+        print(f'**{nm} {nd}** (âm {I["ld"]}/{I["lm"]}, ngày {CAN[I["can"]]} – hành {I["hanh"]}, thần số học {I["tsh"]}; ĐB kỳ trước {" ".join(prev[:2])})')
+        for k, v in bo_methods(nd, prev).items(): print(f'- {k}: {" ".join(sorted(v))}')
+        for k, v in digit_methods(nd, prev).items(): print(f'- {k}: {" ".join(map(str, sorted(v)))}')
+        print()
+
+
+if __name__ == '__main__':
+    main()

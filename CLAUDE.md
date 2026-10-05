@@ -18,15 +18,12 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - App: sửa `build/loto_template.html` → `python3 build/assemble.py` → `node build/check_page.js` (0 lỗi) → đăng `build/nghien-cuu-loto.html`.
 - Sổ kiểm chứng: `build/theodoi.py`, `build/theodoi.json`. Vé anh đã mua: `build/ve_anh.jsonl`. Gợi ý đã đưa: `build/goiy_log.jsonl`.
 - Nghiên cứu và kết quả: `ghi-chu-quy-luat.md` (ghi nối tiếp), `ra-soat-dau-vet.md`.
-- Max 3D / 3D+ / Pro: dữ liệu `build/max3d_data.json`, `build/max3dpro_data.json`; ô trong app từ `build/max3d_app.py`; các script `build/max3d_*.py`.
+- Max 3D / 3D+ / Pro: dữ liệu `build/max3d_data.json`, `build/max3dpro_data.json`; ô trong app + gợi ý 3 cặp kèm lý do từ `build/max3d_app.py` (lưu gợi ý đã đưa vào `build/max3d_goiy_log.jsonl`); tâm linh `build/max3d_tamlinh.py`; các script `build/max3d_*.py`. Chạy lại `max3d_app.py` + `assemble.py` sau mỗi lần `lay_kq.py`.
 
 ## App đã đăng
 - https://claude.ai/artifact/X8ZmKZJ3RGDKZF7j8wbxFr — thuộc tài khoản cũ. Tài khoản mới không ghi đè được link này trừ khi được chia sẻ quyền sửa; nếu không, đăng thành link mới từ `build/nghien-cuu-loto.html`.
 
 ## Việc đang dở (05/10/2026)
 - Kỳ chờ kết quả, gợi ý đã lưu trong `goiy_log.jsonl`: Loto 05/10 21h, Power 06/10, Mega 07/10. Có kết quả → chạy `lay_kq.py` (hoặc add_result) để chấm.
-- Max 3D: anh đã đồng ý nguyên tắc "bộ đang nghỉ thì loại". Đề xuất chờ anh duyệt:
-  - Max 3D+: loại bộ ra trong 5 kỳ gần + giữ 340 bộ nặng nhất (chữ số theo hàng, 50 kỳ).
-  - Max 3D Pro: loại bộ ra trong 20 kỳ gần.
-  - Đưa vào sổ kiểm chứng + hiện pool, 2–3 cặp gợi ý trong 2 ô Max 3D+ / Pro của app.
+- Max 3D: đã hiện pool + 3 cặp gợi ý kèm lý do trong 2 ô app (Max 3D+: loại bộ ra 5 kỳ, tiến liên tiếp, tam hoa, giữ 340 bộ nặng 50 kỳ; Pro: loại bộ ra 20 kỳ, tiến, tam hoa + quẻ lộn ĐB kỳ trước). Chưa làm: chấm sổ kiểm chứng Max 3D từ `max3d_goiy_log.jsonl` khi có kết quả.
 - Đề xuất chưa được duyệt: số May Mắn Loto "MM kỳ trước + 2 vắng lâu" (hiện giữ "3 vắng lâu nhất").
