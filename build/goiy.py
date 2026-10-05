@@ -69,6 +69,12 @@ def signals(t):
     if not A.cu and A.game in ('mega', 'loto'):   # ý anh 04/10: loại trước số "lâu lâu mới ra" (thưa) đang vắng ≥15
         c200 = {n: sum(n in R[u] for u in range(max(0, t - 200), t)) for n in range(1, NB + 1)}
         sig['thua'] = {n for n in range(1, NB + 1) if f[n]['gap'] >= 15 and c200[n] <= 0.85 * min(200, t) * P}
+    if not A.cu:   # luận số / soi cầu có lợi nhẹ (soicau.py 05/10): Loto lô kép, Power cầu Pascal
+        if A.game == 'loto' and WSC: sig['kep'] = set(range(11, NB + 1, 11))
+        if A.game == 'power' and WSC:
+            d = [int(ch) for ch in ''.join(f'{n:02d}' for n in sorted(R[t - 1]))]
+            while len(d) > 2: d = [(d[i] + d[i + 1]) % 10 for i in range(len(d) - 1)]
+            v = d[0] * 10 + d[1]; sig['pascal'] = {v} if 1 <= v <= NB else set()
     if not A.cu:   # luật loại trừ bổ sung (build/loai_tru.py, 04/10/2026) — chỉ giảm/cộng điểm, không loại hẳn
         if A.game == 'power':
             sig['chin'] = {n for n, x in f.items() if 11 <= x['gap'] <= 15}
@@ -115,7 +121,7 @@ def score(f, s, extra=None):
         v += 1.5 * (n in s.get('chuyen', ())) + 1 * (n in s.get('phien', ()))
         v += WCHIN * (n in s.get('chin', ())) - WG610 * (n in s.get('g610', ())) \
             - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ())) \
-            + 1 * (n in s.get('ben', ()))
+            + 1 * (n in s.get('ben', ())) + WSC * (n in s.get('kep', ())) + WSC * (n in s.get('pascal', ()))
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
@@ -137,6 +143,7 @@ def pool_of(sc, s, k):
 
 # ---------- Backtest: tỉ lệ đúng của chính từng tín hiệu ----------
 WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0.5 1').split())
+WSC = float(os.environ.get('GOIY_SC', '0'))   # lô kép (Loto), Pascal (Power): thử 05/10 — pool không đổi rõ → tắt, chỉ theo dõi trong sổ
 WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
