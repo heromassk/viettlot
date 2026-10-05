@@ -1027,3 +1027,74 @@ Kỳ có bộ số trùng nhau trong 20 bộ: Max 3D 19,2%, Pro 17,8% (lý thuy�
 | Bỏ chữ số kỳ trước + ít nhất 20 kỳ | 71.0% | 70.3% | 69.3% | 65% / 75% |
 
 Độ nhiễu: TB 6 vị trí × 100 kỳ, ±2 điểm là bình thường. Max 3D+: "nhiều nhất cả hàng (20 bộ), 20 kỳ" khoảng 5 chữ số trúng 53,7 · 52,5 · 52,3% (chia đều 50%), cả 3 đoạn trên mức. Nếu cả 6 vị trí cùng nghiêng như vậy: 5^6 = 15.625 cặp bộ số (1,6% của 1 triệu cặp) chứa cặp ĐB khoảng 2,2% số kỳ (×1,4). Pro: chưa có cách nào ổn định.
+
+
+# Max 3D / Pro — quan hệ 20 bộ trong 1 kỳ, so với các kỳ trước ≤50 kỳ (05/10/2026)
+
+## max3d_data.json — quan hệ 20 bộ trong kỳ, 300 kỳ gần (21/10/2024 → 02/10/2026)
+
+| Chỉ số | Thực tế | Quay ngẫu nhiên: TB (khoảng 90%) | Nhận xét |
+|---|---|---|---|
+| Chữ số ra nhiều nhất trong 20 (TB, mỗi hàng) | +4.456 | +4.407 (+4.362 … +4.466) | trong vùng ngẫu nhiên |
+| Độ dao động số chữ số nhỏ 0–4 giữa các kỳ (độ lệch chuẩn) | +2.135 | +2.236 (+2.173 … +2.310) | **thấp hơn ngẫu nhiên** |
+| Tương quan nhỏ/lớn giữa 3 hàng cùng kỳ | +0.031 | +0.001 (-0.044 … +0.057) | trong vùng ngẫu nhiên |
+| Trong kỳ: 10 bộ đầu ↔ 10 bộ sau (tương quan chữ số) | +0.016 | -0.001 (-0.019 … +0.022) | trong vùng ngẫu nhiên |
+| Kỳ này ↔ TB 1 kỳ trước (tương quan chữ số mỗi hàng) | -0.014 | -0.000 (-0.019 … +0.017) | trong vùng ngẫu nhiên |
+| Kỳ này ↔ TB 5 kỳ trước (tương quan chữ số mỗi hàng) | -0.017 | -0.001 (-0.022 … +0.021) | trong vùng ngẫu nhiên |
+| Kỳ này ↔ TB 10 kỳ trước (tương quan chữ số mỗi hàng) | +0.004 | -0.001 (-0.019 … +0.015) | trong vùng ngẫu nhiên |
+| Kỳ này ↔ TB 20 kỳ trước (tương quan chữ số mỗi hàng) | +0.019 | +0.000 (-0.015 … +0.017) | **cao hơn ngẫu nhiên** |
+| Kỳ này ↔ TB 50 kỳ trước (tương quan chữ số mỗi hàng) | +0.025 | +0.001 (-0.017 … +0.020) | **cao hơn ngẫu nhiên** |
+| Nhỏ/lớn: kỳ này ↔ kỳ trước (tương quan) | -0.026 | -0.002 (-0.056 … +0.055) | trong vùng ngẫu nhiên |
+| Chẵn/lẻ: kỳ này ↔ kỳ trước (tương quan) | -0.017 | -0.005 (-0.060 … +0.059) | trong vùng ngẫu nhiên |
+
+### Tỉ lệ ra từng chữ số theo hàng: kỳ gần nhất (02/10/2026) so với các kỳ trước (chia đều 10%)
+
+**Hàng trăm**
+
+| Khung | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Kỳ gần nhất | **20** | 5 | **15** | **20** | 5 | 10 | 0 | **15** | 10 | 0 |
+| 5 kỳ | 11 | 10 | 11 | 10 | 12 | 9 | 6 | 8 | 10 | **13** |
+| 10 kỳ | 10 | 10 | 8 | 10 | 12 | 11 | 8 | 6 | **13** | 12 |
+| 20 kỳ | 11 | 10 | 10 | 11 | 10 | 11 | 8 | 9 | 11 | 9 |
+| 50 kỳ | 10 | 10 | 8 | 11 | 9 | 11 | 9 | 9 | 12 | 10 |
+
+**Hàng chục**
+
+| Khung | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Kỳ gần nhất | 5 | 0 | **15** | **20** | **15** | 5 | 10 | 10 | 5 | **15** |
+| 5 kỳ | 9 | 8 | 10 | **13** | 11 | 10 | 12 | 8 | 5 | **14** |
+| 10 kỳ | 11 | 8 | 7 | 12 | **14** | 7 | **14** | 10 | 6 | 12 |
+| 20 kỳ | 10 | 10 | 8 | 10 | 10 | 9 | 12 | 10 | 10 | 10 |
+| 50 kỳ | 10 | 9 | 10 | 9 | 10 | 8 | 11 | 10 | 10 | 11 |
+
+**Hàng đơn vị**
+
+| Khung | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Kỳ gần nhất | 10 | 10 | 0 | 5 | 10 | **20** | **15** | 10 | 5 | **15** |
+| 5 kỳ | 12 | 9 | 8 | 6 | 10 | **13** | 10 | **13** | 7 | 12 |
+| 10 kỳ | **14** | 10 | 8 | 8 | 12 | 10 | 10 | 10 | 9 | 9 |
+| 20 kỳ | 12 | 10 | 10 | 8 | 10 | 9 | 8 | 12 | 10 | 10 |
+| 50 kỳ | 10 | 10 | 9 | 12 | 10 | 10 | 10 | 11 | 10 | 9 |
+
+
+## max3dpro_data.json — quan hệ 20 bộ trong kỳ, 300 kỳ gần (22/10/2024 → 03/10/2026)
+
+| Chỉ số | Thực tế | Quay ngẫu nhiên: TB (khoảng 90%) | Nhận xét |
+|---|---|---|---|
+| Chữ số ra nhiều nhất trong 20 (TB, mỗi hàng) | +4.399 | +4.407 (+4.362 … +4.466) | trong vùng ngẫu nhiên |
+| Độ dao động số chữ số nhỏ 0–4 giữa các kỳ (độ lệch chuẩn) | +2.246 | +2.236 (+2.173 … +2.310) | trong vùng ngẫu nhiên |
+| Tương quan nhỏ/lớn giữa 3 hàng cùng kỳ | +0.015 | +0.001 (-0.044 … +0.057) | trong vùng ngẫu nhiên |
+| Trong kỳ: 10 bộ đầu ↔ 10 bộ sau (tương quan chữ số) | +0.010 | -0.001 (-0.019 … +0.022) | trong vùng ngẫu nhiên |
+| Kỳ này ↔ TB 1 kỳ trước (tương quan chữ số mỗi hàng) | -0.009 | -0.000 (-0.019 … +0.017) | trong vùng ngẫu nhiên |
+| Kỳ này ↔ TB 5 kỳ trước (tương quan chữ số mỗi hàng) | -0.017 | -0.001 (-0.022 … +0.021) | trong vùng ngẫu nhiên |
+| Kỳ này ↔ TB 10 kỳ trước (tương quan chữ số mỗi hàng) | -0.005 | -0.001 (-0.019 … +0.015) | trong vùng ngẫu nhiên |
+| Kỳ này ↔ TB 20 kỳ trước (tương quan chữ số mỗi hàng) | +0.000 | +0.000 (-0.015 … +0.017) | trong vùng ngẫu nhiên |
+| Kỳ này ↔ TB 50 kỳ trước (tương quan chữ số mỗi hàng) | -0.006 | +0.001 (-0.017 … +0.020) | trong vùng ngẫu nhiên |
+| Nhỏ/lớn: kỳ này ↔ kỳ trước (tương quan) | -0.050 | -0.002 (-0.056 … +0.055) | trong vùng ngẫu nhiên |
+| Chẵn/lẻ: kỳ này ↔ kỳ trước (tương quan) | +0.024 | -0.005 (-0.060 … +0.059) | trong vùng ngẫu nhiên |
+
+
+Kết luận: trong 1 kỳ không thấy bi nghiêng về phía nào (dồn chữ số, nhỏ/lớn, 3 hàng cùng phía, 10 bộ đầu ↔ 10 bộ sau đều như quay đều). Max 3D: tần suất chữ số mỗi hàng giữ lại nhẹ ở khung 20 và 50 kỳ (vượt khoảng ngẫu nhiên); khung 1–10 kỳ không có. Pro: không có.
