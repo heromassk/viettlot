@@ -1513,3 +1513,8 @@ Chọn: loại bộ ra trong 30 kỳ (đang nghỉ) + tiến, tam hoa, 00x, rồ
 # Max 3D / Pro — bộ số ≥500 theo kỳ (05/10/2026)
 
 Max 3D+: TB bộ ≥500/kỳ 10 kỳ 9,4 · 20 kỳ 9,6 · 50 kỳ 10,2 · 100 kỳ 10,0; cả lịch sử 49,4%. 10 kỳ gần: 9 13 12 7 10 9 11 9 7 7. Kỳ trước nhiều/ít số lớn → kỳ sau vẫn ~9,8–10 (không nối tiếp). Pro: 10 kỳ gần TB 11,3 (13 11 7 12 12 12 11 14 10 11), 100 kỳ 10,0; kỳ trước ≤8 → kỳ sau 10,15, ≥12 → 9,84 (hồi nhẹ, chưa chắc); tương quan TB 20 kỳ ↔ kỳ sau −0,07. Theo khoảng trăm 100 kỳ: đều 176–230/200. Kết luận: không có dấu vết lớn/nhỏ dùng được.
+
+
+# Max 3D — "đợt" chữ số theo khối 10 kỳ (05/10/2026, anh hỏi đợt này nhiều 9, đợt trước nhiều 8, 7)
+
+Max 3D+ khối 14/09→05/10: 0 và 9 mỗi số 12%; khối 21/08→11/09: 8 12%, 7 11%. Đúng như anh nhận xét. Nhưng kiểm 300 kỳ: 2 chữ số nhiều nhất khối 10 kỳ trước chỉ chiếm 20,4% ở khối sau (chia đều 20%) — đợt không kéo dài sang đợt sau. Pro: 20,2%. Độ lệch ±2 điểm/khối 10 kỳ là dao động bình thường (600 lần quay).
