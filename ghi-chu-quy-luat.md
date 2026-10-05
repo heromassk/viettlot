@@ -936,3 +936,94 @@ Kỳ có bộ số trùng nhau trong 20 bộ: Max 3D 19,2%, Pro 17,8% (lý thuy�
 | 100 bộ NẶNG nhất (50 kỳ) | 100 | 2.16% (×1.09) | 2.28% (×1.15) | 2.01% (×1.01) | — | 100 bộ |
 
 Độ nhiễu: nhóm 100 bộ, mỗi đoạn 100 kỳ ±0,14 điểm (≈ ×0,93–1,07) là bình thường. Không nhóm nào lệch đều 3/3 đoạn quá mức nhiễu. Nghiêng cùng chiều: bộ NẶNG 50 kỳ (×1,09 · 1,15 · 1,01), bộ NHẸ 100 kỳ (×0,95 · 0,90 · 0,98).
+
+
+# Max 3D+ / Pro — 6 chữ số của 2 bộ ĐB: biến thiên và thu hẹp khoảng (05/10/2026)
+
+## max3d_data.json — 6 chữ số của 2 bộ ĐB, 1136 kỳ (22/04/2019 → 02/10/2026)
+
+### Biến thiên từng vị trí (300 kỳ gần)
+
+| Vị trí | TB | Đổi so với kỳ trước: giữ nguyên · ±1 · ±2–3 · ±4–5 (vòng) | Chữ số ra nhiều nhất / ít nhất 100 kỳ |
+|---|---|---|---|
+| Bộ 1 · trăm | 4.63 | 14% · 17% · 39% · 30% (chia đều 10 · 20 · 40 · 30) | 1 (13 lần) / 6 (7 lần) |
+| Bộ 1 · chục | 4.68 | 11% · 24% · 36% · 29% (chia đều 10 · 20 · 40 · 30) | 6 (19 lần) / 4 (5 lần) |
+| Bộ 1 · đơn vị | 4.56 | 9% · 20% · 44% · 28% (chia đều 10 · 20 · 40 · 30) | 8 (16 lần) / 2 (5 lần) |
+| Bộ 2 · trăm | 4.51 | 8% · 21% · 46% · 25% (chia đều 10 · 20 · 40 · 30) | 6 (13 lần) / 1 (7 lần) |
+| Bộ 2 · chục | 4.31 | 10% · 22% · 38% · 30% (chia đều 10 · 20 · 40 · 30) | 3 (16 lần) / 5 (4 lần) |
+| Bộ 2 · đơn vị | 4.76 | 8% · 20% · 48% · 23% (chia đều 10 · 20 · 40 · 30) | 8 (21 lần) / 2 (3 lần) |
+
+### Khoảng 5 chữ số — % kỳ chữ số rơi vào khoảng (chia đều 50%), TB 6 vị trí · từng đoạn gần → xa
+
+| Cách thu hẹp | Đoạn 1 | Đoạn 2 | Đoạn 3 | Tệ nhất / tốt nhất trong 6 vị trí (đoạn 1) |
+|---|---|---|---|---|
+| Nhiều nhất ở chính vị trí, 20 kỳ | 53.0% | 49.7% | 51.5% | 50% / 60% |
+| Nhiều nhất ở chính vị trí, 50 kỳ | 53.7% | 49.8% | 52.2% | 49% / 57% |
+| Nhiều nhất ở chính vị trí, 100 kỳ | 51.8% | 49.3% | 51.7% | 42% / 61% |
+| Nhiều nhất cả hàng (20 bộ), 20 kỳ | 53.7% | 52.5% | 52.3% | 42% / 66% |
+| Nhiều nhất cả hàng (20 bộ), 50 kỳ | 53.5% | 50.7% | 50.0% | 51% / 59% |
+| Nhiều nhất cả hàng (20 bộ), 100 kỳ | 50.0% | 50.0% | 49.7% | 46% / 55% |
+| Quanh chữ số kỳ trước (vòng) | 52.5% | 47.3% | 52.7% | 44% / 58% |
+| Quanh chữ số kỳ trước (khoảng liền) | 50.2% | 46.7% | 51.8% | 46% / 55% |
+| Quanh trung vị 10 kỳ | 50.8% | 46.8% | 49.3% | 46% / 58% |
+| Bỏ chữ số kỳ trước + ít nhất 20 kỳ | 54.3% | 52.3% | 51.2% | 46% / 65% |
+
+### Khoảng 7 chữ số — % kỳ chữ số rơi vào khoảng (chia đều 70%), TB 6 vị trí · từng đoạn gần → xa
+
+| Cách thu hẹp | Đoạn 1 | Đoạn 2 | Đoạn 3 | Tệ nhất / tốt nhất trong 6 vị trí (đoạn 1) |
+|---|---|---|---|---|
+| Nhiều nhất ở chính vị trí, 20 kỳ | 72.8% | 68.2% | 69.0% | 64% / 81% |
+| Nhiều nhất ở chính vị trí, 50 kỳ | 70.8% | 68.3% | 71.3% | 66% / 74% |
+| Nhiều nhất ở chính vị trí, 100 kỳ | 70.2% | 69.2% | 71.3% | 61% / 78% |
+| Nhiều nhất cả hàng (20 bộ), 20 kỳ | 70.7% | 70.2% | 72.5% | 63% / 77% |
+| Nhiều nhất cả hàng (20 bộ), 50 kỳ | 69.3% | 71.8% | 70.2% | 61% / 76% |
+| Nhiều nhất cả hàng (20 bộ), 100 kỳ | 71.8% | 72.2% | 69.5% | 68% / 76% |
+| Quanh chữ số kỳ trước (vòng) | 73.0% | 72.7% | 71.8% | 65% / 82% |
+| Quanh chữ số kỳ trước (khoảng liền) | 68.8% | 68.7% | 71.7% | 62% / 72% |
+| Quanh trung vị 10 kỳ | 71.3% | 68.8% | 68.3% | 66% / 77% |
+| Bỏ chữ số kỳ trước + ít nhất 20 kỳ | 72.0% | 70.8% | 67.8% | 68% / 81% |
+
+## max3dpro_data.json — 6 chữ số của 2 bộ ĐB, 783 kỳ (14/09/2021 → 03/10/2026)
+
+### Biến thiên từng vị trí (300 kỳ gần)
+
+| Vị trí | TB | Đổi so với kỳ trước: giữ nguyên · ±1 · ±2–3 · ±4–5 (vòng) | Chữ số ra nhiều nhất / ít nhất 100 kỳ |
+|---|---|---|---|
+| Bộ 1 · trăm | 4.70 | 10% · 18% · 37% · 34% (chia đều 10 · 20 · 40 · 30) | 9 (15 lần) / 1 (3 lần) |
+| Bộ 1 · chục | 4.41 | 7% · 17% · 41% · 35% (chia đều 10 · 20 · 40 · 30) | 8 (15 lần) / 2 (4 lần) |
+| Bộ 1 · đơn vị | 4.61 | 10% · 21% · 39% · 30% (chia đều 10 · 20 · 40 · 30) | 7 (17 lần) / 2 (6 lần) |
+| Bộ 2 · trăm | 4.47 | 11% · 20% · 40% · 30% (chia đều 10 · 20 · 40 · 30) | 8 (15 lần) / 6 (6 lần) |
+| Bộ 2 · chục | 4.87 | 12% · 23% · 31% · 34% (chia đều 10 · 20 · 40 · 30) | 9 (18 lần) / 1 (5 lần) |
+| Bộ 2 · đơn vị | 4.48 | 12% · 17% · 40% · 31% (chia đều 10 · 20 · 40 · 30) | 6 (19 lần) / 2 (6 lần) |
+
+### Khoảng 5 chữ số — % kỳ chữ số rơi vào khoảng (chia đều 50%), TB 6 vị trí · từng đoạn gần → xa
+
+| Cách thu hẹp | Đoạn 1 | Đoạn 2 | Đoạn 3 | Tệ nhất / tốt nhất trong 6 vị trí (đoạn 1) |
+|---|---|---|---|---|
+| Nhiều nhất ở chính vị trí, 20 kỳ | 52.2% | 47.0% | 49.5% | 47% / 59% |
+| Nhiều nhất ở chính vị trí, 50 kỳ | 51.8% | 46.8% | 50.2% | 42% / 58% |
+| Nhiều nhất ở chính vị trí, 100 kỳ | 52.3% | 50.3% | 48.8% | 45% / 57% |
+| Nhiều nhất cả hàng (20 bộ), 20 kỳ | 49.5% | 48.5% | 48.5% | 42% / 55% |
+| Nhiều nhất cả hàng (20 bộ), 50 kỳ | 51.2% | 48.8% | 44.8% | 44% / 59% |
+| Nhiều nhất cả hàng (20 bộ), 100 kỳ | 53.0% | 52.3% | 48.7% | 48% / 61% |
+| Quanh chữ số kỳ trước (vòng) | 48.3% | 48.7% | 46.5% | 42% / 53% |
+| Quanh chữ số kỳ trước (khoảng liền) | 52.0% | 47.3% | 46.3% | 46% / 59% |
+| Quanh trung vị 10 kỳ | 50.5% | 51.0% | 49.0% | 44% / 61% |
+| Bỏ chữ số kỳ trước + ít nhất 20 kỳ | 54.2% | 48.3% | 47.7% | 48% / 63% |
+
+### Khoảng 7 chữ số — % kỳ chữ số rơi vào khoảng (chia đều 70%), TB 6 vị trí · từng đoạn gần → xa
+
+| Cách thu hẹp | Đoạn 1 | Đoạn 2 | Đoạn 3 | Tệ nhất / tốt nhất trong 6 vị trí (đoạn 1) |
+|---|---|---|---|---|
+| Nhiều nhất ở chính vị trí, 20 kỳ | 71.7% | 67.8% | 70.5% | 67% / 75% |
+| Nhiều nhất ở chính vị trí, 50 kỳ | 69.5% | 67.3% | 68.3% | 66% / 72% |
+| Nhiều nhất ở chính vị trí, 100 kỳ | 71.3% | 69.2% | 69.7% | 66% / 76% |
+| Nhiều nhất cả hàng (20 bộ), 20 kỳ | 70.5% | 70.0% | 70.8% | 63% / 78% |
+| Nhiều nhất cả hàng (20 bộ), 50 kỳ | 71.5% | 68.8% | 66.5% | 65% / 77% |
+| Nhiều nhất cả hàng (20 bộ), 100 kỳ | 69.5% | 67.3% | 68.8% | 65% / 76% |
+| Quanh chữ số kỳ trước (vòng) | 70.7% | 68.2% | 64.3% | 66% / 79% |
+| Quanh chữ số kỳ trước (khoảng liền) | 74.2% | 69.0% | 66.2% | 69% / 79% |
+| Quanh trung vị 10 kỳ | 70.2% | 69.7% | 70.7% | 64% / 78% |
+| Bỏ chữ số kỳ trước + ít nhất 20 kỳ | 71.0% | 70.3% | 69.3% | 65% / 75% |
+
+Độ nhiễu: TB 6 vị trí × 100 kỳ, ±2 điểm là bình thường. Max 3D+: "nhiều nhất cả hàng (20 bộ), 20 kỳ" khoảng 5 chữ số trúng 53,7 · 52,5 · 52,3% (chia đều 50%), cả 3 đoạn trên mức. Nếu cả 6 vị trí cùng nghiêng như vậy: 5^6 = 15.625 cặp bộ số (1,6% của 1 triệu cặp) chứa cặp ĐB khoảng 2,2% số kỳ (×1,4). Pro: chưa có cách nào ổn định.
