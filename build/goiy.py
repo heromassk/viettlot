@@ -467,6 +467,16 @@ if A.game == 'loto':
     hh = [r['h'][15] for r in RECS]; m5 = sum(hh[-5:]) / 5
     ths = sorted(sum(hh[i - 5:i]) / 5 for i in range(5, len(hh))); thr = ths[2 * len(ths) // 3]
     NHIP = dict(m5=round(m5, 2), thr=round(thr, 2), last=hh[-5:], good=m5 >= thr)
+    # pool trúng theo phiên 13h / 21h (anh hỏi nên chơi phiên nào, 05/10)
+    ss = SES[T - len(RECS):T]; PH = {}
+    for ph in ('13', '21'):
+        for W in (50, 200):
+            ix = [i for i in range(len(RECS)) if ss[i] == ph][-W // 2:]
+            PH[f'{ph}_{W}'] = {k: round(sum(RECS[i]['h'][k] for i in ix) / max(len(ix), 1), 2) for k in (10, 15)}
+            PH[f'{ph}_{W}']['n'] = len(ix)
+    NHIP['phien'] = PH
+    print('**Pool trúng theo phiên** (TB số trúng/kỳ, pool 10 · pool 15): ' + ' · '.join(
+        f"{ph}h {W // 2} kỳ gần: {PH[f'{ph}_{W}'][10]} · {PH[f'{ph}_{W}'][15]}" for ph in ('13', '21') for W in (50, 200)))
     print(f"\n**Nhịp pool:** 5 kỳ gần pool 15 trúng {hh[-5:]} → TB {m5:.2f} (ngưỡng nhóm tốt {thr:.2f}) → " + ("**ĐANG VÀO NHỊP — kỳ nên đánh mạnh**" if m5 >= thr else "nhịp thường — đánh nhẹ"))
 
 # ---------- Khẳng định kỳ này (đúng ≥70% ở 200 kỳ) ----------
