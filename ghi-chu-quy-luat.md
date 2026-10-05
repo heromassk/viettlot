@@ -1289,3 +1289,34 @@ Kết luận: Max 3D chỉ "ra ở kỳ trước" hơi ít lặp; 2–10 kỳ nh
 - Ra lại đúng sau 3 kỳ: 281 lần (1.94% số lần lặp; quay đều 1.90%)
 
 Kết luận: phân bố khoảng nghỉ lặp lại trùng gần như tuyệt đối với quay đều ở mọi mốc 1–200 kỳ, cả 2 game, cả khúc gần lẫn cũ. Không có nhịp lặp riêng.
+
+
+# Max 3D / Pro — loại bộ đang trong thời gian nghỉ (anh, 05/10/2026: "nếu nó đang trong thời gian nghỉ thì loại")
+
+## max3d_data.json — giữ lại p% bộ điểm cao (gộp dấu vết)
+
+| Cách | Giữ | Bộ trúng nằm trong nhóm giữ (gần · giữa · xa) | Chia đều | Cả 2 ĐB trong nhóm giữ | Chia đều |
+|---|---|---|---|---|---|
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 1 kỳ gần) | 50% | 50.0% · 50.9% · 51.4% | 50% | 27% · 30% · 33% | 25% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 1 kỳ gần) | 34% | 34.3% · 36.1% · 35.4% | 34% | 15% · 13% · 13% | 12% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 5 kỳ gần) | 50% | 50.8% · 50.9% · 50.6% | 50% | 24% · 31% · 29% | 25% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 5 kỳ gần) | 34% | 34.7% · 36.2% · 34.7% | 34% | 13% · 14% · 14% | 12% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 10 kỳ gần) | 50% | 51.7% · 50.3% · 49.0% | 50% | 28% · 24% · 25% | 25% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 10 kỳ gần) | 34% | 34.2% · 35.4% · 34.5% | 34% | 11% · 16% · 16% | 12% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 20 kỳ gần) | 50% | 49.9% · 50.7% · 50.2% | 50% | 20% · 23% · 26% | 25% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 20 kỳ gần) | 34% | 34.4% · 34.1% · 34.2% | 34% | 9% · 14% · 14% | 12% |
+
+## max3dpro_data.json — giữ lại p% bộ điểm cao (gộp dấu vết)
+
+| Cách | Giữ | Bộ trúng nằm trong nhóm giữ (gần · giữa · xa) | Chia đều | Cả 2 ĐB trong nhóm giữ | Chia đều |
+|---|---|---|---|---|---|
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 1 kỳ gần) | 50% | 49.1% · 52.0% · 49.4% | 50% | 29% · 29% · 21% | 25% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 1 kỳ gần) | 34% | 32.5% · 35.4% · 32.2% | 34% | 17% · 14% · 7% | 12% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 5 kỳ gần) | 50% | 48.5% · 52.1% · 49.6% | 50% | 27% · 27% · 15% | 25% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 5 kỳ gần) | 34% | 33.2% · 35.9% · 33.0% | 34% | 16% · 13% · 5% | 12% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 10 kỳ gần) | 50% | 48.1% · 52.5% · 49.8% | 50% | 24% · 32% · 19% | 25% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 10 kỳ gần) | 34% | 32.6% · 37.0% · 33.4% | 34% | 12% · 17% · 6% | 12% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 20 kỳ gần) | 50% | 50.8% · 51.8% · 51.1% | 50% | 23% · 27% · 18% | 25% |
+| Nặng 50 kỳ + bỏ bộ đang nghỉ (ra trong 20 kỳ gần) | 34% | 33.3% · 35.9% · 34.9% | 34% | 12% · 12% · 7% | 12% |
+
+Kết luận: loại bộ đang nghỉ không làm mất tỉ lệ (bộ đang nghỉ ra bằng hoặc ít hơn mức chia đều), nên dùng được để thu nhỏ pool. Max 3D+: nặng 50 kỳ + loại bộ ra trong 5 kỳ, giữ 340 bộ → bộ trúng 34,7 · 36,2 · 34,7%, cặp ĐB 13 · 14 · 14% (chia đều 12%), ổn định cả 3 đoạn. Pro: loại bộ ra trong 20 kỳ, giữ 50% → 50,8 · 51,8 · 51,1%.

@@ -17,14 +17,15 @@ def score(t, W):
 segs = [(T - 100, T), (T - 200, T - 100), (T - 300, T - 200)]
 print(f'## {os.path.basename(f)} — giữ lại p% bộ điểm cao (gộp dấu vết)\n')
 print('| Cách | Giữ | Bộ trúng nằm trong nhóm giữ (gần · giữa · xa) | Chia đều | Cả 2 ĐB trong nhóm giữ | Chia đều |\n|---|---|---|---|---|---|')
-for W in (20, 50, 100):
-    for p in (70, 50, 34, 20):
+import itertools
+for (W, NG), p in itertools.product([(50, 1), (50, 5), (50, 10), (50, 20)], (50, 34)):
+    if True:
         k = p * 10; a1 = []; a2 = []
         for a, b in segs:
             h = n = e = 0
             for t in range(a, b):
-                sc = score(t, W); prev = [int(s) for s in L[t - 1]]; sc[prev] -= 99
+                sc = score(t, W); prev = sorted({int(s) for u in range(t - NG, t) for s in L[u]}); sc[prev] -= 99
                 keep = set(np.argsort(-sc)[:k].tolist()); nums = [int(s) for s in L[t]]
                 h += sum(x in keep for x in nums); n += 20; e += nums[0] in keep and nums[1] in keep
             a1.append(h / n * 100); a2.append(e / (b - a) * 100)
-        print(f'| Nặng {W} kỳ + bỏ bộ vừa ra | {p}% | ' + ' · '.join(f'{x:.1f}%' for x in a1) + f' | {p}% | ' + ' · '.join(f'{x:.0f}%' for x in a2) + f' | {p * p / 100:.0f}% |')
+        print(f'| Nặng {W} kỳ + bỏ bộ đang nghỉ (ra trong {NG} kỳ gần) | {p}% | ' + ' · '.join(f'{x:.1f}%' for x in a1) + f' | {p}% | ' + ' · '.join(f'{x:.0f}%' for x in a2) + f' | {p * p / 100:.0f}% |')
