@@ -44,6 +44,28 @@ def taixuat_phien(R, t, only=None, G=10):
     last = R[idx[-1]]
     return {n for n in last if all(n not in R[idx[-j]] for j in range(2, G + 2))}
 
+def pascal(R, t, NB):
+    d = [int(c) for c in ''.join(f'{n:02d}' for n in sorted(R[t - 1]))]
+    while len(d) > 2: d = [(d[i] + d[i + 1]) % 10 for i in range(len(d) - 1)]
+    v = d[0] * 10 + d[1]
+    return {v} if 1 <= v <= NB else set()
+
+def cau_chay(R, t, NB, kmin=2):
+    """Soi cầu vị trí: số ghép từ chữ số vị trí i,j của kỳ trước, cầu đã chạy ≥kmin kỳ liền."""
+    dig = lambda u: ''.join(f'{n:02d}' for n in sorted(R[u]))
+    L = len(dig(t - 1)); out = set()
+    for i in range(L):
+        for j in range(L):
+            if i == j: continue
+            run = 0
+            for back in range(1, kmin + 1):
+                u = t - back; v = int(dig(u - 1)[i] + dig(u - 1)[j])
+                if 1 <= v <= NB and v in R[u]: run += 1
+                else: break
+            v = int(dig(t - 1)[i] + dig(t - 1)[j])
+            if run >= kmin and 1 <= v <= NB: out.add(v)
+    return out
+
 def topk(d, k, rev=False): return set(sorted(d, key=lambda n: ((-d[n]) if rev else d[n], n))[:k])
 
 # (id, nhãn, hàm(R, t, c) -> tập số bị LOẠI)
@@ -116,6 +138,9 @@ CLAIMS = [
     ('nhom_k7', 'Nhóm số của kỳ cách 7 kỳ ra NHIỀU hơn bình quân (dấu vết máy, 100 kỳ)', lambda R, t, c, NB, KB: ('nhomnhieu', R[t - 7] - R[t - 1], 0)),
     ('nhom_k9', 'Nhóm số của kỳ cách 9 kỳ ra NHIỀU hơn bình quân (dấu vết máy, 100 kỳ)', lambda R, t, c, NB, KB: ('nhomnhieu', R[t - 9] - R[t - 1], 0)),
     ('nhom_txph21', 'Loto 21h: nhóm tái xuất trong phiên ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', taixuat_phien(R, t, '21') if NB == 35 else set(), 0)),
+    ('nhom_kep', 'Soi cầu: lô kép (11, 22, 33…) ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', set(range(11, NB + 1, 11)), 0)),
+    ('nhom_pascal', 'Soi cầu: số cầu Pascal của kỳ trước ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', pascal(R, t, NB), 0)),
+    ('nhom_cau2', 'Soi cầu: cầu vị trí đã chạy ≥2 kỳ ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', cau_chay(R, t, NB, 2), 0)),
     ('nhom_nhip', 'Nhóm nhịp riêng "lúc vắng thế này chưa từng ra" ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_off(R, t, NB), 0)),
 ]
 

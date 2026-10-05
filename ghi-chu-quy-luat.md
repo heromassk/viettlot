@@ -385,6 +385,16 @@ Hai phiên có "tính cách" ngược nhau:
 - **21h kiểu "cân bằng"**: số tái xuất trong phiên ra NHIỀU: 15.2/18.9%, 17.0/16.1% → giữ (sổ: nhom_txph21); số vắng ≥20 trong phiên ra nhiều; số vắng 10–19 kỳ ra ít 3/4 khung.
 - Liên hệ 13h→21h cùng ngày, 21h→13h hôm sau: không ổn định. Hồi về trung vị tổng theo phiên: đúng 76–79% kỳ (vé giữ ~74%, lợi nhẹ).
 
+## "Luận số / soi cầu" trên mạng — kiểm bằng dữ liệu Vietlott (05/10/2026, `build/soicau.py`, 2 nửa 150 kỳ)
+Luận số trên mạng = các cách soi cầu của lô đề: bạc nhớ (cặp số hay theo sau một dữ kiện), lô gan (vắng lâu), lô rơi (lặp kỳ trước), lô kép, đầu/đuôi câm, cầu vị trí (ghép 2 chữ số ở 2 vị trí cố định của kết quả kỳ trước, "cầu chạy" k ngày thì đánh tiếp), cầu Pascal (cộng dồn chữ số).
+Kết quả (bình quân mỗi số: Loto 14.3, Mega 13.3, Power 10.9%):
+- **Cầu vị trí "đang chạy thì chạy tiếp"**: KHÔNG đúng ở Loto/Power (cầu chạy 1–3 kỳ ra 6–19% lộn xộn); Mega nhích nhẹ theo độ dài cầu (chạy 2: 14.0/16.1%, chạy 3: 17.4/20.0% nhưng chỉ ~25 lần).
+- **Cầu Pascal**: Power 14.3/14.1% (cao hơn 10.9% cả 2 nửa, ~80 lần/nửa); Loto 16/19% (~45 lần); Mega lộn xộn.
+- **Lô kép**: Loto 18.9/16.9% (cao hơn 14.3% cả 2 nửa); Mega/Power bình thường.
+- **Lô gan**: Mega ra ít (11.3/11.5%) — khớp thuyết bi; Power nửa gần ra nhiều (15.6%); Loto hơi ít.
+- Lô rơi, đầu câm, đuôi câm: ≈ bình thường.
+Đưa vào sổ theo dõi: nhom_kep, nhom_pascal, nhom_cau2. Nhận xét: phần lớn "soi cầu" là đọc chuỗi ngẫu nhiên; vài cái nhích nhẹ cần theo dõi thêm.
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
