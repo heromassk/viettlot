@@ -719,3 +719,48 @@ Kết luận: "3 số vắng lâu nhất" ổn định nhất (31% ở 100 kỳ,
 | Pool | Chia đều | 10 kỳ | 20 kỳ | 50 kỳ | 100 kỳ | 100 kỳ trước | Kỳ tới |
 |---|---|---|---|---|---|---|---|
 | Bỏ MM 3 kỳ gần → 9 số còn lại | 0% | 100% | 90% | 80% | 79% | 77% | 01 03 05 06 08 09 10 11 12 |
+
+
+# Max 3D / 3D+ / 3D Pro — luật và xác suất (05/10/2026)
+
+Lịch quay: Max 3D và 3D+ quay thứ 2, 4, 6 lúc 18h; Max 3D Pro quay thứ 3, 5, 7. Mỗi kỳ quay 20 bộ số 000–999: ĐB 2 bộ, Nhất 4, Nhì 6, Ba 8. Giải cố định theo vé 10.000đ.
+
+## Max 3D — chọn 1 bộ số, vé 10.000đ
+
+| Hạng | Số bộ | Giải | Xác suất/kỳ | Đóng góp hoàn tiền |
+|---|---|---|---|---|
+| ĐB | 2 | 1,000,000đ | 0.20% | 20.0% |
+| Nhất | 4 | 350,000đ | 0.40% | 14.0% |
+| Nhì | 6 | 210,000đ | 0.60% | 12.6% |
+| Ba | 8 | 100,000đ | 0.80% | 8.0% |
+| **Tổng** | 20 | | **1.98% có giải** (≈1/50 kỳ) | **54.6%** |
+
+## Max 3D+ — chọn 2 bộ số, vé 10.000đ
+
+| Hạng | Điều kiện | Giải | Xác suất/kỳ | Khoảng 1 lần / | Đóng góp hoàn tiền |
+|---|---|---|---|---|---|
+| ĐB | cả 2 bộ trùng 2 số ĐB | 1,000,000,000đ | 0.00020% | 500,000 kỳ | 20.0% |
+| Nhất | cả 2 bộ nằm trong 4 số giải Nhất | 40,000,000đ | 0.00120% | 83,500 kỳ | 4.8% |
+| Nhì | cả 2 bộ trong 6 số giải Nhì | 10,000,000đ | 0.00299% | 33,467 kỳ | 3.0% |
+| Ba | cả 2 bộ trong 8 số giải Ba | 5,000,000đ | 0.00557% | 17,965 kỳ | 2.8% |
+| Tư | cả 2 bộ nằm trong 20 số (khác nhóm) | 1,000,000đ | 0.02737% | 3,654 kỳ | 2.7% |
+| Năm | 1 bộ trùng 1 số ĐB | 150,000đ | 0.39227% | 255 kỳ | 5.9% |
+| Sáu | 1 bộ trùng 1 số Nhất/Nhì/Ba | 40,000đ | 3.49531% | 29 kỳ | 14.0% |
+| **Tổng** | | | **3.92% có giải** | 25 kỳ | **53.2%** |
+
+## Max 3D Pro — chọn 2 bộ số, vé 10.000đ
+
+| Hạng | Điều kiện | Giải | Xác suất/kỳ | Khoảng 1 lần / | Đóng góp hoàn tiền |
+|---|---|---|---|---|---|
+| ĐB (đúng thứ tự) | 2 bộ trùng 2 số ĐB đúng thứ tự quay | 2,000,000,000đ | 0.00010% | 1,000,000 kỳ | 20.0% |
+| Phụ ĐB (ngược thứ tự) | 2 bộ trùng 2 số ĐB ngược thứ tự | 400,000,000đ | 0.00010% | 1,000,000 kỳ | 4.0% |
+| Nhất | cả 2 bộ nằm trong 4 số giải Nhất | 30,000,000đ | 0.00120% | 83,500 kỳ | 3.6% |
+| Nhì | cả 2 bộ trong 6 số giải Nhì | 10,000,000đ | 0.00299% | 33,467 kỳ | 3.0% |
+| Ba | cả 2 bộ trong 8 số giải Ba | 4,000,000đ | 0.00557% | 17,965 kỳ | 2.2% |
+| Tư | cả 2 bộ nằm trong 20 số (khác nhóm) | 1,000,000đ | 0.02737% | 3,654 kỳ | 2.7% |
+| Năm | 1 bộ trùng 1 số ĐB | 100,000đ | 0.39227% | 255 kỳ | 3.9% |
+| Sáu | 1 bộ trùng 1 số Nhất/Nhì/Ba | 40,000đ | 3.49531% | 29 kỳ | 14.0% |
+| **Tổng** | | | **3.92% có giải** | 25 kỳ | **53.4%** |
+
+Kiểm tra: tỉ lệ hoàn tiền tính ra 53–55%, khớp mức chung của Vietlott, nên các điều kiện giải ở trên là hợp lý.
+Chưa có dữ liệu kết quả Max 3D trong repo (mạng chặn các trang kết quả) — cần anh tải CSV lên để dò dấu vết theo từng hàng trăm/chục/đơn vị.
