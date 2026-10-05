@@ -53,6 +53,7 @@ Mỗi ý mới: viết luật cố định → chạy tiến trên 100 kỳ gầ
 | `python3 build/thu_hep.py <game> [--min 60]` | **Gộp luật loại để thu hẹp pool** (dùng mọi luật trong `theodoi.RULES`): thêm dần luật ít "tốn" an toàn nhất trên mỗi số bỏ thêm; mỗi bước: bỏ TB/kỳ, pool còn, % kỳ không mất số (100 gần / 100 trước), số trúng mất/kỳ, số bị bỏ kỳ tới. |
 | `python3 build/dauvet_may.py` | Dấu vết máy (Loto) khung 100/200 kỳ: lặp theo độ trễ k=1..14, số nhiều/ít giữ sang kỳ kế, vị trí dính kỳ trước, tính cách phiên/thứ. |
 | `python3 build/phien.py` | Loto: tách phiên 13h / 21h thành 2 dãy riêng, khung 100/200 kỳ của chính phiên: lặp theo ngày, nóng/lạnh, loại vắng ≥10/15/20 trong phiên, pool nóng cùng phiên, MM. |
+| `python3 build/phien2.py` | Loto theo phiên: 13h→21h cùng ngày, 21h→13h hôm sau, luật loại/tái xuất/vắng tính trong phiên, hồi về trung vị theo phiên. |
 | `python3 build/khia_canh.py <game> [--W 100]` | Khía cạnh mới: nhóm số (lộn, chạm tổng, ±2, t−2/t−3, nguyên tố, chia 3, cùng vị trí, tái xuất, hàng chục…) 3 đoạn; hồi về trung vị (tổng, lẻ, u, z, số nhỏ) có cột vé giữ lại; hình dạng (chia 3, nguyên tố, khe nhỏ nhất, tổng đuôi, mod 9, đối xứng). Thêm ý mới vào `GROUPS` / `FEAT` / `SH`. |
 | `python3 build/khang_dinh.py <game>` | Khẳng định về kỳ tới (≥1 số của 2 kỳ gần, ≥1 số nóng, chẵn/lẻ, nhỏ/lớn, hàng chục…): % kỳ đúng 3 khúc + vé giữ lại. |
 | `python3 build/loai_tru.py <game>` | Tỉ lệ ra của nhóm bị loại so với nhóm còn lại (cấp số), luật loại vé (cấp vé). |
@@ -80,4 +81,5 @@ Muốn thử ý mới: thêm luật vào `RULES` trong `build/suyluan.py` (hàm 
 - **Power:** số vắng 11–15 kỳ ra nhiều hơn; vắng 6–10 ít hơn; số kỳ cùng thứ tuần trước ít hơn; đà tổng có dấu vết; rải ≥4 hàng chục.
 - **Loto:** phiên 13h/21h có tính cách riêng; chuyển kỳ; số vừa ra kỳ trước ít hơn; số vắng lâu không nên loại; số May Mắn cân bằng (chọn vắng lâu).
 - **Khía cạnh mới (04/10):** Mega số kỳ t−3 ra ít (3/3), hồi về trung vị của tổng (77/76/71% vs vé giữ 69%), tổng mod 9 (theo dõi); Power tổng mod 9 (theo dõi); Loto số "tái xuất" ra ít (3/3) → loại, hồi về trung vị số nhỏ. Bẫy: "hồi về trung vị" phải tính kỳ bằng nhau là sai + luôn so vé giữ lại.
+- **Loto 2 phiên ngược nhau (05/10):** 13h "lạnh giữ lạnh" (vắng ≥20 trong phiên và tái xuất trong phiên đều ra ít → loại); 21h "cân bằng" (vắng lâu & tái xuất trong phiên ra nhiều → giữ).
 - Không có dấu vết: số lộn, chạm tổng, cách ±2, nguyên tố/chia 3 (nhóm số), cùng vị trí ±1, cặp số, theo thứ quay, số "đến hạn", đuôi số (Loto), đà tổng (Loto).

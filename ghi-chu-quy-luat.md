@@ -379,6 +379,12 @@ Kết luận: dấu vết máy Loto rất mờ, chỉ ±1–2 điểm % và hay 
 - Pool 15 nóng 50 kỳ cùng phiên: 13h TB 2.12–2.18, 21h 2.10–2.27 — như nhau.
 Đưa vào sổ theo dõi: vangph20.
 
+## Loto — tìm thêm dấu vết theo phiên (05/10/2026, `build/phien2.py`)
+Hai phiên có "tính cách" ngược nhau:
+- **13h kiểu "lạnh giữ lạnh"**: số tái xuất trong phiên (ra hôm trước sau vắng ≥10 kỳ 13h) ra ÍT ở cả 4 khung: 10.9/10.8% (100 kỳ), 10.8/13.7% (200 kỳ) vs 14.3%, ~1 số/kỳ → loại (sổ: txph13). Số vắng ≥20 kỳ trong phiên cũng ít (xem mục trước).
+- **21h kiểu "cân bằng"**: số tái xuất trong phiên ra NHIỀU: 15.2/18.9%, 17.0/16.1% → giữ (sổ: nhom_txph21); số vắng ≥20 trong phiên ra nhiều; số vắng 10–19 kỳ ra ít 3/4 khung.
+- Liên hệ 13h→21h cùng ngày, 21h→13h hôm sau: không ổn định. Hồi về trung vị tổng theo phiên: đúng 76–79% kỳ (vé giữ ~74%, lợi nhẹ).
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|

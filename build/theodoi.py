@@ -36,6 +36,14 @@ def vang_phien(R, t, G):
         if g >= G: out.add(n)
     return out
 
+def taixuat_phien(R, t, only=None, G=10):
+    """Loto: số vừa ra ở kỳ cùng phiên hôm trước sau khi vắng ≥G kỳ trong phiên. only='13'/'21': chỉ áp cho phiên đó."""
+    if not SESS or (only and SESS[t] != only): return set()
+    idx = [u for u in range(t) if SESS[u] == SESS[t]]
+    if len(idx) < G + 2: return set()
+    last = R[idx[-1]]
+    return {n for n in last if all(n not in R[idx[-j]] for j in range(2, G + 2))}
+
 def topk(d, k, rev=False): return set(sorted(d, key=lambda n: ((-d[n]) if rev else d[n], n))[:k])
 
 # (id, nhãn, hàm(R, t, c) -> tập số bị LOẠI)
@@ -58,6 +66,7 @@ RULES = [
     ('nhipmin100', 'Bỏ số phá nhịp tối thiểu (100 kỳ: luôn nghỉ ≥x kỳ, mới nghỉ <x)', lambda R, t, c: nhip_min(R, t, len(c['gap']), 100)),
     ('nhipmin200', 'Bỏ số phá nhịp tối thiểu (200 kỳ)', lambda R, t, c: nhip_min(R, t, len(c['gap']), 200)),
     ('vangph20', 'Loto: bỏ số vắng ≥20 kỳ CÙNG PHIÊN (13h đúng ~80%, 21h ngược)', lambda R, t, c: vang_phien(R, t, 20) if len(c['gap']) == 35 else set()),
+    ('txph13', 'Loto 13h: bỏ số tái xuất trong phiên (ra hôm trước sau vắng ≥10 kỳ 13h)', lambda R, t, c: taixuat_phien(R, t, '13') if len(c['gap']) == 35 else set()),
     ('uprev', 'Bỏ số nhỏ nhất kỳ trước', lambda R, t, c: {min(R[t - 1])}),
     ('zprev', 'Bỏ số lớn nhất kỳ trước', lambda R, t, c: {max(R[t - 1])}),
 ]
@@ -106,6 +115,7 @@ CLAIMS = [
     ('nhom_nhip80', 'Nhóm "phá nhịp nghỉ" (100 kỳ: ≥80% lần nghỉ ≥x kỳ, mới nghỉ <x) ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_p(R, t, NB), 0)),
     ('nhom_k7', 'Nhóm số của kỳ cách 7 kỳ ra NHIỀU hơn bình quân (dấu vết máy, 100 kỳ)', lambda R, t, c, NB, KB: ('nhomnhieu', R[t - 7] - R[t - 1], 0)),
     ('nhom_k9', 'Nhóm số của kỳ cách 9 kỳ ra NHIỀU hơn bình quân (dấu vết máy, 100 kỳ)', lambda R, t, c, NB, KB: ('nhomnhieu', R[t - 9] - R[t - 1], 0)),
+    ('nhom_txph21', 'Loto 21h: nhóm tái xuất trong phiên ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', taixuat_phien(R, t, '21') if NB == 35 else set(), 0)),
     ('nhom_nhip', 'Nhóm nhịp riêng "lúc vắng thế này chưa từng ra" ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_off(R, t, NB), 0)),
 ]
 
