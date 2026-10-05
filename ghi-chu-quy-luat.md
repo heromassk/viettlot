@@ -1806,3 +1806,67 @@ Tần suất cả lịch sử: lệch lớn nhất z = +3.2 (số 11), nhỏ nh�
 Tương quan tần suất nửa đầu ↔ nửa sau: -0.111 (0 = không có số "ruột")
 
 Kết luận: Keno quay bằng máy tính, không có dấu vết. Mọi nhóm (ra kỳ trước, vắng ≥5/10/15, nóng/lạnh 20/100/500 kỳ) ở 5000 kỳ và cả lịch sử đều 24,7–25,3% (kỳ vọng 25%). Khung 10–100 kỳ lệch vài điểm nhưng không giữ qua 3 đoạn. Không có số "ruột": tần suất nửa đầu ↔ nửa sau tương quan −0,11.
+
+
+# Keno — cơ cấu giải các bậc và chấm cách chọn bậc 7–10 (05/10/2026, anh)
+
+Bảng giải lấy từ các trang hướng dẫn (vietlott.vn bị chặn, tra qua tìm kiếm); kiểm bằng xác suất: mọi bậc trả ~55% → các số khớp nhau. Chẵn/Lẻ (1 bên): 11–12 số 20.000, 13–14 số 40.000, ≥15 số 200.000 (trả ~57%); Hòa (10–10) 26.000 (theo nguồn). Lớn/Nhỏ: chưa xác nhận được mức thưởng. Script `build/keno_bac.py`.
+
+## Lý thuyết mỗi bậc (vé 10.000đ)
+
+| Bậc | Trả thưởng TB | % kỳ có giải | Giải thường gặp nhất |
+|---|---|---|---|
+| 10 | 55.2% | 11.0% | trúng 5: 20,000đ (5.1%) |
+| 9 | 54.7% | 21.7% | trúng 4: 10,000đ (11.4%) |
+| 8 | 54.7% | 19.1% | trúng 0: 10,000đ (8.8%) |
+| 7 | 55.1% | 23.7% | trúng 3: 10,000đ (17.5%) |
+| 6 | 54.5% | 16.2% | trúng 3: 10,000đ (13.0%) |
+| 5 | 54.9% | 9.7% | trúng 3: 10,000đ (8.4%) |
+| 4 | 55.1% | 25.9% | trúng 2: 10,000đ (21.3%) |
+| 3 | 55.5% | 15.3% | trúng 2: 20,000đ (13.9%) |
+| 2 | 54.1% | 6.0% | trúng 2: 90,000đ (6.0%) |
+| 1 | 50.0% | 25.0% | trúng 1: 20,000đ (25.0%) |
+
+## Bậc 7 — tiền về / tiền bỏ (kỳ vọng 55.1%) · % kỳ có giải
+
+| Cách chọn | 100 kỳ | 1000 kỳ | 10000 kỳ | Cả lịch sử | % kỳ có giải (cả LS) | TB số trúng (kỳ vọng 1.75) |
+|---|---|---|---|---|---|---|
+| nóng 100 kỳ | 37% | 69% | 52% | 64% | 23.7% | 1.748 |
+| lạnh 100 kỳ | 165% | 49% | 47% | 45% | 23.6% | 1.750 |
+| nóng 20 kỳ | 42% | 33% | 49% | 59% | 23.6% | 1.748 |
+| vắng lâu nhất | 64% | 56% | 47% | 44% | 23.6% | 1.750 |
+| cố định 1–n | 44% | 38% | 44% | 49% | 23.5% | 1.744 |
+
+## Bậc 8 — tiền về / tiền bỏ (kỳ vọng 54.7%) · % kỳ có giải
+
+| Cách chọn | 100 kỳ | 1000 kỳ | 10000 kỳ | Cả lịch sử | % kỳ có giải (cả LS) | TB số trúng (kỳ vọng 2.00) |
+|---|---|---|---|---|---|---|
+| nóng 100 kỳ | 34% | 42% | 44% | 48% | 19.1% | 1.997 |
+| lạnh 100 kỳ | 84% | 33% | 38% | 44% | 18.8% | 2.001 |
+| nóng 20 kỳ | 32% | 25% | 45% | 44% | 19.1% | 1.998 |
+| vắng lâu nhất | 125% | 51% | 50% | 44% | 19.1% | 1.999 |
+| cố định 1–n | 26% | 34% | 47% | 46% | 19.0% | 1.995 |
+
+## Bậc 9 — tiền về / tiền bỏ (kỳ vọng 54.7%) · % kỳ có giải
+
+| Cách chọn | 100 kỳ | 1000 kỳ | 10000 kỳ | Cả lịch sử | % kỳ có giải (cả LS) | TB số trúng (kỳ vọng 2.25) |
+|---|---|---|---|---|---|---|
+| nóng 100 kỳ | 29% | 35% | 44% | 46% | 21.8% | 2.250 |
+| lạnh 100 kỳ | 62% | 39% | 46% | 46% | 21.4% | 2.251 |
+| nóng 20 kỳ | 41% | 31% | 47% | 46% | 21.7% | 2.247 |
+| vắng lâu nhất | 57% | 46% | 59% | 49% | 21.7% | 2.248 |
+| cố định 1–n | 41% | 36% | 44% | 50% | 21.6% | 2.247 |
+
+## Bậc 10 — tiền về / tiền bỏ (kỳ vọng 55.2%) · % kỳ có giải
+
+| Cách chọn | 100 kỳ | 1000 kỳ | 10000 kỳ | Cả lịch sử | % kỳ có giải (cả LS) | TB số trúng (kỳ vọng 2.50) |
+|---|---|---|---|---|---|---|
+| nóng 100 kỳ | 27% | 31% | 49% | 45% | 11.1% | 2.502 |
+| lạnh 100 kỳ | 42% | 40% | 43% | 43% | 10.9% | 2.501 |
+| nóng 20 kỳ | 22% | 20% | 34% | 36% | 11.0% | 2.497 |
+| vắng lâu nhất | 31% | 29% | 56% | 41% | 11.0% | 2.497 |
+| cố định 1–n | 37% | 30% | 47% | 44% | 10.9% | 2.496 |
+
+Dữ liệu: 86492 kỳ (2022-12-04 → 2026-10-05). Tiền về 1 kỳ dao động rất mạnh (giải lớn hiếm) → khung 100–1000 kỳ có thể lệch hàng chục %; TB số trúng mới là thước đo ổn định.
+
+Kết luận: TB số trúng của mọi cách chọn bằng đúng kỳ vọng (n/4) tới 3 chữ số thập phân → không cách chọn nào hơn. Tiền về thực tế 36–64% (thấp hơn 55% vì chưa ai trong các cách thử trúng giải lớn; giải lớn quyết định phần lớn tỉ lệ trả).
