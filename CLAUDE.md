@@ -21,9 +21,10 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - Max 3D / 3D+ / Pro: dữ liệu `build/max3d_data.json`, `build/max3dpro_data.json`; ô trong app + gợi ý 3 cặp kèm lý do từ `build/max3d_app.py` (lưu gợi ý đã đưa vào `build/max3d_goiy_log.jsonl`); tâm linh `build/max3d_tamlinh.py`; các script `build/max3d_*.py`. Sau mỗi lần `lay_kq.py`: `python3 build/max3d_app.py` → `node build/max3d_tl.js` (17 phương pháp tâm linh, ra `build/max3d_tl.json`) → `python3 build/max3d_app.py` lần nữa (ghép cặp tâm linh) → `assemble.py`.
 
 ## App đã đăng
-- https://claude.ai/artifact/X8ZmKZJ3RGDKZF7j8wbxFr — thuộc tài khoản cũ. Tài khoản mới không ghi đè được link này trừ khi được chia sẻ quyền sửa; nếu không, đăng thành link mới từ `build/nghien-cuu-loto.html`.
+- **https://claude.ai/artifact/ULkC95JvE2BsKHfXyypXHF** — link mới (05/10/2026, tài khoản hiện tại; capabilities db + downloads). Đăng lại cùng URL bằng `build/nghien-cuu-loto.html`.
+- Link cũ X8ZmKZJ3RGDKZF7j8wbxFr thuộc tài khoản cũ, không đọc/sửa được; dữ liệu anh nhập tay trong app cũ (draws/preds/mine) không chuyển sang.
 
 ## Việc đang dở (05/10/2026)
-- Kỳ chờ kết quả, gợi ý đã lưu trong `goiy_log.jsonl`: Loto 05/10 21h, Power 06/10, Mega 07/10. Có kết quả → chạy `lay_kq.py` (hoặc add_result) để chấm.
+- Kỳ chờ kết quả, gợi ý đã lưu trong `goiy_log.jsonl`: Loto 06/10 13h, Power 06/10, Mega 07/10 (Loto 05/10 21h đã chấm). Có kết quả → chạy `lay_kq.py` (hoặc add_result) để chấm.
 - Max 3D: đã hiện pool + 3 cặp gợi ý kèm lý do trong 2 ô app (Max 3D+: loại bộ ra 5 kỳ, tiến liên tiếp, tam hoa, giữ 340 bộ nặng 50 kỳ; Pro: loại bộ ra 30 kỳ, tiến, tam hoa, 00x, giữ 400 bộ nặng 100 kỳ + quẻ lộn ĐB kỳ trước). Khi anh báo kết quả Max 3D+/Pro: `python3 build/max3d_cham.py plus|pro "dd/mm/yyyy" <20 bộ theo thứ tự ĐB 2, Nhất 4, Nhì 6, Ba 8>` (chấm cặp gợi ý + pool, ghi `build/max3d_cham.jsonl`, thêm kỳ vào dữ liệu) rồi chạy lại chuỗi max3d_app → max3d_tl → max3d_app → assemble. Ảnh kết quả từ app Vietlott SMS: tab Max 3D+ hiện ĐB 2 bộ, Nhất 4, Nhì 6, Ba 8.
 - Đề xuất chưa được duyệt: số May Mắn Loto "MM kỳ trước + 2 vắng lâu" (hiện giữ "3 vắng lâu nhất").
