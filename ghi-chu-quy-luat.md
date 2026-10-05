@@ -1429,3 +1429,54 @@ Kết luận: tam hoa ra đúng mức (×0,93 · ×1,01), loại được (kỳ 
 
 
 Ghi chú: quẻ bộ số chỉ 1–2 bộ/kỳ nên mỗi đoạn 100 kỳ chỉ kỳ vọng ~4 lần trúng, dao động ×0–2,5 là bình thường; tin cột "cả lịch sử". Nổi bật: Pro "lộn 2 số ĐB kỳ trước" ×1,97 · ×1,39 · ×1,95, cả lịch sử ×1,33 (ở Max 3D thì ngược, ×0,73) → đưa vào sổ theo dõi. Quẻ chữ số đều ≈ ×1,00.
+
+
+# Max 3D / Pro — 17 phương pháp tâm linh của app (05/10/2026)
+
+Chạy KX_M (Lục Nhâm, Thái Ất, Huyền Không, Nhị thập bát tú, Hoàng đạo, Nạp âm, Thần số học, Tử vi, Xin xăm, Tarot, Mai Hoa, Kỳ Môn, Tứ trụ, Bát trạch) + bóng, lộn 2 số ĐB kỳ trước, trên bộ số 000–999, ngày sinh anh 16/06/1991 âm giờ Sửu. Tỉ lệ = số lần trúng / kỳ vọng.
+
+## plus kỳ tới 05/10/2026 · phiếu cao nhất 8
+| Phương pháp | 100 kỳ gần | giữa | xa | cả lịch sử |
+| Tiểu Lục Nhâm | ×1.02 | ×0.98 | ×0.97 | ×1.00 |
+| Đại Lục Nhâm (rút gọn) | ×0.98 | ×0.97 | ×0.98 | ×0.98 |
+| Thái Ất (thời kế, rút gọn) | ×1.03 | ×1.01 | ×1.00 | ×0.99 |
+| Huyền Không Phi Tinh | ×0.96 | ×1.05 | ×1.02 | ×1.00 |
+| Nhị thập bát tú | ×1.06 | ×1.05 | ×1.06 | ×0.99 |
+| Hoàng đạo / Hắc đạo | ×1.07 | ×1.06 | ×1.04 | ×1.01 |
+| Ngũ hành nạp âm | ×1.00 | ×1.10 | ×1.00 | ×1.01 |
+| Thần số học | ×1.00 | ×0.99 | ×1.04 | ×1.00 |
+| Tử vi (Mệnh, Cục, sao Tử Vi) | ×1.00 | ×1.00 | ×0.95 | ×0.99 |
+| Xin xăm (100 quẻ) | ×0.99 | ×1.01 | ×0.98 | ×0.97 |
+| Tarot (3 lá) | ×1.09 | ×0.90 | ×1.10 | ×0.85 |
+| Mai Hoa (giờ quay) | ×1.30 | ×1.04 | ×0.65 | ×0.86 |
+| Kỳ Môn Độn Giáp | ×0.94 | ×1.30 | ×1.03 | ×1.09 |
+| Tứ trụ (dụng thần) | ×1.02 | ×1.05 | ×1.02 | ×1.00 |
+| Bát trạch (cung mệnh) | ×1.04 | ×1.00 | ×0.93 | ×0.98 |
+| Bóng âm dương 2 số ĐB kỳ trước | ×1.38 | ×1.75 | ×0.13 | ×0.98 |
+| Lộn 2 số ĐB kỳ trước | ×0.75 | ×1.00 | ×0.25 | ×0.68 |
+Theo số phiếu (cả lịch sử): 0 phiếu: ×0.99 (2151 lần) · 1 phiếu: ×1.02 (5076 lần) · 2 phiếu: ×1.00 (5741 lần) · 3 phiếu: ×0.99 (4357 lần) · 4 phiếu: ×1.01 (2852 lần) · 5 phiếu: ×0.98 (1591 lần) · 6 phiếu: ×0.98 (688 lần) · 7 phiếu: ×0.93 (202 lần) · 8 phiếu: ×0.94 (40 lần) · 9 phiếu: ×0.31 (2 lần) · 10 phiếu: ×0.00 (0 lần)
+Top bộ: 014(8) 054(8) 004(7) 009(7) 064(7) 144(7) 194(7) 234(7) 324(7) 374(7) 414(7) 504(7)
+
+## pro kỳ tới 06/10/2026 · phiếu cao nhất 7
+| Phương pháp | 100 kỳ gần | giữa | xa | cả lịch sử |
+| Tiểu Lục Nhâm | ×0.98 | ×1.00 | ×1.01 | ×1.01 |
+| Đại Lục Nhâm (rút gọn) | ×1.00 | ×0.99 | ×0.99 | ×0.97 |
+| Thái Ất (thời kế, rút gọn) | ×0.96 | ×0.95 | ×0.98 | ×1.00 |
+| Huyền Không Phi Tinh | ×1.02 | ×1.01 | ×1.05 | ×1.03 |
+| Nhị thập bát tú | ×0.99 | ×1.08 | ×0.92 | ×0.97 |
+| Hoàng đạo / Hắc đạo | ×0.90 | ×1.12 | ×1.06 | ×1.01 |
+| Ngũ hành nạp âm | ×0.96 | ×0.99 | ×1.04 | ×1.01 |
+| Thần số học | ×1.01 | ×0.96 | ×0.99 | ×0.99 |
+| Tử vi (Mệnh, Cục, sao Tử Vi) | ×1.03 | ×0.98 | ×0.95 | ×0.99 |
+| Xin xăm (100 quẻ) | ×0.97 | ×0.99 | ×0.98 | ×1.02 |
+| Tarot (3 lá) | ×0.60 | ×0.59 | ×0.99 | ×0.85 |
+| Mai Hoa (giờ quay) | ×1.04 | ×1.31 | ×0.78 | ×1.07 |
+| Kỳ Môn Độn Giáp | ×1.32 | ×0.94 | ×0.84 | ×1.01 |
+| Tứ trụ (dụng thần) | ×0.93 | ×0.99 | ×0.97 | ×1.00 |
+| Bát trạch (cung mệnh) | ×1.04 | ×0.93 | ×0.98 | ×0.99 |
+| Bóng âm dương 2 số ĐB kỳ trước | ×1.13 | ×0.88 | ×1.00 | ×0.94 |
+| Lộn 2 số ĐB kỳ trước | ×2.00 | ×1.25 | ×1.75 | ×1.25 |
+Theo số phiếu (cả lịch sử): 0 phiếu: ×1.02 (1507 lần) · 1 phiếu: ×0.98 (3417 lần) · 2 phiếu: ×1.00 (3943 lần) · 3 phiếu: ×1.03 (3120 lần) · 4 phiếu: ×0.98 (1899 lần) · 5 phiếu: ×0.99 (1101 lần) · 6 phiếu: ×0.95 (463 lần) · 7 phiếu: ×1.01 (149 lần) · 8 phiếu: ×0.98 (30 lần) · 9 phiếu: ×3.16 (11 lần) · 10 phiếu: ×0.00 (0 lần) · 11 phiếu: ×0.00 (0 lần)
+Top bộ: 054(7) 019(6) 059(6) 090(6) 139(6) 144(6) 179(6) 199(6) 234(6) 239(6) 319(6) 324(6)
+
+Kết luận: các phương pháp tâm linh ra ngang mức chia đều (×0,85–1,09 cả lịch sử); bộ nhiều phiếu cũng vậy. Dùng để chọn trong pool (không thiệt). Riêng Pro "lộn 2 số ĐB kỳ trước" ×1,25 cả lịch sử, 3 đoạn ×2,00 · 1,25 · 1,75.

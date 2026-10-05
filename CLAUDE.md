@@ -18,7 +18,7 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - App: sửa `build/loto_template.html` → `python3 build/assemble.py` → `node build/check_page.js` (0 lỗi) → đăng `build/nghien-cuu-loto.html`.
 - Sổ kiểm chứng: `build/theodoi.py`, `build/theodoi.json`. Vé anh đã mua: `build/ve_anh.jsonl`. Gợi ý đã đưa: `build/goiy_log.jsonl`.
 - Nghiên cứu và kết quả: `ghi-chu-quy-luat.md` (ghi nối tiếp), `ra-soat-dau-vet.md`.
-- Max 3D / 3D+ / Pro: dữ liệu `build/max3d_data.json`, `build/max3dpro_data.json`; ô trong app + gợi ý 3 cặp kèm lý do từ `build/max3d_app.py` (lưu gợi ý đã đưa vào `build/max3d_goiy_log.jsonl`); tâm linh `build/max3d_tamlinh.py`; các script `build/max3d_*.py`. Chạy lại `max3d_app.py` + `assemble.py` sau mỗi lần `lay_kq.py`.
+- Max 3D / 3D+ / Pro: dữ liệu `build/max3d_data.json`, `build/max3dpro_data.json`; ô trong app + gợi ý 3 cặp kèm lý do từ `build/max3d_app.py` (lưu gợi ý đã đưa vào `build/max3d_goiy_log.jsonl`); tâm linh `build/max3d_tamlinh.py`; các script `build/max3d_*.py`. Sau mỗi lần `lay_kq.py`: `python3 build/max3d_app.py` → `node build/max3d_tl.js` (17 phương pháp tâm linh, ra `build/max3d_tl.json`) → `python3 build/max3d_app.py` lần nữa (ghép cặp tâm linh) → `assemble.py`.
 
 ## App đã đăng
 - https://claude.ai/artifact/X8ZmKZJ3RGDKZF7j8wbxFr — thuộc tài khoản cũ. Tài khoản mới không ghi đè được link này trừ khi được chia sẻ quyền sửa; nếu không, đăng thành link mới từ `build/nghien-cuu-loto.html`.

@@ -45,6 +45,16 @@ def goiy(f, kind):
     if len(mix) == 2:
         pairs.append(dict(x=mix, kind=('Dấu vết' if kind == 'plus' else 'Pool') + ' + chữ số hợp ngày', why=[f'Chữ số hợp ngày {nd}: ngũ hành {I["hanh"]} (Hà Đồ ' + ', '.join(map(str, sorted(QD["Ngũ hành ngày (Hà Đồ, 2 chữ số)"]))) + f'), thần số học {I["tsh"]}',
                       f'{mix[0]}, {mix[1]}: có ≥2 chữ số hợp ngày, vẫn trong pool (điểm hạng {pool.index(mix[0]) + 1}, {pool.index(mix[1]) + 1})']))
+    TLF = os.path.join(HERE, 'max3d_tl.json')
+    TLJ = json.load(open(TLF)).get(kind) if os.path.exists(TLF) else None
+    tl = None
+    if TLJ and TLJ.get('next') == nd:
+        cand = [v for v in TLJ['votes'] if v[0] in P][:2]
+        if len(cand) == 2:
+            tl = dict(methods=TLJ['methods'], top=TLJ['votes'][:12])
+            pairs.append(dict(x=[cand[0][0], cand[1][0]], kind=f'Tâm linh {len(TLJ["methods"])} phương pháp (phiếu nhiều nhất trong pool)',
+                              why=[f'{v[0]}: {v[1]} phiếu — ' + ', '.join(v[2]) for v in cand] +
+                                  ['Kiểm cả lịch sử: bộ nhiều phiếu ra ngang mức chia đều (×0,93–1,03) — không thiệt, chọn theo duyên']))
     if kind == 'pro':
         lon = [prev[0][::-1], prev[1][::-1]]
         pairs.append(dict(x=lon, kind='Tâm linh: lộn ĐB kỳ trước', why=[f'ĐB kỳ trước {prev[0]} – {prev[1]} → lộn giữ thứ tự: {lon[0]} – {lon[1]}',
@@ -55,7 +65,7 @@ def goiy(f, kind):
         pairs.append(dict(x=am, kind='Tâm linh: ngày tháng âm', why=[f'{nd} là ngày {I["ld"]}/{I["lm"]} âm → {am[0]}, {am[1]}', 'Quẻ ra đúng mức chia đều (×1,01 cả lịch sử): không thiệt, chọn theo duyên'] +
                           [f'{x}: ' + ('trong pool' if x in P else 'ngoài pool — cân nhắc') for x in am]))
     return dict(next=nd, am=f'{I["ld"]}/{I["lm"]}', can=TL.CAN[I['can']], hanh=I['hanh'], pool_n=len(pool),
-                loai_n={k: len(v) for k, v in loai.items()}, ng=NG, pool=pool[:40], pairs=pairs,
+                loai_n={k: len(v) for k, v in loai.items()}, ng=NG, pool=pool[:40], pairs=pairs, tl=tl,
                 rule=('Loại bộ ra trong 5 kỳ gần, tiến liên tiếp, tam hoa; trừ điểm nhẹ kép kẹp; giữ 340 bộ chữ số nặng nhất theo hàng (50 kỳ). Kiểm 300 kỳ: cặp ĐB rơi vào pool 13–14% số kỳ (chia đều 12%).' if kind == 'plus'
                       else 'Loại bộ ra trong 20 kỳ gần, tiến liên tiếp, tam hoa. Pro chưa có dấu vết chữ số ổn định → pool rộng, chọn trong pool theo tâm linh.'))
 def stats(f):
