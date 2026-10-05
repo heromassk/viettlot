@@ -371,6 +371,14 @@ Mục tiêu: xác suất nghiêng, không cần quy luật 100%.
 - Vị trí u..y dính kỳ trước: không (≈50%). Tính cách theo phiên / phiên×thứ ở 100–200 kỳ gần: không còn (corr ≈0).
 Kết luận: dấu vết máy Loto rất mờ, chỉ ±1–2 điểm % và hay trôi → Loto chơi nhẹ, chỉ đánh mạnh khi "nhịp pool" tốt.
 
+## Loto — tách riêng phiên 13h và 21h (05/10/2026, `build/phien.py`, khung 100/200 kỳ của chính phiên)
+- **13h: số vắng ≥20 kỳ (tính trong phiên 13h) ra ÍT** — nhóm ra 11.2/14.7% (100 kỳ gần/trước), 12.9/12.0% (200 kỳ) vs 14.3%; loại đúng 78–80% kỳ, bỏ ~1.8 số → nên loại cho 13h.
+- **21h: số vắng ≥20 kỳ (phiên 21h) ra NHIỀU** — 19.0/14.5%, 16.4/17.9% → KHÔNG loại cho 21h (21h hay "cân bằng" quay lại).
+- Lặp theo ngày (k=1..7 cùng phiên), nóng/lạnh giữ sang kỳ kế: không ổn định ở cả 2 phiên.
+- MM: 13h — 3 MM vắng lâu nhất (trong phiên) chỉ 21–22% (dưới 25%) → không hợp; 21h lúc 19% lúc 27%.
+- Pool 15 nóng 50 kỳ cùng phiên: 13h TB 2.12–2.18, 21h 2.10–2.27 — như nhau.
+Đưa vào sổ theo dõi: vangph20.
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|

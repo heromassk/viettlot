@@ -52,6 +52,7 @@ Mỗi ý mới: viết luật cố định → chạy tiến trên 100 kỳ gầ
 | `python3 build/nhip_min.py <game>` | **Nhịp tối thiểu từng số**: luôn nghỉ ≥x kỳ giữa 2 lần ra (cửa sổ 100/200 kỳ) mà hiện mới nghỉ <x → loại. |
 | `python3 build/thu_hep.py <game> [--min 60]` | **Gộp luật loại để thu hẹp pool** (dùng mọi luật trong `theodoi.RULES`): thêm dần luật ít "tốn" an toàn nhất trên mỗi số bỏ thêm; mỗi bước: bỏ TB/kỳ, pool còn, % kỳ không mất số (100 gần / 100 trước), số trúng mất/kỳ, số bị bỏ kỳ tới. |
 | `python3 build/dauvet_may.py` | Dấu vết máy (Loto) khung 100/200 kỳ: lặp theo độ trễ k=1..14, số nhiều/ít giữ sang kỳ kế, vị trí dính kỳ trước, tính cách phiên/thứ. |
+| `python3 build/phien.py` | Loto: tách phiên 13h / 21h thành 2 dãy riêng, khung 100/200 kỳ của chính phiên: lặp theo ngày, nóng/lạnh, loại vắng ≥10/15/20 trong phiên, pool nóng cùng phiên, MM. |
 | `python3 build/khia_canh.py <game> [--W 100]` | Khía cạnh mới: nhóm số (lộn, chạm tổng, ±2, t−2/t−3, nguyên tố, chia 3, cùng vị trí, tái xuất, hàng chục…) 3 đoạn; hồi về trung vị (tổng, lẻ, u, z, số nhỏ) có cột vé giữ lại; hình dạng (chia 3, nguyên tố, khe nhỏ nhất, tổng đuôi, mod 9, đối xứng). Thêm ý mới vào `GROUPS` / `FEAT` / `SH`. |
 | `python3 build/khang_dinh.py <game>` | Khẳng định về kỳ tới (≥1 số của 2 kỳ gần, ≥1 số nóng, chẵn/lẻ, nhỏ/lớn, hàng chục…): % kỳ đúng 3 khúc + vé giữ lại. |
 | `python3 build/loai_tru.py <game>` | Tỉ lệ ra của nhóm bị loại so với nhóm còn lại (cấp số), luật loại vé (cấp vé). |

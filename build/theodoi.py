@@ -22,6 +22,20 @@ def ctx(R, NB, t):
     cnt = lambda w: {n: sum(n in R[u] for u in range(max(0, t - w), t)) for n in range(1, NB + 1)}
     return dict(gap=gap, c5=cnt(5), c10=cnt(10), c20=cnt(20), c100=cnt(100))
 
+SESS = []   # phiên của từng kỳ (Loto: '13'/'21'; trò khác rỗng) — snap() gán
+def vang_phien(R, t, G):
+    """Loto: số vắng ≥G kỳ tính RIÊNG trong phiên của kỳ t (13h hoặc 21h)."""
+    if not SESS: return set()
+    ph = SESS[t]; idx = [u for u in range(t) if SESS[u] == ph]
+    out = set()
+    for n in range(1, len(R[0]) and 36):
+        g = 0
+        for u in reversed(idx):
+            if n in R[u]: break
+            g += 1
+        if g >= G: out.add(n)
+    return out
+
 def topk(d, k, rev=False): return set(sorted(d, key=lambda n: ((-d[n]) if rev else d[n], n))[:k])
 
 # (id, nhãn, hàm(R, t, c) -> tập số bị LOẠI)
@@ -43,6 +57,7 @@ RULES = [
     ('nhip2', 'Bỏ số nhịp "ra – vắng 2 – ra" (vừa ra lại sau đúng 2 kỳ vắng)', lambda R, t, c: {n for n in R[t - 1] if n not in R[t - 2] and n not in R[t - 3] and n in R[t - 4]}),
     ('nhipmin100', 'Bỏ số phá nhịp tối thiểu (100 kỳ: luôn nghỉ ≥x kỳ, mới nghỉ <x)', lambda R, t, c: nhip_min(R, t, len(c['gap']), 100)),
     ('nhipmin200', 'Bỏ số phá nhịp tối thiểu (200 kỳ)', lambda R, t, c: nhip_min(R, t, len(c['gap']), 200)),
+    ('vangph20', 'Loto: bỏ số vắng ≥20 kỳ CÙNG PHIÊN (13h đúng ~80%, 21h ngược)', lambda R, t, c: vang_phien(R, t, 20) if len(c['gap']) == 35 else set()),
     ('uprev', 'Bỏ số nhỏ nhất kỳ trước', lambda R, t, c: {min(R[t - 1])}),
     ('zprev', 'Bỏ số lớn nhất kỳ trước', lambda R, t, c: {max(R[t - 1])}),
 ]
@@ -98,6 +113,8 @@ def snap(game):
     key, NB, KB = GM[game]
     D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
     R = [set(r) for r in D['res']]; T = len(R); c = ctx(R, NB, T)
+    global SESS
+    SESS = (['13' if '13h' in x else '21' for x in D['dates']] + ['13' if '21h' in D['dates'][-1] else '21']) if game == 'loto' else []
     rules = [dict(id=i, lab=l, kind='loai', nums=sorted(f(R, T, c)), applied=i in APPLIED[game]) for i, l, f in RULES]
     for i, l, f in CLAIMS:
         kind, nums, k = f(R, T, c, NB, KB)
