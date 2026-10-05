@@ -1353,3 +1353,79 @@ Kết luận: loại bộ đang nghỉ không làm mất tỉ lệ (bộ đang n
 - Kỳ có ≥1 tam hoa (300 kỳ gần): 18% (kỳ vọng 18%) → luật "loại tam hoa" đúng 82% số kỳ
 
 Kết luận: tam hoa ra đúng mức (×0,93 · ×1,01), loại được (kỳ đúng 80–82%) nhưng không lợi thêm. Tiến liên tiếp (123…789) ra ít hơn ở cả 2 game (×0,86 · ×0,92; 3 đoạn gần đều thấp) → loại. Kép kẹp (121, 303…) ít hơn nhẹ ở cả 2 game (×0,95 · ×0,96) → trừ điểm nhẹ. Kép đầu, kép cuối, lùi liên tiếp: như chia đều.
+
+
+# Max 3D / Pro — tâm linh (05/10/2026)
+
+## Max 3D (3D+) — 1136 kỳ
+
+### Quẻ chọn BỘ SỐ — mỗi bộ ra kỳ đó (chia đều 1.98%)
+
+| Quẻ | 100 kỳ gần | 100 kỳ giữa | 100 kỳ xa | Cả lịch sử |
+|---|---|---|---|---|
+| Ngày + tháng âm (25/8 → 258, 825) | 4.52% (×2.28) | 3.52% (×1.78) | 1.52% (×0.76) | 1.99% (×1.01) |
+| Ngày + tháng dương (05/10 → 050, 005…) | 2.50% (×1.26) | 3.02% (×1.52) | 2.01% (×1.01) | 2.17% (×1.09) |
+| Bóng âm dương 2 số ĐB kỳ trước | 1.50% (×0.76) | 4.00% (×2.02) | 0.00% (×0.00) | 1.67% (×0.84) |
+| Lộn 2 số ĐB kỳ trước | 1.68% (×0.85) | 2.21% (×1.12) | 0.56% (×0.29) | 1.45% (×0.73) |
+| Tam hoa theo thần số học ngày | 5.00% (×2.52) | 0.00% (×0.00) | 2.00% (×1.01) | 1.59% (×0.80) |
+
+### Quẻ chọn CHỮ SỐ — tỉ lệ chiếm trong 60 lần quay chữ số của kỳ (so với chia đều)
+
+| Quẻ | 100 kỳ gần | 100 kỳ giữa | 100 kỳ xa | Cả lịch sử |
+|---|---|---|---|---|
+| Ngũ hành ngày (Hà Đồ, 2 chữ số) | ×1.00 | ×0.99 | ×1.05 | ×1.00 |
+| Can ngày (chữ số đuôi năm can: Canh 0…Kỷ 9) | ×0.95 | ×0.92 | ×1.01 | ×0.99 |
+| Thần số học ngày (1 chữ số) | ×1.00 | ×0.96 | ×1.03 | ×1.00 |
+| Ngày âm (chữ số đuôi + đầu) | ×1.05 | ×1.03 | ×1.01 | ×1.00 |
+| Tổng chạm ĐB1 kỳ trước (1 chữ số) | ×0.95 | ×1.04 | ×1.04 | ×1.00 |
+
+## Max 3D Pro — 783 kỳ
+
+### Quẻ chọn BỘ SỐ — mỗi bộ ra kỳ đó (chia đều 1.98%)
+
+| Quẻ | 100 kỳ gần | 100 kỳ giữa | 100 kỳ xa | Cả lịch sử |
+|---|---|---|---|---|
+| Ngày + tháng âm (25/8 → 258, 825) | 2.51% (×1.27) | 1.51% (×0.76) | 4.04% (×2.04) | 1.93% (×0.97) |
+| Ngày + tháng dương (05/10 → 050, 005…) | 1.50% (×0.76) | 1.51% (×0.76) | 2.53% (×1.27) | 2.12% (×1.07) |
+| Bóng âm dương 2 số ĐB kỳ trước | 1.50% (×0.76) | 1.00% (×0.50) | 2.00% (×1.01) | 1.79% (×0.90) |
+| Lộn 2 số ĐB kỳ trước | 3.91% (×1.97) | 2.75% (×1.39) | 3.87% (×1.95) | 2.64% (×1.33) |
+| Tam hoa theo thần số học ngày | 2.00% (×1.01) | 3.00% (×1.51) | 1.00% (×0.50) | 2.17% (×1.10) |
+
+### Quẻ chọn CHỮ SỐ — tỉ lệ chiếm trong 60 lần quay chữ số của kỳ (so với chia đều)
+
+| Quẻ | 100 kỳ gần | 100 kỳ giữa | 100 kỳ xa | Cả lịch sử |
+|---|---|---|---|---|
+| Ngũ hành ngày (Hà Đồ, 2 chữ số) | ×1.00 | ×0.97 | ×0.98 | ×0.99 |
+| Can ngày (chữ số đuôi năm can: Canh 0…Kỷ 9) | ×1.00 | ×0.98 | ×0.99 | ×1.00 |
+| Thần số học ngày (1 chữ số) | ×1.03 | ×1.09 | ×0.99 | ×1.04 |
+| Ngày âm (chữ số đuôi + đầu) | ×0.98 | ×0.99 | ×1.01 | ×0.99 |
+| Tổng chạm ĐB1 kỳ trước (1 chữ số) | ×1.06 | ×1.03 | ×0.98 | ×0.99 |
+
+## Quẻ kỳ tới
+
+**Max 3D+ 05/10/2026** (âm 25/8, ngày Nhâm – hành Thủy, thần số học 7; ĐB kỳ trước 357 728)
+- Ngày + tháng âm (25/8 → 258, 825): 258 825
+- Ngày + tháng dương (05/10 → 050, 005…): 005 050
+- Bóng âm dương 2 số ĐB kỳ trước: 273 802
+- Lộn 2 số ĐB kỳ trước: 753 827
+- Tam hoa theo thần số học ngày: 777
+- Ngũ hành ngày (Hà Đồ, 2 chữ số): 1 6
+- Can ngày (chữ số đuôi năm can: Canh 0…Kỷ 9): 2
+- Thần số học ngày (1 chữ số): 7
+- Ngày âm (chữ số đuôi + đầu): 2 5
+- Tổng chạm ĐB1 kỳ trước (1 chữ số): 5
+
+**Max 3D Pro 06/10/2026** (âm 26/8, ngày Quý – hành Thủy, thần số học 8; ĐB kỳ trước 509 954)
+- Ngày + tháng âm (25/8 → 258, 825): 268 826
+- Ngày + tháng dương (05/10 → 050, 005…): 006 060
+- Bóng âm dương 2 số ĐB kỳ trước: 054 409
+- Lộn 2 số ĐB kỳ trước: 459 905
+- Tam hoa theo thần số học ngày: 888
+- Ngũ hành ngày (Hà Đồ, 2 chữ số): 1 6
+- Can ngày (chữ số đuôi năm can: Canh 0…Kỷ 9): 3
+- Thần số học ngày (1 chữ số): 8
+- Ngày âm (chữ số đuôi + đầu): 2 6
+- Tổng chạm ĐB1 kỳ trước (1 chữ số): 4
+
+
+Ghi chú: quẻ bộ số chỉ 1–2 bộ/kỳ nên mỗi đoạn 100 kỳ chỉ kỳ vọng ~4 lần trúng, dao động ×0–2,5 là bình thường; tin cột "cả lịch sử". Nổi bật: Pro "lộn 2 số ĐB kỳ trước" ×1,97 · ×1,39 · ×1,95, cả lịch sử ×1,33 (ở Max 3D thì ngược, ×0,73) → đưa vào sổ theo dõi. Quẻ chữ số đều ≈ ×1,00.
