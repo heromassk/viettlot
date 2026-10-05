@@ -25,5 +25,5 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 
 ## Việc đang dở (05/10/2026)
 - Kỳ chờ kết quả, gợi ý đã lưu trong `goiy_log.jsonl`: Loto 05/10 21h, Power 06/10, Mega 07/10. Có kết quả → chạy `lay_kq.py` (hoặc add_result) để chấm.
-- Max 3D: đã hiện pool + 3 cặp gợi ý kèm lý do trong 2 ô app (Max 3D+: loại bộ ra 5 kỳ, tiến liên tiếp, tam hoa, giữ 340 bộ nặng 50 kỳ; Pro: loại bộ ra 20 kỳ, tiến, tam hoa + quẻ lộn ĐB kỳ trước). Chưa làm: chấm sổ kiểm chứng Max 3D từ `max3d_goiy_log.jsonl` khi có kết quả.
+- Max 3D: đã hiện pool + 3 cặp gợi ý kèm lý do trong 2 ô app (Max 3D+: loại bộ ra 5 kỳ, tiến liên tiếp, tam hoa, giữ 340 bộ nặng 50 kỳ; Pro: loại bộ ra 20 kỳ, tiến, tam hoa + quẻ lộn ĐB kỳ trước). Khi anh báo kết quả Max 3D+/Pro: `python3 build/max3d_cham.py plus|pro "dd/mm/yyyy" <20 bộ theo thứ tự ĐB 2, Nhất 4, Nhì 6, Ba 8>` (chấm cặp gợi ý + pool, ghi `build/max3d_cham.jsonl`, thêm kỳ vào dữ liệu) rồi chạy lại chuỗi max3d_app → max3d_tl → max3d_app → assemble. Ảnh kết quả từ app Vietlott SMS: tab Max 3D+ hiện ĐB 2 bộ, Nhất 4, Nhì 6, Ba 8.
 - Đề xuất chưa được duyệt: số May Mắn Loto "MM kỳ trước + 2 vắng lâu" (hiện giữ "3 vắng lâu nhất").

@@ -55,7 +55,14 @@ for f, out in (('3d.jsonl', 'max3d_data.json'), ('3d_pro.jsonl', 'max3dpro_data.
         nums = k['giải đặc biệt'] + k['giải nhất'] + k['giải nhì'] + k['giải ba']
         if len(nums) == 20: rows[int(x['id'])] = (vn(x['date']), nums)
     ids = sorted(rows); old = json.load(open(os.path.join(B, out)))
-    json.dump({'dates': [rows[i][0] for i in ids], 'ids': ids, 'res': [rows[i][1] for i in ids], 'nguon': 'github.com/vietvudanh/vietlott-data'}, open(os.path.join(B, out), 'w'))
+    new = {'dates': [rows[i][0] for i in ids], 'ids': ids, 'res': [rows[i][1] for i in ids], 'nguon': 'github.com/vietvudanh/vietlott-data'}
+    # giữ các kỳ anh nhập tay (max3d_cham.py) mới hơn kho
+    dk = lambda d: datetime.datetime.strptime(d, '%d/%m/%Y')
+    for d, r in zip(old['dates'], old['res']):
+        if d not in new['dates'] and dk(d) > dk(new['dates'][-1]):
+            new['dates'].append(d); new['res'].append(r); new['ids'].append(new['ids'][-1] + 1)
+        elif d in new['dates'] and new['res'][new['dates'].index(d)] != r: print(f'⚠ {out} {d}: kho khác số anh nhập')
+    json.dump(new, open(os.path.join(B, out), 'w'))
     print(f'{out}: {len(ids)} kỳ (thêm {len(ids) - len(old["res"])}), kỳ cuối {rows[ids[-1]][0]}')
 subprocess.run([sys.executable, os.path.join(B, 'max3d_app.py')], check=True)
 subprocess.run([sys.executable, os.path.join(B, 'assemble.py')], check=True)

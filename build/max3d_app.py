@@ -41,7 +41,7 @@ def goiy(f, kind):
     pairs.append(dict(x=[a, b], kind='Dấu vết' if kind == 'plus' else 'Chữ số nặng 50 kỳ (tham khảo — Pro chưa có dấu vết chữ số ổn định)', why=[f'{a}: ' + '; '.join(why(a)), f'{b}: ' + '; '.join(why(b)),
                       'Cặp điểm cao nhất của pool' + (' 340 bộ (giữ nhóm chữ số nặng nhất)' if kind == 'plus' else '')]))
     tld = set(QD['Ngũ hành ngày (Hà Đồ, 2 chữ số)']) | set(QD['Thần số học ngày (1 chữ số)'])
-    mix = [s for s in pool if sum(int(ch) in tld for ch in s) >= 2][:2]
+    mix = [s for s in pool if sum(int(ch) in tld for ch in s) >= 2 and s not in (a, b)][:2]
     if len(mix) == 2:
         pairs.append(dict(x=mix, kind=('Dấu vết' if kind == 'plus' else 'Pool') + ' + chữ số hợp ngày', why=[f'Chữ số hợp ngày {nd}: ngũ hành {I["hanh"]} (Hà Đồ ' + ', '.join(map(str, sorted(QD["Ngũ hành ngày (Hà Đồ, 2 chữ số)"]))) + f'), thần số học {I["tsh"]}',
                       f'{mix[0]}, {mix[1]}: có ≥2 chữ số hợp ngày, vẫn trong pool (điểm hạng {pool.index(mix[0]) + 1}, {pool.index(mix[1]) + 1})']))
@@ -65,7 +65,7 @@ def goiy(f, kind):
         pairs.append(dict(x=am, kind='Tâm linh: ngày tháng âm', why=[f'{nd} là ngày {I["ld"]}/{I["lm"]} âm → {am[0]}, {am[1]}', 'Quẻ ra đúng mức chia đều (×1,01 cả lịch sử): không thiệt, chọn theo duyên'] +
                           [f'{x}: ' + ('trong pool' if x in P else 'ngoài pool — cân nhắc') for x in am]))
     return dict(next=nd, am=f'{I["ld"]}/{I["lm"]}', can=TL.CAN[I['can']], hanh=I['hanh'], pool_n=len(pool),
-                loai_n={k: len(v) for k, v in loai.items()}, ng=NG, pool=pool[:40], pairs=pairs, tl=tl,
+                loai_n={k: len(v) for k, v in loai.items()}, ng=NG, pool=pool[:40], pool_all=sorted(pool), pairs=pairs, tl=tl,
                 rule=('Loại bộ ra trong 5 kỳ gần, tiến liên tiếp, tam hoa; trừ điểm nhẹ kép kẹp; giữ 340 bộ chữ số nặng nhất theo hàng (50 kỳ). Kiểm 300 kỳ: cặp ĐB rơi vào pool 13–14% số kỳ (chia đều 12%).' if kind == 'plus'
                       else 'Loại bộ ra trong 20 kỳ gần, tiến liên tiếp, tam hoa. Pro chưa có dấu vết chữ số ổn định → pool rộng, chọn trong pool theo tâm linh.'))
 def stats(f):
@@ -102,7 +102,7 @@ if os.path.exists(lg): seen = {(j['game'], j['next']) for j in map(json.loads, o
 with open(lg, 'a', encoding='utf-8') as fo:
     for k in ('plus', 'pro'):
         g = out[k]['goiy']
-        if (k, g['next']) not in seen: fo.write(json.dumps(dict(game=k, next=g['next'], pairs=[p['x'] for p in g['pairs']], pool_n=g['pool_n']), ensure_ascii=False) + '\n')
+        if (k, g['next']) not in seen: fo.write(json.dumps(dict(game=k, next=g['next'], pairs=[p['x'] for p in g['pairs']], kinds=[p['kind'] for p in g['pairs']], pool_n=g['pool_n'], pool=g['pool_all']), ensure_ascii=False) + '\n')
 for k in ('plus', 'pro'):
     g = out[k]['goiy']; print(out[k]['name'], g['next'], 'pool', g['pool_n'], [ (p['kind'], p['x']) for p in g['pairs']])
 print('ok max3d_app.json', out['plus']['last'], out['pro']['last'])
