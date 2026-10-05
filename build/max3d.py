@@ -29,20 +29,39 @@ def tier_plus(ma, mb, pro):
     return None
 PZ = {'plus': {'ĐB': 1e9, 'Nhất': 40e6, 'Nhì': 10e6, 'Ba': 5e6, 'Tư': 1e6, 'Năm': 150e3, 'Sáu': 40e3},
       'pro': {'ĐB (đúng thứ tự)': 2e9, 'Phụ ĐB (ngược thứ tự)': 400e6, 'Nhất': 30e6, 'Nhì': 10e6, 'Ba': 4e6, 'Tư': 1e6, 'Năm': 100e3, 'Sáu': 40e3}}
+def tiers_all(ma, mb, pro):
+    """Vé trúng hạng cao thì LĨNH LUÔN mọi giải tương ứng bên dưới (anh, 05/10/2026; khớp ca 36 tỷ: 15 ĐB + 15 phụ ĐB + 30 Tư + 60 Năm).
+    Năm / Sáu tính theo từng bộ số trùng."""
+    out = []
+    if pro and ma & B['D1'] and mb & B['D2']: out.append('ĐB (đúng thứ tự)')
+    if pro and ma & B['D2'] and mb & B['D1']: out.append('Phụ ĐB (ngược thứ tự)')
+    if not pro and ma & D and mb & D: out.append('ĐB')
+    for g, n in (('N', 'Nhất'), ('H', 'Nhì'), ('B', 'Ba')):
+        if ma & B[g] and mb & B[g]: out.append(n)
+    if ma and mb: out.append('Tư')
+    out += ['Năm'] * (bool(ma & D) + bool(mb & D))
+    out += ['Sáu'] * (bool(ma & NHB) + bool(mb & NHB))
+    return out
 def show(name, pro):
-    pt = {}
+    pt = {}; anyw = 0; ex = {}
     for (ma, mb), pr in st.items():
-        t = tier_plus(ma, mb, pro)
-        if t: pt[t] = pt.get(t, 0) + pr
+        ts = tiers_all(ma, mb, pro)
+        if ts: anyw += pr
+        for t in ts: pt[t] = pt.get(t, 0) + pr
+        t0 = tier_plus(ma, mb, pro)
+        if t0: ex[t0] = ex.get(t0, 0) + pr
     z = PZ['pro' if pro else 'plus']; ev = 0
     print(f'\n## {name} — chọn 2 bộ số, vé 10.000đ\n\n| Hạng | Điều kiện | Giải | Xác suất/kỳ | Khoảng 1 lần / | Đóng góp hoàn tiền |\n|---|---|---|---|---|---|')
     COND = {'ĐB': 'cả 2 bộ trùng 2 số ĐB', 'ĐB (đúng thứ tự)': '2 bộ trùng 2 số ĐB đúng thứ tự quay', 'Phụ ĐB (ngược thứ tự)': '2 bộ trùng 2 số ĐB ngược thứ tự',
             'Nhất': 'cả 2 bộ nằm trong 4 số giải Nhất', 'Nhì': 'cả 2 bộ trong 6 số giải Nhì', 'Ba': 'cả 2 bộ trong 8 số giải Ba',
-            'Tư': 'cả 2 bộ nằm trong 20 số (khác nhóm)', 'Năm': '1 bộ trùng 1 số ĐB', 'Sáu': '1 bộ trùng 1 số Nhất/Nhì/Ba'}
+            'Tư': 'cả 2 bộ nằm trong 20 số', 'Năm': 'mỗi bộ trùng 1 số ĐB', 'Sáu': 'mỗi bộ trùng 1 số Nhất/Nhì/Ba'}
     for t, v in z.items():
         pr = pt.get(t, 0); ev += pr * v
         print(f'| {t} | {COND[t]} | {v:,.0f}đ | {pr * 100:.5f}% | {1 / pr:,.0f} kỳ | {pr * v / 10000 * 100:.1f}% |')
-    print(f'| **Tổng** | | | **{sum(pt.values()) * 100:.2f}% có giải** | {1 / sum(pt.values()):.0f} kỳ | **{ev / 10000 * 100:.1f}%** |')
+    print(f'| **Tổng** | | | **{anyw * 100:.2f}% có giải** | {1 / anyw:.0f} kỳ | **{ev / 10000 * 100:.1f}%** |')
+    if pro: print('\nVé trúng ĐB thường lĩnh: 2 tỷ + Tư 1 triệu + 2 × Năm 100.000đ = 2.001.200.000đ. Kiểm ca 36 tỷ: 15 × 2 tỷ + 15 × 400 triệu + 30 × 1 triệu + 60 × 100.000đ = 36.036.000.000đ (+ 1 giải Sáu 40.000đ = 36.036.040.000đ, khớp báo chí).')
+    else: print('\nVé trúng ĐB thường lĩnh: 1 tỷ + Tư 1 triệu + 2 × Năm 150.000đ = 1.001.300.000đ.')
+
 # Max 3D cơ bản: 1 bộ số
 print('## Max 3D — chọn 1 bộ số, vé 10.000đ\n\n| Hạng | Số bộ | Giải | Xác suất/kỳ | Đóng góp hoàn tiền |\n|---|---|---|---|---|')
 ev = 0; pw = 0
