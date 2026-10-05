@@ -1485,3 +1485,26 @@ Kết luận: các phương pháp tâm linh ra ngang mức chia đều (×0,85�
 # Max 3D / Pro — dạng 00x, 0x0, x00 (05/10/2026)
 
 00x (000–009): Max 3D+ ×1,01 cả lịch sử (3 đoạn ×0,90 · ×1,30 · ×1,20), Pro ×1,02. Không hiếm hơn mức chia đều. Kỳ có ≥1 bộ 00x: 19–20% → luật loại 00x đúng ~80% kỳ, số bị loại không ra nhiều hơn TB → anh muốn loại (05/10) nên đưa vào danh sách loại cùng tam hoa. 0x0 ×0,95 / ×0,93; x00 ×0,98 / ×0,86 (Pro).
+
+
+# Max 3D Pro — thu hẹp pool từ ~640 bộ (05/10/2026)
+
+## max3dpro_data.json
+
+| Cách | Cỡ pool | Bộ trúng trong pool (gần · giữa · xa) | Chia đều | Cả 2 ĐB trong pool | Chia đều |
+|---|---|---|---|---|---|
+| Hiện tại: bỏ ra 20 kỳ, tiến, tam hoa, 00x | 649 | 65.9% · 66.3% · 66.0% | 64.9% | 45% · 46% · 38% | 42% |
+| Bỏ ra 30 kỳ (+ tiến, tam hoa, 00x) | 529 | 54.2% · 55.4% · 54.2% | 52.9% | 30% · 36% · 27% | 28% |
+| Bỏ ra 50 kỳ | 350 | 34.5% · 35.0% · 36.4% | 35.0% | 10% · 11% · 11% | 12% |
+| Bỏ ra 20 kỳ + kép kẹp + 0x0/x00 | 584 | 58.0% · 59.7% · 58.8% | 58.4% | 36% · 37% · 28% | 34% |
+| Bỏ ra 30 kỳ + kép kẹp + 0x0/x00 | 476 | 47.7% · 49.4% · 48.5% | 47.6% | 22% · 29% · 20% | 23% |
+| Hiện tại → giữ 340 bộ nặng 20 kỳ | 340 | 34.1% · 34.8% · 34.8% | 34.0% | 14% · 8% · 6% | 12% |
+| Hiện tại → giữ 340 bộ nặng 100 kỳ | 340 | 34.2% · 35.4% · 34.3% | 34.0% | 15% · 12% · 8% | 12% |
+| Hiện tại → giữ 340 bộ NHẸ 20 kỳ (ngược) | 340 | 34.7% · 34.3% · 34.4% | 34.0% | 12% · 14% · 13% | 12% |
+
+| Hiện tại → giữ 340 bộ nặng 100 kỳ | 340 | 34.2% · 35.4% · 34.2% | 34.0% | 15% · 12% · 8% | 12% |
+| Bỏ ra 30 kỳ → giữ 340 bộ nặng 100 kỳ | 340 | 33.2% · 36.5% · 35.6% | 34.0% | 11% · 17% · 9% | 12% |
+| Bỏ ra 30 kỳ → giữ 400 bộ nặng 100 kỳ | 400 | 40.4% · 42.9% · 42.1% | 40.0% | 14% · 25% · 14% | 16% |
+| Hiện tại → giữ 340 bộ NHẸ 20 kỳ (ngược) | 340 | 34.8% · 34.2% · 34.4% | 34.0% | 12% · 14% · 13% | 12% |
+
+Chọn: loại bộ ra trong 30 kỳ (đang nghỉ) + tiến, tam hoa, 00x, rồi giữ 400 bộ chữ số nặng nhất theo hàng (100 kỳ): bộ trúng trong pool 40,4 · 42,9 · 42,1% (chia đều 40%), cả 3 đoạn trên mức. Cặp ĐB trong pool 14 · 25 · 14% (chia đều 16%) — chưa ổn định.
