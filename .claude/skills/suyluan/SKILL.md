@@ -8,6 +8,7 @@ description: Suy luận dấu vết Vietlott (power / mega / loto) từ dữ li�
 Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời tiếng Việt, ngắn gọn, dùng bảng.
 
 ## Cách anh nghĩ (bắt buộc hiểu đúng)
+- **Nguồn kết quả (anh, 05/10/2026):** lấy trực tiếp từ github.com/vietvudanh/vietlott-data bằng `python3 build/lay_kq.py` (Power, Mega, Loto, Max 3D, Max 3D Pro). Các trang kết quả khác bị mạng chặn.
 - **Luật đúng ≥70% là dùng tốt (anh, 05/10/2026).** Vắng lâu, khoảng nghỉ, nhịp… đúng ≥70% ở khung 50 và 100 kỳ thì dùng, miễn số bị loại không ra nhiều hơn trung bình. Chấm bằng `python3 build/luat_khung.py power|mega|loto` (4 khung 10/20/50/100 kỳ).
 - **Luật không sai, chỉ là không xét quá nhiều kỳ (anh, 05/10/2026).** Xét quá khứ quá dài thì tính chất khác (bi đã thay). Mọi luật liên quan bi của Power/Mega dùng khung gần (Power 100, Mega 150 kỳ); khi kiểm luật mới cũng ưu tiên khung gần.
 - **Tối đa 100 kỳ, xét theo 4 khung 10 / 20 / 50 / 100 kỳ (anh, 05/10/2026).** Họ thay bi khoảng 1–2 tháng/lần, nên luật nào về bi của Power/Mega chỉ xét tối đa 100 kỳ. Phải so dấu vết giữa 4 khung: số nào đồng nhất (nóng hoặc lạnh ở cả 4 khung), số nào "mới nóng" / "mới nguội". Theo dõi trường hợp vừa thay bi: 20 kỳ gần lệch hẳn 50 kỳ trước thì tin khung 10/20, bớt tin khung 50/100. Công cụ: `python3 build/khung_bi.py power|mega|loto`.

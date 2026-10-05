@@ -52,7 +52,7 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 1. **Anh báo kết quả** → `python3 build/add_result.py power "dd/mm/yyyy" n1 .. n6 ĐB` (ghi all_data.json, meta index.html, CSV rồi tự build app).
    Anh muốn loại tay số nào kỳ này → `--bo 02,27` (ghi vào bảng + log).
    Rồi **chấm sổ**: đọc dòng `"game": "power"` cuối trong `build/goiy_log.jsonl` (bản đã đưa anh) → so pool 10/15/20, từng tín hiệu, 5 vé, tâm linh top 12, số linh cảm → thêm 1 dòng vào bảng **Sổ chấm phương pháp Power** trong `ghi-chu-quy-luat.md`.
-   Mạng chặn các trang kết quả Vietlott → không tự tra được; nếu anh chưa đưa số thì hỏi anh.
+   **Lấy kết quả tự động (anh, 05/10/2026):** chạy `python3 build/lay_kq.py`. Script lấy từ kho công khai github.com/vietvudanh/vietlott-data (crawl vietlott.vn mỗi ngày, đã đối chiếu khớp 1001/1001 kỳ Power), tự thêm kỳ mới qua add_result.py (chấm sổ + chụp luật), cập nhật luôn Max 3D / 3D Pro. `--xem` để xem trước. Kho thường cập nhật sáng hôm sau; nếu kho chưa có kỳ anh hỏi thì dùng số anh đưa. Loto: kho không ghi 13h/21h, script xếp phiên theo thứ tự sau kỳ cuối khớp; nếu nó báo ⚠ thì kiểm lại với anh.
 2. **Phiếu tâm linh + pool app + PP tốt nhất 50 kỳ**: `node build/tamlinh.js power > <scratchpad>/tl_power.json` (~30 giây).
 3. **Gợi ý**: `python3 build/goiy.py power --app <scratchpad>/tl_power.json --json build/goiy_latest/power.json --save [--linh ..]`
    (in markdown đầy đủ; `--json` là dữ liệu cho bảng trực quan, `--save` lưu bản đã đưa anh để chấm sổ).
