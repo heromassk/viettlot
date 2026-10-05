@@ -1258,3 +1258,34 @@ Kết luận: Max 3D (3D+) "nặng 50 kỳ + bỏ bộ vừa ra", giữ 34% (340
 | Ra ≥2 lần trong 10 kỳ | 15 | 2.12% (×1.07) · 1.31% (×0.66) · 1.62% (×0.82) | 1.98% | 24% · 26% |
 
 Kết luận: Max 3D chỉ "ra ở kỳ trước" hơi ít lặp; 2–10 kỳ như mọi bộ. Pro: bộ đã ra trong 5–10 kỳ gần lặp ít hơn ở cả 3 đoạn (×0,89–0,97). Không dùng làm luật loại cứng: nhóm 10 kỳ có ≥1 bộ lặp ở 98–99% số kỳ.
+
+
+# Max 3D / Pro — khoảng nghỉ lặp lại của bộ số (05/10/2026)
+
+## Max 3D (3D+) — 1136 kỳ (22/04/2019 → 02/10/2026)
+
+| Ra lại trong vòng | 1 kỳ | 5 kỳ | 10 kỳ | 20 kỳ | 50 kỳ | 100 kỳ | 200 kỳ |
+|---|---|---|---|---|---|---|---|
+| Lần ra ở 300 kỳ trước khúc 200 kỳ cuối | 2.4% | 10.2% | 18.6% | 33.3% | 63.1% | 86.4% | 98.4% |
+| Lần ra ở các kỳ cũ hơn | 2.0% | 9.6% | 18.4% | 33.2% | 63.3% | 86.7% | 98.0% |
+| **Quay đều (lý thuyết)** | 2.0% | 9.5% | 18.1% | 33.0% | 63.2% | 86.5% | 98.2% |
+
+- Khoảng nghỉ lặp lại: trung bình **48 kỳ**, trung vị **34 kỳ** (quay đều: TB 50, trung vị 35 kỳ); dài nhất 628 kỳ
+- Ra lại đúng sau 1 kỳ: 450 lần (2.09% số lần lặp; quay đều 1.98%)
+- Ra lại đúng sau 2 kỳ: 425 lần (1.98% số lần lặp; quay đều 1.94%)
+- Ra lại đúng sau 3 kỳ: 445 lần (2.07% số lần lặp; quay đều 1.90%)
+
+## Max 3D Pro — 783 kỳ (14/09/2021 → 03/10/2026)
+
+| Ra lại trong vòng | 1 kỳ | 5 kỳ | 10 kỳ | 20 kỳ | 50 kỳ | 100 kỳ | 200 kỳ |
+|---|---|---|---|---|---|---|---|
+| Lần ra ở 300 kỳ trước khúc 200 kỳ cuối | 2.0% | 9.4% | 17.8% | 32.7% | 63.6% | 86.4% | 98.1% |
+| Lần ra ở các kỳ cũ hơn | 2.1% | 9.9% | 18.1% | 32.4% | 63.5% | 86.5% | 98.3% |
+| **Quay đều (lý thuyết)** | 2.0% | 9.5% | 18.1% | 33.0% | 63.2% | 86.5% | 98.2% |
+
+- Khoảng nghỉ lặp lại: trung bình **47 kỳ**, trung vị **33 kỳ** (quay đều: TB 50, trung vị 35 kỳ); dài nhất 491 kỳ
+- Ra lại đúng sau 1 kỳ: 307 lần (2.12% số lần lặp; quay đều 1.98%)
+- Ra lại đúng sau 2 kỳ: 301 lần (2.07% số lần lặp; quay đều 1.94%)
+- Ra lại đúng sau 3 kỳ: 281 lần (1.94% số lần lặp; quay đều 1.90%)
+
+Kết luận: phân bố khoảng nghỉ lặp lại trùng gần như tuyệt đối với quay đều ở mọi mốc 1–200 kỳ, cả 2 game, cả khúc gần lẫn cũ. Không có nhịp lặp riêng.
