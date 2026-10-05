@@ -79,7 +79,7 @@ RULES = [
     ('vang20', 'Bỏ số vắng ≥20 kỳ', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 20}),
     ('vang25', 'Bỏ số vắng ≥25 kỳ', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 25}),
     ('vang30', 'Bỏ số vắng ≥30 kỳ', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 30}),
-    ('thua15', 'Bỏ số "lâu lâu mới ra" (khung gần: Power 100, Mega 150, Loto 200 kỳ; ≤85% kỳ vọng) đang vắng ≥15', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 15 and sum(n in R[u] for u in range(max(0, t - WBK(c)), t)) <= 0.85 * min(WBK(c), t) * (5 if len(c['gap']) == 35 else 6) / len(c['gap'])})
+    ('thua15', 'Bỏ số "lâu lâu mới ra" (khung gần: Power 100, Mega 150, Loto 200 kỳ; ≤85% kỳ vọng) đang vắng ≥15', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 15 and sum(n in R[u] for u in range(max(0, t - WBK(c)), t)) <= 0.85 * min(WBK(c), t) * (5 if len(c['gap']) == 35 else 6) / len(c['gap'])}),
     ('vang1', 'Bỏ số vắng lâu nhất', lambda R, t, c: topk(c['gap'], 1, True)),
     ('vang2nd', 'Bỏ số vắng lâu nhì', lambda R, t, c: topk(c['gap'], 2, True) - topk(c['gap'], 1, True)),
     ('lien2', 'Bỏ số ra 2 kỳ liền', lambda R, t, c: R[t - 1] & R[t - 2]),
