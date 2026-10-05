@@ -1917,3 +1917,23 @@ So với ngẫu nhiên (số lượng số ra k lần): 0: 6 (≈4.5) · 1: 14 (
 | 0 lần | 14.2% | 24.6% | 29.0% | 27.0% | 27.0% · 29.2% · 25.0% | 25.0% | 25.0% |
 
 Kết luận: 10 kỳ gần trùng kỳ trước TB 5,00 (đúng kỳ vọng). Số 20 ra 7/10 kỳ: 1 số bất kỳ ra ≥7/10 xác suất 0,35%, nhưng trong 80 số thì ~25% lần có ít nhất 1 số như vậy → bình thường. Luật "ra nhiều/ít trong 10 kỳ → kỳ kế" ở 5000 kỳ và cả lịch sử 24,8–25,3% → không có lặp lại.
+
+
+# Keno — chép số kỳ trước mua kỳ sau (05/10/2026, anh: "cũng tính là vết")
+
+Phát hiện: kho keno.jsonl có 26 kỳ bị ghi 2 dòng (cùng mã kỳ) → lần chạy đầu ra 26 lần "trúng 9/9" giả. Đã bỏ trùng trong keno_dauvet/keno_bac/keno_10ky/keno_chep (kết quả cũ gần như không đổi). Script `build/keno_chep.py`.
+
+Dữ liệu 86466 kỳ. Kỳ sau trùng ≥9 số với kỳ trước: thực tế 1750 lần, lý thuyết 1818
+
+| Cách | Bậc | Trúng hết (thực tế / kỳ vọng) | Trúng thiếu 1 (thực tế / kỳ vọng) | TB số trúng (kỳ vọng) | Tiền về |
+|---|---|---|---|---|---|
+| chép n số đầu kỳ trước | 7 | 1 / 2.11 | 50 / 63.3 | 1.750 (1.75) | 48% |
+| chép n số đầu kỳ trước | 8 | 1 / 0.38 | 13 / 13.9 | 1.999 (2.00) | 66% |
+| chép n số đầu kỳ trước | 9 | 0 / 0.06 | 6 / 2.8 | 2.249 (2.25) | 50% |
+| chép n số đầu kỳ trước | 10 | 0 / 0.01 | 0 / 0.5 | 2.499 (2.50) | 41% |
+| chép số kỳ trước, ưu tiên số vừa lặp + nóng 10 kỳ | 7 | 0 / 2.11 | 74 / 63.3 | 1.745 (1.75) | 47% |
+| chép số kỳ trước, ưu tiên số vừa lặp + nóng 10 kỳ | 8 | 0 / 0.38 | 14 / 13.9 | 1.999 (2.00) | 46% |
+| chép số kỳ trước, ưu tiên số vừa lặp + nóng 10 kỳ | 9 | 0 / 0.06 | 1 / 2.8 | 2.247 (2.25) | 46% |
+| chép số kỳ trước, ưu tiên số vừa lặp + nóng 10 kỳ | 10 | 0 / 0.01 | 0 / 0.5 | 2.494 (2.50) | 43% |
+
+Kết luận: kỳ sau trùng ≥9 số với kỳ trước 1750 lần (lý thuyết 1818) — không lặp nhiều hơn ngẫu nhiên. Chép số kỳ trước: trúng hết và trúng thiếu 1 ngang kỳ vọng, TB số trúng đúng n/4. Chơi 100 vé bậc 9: cơ hội có 1 lần 9/9 ≈ 1/13.800.

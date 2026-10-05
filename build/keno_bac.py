@@ -12,6 +12,7 @@ GIAI = {10: {10: 2e9, 9: 150e6, 8: 7.4e6, 7: 600e3, 6: 80e3, 5: 20e3, 0: 10e3},
         6: {6: 12.5e6, 5: 450e3, 4: 40e3, 3: 10e3}, 5: {5: 4.4e6, 4: 150e3, 3: 10e3},
         4: {4: 400e3, 3: 50e3, 2: 10e3}, 3: {3: 200e3, 2: 20e3}, 2: {2: 90e3}, 1: {1: 20e3}}
 D = [json.loads(l) for l in open('/home/user/vietvudanh/vietlott-data/data/keno.jsonl')]
+D = list({d['id']: d for d in D}.values())  # kho có 26 kỳ bị ghi 2 dòng → bỏ trùng
 D.sort(key=lambda d: int(d['id'].lstrip('#')))
 X = np.zeros((len(D), 80), bool)
 for i, d in enumerate(D): X[i, np.array(d['result']) - 1] = True

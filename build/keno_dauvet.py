@@ -4,6 +4,7 @@ Mỗi kỳ ra 20/80 số → mỗi số ra 25%. Đo tỉ lệ ra kỳ sau của 
   python3 build/keno_dauvet.py"""
 import json, numpy as np
 D = [json.loads(l) for l in open('/home/user/vietvudanh/vietlott-data/data/keno.jsonl')]
+D = list({d['id']: d for d in D}.values())  # kho có 26 kỳ bị ghi 2 dòng → bỏ trùng
 D.sort(key=lambda d: int(d['id'].lstrip('#')))
 X = np.zeros((len(D), 81), bool)
 for i, d in enumerate(D): X[i, d['result']] = True
