@@ -1508,3 +1508,8 @@ Kết luận: các phương pháp tâm linh ra ngang mức chia đều (×0,85�
 | Hiện tại → giữ 340 bộ NHẸ 20 kỳ (ngược) | 340 | 34.8% · 34.2% · 34.4% | 34.0% | 12% · 14% · 13% | 12% |
 
 Chọn: loại bộ ra trong 30 kỳ (đang nghỉ) + tiến, tam hoa, 00x, rồi giữ 400 bộ chữ số nặng nhất theo hàng (100 kỳ): bộ trúng trong pool 40,4 · 42,9 · 42,1% (chia đều 40%), cả 3 đoạn trên mức. Cặp ĐB trong pool 14 · 25 · 14% (chia đều 16%) — chưa ổn định.
+
+
+# Max 3D / Pro — bộ số ≥500 theo kỳ (05/10/2026)
+
+Max 3D+: TB bộ ≥500/kỳ 10 kỳ 9,4 · 20 kỳ 9,6 · 50 kỳ 10,2 · 100 kỳ 10,0; cả lịch sử 49,4%. 10 kỳ gần: 9 13 12 7 10 9 11 9 7 7. Kỳ trước nhiều/ít số lớn → kỳ sau vẫn ~9,8–10 (không nối tiếp). Pro: 10 kỳ gần TB 11,3 (13 11 7 12 12 12 11 14 10 11), 100 kỳ 10,0; kỳ trước ≤8 → kỳ sau 10,15, ≥12 → 9,84 (hồi nhẹ, chưa chắc); tương quan TB 20 kỳ ↔ kỳ sau −0,07. Theo khoảng trăm 100 kỳ: đều 176–230/200. Kết luận: không có dấu vết lớn/nhỏ dùng được.
