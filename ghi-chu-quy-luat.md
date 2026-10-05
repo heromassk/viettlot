@@ -401,6 +401,10 @@ Kết quả (bình quân mỗi số: Loto 14.3, Mega 13.3, Power 10.9%):
   - Nuôi kép, cạnh kép, chạm nhiều nhất, xiên 2 (cặp hay đi cùng): không có dấu vết.
 Đưa vào sổ theo dõi: nhom_kep, nhom_pascal, nhom_cau2. Nhận xét: phần lớn "soi cầu" là đọc chuỗi ngẫu nhiên; vài cái nhích nhẹ cần theo dõi thêm.
 
+## Bi Power/Mega chỉ xét x kỳ gần (05/10/2026, theo ý anh: thay bi định kỳ)
+- Tần suất từng số ở 2 khối 100 kỳ liền nhau: corr TB Power +0.03, Mega −0.03 (mức nhiễu 90% ≈0.16–0.21) → "tính chất bi" không giữ quá ~100 kỳ, đúng với việc thay bi.
+- goiy.py: các tín hiệu bi (dễ/khó ra, thưa, ra đều 4 đoạn, ít nhất 100 kỳ) dùng cửa sổ WB: Power 100, Mega 150 (thử 50–200, pool 15 gần như nhau: Power 1.73–1.77, Mega 2.09–2.15).
+
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
 | Kỳ | Kết quả | Nóng | Kề ±1 | Dễ ra | Bỏ khó ra | Bỏ vắng≥15 | Đà/khoảng tổng | Pool dấu vết 15 | Vé tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|

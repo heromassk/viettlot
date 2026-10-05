@@ -36,6 +36,8 @@ APP = json.load(open(A.app)) if A.app else None
 LINH = {int(x) for x in A.linh.replace(' ', ',').split(',') if x.strip()}
 BO = {int(x) for x in A.bo.replace(' ', ',').split(',') if x.strip()}
 P = KB / NB
+# Cửa sổ xét "tính chất bi" (dễ/khó ra, thưa, ra đều…): Power/Mega thay bộ bi định kỳ → chỉ xét WB kỳ gần (anh, 05/10)
+WB = int(os.environ.get('GOIY_WB', {'power': '100', 'mega': '150', 'loto': '200'}[A.game]))   # thử 50–200: pool gần như nhau → chọn khung gần nhất không làm pool kém
 
 
 def feats(t):
@@ -46,8 +48,8 @@ def feats(t):
         while g < t and n not in R[t - 1 - g]:
             g += 1
         c = lambda w: sum(n in R[i] for i in range(max(0, t - w), t))
-        w2 = min(200, t)
-        z = (c(200) - w2 * P) / math.sqrt(w2 * P * (1 - P))
+        w2 = min(WB, t)
+        z = (c(WB) - w2 * P) / math.sqrt(w2 * P * (1 - P))
         f[n] = dict(gap=g, c10=c(10), c20=c(20), z=z)
     return f
 
@@ -67,8 +69,8 @@ def signals(t):
         same = [u for u in range(max(0, t - 200), t) if SES[u] == ph][-100:]
         sig['phien'] = top8({n: sum(n in R[u] for u in same) for n in range(1, NB + 1)})
     if not A.cu and A.game in ('mega', 'loto'):   # ý anh 04/10: loại trước số "lâu lâu mới ra" (thưa) đang vắng ≥15
-        c200 = {n: sum(n in R[u] for u in range(max(0, t - 200), t)) for n in range(1, NB + 1)}
-        sig['thua'] = {n for n in range(1, NB + 1) if f[n]['gap'] >= 15 and c200[n] <= 0.85 * min(200, t) * P}
+        c200 = {n: sum(n in R[u] for u in range(max(0, t - WB), t)) for n in range(1, NB + 1)}
+        sig['thua'] = {n for n in range(1, NB + 1) if f[n]['gap'] >= 15 and c200[n] <= 0.85 * min(WB, t) * P}
     if not A.cu:   # luận số / soi cầu có lợi nhẹ (soicau.py 05/10): Loto lô kép, Power cầu Pascal
         if A.game == 'loto' and WSC: sig['kep'] = set(range(11, NB + 1, 11))
         if A.game == 'power' and WSC:
@@ -80,7 +82,7 @@ def signals(t):
             sig['chin'] = {n for n, x in f.items() if 11 <= x['gap'] <= 15}
             sig['g610'] = {n for n, x in f.items() if 6 <= x['gap'] <= 10}
             sig['tuan'] = R[t - 3] - R[t - 1]   # số của kỳ cùng thứ tuần trước: ra lại ít hơn 3/3 khúc (thu_them.py)
-            c100 = {n: sum(n in R[u] for u in range(t - 100, t)) for n in range(1, NB + 1)}
+            c100 = {n: sum(n in R[u] for u in range(t - min(100, WB), t)) for n in range(1, NB + 1)}
             sig['it100'] = set(sorted(c100, key=lambda n: (c100[n], n))[:1])   # ra ít nhất 100 kỳ → loại (93/93/91%, loai_nho.py)
         elif A.game == 'mega':
             sig['duoi'] = {n for n in range(1, NB + 1) if n % 10 in {x % 10 for x in last}} - last
@@ -88,8 +90,8 @@ def signals(t):
             if WCHM: sig['chin'] = {n for n, x in f.items() if 11 <= x['gap'] <= 15}   # thử: vắng 11–15 "chín" (04/10: 4/6 số về đều vắng 11–14)
             sig['lt3'] = R[t - 1] & R[t - 3]            # ra kỳ trước VÀ kỳ t−3 → loại (90/90/91%)
             sig['zprev'] = {max(R[t - 1])}              # số lớn nhất kỳ trước → loại (88/86/91%)
-            e25 = 25 * P
-            q4 = [{n: sum(n in R[u] for u in range(t - 100 + 25 * i, t - 75 + 25 * i)) for n in range(1, NB + 1)} for i in range(4)]
+            q = min(100, WB) // 4; e25 = q * P
+            q4 = [{n: sum(n in R[u] for u in range(t - 4 * q + q * i, t - 3 * q + q * i)) for n in range(1, NB + 1)} for i in range(4)]
             sig['ben'] = {n for n in range(1, NB + 1) if all(x[n] > e25 for x in q4)}   # ra nhiều cả 4 đoạn 25 kỳ → +1
         else:
             sig['lap'] = set(last)
@@ -410,10 +412,10 @@ VL = []
 for n in sorted(range(1, NB + 1), key=lambda n: -f[n]['gap']):
     g = f[n]['gap']
     if g < 15: continue
-    c100 = sum(n in R[u] for u in range(T - 100, T)); c200 = sum(n in R[u] for u in range(T - 200, T))
+    c100 = sum(n in R[u] for u in range(T - 100, T)); c200 = sum(n in R[u] for u in range(T - WB, T))
     gl = GA[n]; po, pn = hz(gl, g); pa, _ = hz(POOLG, g)
     long15 = sum(x >= 15 for x in gl) / max(len(gl), 1) * 100
-    thua = c200 / (200 * P) * 100
+    thua = c200 / (WB * P) * 100
     tl_n = votes[n] if APP else 0
     if n in s['vang'] or n in s.get('thua', set()) or n in s.get('vang1', set()): verdict = 'Loại'
     elif n in (rescued if APP else []): verdict = 'Cân nhắc (tâm linh mạnh)'
@@ -423,7 +425,7 @@ for n in sorted(range(1, NB + 1), key=lambda n: -f[n]['gap']):
                    po=None if po is None else round(po), pn=pn, pa=None if pa is None else round(pa, 1), tl=tl_n, verdict=verdict))
 if VL:
     print(f'\n### Số vắng lâu (≥15 kỳ) — bảng để anh tự nhận định\n')
-    print('| Số | Đang vắng | Ra 100 / 200 kỳ (kỳ vọng {:.0f} / {:.0f}) | Mức ra 200 kỳ | % lần nghỉ ≥15 kỳ (lịch sử) | Nghỉ dài nhất | Khi đã vắng tới mức này: ra ngay kỳ kế (của chính số / mọi số) | Tâm linh | Nhận định |'.format(100 * P, 200 * P))
+    print('| Số | Đang vắng | Ra 100 / {} kỳ (kỳ vọng {:.0f} / {:.0f}) | Mức ra {} kỳ | % lần nghỉ ≥15 kỳ (lịch sử) | Nghỉ dài nhất | Khi đã vắng tới mức này: ra ngay kỳ kế (của chính số / mọi số) | Tâm linh | Nhận định |'.format(WB, 100 * P, WB * P, WB))
     print('|---|---|---|---|---|---|---|---|---|')
     for v in VL:
         print(f"| **{v['n']:02d}** | {v['gap']} | {v['c100']} / {v['c200']} | {v['thua']}% | {v['long15']}% | {v['maxg']} | {'—' if v['po'] is None else str(v['po']) + '%'} ({v['pn']} lần) / {v['pa']}% | {v['tl']} phiếu | **{v['verdict']}** |")
@@ -434,13 +436,13 @@ e10, e20 = 10 * P, 20 * P
 for n in range(1, NB + 1):
     c10 = f[n]['c10']; c20 = f[n]['c20']
     if not (c10 >= 3 or c20 >= max(5, round(2 * e20))): continue
-    c100 = sum(n in R[u] for u in range(T - 100, T)); c200 = sum(n in R[u] for u in range(T - 200, T))
+    c100 = sum(n in R[u] for u in range(T - 100, T)); c200 = sum(n in R[u] for u in range(T - WB, T))
     q4 = [sum(n in R[u] for u in range(T - 100 + 25 * i, T - 75 + 25 * i)) for i in range(4)]
     # lịch sử của chính số: những lần nó ra ≥c10 lần trong 10 kỳ thì kỳ kế ra bao nhiêu %
     seen = hit = 0
     for t in range(max(10, T - 300), T):
         if sum(n in R[u] for u in range(t - 10, t)) >= min(c10, 3): seen += 1; hit += n in R[t]
-    lr = c200 / (200 * P) * 100
+    lr = c200 / (WB * P) * 100
     if lr >= 115 and sum(x > 25 * P for x in q4) >= 3: kind = 'Nóng bền — có thể bi dễ ra (nặng/nhẹ lệch)'
     elif lr >= 100: kind = 'Nóng, đường dài cũng ra nhiều'
     elif lr >= 85: kind = 'Nóng ngắn hạn (đường dài bình thường)'
@@ -452,7 +454,7 @@ for n in range(1, NB + 1):
 NONG.sort(key=lambda v: (-v['c10'], -v['c20']))
 if NONG:
     print(f'\n### Số ra nhiều gần đây (10/20 kỳ) — kỳ vọng {e10:.1f} / {e20:.1f} lần\n')
-    print('| Số | Ra 10 kỳ | Ra 20 kỳ | Ra 100 / 200 kỳ | Mức ra 200 kỳ | 4 đoạn 25 kỳ | Đang vắng | Khi nóng thế này, kỳ kế ra (lịch sử của số) | Trạng thái | Nhận xét |')
+    print(f'| Số | Ra 10 kỳ | Ra 20 kỳ | Ra 100 / {WB} kỳ | Mức ra {WB} kỳ | 4 đoạn 25 kỳ | Đang vắng | Khi nóng thế này, kỳ kế ra (lịch sử của số) | Trạng thái | Nhận xét |')
     print('|---|---|---|---|---|---|---|---|---|---|')
     for v in NONG:
         print(f"| **{v['n']:02d}** | {v['c10']} | {v['c20']} | {v['c100']} / {v['c200']} | {v['lr']}% | {'/'.join(map(str, v['q4']))} | {v['gap']} | {'—' if v['nx'] is None else str(v['nx']) + '%'} ({v['ns']} lần) | {v['state']} | {v['kind']} |")

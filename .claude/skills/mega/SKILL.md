@@ -8,6 +8,7 @@ description: Mega 6/45: nhập kết quả, chấm sổ, đưa pool + 5 vé kỳ
 Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời tiếng Việt, ngắn gọn, dùng bảng.
 
 ## Nguyên tắc của anh (bắt buộc giữ)
+- **Luật liên quan bi chỉ xét x kỳ gần (anh, 05/10/2026: Vietlott thay bộ bi định kỳ).** Tính chất bi (dễ/khó ra, thưa, ra đều 4 đoạn, ra ít nhất…) dùng cửa sổ `WB` kỳ gần (`GOIY_WB`; Power 100, Mega 150 — chọn khung gần nhất không làm pool kém). Bảng số vắng lâu / số nóng ghi "Mức ra WB kỳ". Đã kiểm: tần suất từng bi ở 2 khối 100 kỳ liền nhau gần như không giữ (corr ≈0) → không nên dựa vào dữ liệu bi quá cũ.
 - **Dấu vết = xác suất nghiêng, không phải đúng 100%.** Lệch nhỏ nhưng ổn định vẫn là dấu vết có giá trị (cho trọng số nhỏ, không bỏ).
 - **Chơi bền, không chơi ăn ngay (anh, 04/10/2026):** không đổi luật/pool theo kết quả 1 kỳ; có kỳ trúng kỳ trật là bình thường. Khi có kết quả: chấm sổ và báo; chỉ đề xuất sửa luật khi số liệu cộng dồn nhiều kỳ (sổ kiểm chứng) cho thấy luật yếu đi, và phải kiểm trên 100–200 kỳ trước.
 - **Cốt lõi (anh, 04/10/2026):** luật loại được chấm trên CHUỖI kỳ dài, không phán theo 1 kỳ. Số "lâu lâu mới ra" có ra 1 kỳ thì chỉ thua kỳ đó; sau đó nó lại vắng theo nhịp cũ → các kỳ sau vẫn loại đúng → cộng dồn vẫn thắng. Không bỏ luật vì 1 kỳ sai; chỉ xem lại khi tỉ lệ cộng dồn trong sổ kiểm chứng tụt dần nhiều kỳ (tính cách số đổi / bộ bi đổi).
