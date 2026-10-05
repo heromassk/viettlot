@@ -106,13 +106,15 @@ def signals(t):
 import sys as _sys
 _sys.path.insert(0, HERE)
 import theodoi as _TD
-WTD = float(os.environ.get('GOIY_TD', {'loto': '1', 'power': '1', 'mega': '0'}[A.game]))   # Mega: thêm vào làm pool kém → 0
+WTD = float(os.environ.get('GOIY_TD', {'loto': '1', 'power': '1', 'mega': '1'}[A.game]))   # luật đúng ≥70% ở khung 50 & 100 kỳ và số bị loại ra ≤ TB (luat_khung.py, anh 05/10)
 TDW = {   # id luật → dấu trọng số (−: ra ít, +: ra nhiều)
-    'power': {'nong35': -1, 'nhip2': -1, 'nhom_lokep': -1, 'nhom_kep': 1, 'nhom_pascal': 1, 'nhom_cau2': 1},
-    'mega': {'nong35': -1, 'tx15': -1, 'nhip2': -1, 'nhipmin200': -1, 'nhom_nhip': -1, 'nhom_keplk': 1},
+    'power': {'nong35': -1, 'nhip2': -1, 'lt3': -1, 'tx15': -1, 'tx10': -1, 'zprev': -1,
+              'nhom_lokep': -1, 'nhom_kep': 1, 'nhom_pascal': 1, 'nhom_cau2': 1},
+    'mega': {'nong35': -1, 'tx15': -1, 'nong10': -1, 'nhieu100': -1, 'nhip2': -1},
     'loto': {'lt3': -1, 'tx10': -1, 'nhip2': -1, 'nhipmin100': -1, 'nhom_nhip80': -1, 'nhom_nhip': -1, 'nhom_lokep': -1,
-             'nhom_k7': 1, 'nhom_k9': 1, 'nhom_kep': 1, 'nhom_pascal': 1, 'nhom_keplk': 1},
+             'nhom_k7': 1, 'nhom_k9': 1, 'nhom_kep': 1, 'nhom_pascal': 1, 'nhom_keplk': 1, 'txph13': -1},
 }[A.game]
+if os.environ.get('GOIY_TDW'): TDW = json.loads(os.environ['GOIY_TDW'])   # thử bộ trọng số khác
 _RF = {i: f for i, l, f in _TD.RULES}; _CF = {i: f for i, l, f in _TD.CLAIMS}
 if A.game == 'loto': _TD.SESS = SES
 def td_sets(t):
