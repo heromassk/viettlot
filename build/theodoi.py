@@ -70,7 +70,7 @@ def cau_chay(R, t, NB, kmin=2):
 
 def WBK(c):
     """Khung xét tính chất bi: Power/Mega thay bi định kỳ → không dùng quá nhiều kỳ (anh, 05/10)."""
-    return {55: 100, 45: 150}.get(len(c['gap']), 200)
+    return {55: 100, 45: 100}.get(len(c['gap']), 200)
 
 def topk(d, k, rev=False): return set(sorted(d, key=lambda n: ((-d[n]) if rev else d[n], n))[:k])
 
@@ -79,7 +79,7 @@ RULES = [
     ('vang20', 'Bỏ số vắng ≥20 kỳ', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 20}),
     ('vang25', 'Bỏ số vắng ≥25 kỳ', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 25}),
     ('vang30', 'Bỏ số vắng ≥30 kỳ', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 30}),
-    ('thua15', 'Bỏ số "lâu lâu mới ra" (khung gần: Power 100, Mega 150, Loto 200 kỳ; ≤85% kỳ vọng) đang vắng ≥15', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 15 and sum(n in R[u] for u in range(max(0, t - WBK(c)), t)) <= 0.85 * min(WBK(c), t) * (5 if len(c['gap']) == 35 else 6) / len(c['gap'])}),
+    ('thua15', 'Bỏ số "lâu lâu mới ra" (khung gần: Power 100, Mega 100, Loto 200 kỳ; ≤85% kỳ vọng) đang vắng ≥15', lambda R, t, c: {n for n in c['gap'] if c['gap'][n] >= 15 and sum(n in R[u] for u in range(max(0, t - WBK(c)), t)) <= 0.85 * min(WBK(c), t) * (5 if len(c['gap']) == 35 else 6) / len(c['gap'])}),
     ('vang1', 'Bỏ số vắng lâu nhất', lambda R, t, c: topk(c['gap'], 1, True)),
     ('vang2nd', 'Bỏ số vắng lâu nhì', lambda R, t, c: topk(c['gap'], 2, True) - topk(c['gap'], 1, True)),
     ('lien2', 'Bỏ số ra 2 kỳ liền', lambda R, t, c: R[t - 1] & R[t - 2]),
@@ -92,7 +92,7 @@ RULES = [
     ('nhieu100', 'Bỏ số ra nhiều nhất 100 kỳ', lambda R, t, c: topk(c['c100'], 1, True)),
     ('nhip2', 'Bỏ số nhịp "ra – vắng 2 – ra" (vừa ra lại sau đúng 2 kỳ vắng)', lambda R, t, c: {n for n in R[t - 1] if n not in R[t - 2] and n not in R[t - 3] and n in R[t - 4]}),
     ('nhipmin100', 'Bỏ số phá nhịp tối thiểu (100 kỳ: luôn nghỉ ≥x kỳ, mới nghỉ <x)', lambda R, t, c: nhip_min(R, t, len(c['gap']), 100)),
-    ('nhipmin200', 'Bỏ số phá nhịp tối thiểu (khung dài: Power 100, Mega 150, Loto 200 kỳ)', lambda R, t, c: nhip_min(R, t, len(c['gap']), WBK(c))),
+    ('nhipmin200', 'Bỏ số phá nhịp tối thiểu (khung dài: Power 100, Mega 100, Loto 200 kỳ)', lambda R, t, c: nhip_min(R, t, len(c['gap']), WBK(c))),
     ('vangph20', 'Loto: bỏ số vắng ≥20 kỳ CÙNG PHIÊN (13h đúng ~80%, 21h ngược)', lambda R, t, c: vang_phien(R, t, 20) if len(c['gap']) == 35 else set()),
     ('txph13', 'Loto 13h: bỏ số tái xuất trong phiên (ra hôm trước sau vắng ≥10 kỳ 13h)', lambda R, t, c: taixuat_phien(R, t, '13') if len(c['gap']) == 35 else set()),
     ('uprev', 'Bỏ số nhỏ nhất kỳ trước', lambda R, t, c: {min(R[t - 1])}),

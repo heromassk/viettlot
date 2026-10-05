@@ -416,3 +416,153 @@ Kết quả (bình quân mỗi số: Loto 14.3, Mega 13.3, Power 10.9%):
 |---|---|---|---|---|---|---|---|---|
 | 04/10 | 15 20 29 37 40 45 (tổng 186) | **đúng hết** (8 số bị loại, không số nào về); sổ: 24/25 luật đúng | 02 05 08 19 27 31 41 42 | 1 / 1 / 3 (15; 20 45) | 1 | 0 | 1 (15) | 4/6 số về đang vắng 11–14 kỳ (29 37 40 45) → thêm +1 điểm "vắng 11–15" cho Mega (pool 15 ở 50 kỳ 2.12→2.22). Tổng 186 > 126 đúng xu hướng hồi về trung vị. |
 | 04/10 21h | 07 16 30 31 33 · MM 02 | 0/4 nóng | 2 (31 33) | — | — | luật loại áp dụng đúng hết (bỏ 10 19 26 27 35) | — | pool 10/15/20: 0/2/4 | vé tốt nhất 1; **vé anh** 09 11 19 28 34 mm06 & 11 14 20 28 34 mm10: 0 số, MM trật; sổ 23/25 luật đúng |
+
+
+# Dấu vết bi theo 4 khung 10/20/50/100 kỳ (05/10/2026)
+
+Tối đa 100 kỳ vì họ thay bi 1–2 tháng/lần. Goiy và sổ kiểm chứng của Power/Mega đã chuyển sang khung 100 kỳ (Mega trước đây dùng 150).
+
+## power655 — 1. Hai khối W kỳ liền nhau có giống nhau không (tương quan tần suất từng số, TB trên 300 kỳ gần)
+
+| Khung W | Thực tế | Quay ngẫu nhiên: TB (khoảng 90% của 30 lần thử) | Nhận xét |
+|---|---|---|---|
+| 10 | -0.002 | +0.006 (-0.017 … +0.045) | nằm trong vùng ngẫu nhiên |
+| 20 | +0.011 | -0.002 (-0.055 … +0.039) | nằm trong vùng ngẫu nhiên |
+| 50 | -0.018 | -0.002 (-0.057 … +0.060) | nằm trong vùng ngẫu nhiên |
+| 100 | +0.041 | -0.007 (-0.146 … +0.083) | nằm trong vùng ngẫu nhiên |
+
+## 2–3. Tỉ lệ ra kỳ kế của mỗi số trong nhóm (trung bình 10.9%) — 3 đoạn 100 kỳ: gần → xa
+
+| Nhóm | Cỡ TB | Đoạn 1 | Đoạn 2 | Đoạn 3 | Kết luận |
+|---|---|---|---|---|---|
+| nóng 10 | 16.2 | 9.7% | 11.3% | 11.2% | — |
+| lạnh 10 | 38.8 | 11.4% | 10.7% | 10.8% | — |
+| nóng 20 | 20.4 | 10.2% | 11.4% | 11.2% | ▲ 2/3 |
+| lạnh 20 | 34.6 | 11.3% | 10.6% | 10.7% | — |
+| nóng 50 | 25.1 | 11.1% | 10.6% | 11.5% | — |
+| lạnh 50 | 29.9 | 10.8% | 11.2% | 10.4% | — |
+| nóng 100 | 29.4 | 10.6% | 10.7% | 11.0% | — |
+| lạnh 100 | 25.6 | 11.2% | 11.2% | 10.8% | — |
+| NÓNG đồng nhất 4 khung | 8.3 | 10.8% | 11.6% | 11.0% | — |
+| LẠNH đồng nhất 4 khung | 16.4 | 11.8% | 10.9% | 10.5% | — |
+| mới nóng (10,20↑ 50,100↓) | 1.6 | 7.5% | 15.8% | 11.7% | ▲ 2/3 |
+| mới nguội (10,20↓ 50,100↑) | 6.6 | 10.8% | 9.4% | 11.8% | — |
+
+## 4. Dò "vừa thay bi": độ giống 20 kỳ gần ↔ 50 kỳ trước đó (300 kỳ). Thấp nhất 1/3 = "lệch hẳn, nghi vừa thay bi"
+
+| Nhóm | Khi LỆCH HẲN (nghi thay bi) | Khi bình thường | Khi GIỐNG NHAU |
+|---|---|---|---|
+| nóng 10 | 10.0% | 11.8% | 10.4% |
+| nóng 20 | 10.5% | 11.9% | 10.4% |
+| nóng 50 | 10.7% | 11.8% | 10.7% |
+| nóng 100 | 10.7% | 10.8% | 10.8% |
+| lạnh 20 | 11.1% | 10.3% | 11.2% |
+| lạnh 100 | 11.1% | 11.0% | 11.0% |
+| NÓNG đồng nhất 4 khung | 10.4% | 11.8% | 11.1% |
+| LẠNH đồng nhất 4 khung | 10.9% | 10.7% | 11.6% |
+
+## 5. Hiện trạng kỳ tới (sau 03/10/2026)
+
+- Độ giống 20 kỳ gần ↔ 50 kỳ trước: **+0.12** (cao hơn 84% các kỳ trong 300 kỳ) → giống nhau — khung dài còn dùng được
+- NÓNG đồng nhất 4 khung: 01 07 11 13 18 25 38 47
+- LẠNH đồng nhất 4 khung: 03 06 10 12 15 17 19 20 30 34 35 37 42 46 48 49 50 51
+- mới nóng (10,20↑ 50,100↓): 36 54
+- mới nguội (10,20↓ 50,100↑): 16 23 28 33 41 44 45
+
+
+## mega645 — 1. Hai khối W kỳ liền nhau có giống nhau không (tương quan tần suất từng số, TB trên 300 kỳ gần)
+
+| Khung W | Thực tế | Quay ngẫu nhiên: TB (khoảng 90% của 30 lần thử) | Nhận xét |
+|---|---|---|---|
+| 10 | +0.012 | -0.005 (-0.042 … +0.042) | nằm trong vùng ngẫu nhiên |
+| 20 | +0.048 | -0.010 (-0.068 … +0.051) | nằm trong vùng ngẫu nhiên |
+| 50 | -0.008 | +0.003 (-0.040 … +0.087) | nằm trong vùng ngẫu nhiên |
+| 100 | -0.013 | +0.014 (-0.089 … +0.120) | nằm trong vùng ngẫu nhiên |
+
+## 2–3. Tỉ lệ ra kỳ kế của mỗi số trong nhóm (trung bình 13.3%) — 3 đoạn 100 kỳ: gần → xa
+
+| Nhóm | Cỡ TB | Đoạn 1 | Đoạn 2 | Đoạn 3 | Kết luận |
+|---|---|---|---|---|---|
+| nóng 10 | 17.6 | 13.3% | 13.1% | 13.8% | — |
+| lạnh 10 | 27.4 | 13.4% | 13.5% | 13.0% | — |
+| nóng 20 | 22.9 | 13.4% | 13.6% | 14.1% | — |
+| lạnh 20 | 22.1 | 13.3% | 13.0% | 12.6% | ▼ 2/3 |
+| nóng 50 | 23.3 | 13.2% | 13.9% | 13.8% | ▲ 2/3 |
+| lạnh 50 | 21.7 | 13.4% | 12.7% | 12.8% | ▼ 2/3 |
+| nóng 100 | 20.9 | 13.4% | 13.1% | 13.9% | — |
+| lạnh 100 | 24.1 | 13.3% | 13.6% | 12.9% | — |
+| NÓNG đồng nhất 4 khung | 8.9 | 13.3% | 12.8% | 13.1% | — |
+| LẠNH đồng nhất 4 khung | 11.8 | 13.0% | 12.8% | 11.8% | ▼ ra ÍT hơn 3/3 |
+| mới nóng (10,20↑ 50,100↓) | 2.4 | 12.3% | 13.6% | 17.0% | — |
+| mới nguội (10,20↓ 50,100↑) | 3.0 | 12.8% | 14.9% | 13.9% | ▲ 2/3 |
+
+## 4. Dò "vừa thay bi": độ giống 20 kỳ gần ↔ 50 kỳ trước đó (300 kỳ). Thấp nhất 1/3 = "lệch hẳn, nghi vừa thay bi"
+
+| Nhóm | Khi LỆCH HẲN (nghi thay bi) | Khi bình thường | Khi GIỐNG NHAU |
+|---|---|---|---|
+| nóng 10 | 13.6% | 13.3% | 13.4% |
+| nóng 20 | 13.3% | 13.5% | 14.3% |
+| nóng 50 | 13.5% | 13.8% | 13.7% |
+| nóng 100 | 13.4% | 13.6% | 13.3% |
+| lạnh 20 | 13.4% | 13.1% | 12.3% |
+| lạnh 100 | 13.3% | 13.1% | 13.3% |
+| NÓNG đồng nhất 4 khung | 13.0% | 13.4% | 12.8% |
+| LẠNH đồng nhất 4 khung | 12.2% | 13.2% | 12.1% |
+
+## 5. Hiện trạng kỳ tới (sau 04/10/2026)
+
+- Độ giống 20 kỳ gần ↔ 50 kỳ trước: **+0.19** (cao hơn 88% các kỳ trong 300 kỳ) → giống nhau — khung dài còn dùng được
+- NÓNG đồng nhất 4 khung: 02 03 06 12 15 20 26 27 31 33 38 41
+- LẠNH đồng nhất 4 khung: 05 08 14 19 23 24 28 32 34 42
+- mới nóng (10,20↑ 50,100↓): 01 10 18
+- mới nguội (10,20↓ 50,100↑): 37 44
+
+
+## loto535 — 1. Hai khối W kỳ liền nhau có giống nhau không (tương quan tần suất từng số, TB trên 300 kỳ gần)
+
+| Khung W | Thực tế | Quay ngẫu nhiên: TB (khoảng 90% của 30 lần thử) | Nhận xét |
+|---|---|---|---|
+| 10 | +0.037 | -0.006 (-0.047 … +0.029) | **có dấu vết giữ lại** |
+| 20 | +0.021 | -0.013 (-0.081 … +0.048) | nằm trong vùng ngẫu nhiên |
+| 50 | +0.052 | -0.009 (-0.093 … +0.122) | nằm trong vùng ngẫu nhiên |
+| 100 | +0.073 | +0.007 (-0.090 … +0.136) | nằm trong vùng ngẫu nhiên |
+
+## 2–3. Tỉ lệ ra kỳ kế của mỗi số trong nhóm (trung bình 14.3%) — 3 đoạn 100 kỳ: gần → xa
+
+| Nhóm | Cỡ TB | Đoạn 1 | Đoạn 2 | Đoạn 3 | Kết luận |
+|---|---|---|---|---|---|
+| nóng 10 | 15.0 | 15.1% | 13.7% | 13.8% | ▼ 2/3 |
+| lạnh 10 | 20.0 | 13.7% | 14.7% | 14.7% | ▲ 2/3 |
+| nóng 20 | 19.5 | 14.9% | 14.1% | 14.0% | — |
+| lạnh 20 | 15.5 | 13.5% | 14.5% | 14.6% | — |
+| nóng 50 | 14.8 | 14.3% | 14.2% | 14.2% | — |
+| lạnh 50 | 20.2 | 14.3% | 14.4% | 14.3% | — |
+| nóng 100 | 16.9 | 14.2% | 14.8% | 14.9% | ▲ 2/3 |
+| lạnh 100 | 18.1 | 14.4% | 13.7% | 13.8% | ▼ 2/3 |
+| NÓNG đồng nhất 4 khung | 7.2 | 16.0% | 12.6% | 14.4% | — |
+| LẠNH đồng nhất 4 khung | 9.3 | 14.6% | 13.2% | 14.5% | — |
+| mới nóng (10,20↑ 50,100↓) | 3.0 | 15.7% | 14.6% | 13.8% | ▲ 2/3 |
+| mới nguội (10,20↓ 50,100↑) | 1.7 | 12.4% | 18.1% | 16.0% | ▲ 2/3 |
+
+## 4. Dò "vừa thay bi": độ giống 20 kỳ gần ↔ 50 kỳ trước đó (300 kỳ). Thấp nhất 1/3 = "lệch hẳn, nghi vừa thay bi"
+
+| Nhóm | Khi LỆCH HẲN (nghi thay bi) | Khi bình thường | Khi GIỐNG NHAU |
+|---|---|---|---|
+| nóng 10 | 14.0% | 13.2% | 15.4% |
+| nóng 20 | 15.0% | 13.5% | 14.5% |
+| nóng 50 | 14.7% | 13.5% | 14.4% |
+| nóng 100 | 15.4% | 13.3% | 15.2% |
+| lạnh 20 | 13.4% | 15.3% | 14.0% |
+| lạnh 100 | 13.3% | 15.2% | 13.4% |
+| NÓNG đồng nhất 4 khung | 14.5% | 13.1% | 15.1% |
+| LẠNH đồng nhất 4 khung | 12.8% | 16.9% | 12.9% |
+
+## 5. Hiện trạng kỳ tới (sau 04/10/2026 21h)
+
+- Độ giống 20 kỳ gần ↔ 50 kỳ trước: **-0.06** (cao hơn 27% các kỳ trong 300 kỳ) → **lệch hẳn — nghi vừa thay bi**, tin khung 10/20 hơn
+- NÓNG đồng nhất 4 khung: 02 07 10 11 30 34 35
+- LẠNH đồng nhất 4 khung: 04 05 09 18 21 23 25 26 29 31
+- mới nóng (10,20↑ 50,100↓): 12 17
+- mới nguội (10,20↓ 50,100↑): 16 19 27
+
+

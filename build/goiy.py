@@ -37,7 +37,7 @@ LINH = {int(x) for x in A.linh.replace(' ', ',').split(',') if x.strip()}
 BO = {int(x) for x in A.bo.replace(' ', ',').split(',') if x.strip()}
 P = KB / NB
 # Cửa sổ xét "tính chất bi" (dễ/khó ra, thưa, ra đều…): Power/Mega thay bộ bi định kỳ → chỉ xét WB kỳ gần (anh, 05/10)
-WB = int(os.environ.get('GOIY_WB', {'power': '100', 'mega': '150', 'loto': '200'}[A.game]))   # thử 50–200: pool gần như nhau → chọn khung gần nhất không làm pool kém
+WB = int(os.environ.get('GOIY_WB', {'power': '100', 'mega': '100', 'loto': '200'}[A.game]))   # Power/Mega tối đa 100 kỳ (thay bi 1–2 tháng/lần — anh, 05/10); Loto không có bi thật
 
 
 def feats(t):
