@@ -1480,3 +1480,8 @@ Theo số phiếu (cả lịch sử): 0 phiếu: ×1.02 (1507 lần) · 1 phiế
 Top bộ: 054(7) 019(6) 059(6) 090(6) 139(6) 144(6) 179(6) 199(6) 234(6) 239(6) 319(6) 324(6)
 
 Kết luận: các phương pháp tâm linh ra ngang mức chia đều (×0,85–1,09 cả lịch sử); bộ nhiều phiếu cũng vậy. Dùng để chọn trong pool (không thiệt). Riêng Pro "lộn 2 số ĐB kỳ trước" ×1,25 cả lịch sử, 3 đoạn ×2,00 · 1,25 · 1,75.
+
+
+# Max 3D / Pro — dạng 00x, 0x0, x00 (05/10/2026)
+
+00x (000–009): Max 3D+ ×1,01 cả lịch sử (3 đoạn ×0,90 · ×1,30 · ×1,20), Pro ×1,02. Không hiếm hơn mức chia đều. Kỳ có ≥1 bộ 00x: 19–20% → luật loại 00x đúng ~80% kỳ, số bị loại không ra nhiều hơn TB → anh muốn loại (05/10) nên đưa vào danh sách loại cùng tam hoa. 0x0 ×0,95 / ×0,93; x00 ×0,98 / ×0,86 (Pro).

@@ -25,7 +25,7 @@ def goiy(f, kind):
     tot = [sum(x) for x in c]
     w = lambda s: (c[0][int(s[0])] / tot[0]) * (c[1][int(s[1])] / tot[1]) * (c[2][int(s[2])] / tot[2]) * 1000
     def sc(s): return w(s) * (0.95 if s[0] == s[2] and s[0] != s[1] else 1)   # kép kẹp trừ điểm nhẹ
-    loai = {'nghi': nghi, 'tien': TIEN, 'tamhoa': {d * 3 for d in '0123456789'}}
+    loai = {'nghi': nghi, 'tien': TIEN, 'tamhoa': {d * 3 for d in '0123456789'}, '00x': {f'00{d}' for d in '0123456789'}}
     con = [s for s in ALL if not any(s in v for v in loai.values())]
     con.sort(key=lambda s: -sc(s))
     pool = con[:340] if kind == 'plus' else con
@@ -59,15 +59,15 @@ def goiy(f, kind):
         lon = [prev[0][::-1], prev[1][::-1]]
         pairs.append(dict(x=lon, kind='Tâm linh: lộn ĐB kỳ trước', why=[f'ĐB kỳ trước {prev[0]} – {prev[1]} → lộn giữ thứ tự: {lon[0]} – {lon[1]}',
                           'Pro: quẻ này ra ×1,33 cả lịch sử, ×1,97 · 1,39 · 1,95 ở 3 đoạn 100 kỳ gần (đang theo dõi trong sổ)'] +
-                          [f'{x}: ' + ('trong pool' if x in P else 'ngoài pool (' + ', '.join(n for k, n in (('nghi', 'đang nghỉ'), ('tien', 'tiến liên tiếp'), ('tamhoa', 'tam hoa')) if x in loai[k]) + ') — cân nhắc') for x in lon]))
+                          [f'{x}: ' + ('trong pool' if x in P else 'ngoài pool (' + ', '.join(n for k, n in (('nghi', 'đang nghỉ'), ('tien', 'tiến liên tiếp'), ('tamhoa', 'tam hoa'), ('00x', 'dạng 00x')) if x in loai[k]) + ') — cân nhắc') for x in lon]))
     else:
         am = sorted(Q['Ngày + tháng âm (25/8 → 258, 825)'])
         pairs.append(dict(x=am, kind='Tâm linh: ngày tháng âm', why=[f'{nd} là ngày {I["ld"]}/{I["lm"]} âm → {am[0]}, {am[1]}', 'Quẻ ra đúng mức chia đều (×1,01 cả lịch sử): không thiệt, chọn theo duyên'] +
                           [f'{x}: ' + ('trong pool' if x in P else 'ngoài pool — cân nhắc') for x in am]))
     return dict(next=nd, am=f'{I["ld"]}/{I["lm"]}', can=TL.CAN[I['can']], hanh=I['hanh'], pool_n=len(pool),
                 loai_n={k: len(v) for k, v in loai.items()}, ng=NG, pool=pool[:40], pool_all=sorted(pool), pairs=pairs, tl=tl,
-                rule=('Loại bộ ra trong 5 kỳ gần, tiến liên tiếp, tam hoa; trừ điểm nhẹ kép kẹp; giữ 340 bộ chữ số nặng nhất theo hàng (50 kỳ). Kiểm 300 kỳ: cặp ĐB rơi vào pool 13–14% số kỳ (chia đều 12%).' if kind == 'plus'
-                      else 'Loại bộ ra trong 20 kỳ gần, tiến liên tiếp, tam hoa. Pro chưa có dấu vết chữ số ổn định → pool rộng, chọn trong pool theo tâm linh.'))
+                rule=('Loại bộ ra trong 5 kỳ gần, tiến liên tiếp, tam hoa, 00x; trừ điểm nhẹ kép kẹp; giữ 340 bộ chữ số nặng nhất theo hàng (50 kỳ). Kiểm 300 kỳ: cặp ĐB rơi vào pool 13–14% số kỳ (chia đều 12%).' if kind == 'plus'
+                      else 'Loại bộ ra trong 20 kỳ gần, tiến liên tiếp, tam hoa, 00x. Pro chưa có dấu vết chữ số ổn định → pool rộng, chọn trong pool theo tâm linh.'))
 def stats(f):
     D = json.load(open(os.path.join(HERE, f))); R = D['res']; T = len(R)
     pos = []
