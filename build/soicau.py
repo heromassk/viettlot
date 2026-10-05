@@ -61,3 +61,50 @@ print(f'**4. Lô rơi** (số kỳ trước rơi lại): {rate(lambda t: R[t - 1
 print(f'**5. Lô gan** (vắng ≥{int(NB / KB * 3)} kỳ, gấp 3 nhịp bình quân): {rate(lambda t: {n for n in range(1, NB + 1) if gap(t, n) >= int(NB / KB * 3)})}')
 print(f'**6. Đầu câm** (hàng chục vắng mặt kỳ trước) → kỳ này: {rate(lambda t: {n for n in range(1, NB + 1) if n // 10 not in {m // 10 for m in R[t - 1]}})}')
 print(f'**7. Đuôi câm** (chữ số cuối vắng mặt kỳ trước) → kỳ này: {rate(lambda t: {n for n in range(1, NB + 1) if n % 10 not in {m % 10 for m in R[t - 1]}})}')
+
+# ---------- Thêm các cách soi khác (05/10/2026) ----------
+import datetime
+dts = D['dates']
+def dmy(t):
+    d = datetime.datetime.strptime(dts[t][:10], '%d/%m/%Y'); return d.day, d.month
+def kep_lien(t):
+    ks = {n for n in R[t - 1] if n % 11 == 0}
+    return {m for k in ks for m in (k - 11, k + 11) if 11 <= m <= NB}
+def kep_canh(t):
+    ks = {n for n in R[t - 1] if n % 11 == 0}
+    return {m for k in ks for m in (k - 1, k + 1) if 1 <= m <= NB} - R[t - 1]
+def kep_nuoi(t): return {n for n in R[t - 1] if n % 11 == 0}
+def lo_kep_giua(t): return {a + 1 for a in R[t - 1] if a + 2 in R[t - 1] and a + 1 not in R[t - 1]}
+def ngay(t):
+    d, m = dmy(t); return {x for x in (d, m, d + m) if 1 <= x <= NB}
+def cham_nhieu(t):
+    from collections import Counter
+    c = Counter(ch for n in R[t - 1] for ch in f'{n:02d}'); top = c.most_common(1)[0][0]
+    return {n for n in range(1, NB + 1) if top in f'{n:02d}'} - R[t - 1]
+def bach_thu(t):
+    """Cầu vị trí đang chạy dài nhất (ít nhất 1 kỳ) — bạch thủ 1 số."""
+    dig = lambda u: ''.join(f'{n:02d}' for n in sorted(R[u])); best = None
+    for (i, j) in pairs:
+        run = 0
+        for back in range(1, 8):
+            u = t - back; v = int(dig(u - 1)[i] + dig(u - 1)[j])
+            if 1 <= v <= NB and v in R[u]: run += 1
+            else: break
+        v = int(dig(t - 1)[i] + dig(t - 1)[j])
+        if run >= 1 and 1 <= v <= NB and (best is None or run > best[0]): best = (run, v)
+    return {best[1]} if best else set()
+print(f'\n**8. Bạch thủ** (cầu vị trí chạy dài nhất): {rate(bach_thu)}')
+print(f'**9. Nuôi kép** (kép kỳ trước ra lại): {rate(kep_nuoi)} · **kép liền kề** (11↔22↔33): {rate(kep_lien)} · **cạnh kép** (kép ±1): {rate(kep_canh)}')
+print(f'**10. Lô kẹp** (kỳ trước có a và a+2 → a+1): {rate(lo_kep_giua)}')
+print(f'**11. Theo ngày dương** (số = ngày, tháng, ngày+tháng của kỳ quay): {rate(ngay)}')
+print(f'**12. Chạm nhiều nhất** (chữ số xuất hiện nhiều nhất kỳ trước → các số chứa chữ số đó): {rate(cham_nhieu)}')
+# xiên 2: cặp hay đi cùng nhất 100 kỳ → kỳ tới cả 2 cùng về?
+from itertools import combinations
+def xien(t):
+    c = {}
+    for u in range(t - 100, t):
+        for p in combinations(sorted(R[u]), 2): c[p] = c.get(p, 0) + 1
+    return max(c, key=lambda p: (c[p], p))
+for a, b in segs:
+    both = sum(set(xien(t)) <= R[t] for t in range(a, b)) / (b - a) * 100
+    print(f'**13. Xiên 2** (cặp đi cùng nhiều nhất 100 kỳ, cả 2 cùng về): {both:.1f}% kỳ (bình thường {KB * (KB - 1) / NB / (NB - 1) * 100:.1f}%)')

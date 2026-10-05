@@ -141,6 +141,8 @@ CLAIMS = [
     ('nhom_kep', 'Soi cầu: lô kép (11, 22, 33…) ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', set(range(11, NB + 1, 11)), 0)),
     ('nhom_pascal', 'Soi cầu: số cầu Pascal của kỳ trước ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', pascal(R, t, NB), 0)),
     ('nhom_cau2', 'Soi cầu: cầu vị trí đã chạy ≥2 kỳ ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', cau_chay(R, t, NB, 2), 0)),
+    ('nhom_keplk', 'Soi cầu: kép liền kề của kép kỳ trước (11↔22↔33) ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', {m for k in R[t - 1] if k % 11 == 0 for m in (k - 11, k + 11) if 11 <= m <= NB}, 0)),
+    ('nhom_lokep', 'Soi cầu: lô kẹp (kỳ trước có a, a+2 → a+1) ra ÍT hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', {a + 1 for a in R[t - 1] if a + 2 in R[t - 1] and a + 1 not in R[t - 1]}, 0)),
     ('nhom_nhip', 'Nhóm nhịp riêng "lúc vắng thế này chưa từng ra" ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_off(R, t, NB), 0)),
 ]
 

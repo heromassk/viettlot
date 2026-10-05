@@ -393,6 +393,12 @@ Kết quả (bình quân mỗi số: Loto 14.3, Mega 13.3, Power 10.9%):
 - **Lô kép**: Loto 18.9/16.9% (cao hơn 14.3% cả 2 nửa); Mega/Power bình thường.
 - **Lô gan**: Mega ra ít (11.3/11.5%) — khớp thuyết bi; Power nửa gần ra nhiều (15.6%); Loto hơi ít.
 - Lô rơi, đầu câm, đuôi câm: ≈ bình thường.
+- **Thêm (05/10): các cách soi khác** (bình quân Loto 14.3 / Mega 13.3 / Power 10.9%):
+  - **Kép liền kề** (kỳ trước có kép → kép bên cạnh 11↔22↔33): Loto 17.4/17.8, Mega 18.2/14.3, Power 13.1/13.6% — cao hơn ở cả 3 trò, cả 2 nửa (mẫu nhỏ) → theo dõi (nhom_keplk).
+  - **Lô kẹp** (a, a+2 → a+1): Power 8.6/6.7%, Loto 13.3/12.1% — ra ÍT → theo dõi (nhom_lokep).
+  - **Bạch thủ** (cầu chạy dài nhất): Power 12.7/12.2% nhích nhẹ; Loto/Mega không.
+  - **Theo ngày dương** (ngày, tháng, ngày+tháng): Loto 15.2/16.5% nhích nhẹ; Mega/Power không.
+  - Nuôi kép, cạnh kép, chạm nhiều nhất, xiên 2 (cặp hay đi cùng): không có dấu vết.
 Đưa vào sổ theo dõi: nhom_kep, nhom_pascal, nhom_cau2. Nhận xét: phần lớn "soi cầu" là đọc chuỗi ngẫu nhiên; vài cái nhích nhẹ cần theo dõi thêm.
 
 ## Sổ chấm phương pháp Loto 5/35 (bắt đầu 03/10/2026 21h, chấm bằng `build/goiy.py`)
