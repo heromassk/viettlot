@@ -773,3 +773,142 @@ Chưa có dữ liệu kết quả Max 3D trong repo — cần anh tải CSV lên
 - Hệ quả: mỗi kỳ có 60 lần quay chữ số 0–9. Dấu vết nằm ở **từng viên bi chữ số**. Một bộ số nặng hay nhẹ là tích độ nặng của 3 chữ số; ví dụ chữ số nặng 11% thay vì 10% thì bộ 3 chữ số đó có khả năng ×1,33.
 - Áp nguyên tắc như Power/Mega: họ thay bi định kỳ, nên chỉ xét tối đa 100 kỳ và so 4 khung 10/20/50/100.
 - Công cụ `build/max3d_dauvet.py` (thử với `--thu` trên dữ liệu giả lập: bi lệch ±10%, thay bi mỗi 20 kỳ). Script nhận ra đúng "1 bộ bi dùng chung" và "dấu vết giữ lại ở khung 20–50 kỳ"; 3 chữ số nặng nhất trúng khoảng 30–31,5% (chia đều 30%).
+
+
+# Max 3D — dò dấu vết bi trên dữ liệu thật (05/10/2026)
+
+Nguồn: github.com/vietvudanh/vietlott-data (crawl hằng ngày từ vietlott.vn). Đối chiếu Power 6/55 của nguồn này với dữ liệu của anh: 1001/1001 kỳ khớp. Max 3D: 1136 kỳ (22/04/2019 → 02/10/2026); Max 3D Pro: 783 kỳ (14/09/2021 → 03/10/2026); mỗi loại thiếu 4 kỳ (nghỉ Tết).
+
+Kỳ có bộ số trùng nhau trong 20 bộ: Max 3D 19,2%, Pro 17,8% (lý thuyết quay từng chữ số có trả bi: 17,3%). Khớp với cách quay từng chữ số anh nói.
+
+## Max 3D — 1136 kỳ (22/04/2019 → 02/10/2026)
+
+### 1. Tỉ lệ ra từng chữ số (chia đều 10%) — cả 3 hàng
+
+| Chữ số | 10 kỳ gần | 20 kỳ gần | 50 kỳ gần | 100 kỳ gần | 100 kỳ trước đó |
+|---|---|---|---|---|---|
+| 0 | 11.8% | 10.8% | 10.4% | 9.8% | 10.4% |
+| 1 | 9.7% | 10.2% | 9.7% | 10.3% | 9.9% |
+| 2 | 7.7% | 9.2% | 9.3% | 9.4% | 10.6% |
+| 3 | 10.0% | 9.8% | 10.7% | 10.2% | 9.8% |
+| 4 | 12.2% | 10.0% | 9.6% | 9.9% | 9.9% |
+| 5 | 9.5% | 9.8% | 9.8% | 9.3% | 10.5% |
+| 6 | 10.3% | 9.8% | 9.9% | 10.7% | 9.9% |
+| 7 | 8.5% | 10.4% | 10.0% | 9.9% | 9.4% |
+| 8 | 9.3% | 10.3% | 10.5% | 10.4% | 9.7% |
+| 9 | 11.0% | 9.7% | 10.2% | 10.1% | 9.8% |
+
+### 2. Một lồng hay ba lồng? Độ lệch chữ số giữa các hàng (100 kỳ gần)
+
+- Hàng trăm: 0:10.2 1:11.3 2:8.8 3:10.0 4:9.5 5:10.1 6:10.2 7:9.6 8:10.6 9:9.7
+- Hàng chục: 0:9.5 1:9.4 2:11.2 3:9.8 4:10.1 5:8.8 6:10.8 7:9.4 8:10.8 9:10.2
+- Hàng đơn vị: 0:9.8 1:10.2 2:8.2 3:10.8 4:10.0 5:9.1 6:10.8 7:10.7 8:10.0 9:10.4
+- Tương quan độ lệch giữa 3 hàng, TB các khối 20 kỳ trên toàn bộ 1136 kỳ: **-0.031** (quay ngẫu nhiên: -0.043 … +0.047)
+  → không cùng chiều rõ — có thể mỗi hàng 1 lồng/bộ bi riêng, hoặc độ lệch quá nhỏ
+
+### 3. Bi vừa ra có ra lại ngay không
+
+- Chữ số lặp lại ở lần quay kế tiếp: **10.5%** (chia đều 10%)
+
+### 4. Dấu vết có giữ không: tương quan tần suất 2 khối W kỳ liền nhau (TB) — so với quay ngẫu nhiên
+
+| Khung W | Thực tế | Quay ngẫu nhiên (10 lần thử: thấp nhất … cao nhất) | Nhận xét |
+|---|---|---|---|
+| 10 | +0.032 | -0.072 … +0.052 | trong vùng ngẫu nhiên |
+| 20 | +0.084 | -0.110 … +0.135 | trong vùng ngẫu nhiên |
+| 50 | +0.106 | -0.076 … +0.126 | trong vùng ngẫu nhiên |
+| 100 | +0.174 | -0.206 … +0.357 | trong vùng ngẫu nhiên |
+
+### 5. 3 chữ số nặng nhất của khung W → tỉ lệ ra ở kỳ kế (chia đều 30%), chấm 300 kỳ gần chia 3 đoạn
+
+| Khung | Đoạn gần | Đoạn giữa | Đoạn xa |
+|---|---|---|---|
+| 10 kỳ | 30.0% | 29.9% | 30.4% |
+| 20 kỳ | 30.1% | 29.6% | 30.5% |
+| 50 kỳ | 30.1% | 30.0% | 29.4% |
+| 100 kỳ | 29.2% | 31.3% | 30.4% |
+
+### 6. Theo từng hàng: 3 chữ số nặng nhất của hàng (khung W) → % ra ở hàng đó kỳ kế (chia đều 30%)
+
+| Khung | Đoạn gần | Đoạn giữa | Đoạn xa |
+|---|---|---|---|
+| 10 kỳ | 31.5% | 30.7% | 29.7% |
+| 20 kỳ | 31.6% | 30.7% | 29.5% |
+| 50 kỳ | 30.4% | 31.4% | 30.0% |
+| 100 kỳ | 29.9% | 32.0% | 30.1% |
+
+### 7. Theo từng hàng: 3 chữ số NHẸ nhất của hàng (khung W) → % ra kỳ kế (chia đều 30%)
+
+| Khung | Đoạn gần | Đoạn giữa | Đoạn xa |
+|---|---|---|---|
+| 10 kỳ | 29.7% | 30.0% | 31.2% |
+| 20 kỳ | 29.5% | 29.7% | 30.2% |
+| 50 kỳ | 30.0% | 29.3% | 29.4% |
+| 100 kỳ | 29.3% | 27.9% | 29.2% |
+
+## Max 3D Pro
+
+## Max 3D — 783 kỳ (14/09/2021 → 03/10/2026)
+
+### 1. Tỉ lệ ra từng chữ số (chia đều 10%) — cả 3 hàng
+
+| Chữ số | 10 kỳ gần | 20 kỳ gần | 50 kỳ gần | 100 kỳ gần | 100 kỳ trước đó |
+|---|---|---|---|---|---|
+| 0 | 11.3% | 10.9% | 10.3% | 10.3% | 9.9% |
+| 1 | 9.0% | 8.8% | 9.8% | 9.9% | 10.6% |
+| 2 | 8.7% | 8.8% | 9.7% | 9.9% | 9.7% |
+| 3 | 10.7% | 9.8% | 10.5% | 10.3% | 10.0% |
+| 4 | 7.7% | 9.7% | 10.1% | 10.0% | 9.8% |
+| 5 | 9.7% | 10.3% | 9.7% | 10.0% | 9.7% |
+| 6 | 8.7% | 10.1% | 10.0% | 9.9% | 10.6% |
+| 7 | 10.3% | 9.8% | 9.7% | 9.9% | 10.1% |
+| 8 | 13.0% | 11.8% | 10.3% | 10.1% | 9.9% |
+| 9 | 11.0% | 10.1% | 9.9% | 9.7% | 9.7% |
+
+### 2. Một lồng hay ba lồng? Độ lệch chữ số giữa các hàng (100 kỳ gần)
+
+- Hàng trăm: 0:10.9 1:9.3 2:9.8 3:10.2 4:9.7 5:10.3 6:9.4 7:10.0 8:10.1 9:10.3
+- Hàng chục: 0:9.5 1:10.8 2:10.2 3:10.5 4:10.0 5:9.6 6:10.0 7:9.6 8:9.4 9:10.5
+- Hàng đơn vị: 0:10.4 1:9.6 2:9.7 3:10.3 4:10.4 5:10.1 6:10.3 7:10.2 8:10.7 9:8.2
+- Tương quan độ lệch giữa 3 hàng, TB các khối 20 kỳ trên toàn bộ 783 kỳ: **-0.030** (quay ngẫu nhiên: -0.059 … +0.045)
+  → không cùng chiều rõ — có thể mỗi hàng 1 lồng/bộ bi riêng, hoặc độ lệch quá nhỏ
+
+### 3. Bi vừa ra có ra lại ngay không
+
+- Chữ số lặp lại ở lần quay kế tiếp: **9.7%** (chia đều 10%)
+
+### 4. Dấu vết có giữ không: tương quan tần suất 2 khối W kỳ liền nhau (TB) — so với quay ngẫu nhiên
+
+| Khung W | Thực tế | Quay ngẫu nhiên (10 lần thử: thấp nhất … cao nhất) | Nhận xét |
+|---|---|---|---|
+| 10 | -0.007 | -0.084 … +0.115 | trong vùng ngẫu nhiên |
+| 20 | -0.126 | -0.119 … +0.204 | ngược chiều |
+| 50 | +0.104 | -0.156 … +0.101 | **có dấu vết giữ lại** |
+| 100 | +0.244 | -0.202 … +0.253 | trong vùng ngẫu nhiên |
+
+### 5. 3 chữ số nặng nhất của khung W → tỉ lệ ra ở kỳ kế (chia đều 30%), chấm 300 kỳ gần chia 3 đoạn
+
+| Khung | Đoạn gần | Đoạn giữa | Đoạn xa |
+|---|---|---|---|
+| 10 kỳ | 29.7% | 30.9% | 29.8% |
+| 20 kỳ | 29.8% | 30.4% | 29.8% |
+| 50 kỳ | 28.5% | 30.7% | 29.6% |
+| 100 kỳ | 29.7% | 30.7% | 30.5% |
+
+### 6. Theo từng hàng: 3 chữ số nặng nhất của hàng (khung W) → % ra ở hàng đó kỳ kế (chia đều 30%)
+
+| Khung | Đoạn gần | Đoạn giữa | Đoạn xa |
+|---|---|---|---|
+| 10 kỳ | 30.1% | 30.6% | 29.7% |
+| 20 kỳ | 29.3% | 30.7% | 29.2% |
+| 50 kỳ | 29.4% | 30.8% | 28.8% |
+| 100 kỳ | 29.6% | 30.6% | 30.2% |
+
+### 7. Theo từng hàng: 3 chữ số NHẸ nhất của hàng (khung W) → % ra kỳ kế (chia đều 30%)
+
+| Khung | Đoạn gần | Đoạn giữa | Đoạn xa |
+|---|---|---|---|
+| 10 kỳ | 30.2% | 31.4% | 29.7% |
+| 20 kỳ | 30.1% | 30.0% | 29.5% |
+| 50 kỳ | 30.6% | 29.4% | 30.2% |
+| 100 kỳ | 30.6% | 29.0% | 29.4% |

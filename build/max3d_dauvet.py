@@ -94,3 +94,30 @@ for W in (10, 20, 50, 100):
             nx = cnt(t, t + 1); h += sum(nx[d] for d in top); m += 60
         out.append(f'{h / m * 100:.1f}%')
     print(f'| {W} kỳ | ' + ' | '.join(out) + ' |')
+# 6. theo TỪNG HÀNG (nếu mỗi hàng 1 lồng riêng): 3 chữ số nặng nhất của hàng đó → % ra ở hàng đó kỳ kế
+print('\n### 6. Theo từng hàng: 3 chữ số nặng nhất của hàng (khung W) → % ra ở hàng đó kỳ kế (chia đều 30%)\n')
+print('| Khung | Đoạn gần | Đoạn giữa | Đoạn xa |\n|---|---|---|---|')
+for W in (10, 20, 50, 100):
+    out = []
+    for a, b in ((T - 100, T), (T - 200, T - 100), (T - 300, T - 200)):
+        if a - W < 0: out.append('—'); continue
+        h = m = 0
+        for t in range(a, b):
+            for i in range(3):
+                c = cnt(t - W, t, i); top = sorted(range(10), key=lambda d: -c[d])[:3]
+                h += sum(s[i] in top for s in R[t]); m += 20
+        out.append(f'{h / m * 100:.1f}%')
+    print(f'| {W} kỳ | ' + ' | '.join(out) + ' |')
+# 7. lạnh nhất theo hàng
+print('\n### 7. Theo từng hàng: 3 chữ số NHẸ nhất của hàng (khung W) → % ra kỳ kế (chia đều 30%)\n')
+print('| Khung | Đoạn gần | Đoạn giữa | Đoạn xa |\n|---|---|---|---|')
+for W in (10, 20, 50, 100):
+    out = []
+    for a, b in ((T - 100, T), (T - 200, T - 100), (T - 300, T - 200)):
+        h = m = 0
+        for t in range(a, b):
+            for i in range(3):
+                c = cnt(t - W, t, i); bot = sorted(range(10), key=lambda d: c[d])[:3]
+                h += sum(s[i] in bot for s in R[t]); m += 20
+        out.append(f'{h / m * 100:.1f}%')
+    print(f'| {W} kỳ | ' + ' | '.join(out) + ' |')
