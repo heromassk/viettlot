@@ -32,6 +32,7 @@ td.l,th.l{text-align:left;}
 .mytk{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:16px;border:2px solid var(--border);background:var(--panel2);cursor:pointer;font-size:.85rem;}.mytk.myadd{font-weight:700;font-size:1.1rem;padding:3px 14px;}.mydel{color:var(--bad);font-weight:700;margin-left:2px;padding:0 4px;}.myyes{background:var(--bad);color:#fff;border-radius:10px;padding:1px 8px;margin-left:4px;font-weight:700;}.myno{border:1px solid var(--border);border-radius:10px;padding:1px 8px;margin-left:4px;}
 .b{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 4px;border-radius:13px;background:var(--panel2);font-size:.78rem;font-weight:700;margin:1px;}
 .b.lk{background:rgba(226,69,60,.16);color:#ff9d96;border:1px solid var(--bad);}
+.m3n{display:inline-block;font-variant-numeric:tabular-nums;letter-spacing:.06em;padding:1px 6px;margin:2px;border-radius:6px;background:var(--panel2);border:1px solid var(--border);}.m3n.hit{background:var(--good);color:#06210c;border-color:var(--good);font-weight:700;}.m3g{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:start;margin:6px 0;}.m3d.light{color:#ff9d96;font-weight:700;}
 .up{color:var(--good);font-weight:700;} .dn{color:#ff9d96;font-weight:700;}
 .ok{color:var(--good);font-weight:700;} .no{color:#ff9d96;}
 .foot{color:var(--muted);font-size:.78rem;margin-top:6px;line-height:1.5;}
@@ -78,6 +79,10 @@ input.n{width:52px;text-align:center;}
 <details class="card" id="myCard" open>
   <summary><h2>Dãy của anh</h2></summary>
   <div id="myBox" class="sum"></div>
+</details>
+<details class="card" id="m3Card">
+  <summary><h2>Max 3D+ và Max 3D Pro</h2></summary>
+  <div id="m3In"></div>
 </details>
 <details class="card" id="addCard">
   <summary><h2>② Nhập kết quả mới</h2></summary>
@@ -264,6 +269,30 @@ input.n{width:52px;text-align:center;}
 const ALL=/*DATA*/;
 const GOIY=/*GOIY*/;
 const THEODOI=/*THEODOI*/;
+const M3=/*MAX3D*/;
+function renderM3(){const el=$('m3In');if(!el||!M3.plus)return;const k=S.m3k||'plus',G=M3[k],fm=v=>v>=1e9?(v/1e9).toLocaleString('vi-VN')+' tỷ':v>=1e6?(v/1e6).toLocaleString('vi-VN')+' triệu':v.toLocaleString('vi-VN')+'đ';
+  const tk=(S.m3t||'').match(/\d{3}/g)||[],two=tk.length>=2?[tk[0],tk[1]]:null;
+  const grp=r=>[['Đặc biệt',r.slice(0,2)],['Nhất',r.slice(2,6)],['Nhì',r.slice(6,12)],['Ba',r.slice(12,20)]];
+  const prz=r=>{if(!two)return null;const [a,b]=two,D=r.slice(0,2),N=r.slice(2,6),H=r.slice(6,12),B=r.slice(12,20),out=[];
+    if(k==='pro'){if(a===D[0]&&b===D[1])out.push('Đặc biệt');if(a===D[1]&&b===D[0])out.push('Phụ Đặc biệt');}else if(D.includes(a)&&D.includes(b))out.push('Đặc biệt');
+    [['Nhất',N],['Nhì',H],['Ba',B]].forEach(([n,g])=>{if(g.includes(a)&&g.includes(b))out.push(n);});
+    if(r.includes(a)&&r.includes(b))out.push('Tư');[a,b].forEach(x=>{if(D.includes(x))out.push('Năm');});[a,b].forEach(x=>{if(N.includes(x)||H.includes(x)||B.includes(x))out.push('Sáu');});
+    const pz=Object.fromEntries(G.prizes.map(p=>[p[0],p[2]]));return {names:out,sum:out.reduce((s,n)=>s+pz[n],0)};};
+  const last=G.recent[G.recent.length-1];
+  const res=r=>`<div class="m3g">${grp(r).map(([n,a])=>`<span class="lbl">${n}</span><span>${a.map(x=>`<span class="m3n${two&&two.includes(x)?' hit':''}">${x}</span>`).join('')}</span>`).join('')}</div>`;
+  const chk=two?`<div class="tw"><table><thead><tr><th class="l">Kỳ</th><th class="l">Giải trúng</th><th>Tiền/vé</th></tr></thead><tbody>${G.recent.slice().reverse().map(x=>{const p=prz(x.r);return `<tr><td class="l">${x.d}</td><td class="l">${p.names.length?p.names.join(' + '):'—'}</td><td>${p.sum?'<b class="up">'+fm(p.sum)+'</b>':'—'}</td></tr>`;}).join('')}</tbody></table></div>`:'';
+  const pos=['Hàng trăm','Hàng chục','Hàng đơn vị'];
+  el.innerHTML=`<div class="row" style="margin-bottom:8px;">${['plus','pro'].map(x=>`<span class="chip${x===k?' on':''}" data-m3="${x}" style="cursor:pointer;">${M3[x].name}</span>`).join('')}</div>
+  <div class="foot" style="margin-top:0;"><b>${G.name}</b>: chọn 2 bộ số 000–999, vé 10.000đ. Quay ${G.days}. Mỗi kỳ 20 bộ số; bi vật lý, quay lần lượt hàng trăm → chục → đơn vị. Giải cố định (không chia như Jackpot), mua nhiều nhân lên; trúng hạng cao lĩnh luôn các giải tương ứng bên dưới.</div>
+  <h3 style="margin-top:10px;">Kết quả kỳ gần nhất · ${last.d}</h3>${res(last.r)}
+  <h3 style="margin-top:12px;">Dò vé 2 bộ số</h3><div class="row"><input type="text" id="m3Tk" inputmode="numeric" placeholder="123 456" value="${S.m3t||''}" style="max-width:160px;font-size:1rem;letter-spacing:.06em;"><button class="btn pri" id="m3Go">Dò ${G.recent.length} kỳ gần</button></div>${chk}
+  <h3 style="margin-top:12px;">Cơ cấu giải ${G.name}</h3><div class="tw"><table><thead><tr><th class="l">Hạng</th><th class="l">Điều kiện</th><th>Giải</th><th>Khoảng 1 lần /</th></tr></thead><tbody>${G.prizes.map(p=>`<tr><td class="l">${p[0]}</td><td class="l">${p[1]}</td><td>${fm(p[2])}</td><td>${p[3].toLocaleString('vi-VN')} kỳ</td></tr>`).join('')}</tbody></table></div>
+  <div class="foot">Có giải ${G.win.toLocaleString('vi-VN')}% số kỳ (khoảng 1 lần / 25 kỳ) · hoàn tiền ${G.rtp.toLocaleString('vi-VN')}%.</div>
+  <h3 style="margin-top:12px;">Chữ số theo hàng · 100 kỳ gần (chia đều 200 lần/chữ số)</h3><div class="tw"><table><thead><tr><th class="l">Hàng</th>${[...Array(10).keys()].map(d=>`<th>${d}</th>`).join('')}</tr></thead><tbody>${G.pos.map((p,i)=>`<tr><td class="l">${pos[i]}</td>${p.c.map((c,d)=>`<td class="m3d${p.light.includes(d)?' light':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+  <div class="foot">Đỏ = 3 chữ số nhẹ nhất của hàng. ${G.trace}</div>
+  <div class="foot">Dữ liệu ${G.n.toLocaleString('vi-VN')} kỳ (${G.first} → ${G.last}).</div>`;
+  el.querySelectorAll('[data-m3]').forEach(c=>c.onclick=()=>{S.m3k=c.dataset.m3;renderM3();});
+  const go=()=>{S.m3t=$('m3Tk').value;renderM3();};$('m3Go').onclick=go;$('m3Tk').onkeydown=e=>{if(e.key==='Enter')go();};}
 function renderTD(){const el=$('tdIn');if(!el)return;const D=THEODOI[GAME],p2=n=>String(n).padStart(2,'0'),js=a=>a&&a.length?a.map(p2).join(' '):'—';
   if(!D){el.innerHTML='<div class="foot">Chưa có dữ liệu.</div>';return;}
   const H=D.hist||[],P=D.pending,ids=[];const by={};
@@ -405,7 +434,7 @@ function renderAll(){
   $('status').textContent=`Dữ liệu ${M.all.length} kỳ (${M.all[0].date} → ${M.all[M.all.length-1].date}) · đang nghiên cứu ${M.W} kỳ gần nhất · kỳ tới: ${fmt(M.nd)}`;
   $('winBtns').innerHTML=[100,200,300,500,1000].map(n=>`<span class="chip${n===S.win?' on':''}" data-n="${n}">${n>=M.all.length&&n===1000?'tất cả':n}</span>`).join('');
   $('winBtns').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.win=+e.dataset.n;renderAll();});
-  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();renderTD();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
+  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();renderTD();renderM3();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
 }
 function renderAdd(){
   const a=ex();$('addList').innerHTML=a.length?`<div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ đã thêm</th><th class="l">Số</th><th></th></tr></thead><tbody>${a.map((e,i)=>`<tr><td class="l">${e.date}</td><td class="l">${e.r.map(n=>`<span class="b">${p2(n)}</span>`).join('')}${GC.extra&&e.lk!=null?` <span class="b lk">${p2(e.lk)}</span>`:''}</td><td><button class="btn" data-del="${i}">Xóa</button></td></tr>`).join('')}</tbody></table></div>`:'';
