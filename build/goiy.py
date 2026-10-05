@@ -27,7 +27,7 @@ ap.add_argument('--json', help='ghi dữ liệu gợi ý dạng JSON (cho bảng
 ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
-G = A.G or (15 if A.cu and A.game == 'loto' else 20)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
+G = A.G or (15 if A.cu and A.game == 'loto' else 999 if A.game == 'power' and not A.cu else 20)   # Power: vắng ≥20 đang NGƯỢC (200 kỳ: ra 14.7/11.0%, loại đúng chỉ 51%) → bỏ (05/10)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
 R = [set(r) for r in D['res']]          # cũ -> mới
 SES = ['13' if '13h' in x else '21' for x in D['dates']] + ['13' if '21h' in D['dates'][-1] else '21']
@@ -96,7 +96,30 @@ def signals(t):
             sig['tx15'] = {n for n in last if all(n not in R[u] for u in range(max(0, t - 16), t - 1))}   # tái xuất sau vắng ≥15 → loại (96/93/97%)
             sig['vang1'] = {max(f, key=lambda n: (f[n]['gap'], -n))}                                   # vắng lâu nhất → loại (89/90/89%)
             sig['nong35'] = {n for n in range(1, NB + 1) if sum(n in R[u] for u in range(t - 5, t)) >= 3}  # ra 3 lần/5 kỳ → loại (92/95/91%)
+    sig['_td'] = td_sets(t)
     return f, sig
+
+
+# ---- Luật trong sổ kiểm chứng nghiêng ổn định (rasoat.py 05/10/2026) → trọng số nhỏ (dấu vết = xác suất nghiêng) ----
+import sys as _sys
+_sys.path.insert(0, HERE)
+import theodoi as _TD
+WTD = float(os.environ.get('GOIY_TD', {'loto': '1', 'power': '1', 'mega': '0'}[A.game]))   # Mega: thêm vào làm pool kém → 0
+TDW = {   # id luật → dấu trọng số (−: ra ít, +: ra nhiều)
+    'power': {'nong35': -1, 'nhip2': -1, 'nhom_lokep': -1, 'nhom_kep': 1, 'nhom_pascal': 1, 'nhom_cau2': 1},
+    'mega': {'nong35': -1, 'tx15': -1, 'nhip2': -1, 'nhipmin200': -1, 'nhom_nhip': -1, 'nhom_keplk': 1},
+    'loto': {'lt3': -1, 'tx10': -1, 'nhip2': -1, 'nhipmin100': -1, 'nhom_nhip80': -1, 'nhom_nhip': -1, 'nhom_lokep': -1,
+             'nhom_k7': 1, 'nhom_k9': 1, 'nhom_kep': 1, 'nhom_pascal': 1, 'nhom_keplk': 1},
+}[A.game]
+_RF = {i: f for i, l, f in _TD.RULES}; _CF = {i: f for i, l, f in _TD.CLAIMS}
+if A.game == 'loto': _TD.SESS = SES
+def td_sets(t):
+    if not WTD or A.cu: return {}
+    c = _TD.ctx(R, NB, t); out = {}
+    for i, sg in TDW.items():
+        if i in _RF: out[i] = (sg, _RF[i](R, t, c))
+        elif i in _CF: out[i] = (sg, set(_CF[i](R, t, c, NB, KB)[1]))
+    return out
 
 
 def top8(c):
@@ -122,6 +145,7 @@ def score(f, s, extra=None):
         v += WCHIN * (n in s.get('chin', ())) - WG610 * (n in s.get('g610', ())) \
             - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ())) \
             + 1 * (n in s.get('ben', ())) + WSC * (n in s.get('kep', ())) + WSC * (n in s.get('pascal', ()))
+        v += sum(WTD * sg for sg, st in s.get('_td', {}).values() if n in st)
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
@@ -498,7 +522,7 @@ if A.json:
 if A.save:
     rec = dict(game=A.game, next=nd, last=D['dates'][-1], pool=sorted(pool), rank=rank, core=core,
                tickets=[tk for _, tk, _ in tickets], tamlinh=sorted(top_v) if APP else [], tl_strong=sorted(strong) if APP else [], tl_rescued=rescued if APP else [], linh=sorted(LINH),
-               signals={k: sorted(v) for k, v in s.items()}, sum_range=[SLO, SHI], mm=MM,
+               signals={k: sorted(v) for k, v in s.items() if k != '_td'}, sum_range=[SLO, SHI], mm=MM,
                claims=[dict(lab=c['lab'], nums=c['nums'], r200=round(c['r200'])) for c in CLR if c['r200'] >= 70])
     with open(os.path.join(HERE, 'goiy_log.jsonl'), 'a') as fo:
         fo.write(json.dumps(rec, ensure_ascii=False) + '\n')

@@ -7,7 +7,9 @@ import json, os, sys, datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 GM = {'power': ('power655', 55, 6), 'mega': ('mega645', 45, 6), 'loto': ('loto535', 35, 5)}
 # Luật đang ÁP DỤNG trong gợi ý (goiy.py) — để app đánh dấu
-APPLIED = {'power': {'vang20', 'it100'}, 'mega': {'vang20', 'thua15', 'lien2', 'lt3', 'zprev'}, 'loto': {'vang20', 'thua15', 'tx15', 'vang1', 'nong35'}}
+APPLIED = {'power': {'it100', 'nong35', 'nhip2', 'nhom_lokep', 'nhom_kep', 'nhom_pascal', 'nhom_cau2'},
+           'mega': {'vang20', 'thua15', 'lien2', 'lt3', 'zprev'},
+           'loto': {'vang20', 'thua15', 'tx15', 'vang1', 'nong35', 'lt3', 'tx10', 'nhip2', 'nhipmin100', 'nhom_nhip80', 'nhom_nhip', 'nhom_lokep', 'nhom_k7', 'nhom_k9', 'nhom_kep', 'nhom_pascal', 'nhom_keplk'}}
 FILE = os.path.join(HERE, 'theodoi.json')
 
 def load():
