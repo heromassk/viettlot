@@ -767,3 +767,9 @@ Vé trúng ĐB thường lĩnh: 1 tỷ + Tư 1 triệu + 2 × Năm 150.000đ = 1
 Vé trúng ĐB thường lĩnh: 2 tỷ + Tư 1 triệu + 2 × Năm 100.000đ = 2.001.200.000đ. Kiểm ca 36 tỷ: 15 × 2 tỷ + 15 × 400 triệu + 30 × 1 triệu + 60 × 100.000đ = 36.036.000.000đ (+ 1 giải Sáu 40.000đ = 36.036.040.000đ, khớp báo chí).
 
 Chưa có dữ liệu kết quả Max 3D trong repo — cần anh tải CSV lên để dò dấu vết theo từng hàng trăm/chục/đơn vị.
+
+## Max 3D — cách quay (anh xác nhận 05/10/2026)
+- Max 3D, 3D+ và 3D Pro quay bằng **bi vật lý trong lồng quay khí nén**. Mỗi bộ số quay **lần lượt từng chữ số**: hàng trăm → chục → đơn vị.
+- Hệ quả: mỗi kỳ có 60 lần quay chữ số 0–9. Dấu vết nằm ở **từng viên bi chữ số**. Một bộ số nặng hay nhẹ là tích độ nặng của 3 chữ số; ví dụ chữ số nặng 11% thay vì 10% thì bộ 3 chữ số đó có khả năng ×1,33.
+- Áp nguyên tắc như Power/Mega: họ thay bi định kỳ, nên chỉ xét tối đa 100 kỳ và so 4 khung 10/20/50/100.
+- Công cụ `build/max3d_dauvet.py` (thử với `--thu` trên dữ liệu giả lập: bi lệch ±10%, thay bi mỗi 20 kỳ). Script nhận ra đúng "1 bộ bi dùng chung" và "dấu vết giữ lại ở khung 20–50 kỳ"; 3 chữ số nặng nhất trúng khoảng 30–31,5% (chia đều 30%).
