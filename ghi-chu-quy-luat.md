@@ -1518,3 +1518,8 @@ Max 3D+: TB bộ ≥500/kỳ 10 kỳ 9,4 · 20 kỳ 9,6 · 50 kỳ 10,2 · 100 k
 # Max 3D — "đợt" chữ số theo khối 10 kỳ (05/10/2026, anh hỏi đợt này nhiều 9, đợt trước nhiều 8, 7)
 
 Max 3D+ khối 14/09→05/10: 0 và 9 mỗi số 12%; khối 21/08→11/09: 8 12%, 7 11%. Đúng như anh nhận xét. Nhưng kiểm 300 kỳ: 2 chữ số nhiều nhất khối 10 kỳ trước chỉ chiếm 20,4% ở khối sau (chia đều 20%) — đợt không kéo dài sang đợt sau. Pro: 20,2%. Độ lệch ±2 điểm/khối 10 kỳ là dao động bình thường (600 lần quay).
+
+
+# Max 3D — phân tích 1 đợt 20 kỳ (05/10/2026)
+
+Max 3D+ 21/08→05/10: 62 bộ ra ≥2 lần (ngẫu nhiên ~61); 152 và 361 ra 4 lần. Hàng trăm nhiều 1, 5 (46); chục 6 (51); đơn vị 0 (48), 7 (47). Pro 20/08→03/10: 584 ra 5 lần, 780 4 lần; 48 bộ ≥2 lần; cả 3 hàng 8 nhiều nhất (141/120), 1 và 2 ít (105). Kiểm cả lịch sử: bộ ra ≥3 kỳ trong 20 kỳ → kỳ sau ×0,99 (3D+), ×0,92 (Pro); bộ ra ≥4 kỳ/khối 20 kỳ: 0,68 và 0,46 so với lý thuyết 0,75 → không có bộ "ruột". Chữ số nhiều nhất mỗi hàng 10 kỳ → 10 kỳ sau 30,5% / 29,9% (chia đều 30%). Không có dấu vết trong đợt.
