@@ -22,6 +22,7 @@ NHOM = {  # tên → hàm chọn số trước kỳ t
     'ra liền 4 kỳ': lambda t: run[t] == 4, 'ra liền ≥5 kỳ': lambda t: run[t] >= 5,
     'ra ≥5 lần / 10 kỳ': lambda t: C[t] - C[t - 10] >= 5, 'ra 4 lần / 10 kỳ': lambda t: C[t] - C[t - 10] == 4,
     'vắng cả 10 kỳ': lambda t: C[t] - C[t - 10] == 0,
+    'ngoài 3 kỳ gần (loại 3 kỳ)': lambda t: C[t] - C[t - 3] == 0, 'ngoài 5 kỳ gần (loại 5 kỳ)': lambda t: C[t] - C[t - 5] == 0,
 }
 def dem(ts):
     out = {}
@@ -34,12 +35,13 @@ def dem(ts):
 so = json.load(open(SO)) if os.path.exists(SO) else {'start_id': START, 'last_id': START, 'ngay': {}}
 moi = [t for t in range(10, N) if ID[t] > so['last_id']]
 for t in moi:   # cộng dồn theo ngày
-    day = so['ngay'].setdefault(D[t]['date'], {k: [0, 0] for k in NHOM}); day.setdefault('_ky', 0); day['_ky'] += 1
+    day = so['ngay'].setdefault(D[t]['date'], {}); day.setdefault('_ky', 0); day['_ky'] += 1
+    for k in NHOM: day.setdefault(k, [0, 0])
     for k, f in NHOM.items():
         m = f(t); day[k][0] += int(X[t][m].sum()); day[k][1] += int(m.sum())
 if moi: so['last_id'] = int(ID[moi[-1]])
 json.dump(so, open(SO, 'w'), ensure_ascii=False, indent=1)
-tong = {k: [sum(v[k][0] for v in so['ngay'].values()), sum(v[k][1] for v in so['ngay'].values())] for k in NHOM}
+tong = {k: [sum(v.get(k, [0, 0])[0] for v in so['ngay'].values()), sum(v.get(k, [0, 0])[1] for v in so['ngay'].values())] for k in NHOM}
 nky = sum(v['_ky'] for v in so['ngay'].values())
 def pct(h, n): return f'{h / n * 100:.1f}%' if n else '–'
 def z(h, n): return (h - .25 * n) / np.sqrt(n * .25 * .75) if n else 0
@@ -59,7 +61,7 @@ for k in NHOM:
     L.append(f'| {k} | {pct(h, n)} | {n} | {z(h, n):+.1f} | {pct(*B1[k])} | {pct(*B5[k])} | {nhan(h, n)} |')
 L += ['', '## Theo ngày (tỉ lệ ra tiếp)', '', '| Ngày | Kỳ | ' + ' | '.join(NHOM) + ' |', '|' + '---|' * (len(NHOM) + 2)]
 for d, v in sorted(so['ngay'].items()):
-    L.append(f'| {d} | {v["_ky"]} | ' + ' | '.join(f'{pct(*v[k])} ({v[k][1]})' for k in NHOM) + ' |')
+    L.append(f'| {d} | {v["_ky"]} | ' + ' | '.join(f'{pct(*v.get(k, [0, 0]))} ({v.get(k, [0, 0])[1]})' for k in NHOM) + ' |')
 t = N  # số đang theo dõi cho kỳ kế tiếp
 L += ['', f'## Đang ra liền sau kỳ {D[-1]["id"]} (để anh theo dõi kỳ kế)', '']
 for L0 in range(run[t].max(), 2, -1):
