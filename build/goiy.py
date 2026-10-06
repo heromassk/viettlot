@@ -308,6 +308,7 @@ def bad_ticket(tk):
     if (len(x & R[-1]) >= 3 or odd in (0, KB) or low in (0, KB)
             or (KB == 6 and max(dec.values()) >= 4) or max(tk) < NB * 2 // 3):
         return True
+    if KB == 6 and abs(odd - 3) > 1: return True                  # anh (06/10/2026): chẵn/lẻ chỉ 2-4, 4-2, 3-3 — không 1:5, 5:1
     if A.game == 'power' and len(dec) < 4: return True          # rải ≥4 hàng chục: 78–80% kỳ thật, giữ 75% vé
     if A.game == 'mega':                                          # khẳng định Mega có dấu vết (khang_dinh.py)
         if not x & (R[-1] | R[-2]) or not x & HOT10: return True
