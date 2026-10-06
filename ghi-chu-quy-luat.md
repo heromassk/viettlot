@@ -1944,3 +1944,16 @@ Kết luận: kỳ sau trùng ≥9 số với kỳ trước 1750 lần (lý thuy
 # Keno — anh dừng (06/10/2026)
 
 Vé thử 4 kỳ (#298244, #298246): loại 3 kỳ TB 2,7 số/vé, tâm linh 3,0, kết hợp 3,0 (kỳ vọng 2,25); vé anh mua thật 4/9 → hoàn 10k (hòa vốn). Anh: "bỏ keno đi, khó nhai" → ngừng.
+
+
+# Max 3D Pro — lộn ĐB theo độ trễ (06/10/2026, anh hỏi "lộn ngay sau kỳ trước á")
+
+| Lộn ĐB của kỳ cách | Cả lịch sử | 300 kỳ gần |
+|---|---|---|
+| 1 kỳ (kỳ trước) | 2,43% ×1,22 (38 lần) | ×1,68 |
+| 2 kỳ | 2,94% ×1,48 (46 lần) | ×1,26 |
+| 3 kỳ | 2,30% ×1,16 | ×1,26 |
+| 4 kỳ | 1,60% ×0,81 | ×0,42 |
+| 5 kỳ | 1,41% ×0,71 | ×0,59 |
+
+Bộ lộn của ĐB hay ra trong 1–3 kỳ sau, sau đó ra ít. Chia đều 1,98%/bộ.
