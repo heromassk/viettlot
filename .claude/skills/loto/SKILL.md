@@ -7,6 +7,8 @@ description: Loto 5/35: nhập kết quả 13h/21h, chấm sổ, đưa pool + 5 
 
 Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời tiếng Việt, ngắn gọn, dùng bảng.
 
+**⚠ Anh đã DỪNG chơi Loto (06/10/2026): "quay bằng máy không đỡ được, phí tiền". Chỉ dùng skill này khi anh chủ động yêu cầu lại.**
+
 ## Nguyên tắc của anh (bắt buộc giữ)
 - **Số May Mắn (05/10/2026):** giữ "3 số vắng lâu nhất" (31% ở 100 kỳ, 28% ở 100 kỳ trước đó; trung bình 25%). Vé chỉ ghi 1 MM thì ưu tiên số vắng lâu nhất. Ước lượng: chọn 3 số thì khoảng 7/10 kỳ vẫn trật, trật 3 kỳ liền xảy ra khoảng 1/3 thời gian. Chấm lại bằng `python3 build/somayman2.py`. Luật ≥70% (somayman3.py): loại MM vừa ra kỳ trước (92%), loại 2 số ra nhiều nhất 20 kỳ (84%); pool 7–8 số vắng lâu nhất trúng 62–71%.
 - **Luật đúng ≥70% là dùng tốt (anh, 05/10/2026).** Vắng lâu, khoảng nghỉ, nhịp… đúng ≥70% ở khung 50 và 100 kỳ thì dùng, miễn số bị loại không ra nhiều hơn trung bình. Chấm bằng `python3 build/luat_khung.py power|mega|loto` (4 khung 10/20/50/100 kỳ).
