@@ -265,6 +265,7 @@ Nguyên tắc (theo yêu cầu của anh): phương pháp có cơ sở, cố đ�
 | Kỳ | Kết quả | Bỏ vắng≥20 (12 20 30 50) | Bỏ khó ra (04 06 37 49 12 50) | Số nóng ★ (01 05 07 11 18 25) | Kề ±1 kỳ trước | Đà tổng thấp | Pool dấu vết 15 | Tâm linh pool 12 | Dãy tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
 | 03/10 | 07 11 13 16 18 54 · ĐB 41 | 4/4 bỏ đúng | 6/6 bỏ đúng | 3 trúng (07 11 18) | 1 (54) | đúng (tổng 119) | 4 trúng (07 11 18 54) | 3 (07 13 54) | 01 07 11 22 43 54 → 3 số |
+| 06/10 | 06 07 18 20 24 27 · ĐB 01 (tổng 102; 2 số lặp kỳ trước 07 18) | (không dùng vắng≥20) | khó ra: 06 về (sai) | nóng: 07 18 trúng | kề: 06 | đúng (102 trong 101–189) | **bản gốc** pool 15: 2 (07 18), vé tốt 1 số · **bản anh loại số kỳ trước** (đã mua 5 vé): pool 15: 0, 5 vé 0 số | tâm linh 12: 2 (06 18) | luật ● sai: it100 (06), nhip2 (18 — luật 99%); sổ 18/35 |
 
 ## Dấu vết Loto 5/35 (máy tính quay, không bi) — nghiên cứu 04/10/2026, 924 kỳ, `build/loto_dauvet.py`
 Chấm bằng tỉ lệ của chính phương pháp, chạy tiến (chỉ dùng dữ liệu trước kỳ), chia 3 khúc để xem độ ổn định.
