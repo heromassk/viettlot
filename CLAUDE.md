@@ -20,7 +20,7 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - Nghiên cứu và kết quả: `ghi-chu-quy-luat.md` (ghi nối tiếp), `ra-soat-dau-vet.md`.
 - Max 3D / 3D+ / Pro: dữ liệu `build/max3d_data.json`, `build/max3dpro_data.json`; ô trong app + gợi ý 3 cặp kèm lý do từ `build/max3d_app.py` (lưu gợi ý đã đưa vào `build/max3d_goiy_log.jsonl`); tâm linh `build/max3d_tamlinh.py`; các script `build/max3d_*.py`. Sau mỗi lần `lay_kq.py`: `python3 build/max3d_app.py` → `node build/max3d_tl.js` (17 phương pháp tâm linh, ra `build/max3d_tl.json`) → `python3 build/max3d_app.py` lần nữa (ghép cặp tâm linh) → `assemble.py`.
 
-- **Keno** (05/10/2026): máy tính quay, chưa thấy dấu vết (`build/keno_dauvet.py`, `keno_bac.py`, `keno_10ky.py`, `keno_chep.py`; kho keno.jsonl có dòng trùng → luôn bỏ trùng theo id). **Sổ theo dõi Keno** `build/keno_theodoi.py` (lay_kq.py tự gọi; ra `build/keno_theodoi.md`): chấm số ra liền 1–≥5 kỳ, nóng/vắng 10 kỳ → kỳ sau ra tiếp %; chỉ báo anh khi nhóm nào cộng dồn ≥30%, đủ mẫu, z ≥ 3 (mốc hòa vốn bậc 9 ≈ 32%/số).
+- **Keno: anh đã bỏ (06/10/2026, "khó nhai")** — không đưa vé, không chấm, lay_kq.py không gọi sổ Keno nữa. Script và kết quả cũ giữ lại để tham khảo (`build/keno_*.py`, `keno_ve_anh.jsonl`, `keno_tay.json`; ghi chú trong ghi-chu-quy-luat.md). Chỉ làm lại khi anh yêu cầu.
 
 ## App đã đăng
 - **https://claude.ai/artifact/ULkC95JvE2BsKHfXyypXHF** — link mới (05/10/2026, tài khoản hiện tại; capabilities db + downloads). Đăng lại cùng URL bằng `build/nghien-cuu-loto.html`.

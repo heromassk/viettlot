@@ -1937,3 +1937,8 @@ Dữ liệu 86466 kỳ. Kỳ sau trùng ≥9 số với kỳ trước: thực t�
 | chép số kỳ trước, ưu tiên số vừa lặp + nóng 10 kỳ | 10 | 0 / 0.01 | 0 / 0.5 | 2.494 (2.50) | 43% |
 
 Kết luận: kỳ sau trùng ≥9 số với kỳ trước 1750 lần (lý thuyết 1818) — không lặp nhiều hơn ngẫu nhiên. Chép số kỳ trước: trúng hết và trúng thiếu 1 ngang kỳ vọng, TB số trúng đúng n/4. Chơi 100 vé bậc 9: cơ hội có 1 lần 9/9 ≈ 1/13.800.
+
+
+# Keno — anh dừng (06/10/2026)
+
+Vé thử 4 kỳ (#298244, #298246): loại 3 kỳ TB 2,7 số/vé, tâm linh 3,0, kết hợp 3,0 (kỳ vọng 2,25); vé anh mua thật 4/9 → hoàn 10k (hòa vốn). Anh: "bỏ keno đi, khó nhai" → ngừng.
