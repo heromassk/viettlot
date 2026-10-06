@@ -36,6 +36,8 @@ function renderBang(J){
   const mm=J.mm&&J.mm.length?`<div class="bg-sec"><h4>Số May Mắn</h4><div class="bg-row">${J.mm.map(k=>ball(k,'mm')+`<small class="bg-mmg">vắng ${J.mmGap[k]} kỳ</small>`).join('')}</div></div>`:'';
   return `<div class="bg" style="--ac:${ac};">
   <div class="bg-hd"><div><b>${J.name}</b> · kỳ <b>${J.next}</b></div><div class="bg-foot">Kỳ trước ${J.last}: ${J.lastRes.map(n=>ball(n,'lr')).join('')}</div></div>
+  ${J.hist10?`<div class="bg-sec"><h4>10 kỳ gần nhất</h4><div style="overflow-x:auto;"><table class="bg-vl bg-h10"><thead><tr><th>Kỳ</th><th style="text-align:left;">Kết quả <small>(tô màu theo pool kỳ tới)</small></th>${J.game==='mega'?'':`<th>${J.game==='power'?'ĐB':'MM'}</th>`}<th>Pool 15 kỳ đó trúng</th></tr></thead><tbody>${J.hist10.slice().reverse().map((h,i)=>{const hit=J.last10[J.last10.length-1-i];return `<tr><td>${h.d.slice(0,5)}${h.d.length>10?' '+h.d.slice(11):''}</td><td style="text-align:left;white-space:nowrap;">${h.r.map(n=>ball(n,tierCls(n))).join('')}</td>${J.game==='mega'?'':`<td>${h.x==null?'—':p2(h.x)}</td>`}<td><b>${hit==null?'—':hit}</b></td></tr>`;}).join('')}</tbody></table></div>
+    <div class="bg-foot">Màu bi theo pool kỳ tới (xanh đậm = pool 10, nhạt = đến 15, mờ = đến 20, gạch = bị loại). Cột cuối: pool 15 tính theo đúng cách hiện tại cho kỳ đó trúng mấy số.</div></div>`:''}
   <div class="bg-sec"><h4>Pool số kỳ tới</h4>
     <div class="bg-grid" style="grid-template-columns:repeat(${cols},1fr);">${grid}</div>
     <div class="bg-leg"><span><i class="bg-sw t10"></i>Pool 10</span><span><i class="bg-sw t15"></i>đến 15</span><span><i class="bg-sw t20"></i>đến 20</span><span><i class="bg-sw tx"></i>bị loại (vắng lâu / luật loại)</span><span>★ tâm linh mạnh</span><span>☆ tâm linh</span><span><i class="bg-hot"></i> nóng</span><span><i class="bg-sw lastd"></i>vừa ra</span>${linh.size?'<span>✦ linh cảm</span>':''}</div>
@@ -113,5 +115,6 @@ const BANG_CSS=`.bg{--ac:#f0b429;color:var(--text,#e8ecf5);font-size:.9rem;}
 .bg-chip.s{background:#7c4dcc;color:#fff;} .bg-chip small{opacity:.8;}
 .bg-vl{width:100%;border-collapse:collapse;font-size:.78rem;}.bg-vl th,.bg-vl td{padding:4px 3px;border-bottom:1px solid var(--border,#2c3550);text-align:center;white-space:nowrap;}.bg-vl th{color:var(--muted,#8b93a7);font-weight:500;}
 .vlx{color:#ff6b6b;font-weight:700;}.vln{color:#f0b429;font-weight:700;}.vlt{color:var(--muted,#8b93a7);}
-.bg-warn{margin-top:6px;padding:6px 8px;border-radius:8px;background:rgba(240,180,41,.12);border:1px solid #f0b429;font-size:.8rem;}`;
+.bg-warn{margin-top:6px;padding:6px 8px;border-radius:8px;background:rgba(240,180,41,.12);border:1px solid #f0b429;font-size:.8rem;}
+.bg-h10 .bg-b{min-width:23px;height:23px;font-size:.72rem;margin:1px;} .bg-b.tx{opacity:.45;text-decoration:line-through;}`;
 if(typeof module!=='undefined')module.exports={renderBang,BANG_CSS};
