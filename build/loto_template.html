@@ -88,6 +88,16 @@ input.n{width:52px;text-align:center;}
   <summary><h2>Dãy của anh</h2></summary>
   <div id="myBox" class="sum"></div>
 </details>
+<details class="card" id="kbCard">
+  <summary><h2>Kiểm bộ số của anh</h2></summary>
+  <div class="row" style="gap:6px;flex-wrap:wrap;margin:6px 0;">
+    <select id="kbGame"><option value="power655">Power 6/55</option><option value="mega645">Mega 6/45</option><option value="loto535">Loto 5/35</option></select>
+    <input id="kbNums" placeholder="vd 01 05 07 08 16 18" style="flex:1;min-width:160px;" inputmode="numeric">
+    <button id="kbGo">Kiểm</button>
+  </div>
+  <div class="foot">Xem bộ số đã từng ra trọn chưa, trúng 3/4/5 số kỳ nào, tỉ lệ trúng của chính bộ ở khung 10/20/50/100 kỳ và 3 đoạn 100 kỳ, từng số ra bao nhiêu lần.</div>
+  <div id="kbOut"></div>
+</details>
 <details class="card" id="addCard">
   <summary><h2>② Nhập kết quả mới</h2></summary>
   <div class="foot" style="margin-top:0;">Nhập kết quả mỗi kỳ để máy tự đối chiếu và cập nhật mọi tỉ lệ.</div>
@@ -274,6 +284,26 @@ const ALL=/*DATA*/;
 const GOIY=/*GOIY*/;
 const THEODOI=/*THEODOI*/;
 const M3=/*MAX3D*/;
+
+// ================= KIỂM BỘ SỐ CỦA ANH (anh, 07/10/2026) =================
+function renderKB(){const go=$('kbGo');if(!go||go._b)return;go._b=1;
+  const run=()=>{const key=$('kbGame').value,D=ALL[key],NB={power655:55,mega645:45,loto535:35}[key],K={power655:6,mega645:6,loto535:5}[key];
+    const S=[...new Set(($('kbNums').value.match(/\d+/g)||[]).map(Number).filter(x=>x>=1&&x<=NB))].sort((a,b)=>a-b),out=$('kbOut');
+    if(S.length<2){out.innerHTML='<div class="foot">Nhập ít nhất 2 số trong 1–'+NB+'.</div>';return;}
+    const N=D.res.length,h=D.res.map(r=>r.filter(x=>S.includes(x)).length),c=new Array(S.length+1).fill(0);h.forEach(x=>c[Math.min(x,S.length)]++);
+    const avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2):'–',seg=i=>h.slice(Math.max(0,N-100*(i+1)),N-100*i);
+    const full=h.map((x,t)=>x>=Math.min(K,S.length)?t:-1).filter(t=>t>=0);
+    const top=h.map((x,t)=>[x,t]).filter(([x])=>x>=3).sort((a,b)=>b[0]-a[0]||b[1]-a[1]).slice(0,15);
+    const lk=D.lk,lab={power655:'ĐB',loto535:'MM'}[key];
+    const bl=t=>D.res[t].map(x=>`<b style="${S.includes(x)?'color:var(--accent)':'opacity:.55'}">${p2(x)}</b>`).join(' ')+(lk&&lk[t]!=null?` <span class="foot">${lab} ${p2(lk[t])}${S.includes(lk[t])?' ✔':''}</span>`:'');
+    out.innerHTML=`<div class="sum" style="margin-top:8px;">Bộ <b>${S.map(p2).join(' ')}</b> · ${N} kỳ (${D.dates[0]} → ${D.dates[N-1]})<br>
+      ${full.length?`<b style="color:var(--accent)">Đã ra trọn bộ ${full.length} lần:</b> ${full.map(t=>D.dates[t]).join(', ')}`:'<b>Chưa từng ra trọn bộ.</b>'}</div>
+     <div class="tw"><table><thead><tr><th>Trúng</th>${c.map((_,j)=>`<th>${j} số</th>`).join('')}</tr></thead><tbody><tr><td>Số kỳ</td>${c.map(x=>`<td>${x}</td>`).join('')}</tr></tbody></table></div>
+     <div class="tw"><table><thead><tr><th>TB số trúng/kỳ</th><th>10 kỳ</th><th>20 kỳ</th><th>50 kỳ</th><th>100 kỳ</th><th>3 đoạn 100 kỳ (gần→xa)</th><th>Cả LS</th></tr></thead>
+      <tbody><tr><td></td><td>${avg(h.slice(-10))}</td><td>${avg(h.slice(-20))}</td><td>${avg(h.slice(-50))}</td><td>${avg(h.slice(-100))}</td><td>${[0,1,2].map(i=>avg(seg(i))).join(' · ')}</td><td>${avg(h)}</td></tr></tbody></table></div>
+     <div class="tw"><table><thead><tr><th>Số</th><th>10 kỳ</th><th>20 kỳ</th><th>50 kỳ</th><th>100 kỳ</th><th>Cả LS</th><th>Đang vắng</th></tr></thead><tbody>${S.map(x=>{const cnt=W=>D.res.slice(-W).filter(r=>r.includes(x)).length;let g=0;while(g<N&&!D.res[N-1-g].includes(x))g++;return `<tr><td><b>${p2(x)}</b></td><td>${cnt(10)}</td><td>${cnt(20)}</td><td>${cnt(50)}</td><td>${cnt(100)}</td><td>${cnt(N)}</td><td>${g} kỳ</td></tr>`;}).join('')}</tbody></table></div>
+     ${top.length?`<div class="lbl" style="margin-top:6px;">Các kỳ trúng từ 3 số (nhiều nhất trước):</div>${top.map(([x,t])=>`<div class="foot" style="margin:2px 0;">${D.dates[t]}: ${bl(t)} → <b>${x} số</b></div>`).join('')}`:'<div class="foot">Chưa kỳ nào trúng từ 3 số.</div>'}`;};
+  go.onclick=run;$('kbNums').onkeydown=e=>{if(e.key==='Enter')run();};}
 function renderM3(){['plus','pro'].forEach(renderM3k);}
 function renderM3k(k){const el=$('m3'+k+'In');if(!el||!M3[k])return;const G=M3[k],T=(S.m3t||{}),fm=v=>v>=1e9?(v/1e9).toLocaleString('vi-VN')+' tỷ':v>=1e6?(v/1e6).toLocaleString('vi-VN')+' triệu':v.toLocaleString('vi-VN')+'đ';
   const tk=(T[k]||'').match(/\d{3}/g)||[],two=tk.length>=2?[tk[0],tk[1]]:null;
@@ -444,7 +474,7 @@ function renderAll(){
   $('status').textContent=`Dữ liệu ${M.all.length} kỳ (${M.all[0].date} → ${M.all[M.all.length-1].date}) · đang nghiên cứu ${M.W} kỳ gần nhất · kỳ tới: ${fmt(M.nd)}`;
   $('winBtns').innerHTML=[100,200,300,500,1000].map(n=>`<span class="chip${n===S.win?' on':''}" data-n="${n}">${n>=M.all.length&&n===1000?'tất cả':n}</span>`).join('');
   $('winBtns').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.win=+e.dataset.n;renderAll();});
-  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();renderTD();renderM3();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
+  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();renderTD();renderM3();renderKB();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
 }
 function renderAdd(){
   const a=ex();$('addList').innerHTML=a.length?`<div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ đã thêm</th><th class="l">Số</th><th></th></tr></thead><tbody>${a.map((e,i)=>`<tr><td class="l">${e.date}</td><td class="l">${e.r.map(n=>`<span class="b">${p2(n)}</span>`).join('')}${GC.extra&&e.lk!=null?` <span class="b lk">${p2(e.lk)}</span>`:''}</td><td><button class="btn" data-del="${i}">Xóa</button></td></tr>`).join('')}</tbody></table></div>`:'';
