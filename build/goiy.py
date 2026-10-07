@@ -214,9 +214,9 @@ def claims(t, rk):
 def pm_pool(t, sc):
     """Pool ±1/±10 của kỳ t−1 (anh, 08/10/2026), xếp theo điểm đồng thuận."""
     p = R[t - 1]; P = {x + d for x in p for d in (-1, 1, -10, 10) if 1 <= x + d <= NB} - p
-    if os.environ.get('GOIY_PMX'):   # thử: pool điểm 20, số thuộc ±1/±10 cộng điểm
+    if float(os.environ.get('GOIY_PMX', '0.5')) > 0:   # pool điểm 20, số thuộc ±1/±10 +0.5 điểm (chấm lùi 08/10: tốt hơn lấy thuần ±1/±10; GOIY_PMX=0 → thuần)
         top = sorted((n for n in sc if n not in p), key=lambda n: (-sc[n], n))[:20]
-        return sorted(top, key=lambda n: (-(sc[n] + float(os.environ['GOIY_PMX']) * (n in P)), n))
+        return sorted(top, key=lambda n: (-(sc[n] + float(os.environ.get('GOIY_PMX', '0.5')) * (n in P)), n))
     rk = sorted(P, key=lambda n: (-sc[n], n))
     return rk + sorted((n for n in sc if n not in P and n not in p), key=lambda n: (-sc[n], n))[:max(0, 12 - len(rk))]   # thiếu 12 thì bù số điểm cao (không lấy số kỳ trước)
 
