@@ -419,6 +419,7 @@ Kết quả (bình quân mỗi số: Loto 14.3, Mega 13.3, Power 10.9%):
 | Kỳ | Kết quả | Luật loại (đã áp dụng) | Bị loại | Pool 10 / 15 / 20 | Vé tốt nhất | Tâm linh 12 | Bao 7 anh | Ghi chú |
 |---|---|---|---|---|---|---|---|---|
 | 04/10 | 15 20 29 37 40 45 (tổng 186) | **đúng hết** (8 số bị loại, không số nào về); sổ: 24/25 luật đúng | 02 05 08 19 27 31 41 42 | 1 / 1 / 3 (15; 20 45) | 1 | 0 | 1 (15) | 4/6 số về đang vắng 11–14 kỳ (29 37 40 45) → thêm +1 điểm "vắng 11–15" cho Mega (pool 15 ở 50 kỳ 2.12→2.22). Tổng 186 > 126 đúng xu hướng hồi về trung vị. |
+| 07/10 | 10 14 36 37 41 43 (tổng 181) | **đúng hết** 10/10 luật ● (bỏ 05 08 19 20 32 42 45 15 16 — không số nào về) | 05 08 19 32 42 | 2 / 2 / 3 (36 41; 43) | lõi 36 41 về (31 trật) | vé tốt nhất 2 số (vé 1, 2, 3, 6) | tâm linh 12: 1 (41) | khẳng định: sai "≥1 số nóng 20 kỳ" và 3 câu hình dạng (chẵn/lẻ 3/3 đúng? xem sổ) |
 | 04/10 21h | 07 16 30 31 33 · MM 02 | 0/4 nóng | 2 (31 33) | — | — | luật loại áp dụng đúng hết (bỏ 10 19 26 27 35) | — | pool 10/15/20: 0/2/4 | vé tốt nhất 1; **vé anh** 09 11 19 28 34 mm06 & 11 14 20 28 34 mm10: 0 số, MM trật; sổ 23/25 luật đúng |
 
 
