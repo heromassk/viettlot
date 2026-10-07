@@ -141,10 +141,10 @@ input.n{width:52px;text-align:center;}
   <summary><h2>Kiểm bộ số của anh</h2></summary>
   <div class="row" style="gap:6px;flex-wrap:wrap;margin:6px 0;">
     <select id="kbGame"><option value="power655">Power 6/55</option><option value="mega645">Mega 6/45</option><option value="loto535">Loto 5/35</option></select>
-    <input id="kbNums" placeholder="vd 01 05 07 08 16 18" style="flex:1;min-width:160px;" inputmode="numeric">
+    <input id="kbNums" placeholder="vd 01 05 07 08 16 18 hoặc 010507081618" style="flex:1;min-width:160px;" inputmode="text">
     <button id="kbGo">Kiểm</button>
   </div>
-  <div class="foot">Xem bộ số đã từng ra trọn chưa, trúng 3/4/5 số kỳ nào, tỉ lệ trúng của chính bộ ở khung 10/20/50/100 kỳ và 3 đoạn 100 kỳ, từng số ra bao nhiêu lần.</div>
+  <div class="foot">Gõ số cách nhau bằng dấu cách, dấu phẩy, dấu chấm hoặc viết liền từng cặp 2 chữ số (010507…). Xem bộ số đã từng ra trọn chưa, trúng 3/4/5 số kỳ nào, tỉ lệ trúng của chính bộ ở khung 10/20/50/100 kỳ và 3 đoạn 100 kỳ, từng số ra bao nhiêu lần.</div>
   <div id="kbOut"></div>
 </details>
 <details class="card" id="addCard">
@@ -337,7 +337,7 @@ const M3={"plus": {"n": 1137, "first": "22/04/2019", "last": "05/10/2026", "rece
 // ================= KIỂM BỘ SỐ CỦA ANH (anh, 07/10/2026) =================
 function renderKB(){const go=$('kbGo');if(!go||go._b)return;go._b=1;
   const run=()=>{const key=$('kbGame').value,D=ALL[key],NB={power655:55,mega645:45,loto535:35}[key],K={power655:6,mega645:6,loto535:5}[key];
-    const S=[...new Set(($('kbNums').value.match(/\d+/g)||[]).map(Number).filter(x=>x>=1&&x<=NB))].sort((a,b)=>a-b),out=$('kbOut');
+    const S=[...new Set(($('kbNums').value.match(/\d+/g)||[]).flatMap(t=>t.length>2?t.match(/\d{1,2}/g):[t]).map(Number).filter(x=>x>=1&&x<=NB))].sort((a,b)=>a-b),out=$('kbOut');
     if(S.length<2){out.innerHTML='<div class="foot">Nhập ít nhất 2 số trong 1–'+NB+'.</div>';return;}
     const N=D.res.length,h=D.res.map(r=>r.filter(x=>S.includes(x)).length),c=new Array(S.length+1).fill(0);h.forEach(x=>c[Math.min(x,S.length)]++);
     const avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2):'–',seg=i=>h.slice(Math.max(0,N-100*(i+1)),N-100*i);
