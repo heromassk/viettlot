@@ -25,7 +25,7 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - **Loto 5/35: anh đã bỏ (06/10/2026 chiều, "quay bằng máy không đỡ được, phí tiền")** — không đưa gợi ý, không chấm Loto nữa trừ khi anh yêu cầu. Gợi ý 06/10 21h đã lưu nhưng không theo dõi. lay_kq.py vẫn thêm kỳ Loto vào dữ liệu (không hại), không cần báo anh.
 - **Keno: anh đã bỏ (06/10/2026, "khó nhai")** — không đưa vé, không chấm, lay_kq.py không gọi sổ Keno nữa. Script và kết quả cũ giữ lại để tham khảo (`build/keno_*.py`, `keno_ve_anh.jsonl`, `keno_tay.json`; ghi chú trong ghi-chu-quy-luat.md). Chỉ làm lại khi anh yêu cầu.
 
-- **Theo dõi quẻ ngày tháng** (anh, 07/10/2026): `build/ngaythang.py` → `build/ngaythang.md` (lay_kq.py tự chạy; add_result thì chạy tay). Nhóm số dương (thứ T2=2…CN=8, ngày, tháng, năm 26) và âm (ngày, tháng, năm) cho Power/Mega/Loto; khi đưa gợi ý thì nêu số ngày tháng của kỳ tới. Kết quả lần đầu: Power dương thứ–ngày–tháng nhỉnh nhẹ ổn định (3 đoạn 12,2·12,4·11,6% vs 10,9%), còn lại ≈ chia đều.
+- **Theo dõi quẻ ngày tháng** (anh, 07/10/2026): `build/ngaythang.py` → `build/ngaythang.md` (lay_kq.py tự chạy; add_result thì chạy tay). Nhóm số dương (thứ T2=2…CN=8, ngày, tháng, năm 26) và âm (ngày, tháng, năm) cho Power/Mega/Loto; khi đưa gợi ý thì nêu số ngày tháng của kỳ tới. Chi tiết từng thành phần + tổng: `python3 build/loto_ngaythang.py loto|power|mega` → `build/<game>_ngaythang.md`. Kết quả lần đầu: Power dương thứ–ngày–tháng nhỉnh nhẹ ổn định (3 đoạn 12,2·12,4·11,6% vs 10,9%), còn lại ≈ chia đều.
 
 ## App đã đăng
 - **https://claude.ai/artifact/ULkC95JvE2BsKHfXyypXHF** — link mới (05/10/2026, tài khoản hiện tại; capabilities db + downloads). Đăng lại cùng URL bằng `build/nghien-cuu-loto.html`.

@@ -69,5 +69,5 @@ subprocess.run([sys.executable, os.path.join(B, 'assemble.py')], check=True)
 # Quẻ ngày tháng (anh, 07/10/2026): cập nhật build/ngaythang.md sau mỗi lần lấy kết quả
 if not XEM:
     subprocess.run([sys.executable, os.path.join(B, 'ngaythang.py')], check=True, stdout=subprocess.DEVNULL)
-    subprocess.run([sys.executable, os.path.join(B, 'loto_ngaythang.py')], check=True, stdout=subprocess.DEVNULL)
+    for g in ('loto', 'power', 'mega'): subprocess.run([sys.executable, os.path.join(B, 'loto_ngaythang.py'), g], check=True, stdout=subprocess.DEVNULL)
     print('Ngày tháng: đã cập nhật build/ngaythang.md')
