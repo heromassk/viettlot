@@ -30,6 +30,8 @@ A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
 G = A.G or (15 if A.cu and A.game == 'loto' else 999 if A.game == 'power' and not A.cu else 20)   # Power: vắng ≥20 đang NGƯỢC (200 kỳ: ra 14.7/11.0%, loại đúng chỉ 51%) → bỏ (05/10)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
+if os.environ.get('GOIY_CUT'):   # chấm lùi: bỏ n kỳ cuối, gợi ý như đứng ở quá khứ
+    D = {k: (v[:-int(os.environ['GOIY_CUT'])] if isinstance(v, list) else v) for k, v in D.items()}
 R = [set(r) for r in D['res']]          # cũ -> mới
 SES = ['13' if '13h' in x else '21' for x in D['dates']] + ['13' if '21h' in D['dates'][-1] else '21']
 T = len(R)
