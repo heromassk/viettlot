@@ -26,6 +26,7 @@ ap.add_argument('--cu', action='store_true', help='cách cũ: tắt các luật 
 ap.add_argument('--json', help='ghi dữ liệu gợi ý dạng JSON (cho bảng trực quan)')
 ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
 ap.add_argument('--mt', type=int, default=0, choices=(0, 9, 12), help='vé ma trận: 12 số → 6 vé (4 nhóm×3, mỗi vé 2 nhóm) hoặc 9 số → 3 vé')
+ap.add_argument('--pm', action='store_true', help='ma trận lấy từ pool ±1/±10 số kỳ trước (xếp theo điểm) thay vì pool điểm')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
 G = A.G or (15 if A.cu and A.game == 'loto' else 999 if A.game == 'power' and not A.cu else 20)   # Power: vắng ≥20 đang NGƯỢC (200 kỳ: ra 14.7/11.0%, loại đúng chỉ 51%) → bỏ (05/10)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
@@ -210,15 +211,24 @@ def claims(t, rk):
         (f'Rải ≥{KB - 2} hàng chục', None, lambda x: len({n // 10 for n in x}) >= KB - 2),
     ]
 
+def pm_pool(t, sc):
+    """Pool ±1/±10 của kỳ t−1 (anh, 08/10/2026), xếp theo điểm đồng thuận."""
+    p = R[t - 1]; P = {x + d for x in p for d in (-1, 1, -10, 10) if 1 <= x + d <= NB} - p
+    if os.environ.get('GOIY_PMX'):   # thử: pool điểm 20, số thuộc ±1/±10 cộng điểm
+        top = sorted((n for n in sc if n not in p), key=lambda n: (-sc[n], n))[:20]
+        return sorted(top, key=lambda n: (-(sc[n] + float(os.environ['GOIY_PMX']) * (n in P)), n))
+    rk = sorted(P, key=lambda n: (-sc[n], n))
+    return rk + sorted((n for n in sc if n not in P and n not in p), key=lambda n: (-sc[n], n))[:max(0, 12 - len(rk))]   # thiếu 12 thì bù số điểm cao (không lấy số kỳ trước)
+
 def backtest(W=200):
     """Chạy tiến W kỳ: mỗi kỳ ghi số trúng của từng tín hiệu, pool 10/15/20 và từng khẳng định."""
     recs = []
     for t in range(T - W, T):
         f, s = signals(t)
-        rk = pool_of(score(f, s), s, 20)
+        sct = score(f, s); rk = pool_of(sct, s, 20)
         sig = {k: (len(s[k] & R[t]), len(s[k])) for k in SIGS}
         cl = [(lab, fn(R[t]), sum(fn(m) for m in MC) / len(MC)) for lab, _, fn in claims(t, rk)]
-        recs.append(dict(rk=rk[:12], r=R[t], sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 20)}, cl=cl))
+        recs.append(dict(rk=(pm_pool(t, sct) if A.pm else rk)[:12], r=R[t], sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 20)}, cl=cl))
     return recs
 
 def summ(recs):
@@ -368,7 +378,7 @@ for i in range(2):   # 2 vé trải: 1 số lõi + phần pool ít dùng
     tk, lv = pick([core[i]], [n for n in pool if n not in core], KB - 1, used); tickets.append(('trải', tk, lv)); DONE.append(tk)
     for n in tk: used[n] = used.get(n, 0) + 1
 if A.mt:   # vé ma trận thay cho 5 vé lõi+vệ tinh
-    tickets = [(f'ma trận {A.mt} số', tk, 0) for tk in mt_tickets(rank[:A.mt], lambda tk: not bad_ticket(tk), sc)]
+    tickets = [(f'ma trận {A.mt} số', tk, 0) for tk in mt_tickets((pm_pool(T, sc) if A.pm else rank)[:A.mt], lambda tk: not bad_ticket(tk), sc)]
 
 # ---------- In ----------
 fm = lambda xs: ' '.join(f'{n:02d}' for n in sorted(xs)) or '—'
