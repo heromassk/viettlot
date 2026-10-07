@@ -2189,3 +2189,26 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 | Thực tế (số kỳ) | 34 | 33 | 22 | 11 | 115 |
 | Ngẫu nhiên | 24 | 43 | 25.9 | 7.4 | 117 |
 
+
+
+# Power / Mega — mua cố định 1 bộ: thử cách chọn bộ (07/10/2026)
+
+## POWER — chọn bộ ở mốc, chấm 100 kỳ sau mốc, 3 mốc (300 kỳ gần). Chọn bừa: TB 0.65 số/kỳ, ≥3 số 4.0 lần/300 kỳ
+
+| Cách chọn bộ cố định | 3 mốc: TB số trúng | ≥3 số (300 kỳ) | Hơn % bộ chọn bừa | Bộ hiện tại (theo toàn bộ dữ liệu) |
+|---|---|---|---|---|
+| Ra nhiều nhất cả quá khứ | 0.85 · 0.68 · 0.66 | 7 | 96% | 22 34 41 43 48 51 |
+| Ra nhiều nhất 100 kỳ gần | 0.76 · 0.67 · 0.68 | 5 | 87% | 01 05 07 08 13 16 |
+| Ra ít nhất 100 kỳ gần | 0.66 · 0.56 · 0.74 | 7 | 51% | 06 12 19 35 37 42 |
+| Cặp hay đi cùng nhất (gắn kết) | 0.62 · 0.58 · 0.68 | 3 | 25% | 11 22 38 41 43 48 |
+| Bộ "trung tâm" (hay trùng ≥3 số với kỳ cũ) | 0.61 · 0.70 · 0.68 | 5 | 59% | 05 11 18 22 43 51 |
+
+## MEGA — chọn bộ ở mốc, chấm 100 kỳ sau mốc, 3 mốc (300 kỳ gần). Chọn bừa: TB 0.80 số/kỳ, ≥3 số 7.2 lần/300 kỳ
+
+| Cách chọn bộ cố định | 3 mốc: TB số trúng | ≥3 số (300 kỳ) | Hơn % bộ chọn bừa | Bộ hiện tại (theo toàn bộ dữ liệu) |
+|---|---|---|---|---|
+| Ra nhiều nhất cả quá khứ | 0.74 · 0.81 · 0.85 | 9 | 49% | 04 07 10 20 37 41 |
+| Ra nhiều nhất 100 kỳ gần | 0.89 · 0.90 · 0.77 | 6 | 87% | 06 16 22 31 36 44 |
+| Ra ít nhất 100 kỳ gần | 0.86 · 0.76 · 0.75 | 3 | 39% | 01 05 08 18 34 40 |
+| Cặp hay đi cùng nhất (gắn kết) | 0.79 · 0.84 · 0.77 | 7 | 49% | 07 13 20 29 37 44 |
+| Bộ "trung tâm" (hay trùng ≥3 số với kỳ cũ) | 0.76 · 0.76 · 0.87 | 4 | 46% | 04 10 13 20 27 37 |
