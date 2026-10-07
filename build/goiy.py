@@ -25,6 +25,7 @@ ap.add_argument('--bo', default='', help='số anh muốn loại tay kỳ này, 
 ap.add_argument('--cu', action='store_true', help='cách cũ: tắt các luật loại trừ bổ sung (để so)')
 ap.add_argument('--json', help='ghi dữ liệu gợi ý dạng JSON (cho bảng trực quan)')
 ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
+ap.add_argument('--mt', type=int, default=0, choices=(0, 9, 12), help='vé ma trận: 12 số → 6 vé (4 nhóm×3, mỗi vé 2 nhóm) hoặc 9 số → 3 vé')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
 G = A.G or (15 if A.cu and A.game == 'loto' else 999 if A.game == 'power' and not A.cu else 20)   # Power: vắng ≥20 đang NGƯỢC (200 kỳ: ra 14.7/11.0%, loại đúng chỉ 51%) → bỏ (05/10)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
@@ -215,7 +216,7 @@ def backtest(W=200):
         rk = pool_of(score(f, s), s, 20)
         sig = {k: (len(s[k] & R[t]), len(s[k])) for k in SIGS}
         cl = [(lab, fn(R[t]), sum(fn(m) for m in MC) / len(MC)) for lab, _, fn in claims(t, rk)]
-        recs.append(dict(sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 20)}, cl=cl))
+        recs.append(dict(rk=rk[:12], r=R[t], sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 20)}, cl=cl))
     return recs
 
 def summ(recs):
@@ -232,6 +233,35 @@ def summ(recs):
                      for i in range(len(recs[0]['cl']))]
     return out
 
+
+# ---------- Ma trận vòng xoay (anh, 08/10/2026): chia M số pool thành M/3 nhóm × 3 số, mỗi vé = 2 nhóm ----------
+def _parts(m):
+    def rec(rest):
+        if not rest: yield []; return
+        a = rest[0]
+        for b, c in combinations(rest[1:], 2):
+            for tail in rec([x for x in rest[1:] if x not in (b, c)]): yield [(a, b, c)] + tail
+    return list(rec(list(range(m))))
+PARTS = {9: _parts(9), 12: _parts(12)}
+
+def mt_tickets(nums, chk=None, w=None):
+    """Chọn cách chia nhóm: mọi vé chẵn/lẻ 2-4/4-2/3-3 (+ chk nếu có), điểm các vé đều nhau nhất."""
+    m = len(nums); w = w or {n: m - i for i, n in enumerate(nums)}; best = None
+    for pt in PARTS[m]:
+        gs = [[nums[i] for i in g] for g in pt]
+        tks = [sorted(a + b) for a, b in combinations(gs, 2)]
+        bad = sum(abs(sum(x % 2 for x in tk) - 3) > 1 for tk in tks) * 100 + (sum(not chk(tk) for tk in tks) if chk else 0)
+        sw = [sum(w[x] for x in tk) for tk in tks]
+        v = (bad, max(sw) - min(sw))
+        if best is None or v < best[0]: best = (v, tks)
+    return best[1]
+
+def mt_bt(recs, m):
+    out = []
+    for r in recs:
+        tks = mt_tickets(r['rk'][:m])
+        out.append((max(len(set(tk) & r['r']) for tk in tks), len(set(r['rk'][:m]) & r['r'])))
+    return out
 
 # ---------- Đà tổng ----------
 sums = [sum(r) for r in D['res']]
@@ -335,6 +365,8 @@ for i in range(3):
 for i in range(2):   # 2 vé trải: 1 số lõi + phần pool ít dùng
     tk, lv = pick([core[i]], [n for n in pool if n not in core], KB - 1, used); tickets.append(('trải', tk, lv)); DONE.append(tk)
     for n in tk: used[n] = used.get(n, 0) + 1
+if A.mt:   # vé ma trận thay cho 5 vé lõi+vệ tinh
+    tickets = [(f'ma trận {A.mt} số', tk, 0) for tk in mt_tickets(rank[:A.mt], lambda tk: not bad_ticket(tk), sc)]
 
 # ---------- In ----------
 fm = lambda xs: ' '.join(f'{n:02d}' for n in sorted(xs)) or '—'
@@ -344,6 +376,13 @@ print(f'Kỳ gần nhất {D["dates"][-1]}: **{fm(R[-1])}** (tổng {sums[-1]})\
 print('### Tín hiệu dấu vết (cùng một cách tính mọi kỳ)\n')
 RECS = backtest(200)
 B = {W: summ(RECS[-W:]) for W in (10, 50, 200)}
+MTB = {}
+if A.mt:
+    hh = mt_bt(RECS, A.mt)
+    for W in (10, 20, 50, 100, 200):
+        x = hh[-W:]; MTB[W] = dict(tb=round(sum(h for h, _ in x) / W, 2), g3=round(sum(h >= 3 for h, _ in x) / W * 100), g4=round(sum(h >= 4 for h, _ in x) / W * 100), pool=round(sum(p for _, p in x) / W, 2))
+    MTB['doan'] = [round(sum(h for h, _ in hh[i:i + 100][:100]) / 100, 2) for i in (0, 100)]
+    print(f'Ma trận {A.mt} số → {len(tickets)} vé, chấm lùi (vé tốt nhất mỗi kỳ): ' + ' · '.join(f"{W} kỳ TB {v['tb']} / ≥3: {v['g3']}% / ≥4: {v['g4']}%" for W, v in MTB.items() if W != 'doan') + f"  ·  2 đoạn 100 kỳ TB {MTB['doan']}\n")
 pc = lambda v: '—' if v is None else f'{v:.0f}%'
 rows = [('hot', 'Nóng (c10≥3 hoặc c20≥2×kỳ vọng)', 'tỉ lệ ra/số'),
         ('ke', 'Kề ±1 kỳ trước', 'tỉ lệ ra/số'),
