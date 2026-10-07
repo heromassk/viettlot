@@ -27,6 +27,8 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 
 - **Theo dõi quẻ ngày tháng** (anh, 07/10/2026): `build/ngaythang.py` → `build/ngaythang.md` (lay_kq.py tự chạy; add_result thì chạy tay). Nhóm số dương (thứ T2=2…CN=8, ngày, tháng, năm 26) và âm (ngày, tháng, năm) cho Power/Mega/Loto; khi đưa gợi ý thì nêu số ngày tháng của kỳ tới. Chi tiết từng thành phần + tổng: `python3 build/loto_ngaythang.py loto|power|mega` → `build/<game>_ngaythang.md`. Kết quả lần đầu: Power dương thứ–ngày–tháng nhỉnh nhẹ ổn định (3 đoạn 12,2·12,4·11,6% vs 10,9%), còn lại ≈ chia đều.
 
+- **Bộ cố định mua bền Power/Mega** (anh, 07/10/2026): `build/bo_codinh_so.json` — 6 số ra nhiều nhất 100 kỳ gần, giữ ~100 kỳ rồi chọn lại (`build/bo_codinh.py` kiểm cách chọn). Power 01 05 07 08 13 16 (từ 08/10), Mega 06 16 31 33 36 44 (từ 09/10). Mỗi kỳ có kết quả: chấm bộ này, báo anh.
+
 ## App đã đăng
 - **https://claude.ai/artifact/ULkC95JvE2BsKHfXyypXHF** — link mới (05/10/2026, tài khoản hiện tại; capabilities db + downloads). Đăng lại cùng URL bằng `build/nghien-cuu-loto.html`.
 - Link cũ X8ZmKZJ3RGDKZF7j8wbxFr thuộc tài khoản cũ, không đọc/sửa được; dữ liệu anh nhập tay trong app cũ (draws/preds/mine) không chuyển sang.

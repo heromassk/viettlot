@@ -1,0 +1,3 @@
+{"ghi_chu": "Bộ cố định mua bền (anh, 07/10/2026): 6 số ra nhiều nhất 100 kỳ gần, giữ nguyên ~100 kỳ rồi chọn lại (bi thay 1–2 tháng). Chỉnh chẵn/lẻ 2-4/4-2/3-3. Chấm thử 300 kỳ: Power hơn 86%, Mega hơn 87% bộ chọn bừa.",
+ "power": {"bo": [1, 5, 7, 8, 13, 16], "tu_ky": "08/10/2026", "chon_lai_sau": 100},
+ "mega": {"bo": [6, 16, 31, 33, 36, 44], "tu_ky": "09/10/2026", "chon_lai_sau": 100, "chinh": "bộ gốc 06 16 22 31 36 44 (5 chẵn) → đổi 22 thành 33"}}
