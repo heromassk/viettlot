@@ -66,3 +66,7 @@ for f, out in (('3d.jsonl', 'max3d_data.json'), ('3d_pro.jsonl', 'max3dpro_data.
     print(f'{out}: {len(ids)} kỳ (thêm {len(ids) - len(old["res"])}), kỳ cuối {rows[ids[-1]][0]}')
 subprocess.run([sys.executable, os.path.join(B, 'max3d_app.py')], check=True)
 subprocess.run([sys.executable, os.path.join(B, 'assemble.py')], check=True)
+# Quẻ ngày tháng (anh, 07/10/2026): cập nhật build/ngaythang.md sau mỗi lần lấy kết quả
+if not XEM:
+    subprocess.run([sys.executable, os.path.join(B, 'ngaythang.py')], check=True, stdout=subprocess.DEVNULL)
+    print('Ngày tháng: đã cập nhật build/ngaythang.md')
