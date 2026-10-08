@@ -30,6 +30,8 @@ ap.add_argument('--pm', action='store_true', help='ma trận lấy từ pool ±1
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
 _ct = os.environ.get('GOIY_CT', '1:5' if A.game == 'power' else '')   # Power: ±1 qua 5 kỳ +1 điểm (anh duyệt 08/10/2026; pool 15 ≥3: 23→24%/24→28%, ≥4: 6→7%/4→7% ở 100/200 kỳ)
+_nc = os.environ.get('GOIY_NC', '2:3' if A.game == 'power' else '')
+NC = tuple(int(x) for x in _nc.split(':')) if _nc else None
 CT = (tuple(int(x) for x in _ct.split(':')[0].split(',')), int(_ct.split(':')[1])) if _ct else None
 G = A.G or (15 if A.cu and A.game == 'loto' else 25 if A.game == 'power' and not A.cu else 20)   # Power: anh chốt 08/10/2026 loại số vắng ≥25 kỳ (loại đúng 70–72% ở 100/200/500 kỳ)   # Power: vắng ≥20 đang NGƯỢC (200 kỳ: ra 14.7/11.0%, loại đúng chỉ 51%) → bỏ (05/10)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
@@ -115,6 +117,14 @@ def signals(t):
             sig['nong35'] = {n for n in range(1, NB + 1) if sum(n in R[u] for u in range(t - 5, t)) >= 3}  # ra 3 lần/5 kỳ → loại (92/95/91%)
     sig['_td'] = td_sets(t)
     sig['ct'] = ct
+    nc = set()
+    if NC:   # nhân/chia (anh, 08/10/2026): số kỳ trước ×m hoặc ÷m (chia hết) qua k kỳ, bỏ số kỳ trước
+        for j in range(1, NC[1] + 1):
+            for x in R[t - j]:
+                for y in (x * NC[0], x // NC[0] if x % NC[0] == 0 else 0):
+                    if 1 <= y <= NB: nc.add(y)
+        nc -= last
+    sig['nc'] = nc
     return f, sig
 
 
@@ -166,7 +176,7 @@ def score(f, s, extra=None):
             - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ())) \
             + 1 * (n in s.get('ben', ())) + WSC * (n in s.get('kep', ())) + WSC * (n in s.get('pascal', ()))
         v += sum(WTD * sg for sg, st in s.get('_td', {}).values() if n in st)
-        v += WCT * (n in s.get('ct', ()))
+        v += WCT * (n in s.get('ct', ())) + WNC * (n in s.get('nc', ()))
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
@@ -191,6 +201,7 @@ WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0
 WSC = float(os.environ.get('GOIY_SC', '0'))   # lô kép (Loto), Pascal (Power): thử 05/10 — pool không đổi rõ → tắt, chỉ theo dõi trong sổ
 WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
+WNC = float(os.environ.get('GOIY_NCW', '0'))   # điểm cộng cho số ×÷m qua k kỳ (GOIY_NC='2:3')
 WCT = float(os.environ.get('GOIY_CTW', '1' if A.game == 'power' else '0'))   # điểm cộng cho số trong pool cộng/trừ (GOIY_CT='1,16:5')
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
         {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua', 'chin'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])

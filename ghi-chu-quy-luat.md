@@ -2218,3 +2218,4 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 - Quét ±d × k kỳ (congtru_*.py, power_ct200.py): bền nhất Power ±1 qua 5 kỳ, ±1/±16 qua 5 kỳ; ±16 đang vào nhịp 200 kỳ gần.
 - Gắn vào goiy.py (GOIY_CT/GOIY_CTW): Power mặc định ±1 qua 5 kỳ, +1 điểm. Pool 15: TB 1.80→1.84 (100), 1.75→1.83 (200); ≥3 số 23→24% / 24→28%; ≥4 số 6→7% / 4→7%.
 - Mega: số bị luật loại nhưng ±14 (10 kỳ)/±6 (5 kỳ) trỏ tới vẫn ra 14,4–14,8% → đề xuất luật cứu (chưa làm).
+- 08/10: Nhân/chia Power (nhanchia.py): ×÷2 qua 3 kỳ ra 12,8% ở 100 kỳ (pool ~13 số, 4 đoạn 25 kỳ đều) nhưng 500 kỳ ≈ TB. Gắn vào goiy (GOIY_NC='2:3', GOIY_NCW): pool 15 không lên (w0 1.78/1.80 → w0.5 1.76/1.75, w1 1.78/1.75 ở 100/200) → để trọng số 0, chỉ theo dõi.
