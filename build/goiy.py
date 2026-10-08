@@ -583,12 +583,14 @@ MM = []
 if A.game == 'loto':
     LK = D['lk']
     mg = {k: next((g for g in range(len(LK)) if LK[-1 - g] == k), len(LK)) for k in range(1, 13)}
-    MM = sorted(mg, key=lambda k: (-mg[k], k))[:3]
+    # anh 06/10/2026: loại MM vắng ≥25 kỳ ("ra 1 kỳ xong lại mất hút") và MM vừa ra kỳ trước; còn lại lấy 3 số vắng lâu nhất
+    MMOK = lambda g: [k for k in sorted(g, key=lambda k: (-g[k], k)) if g[k] < 25 and g[k] > 0]
+    MM = MMOK(mg)[:3]
     hm = []
     for t in range(len(LK) - 200, len(LK)):
         g = {k: next((x for x in range(t) if LK[t - 1 - x] == k), t) for k in range(1, 13)}
-        hm.append(LK[t] in sorted(g, key=lambda k: (-g[k], k))[:3])
-    print(f'\n### Số May Mắn (3 số vắng lâu nhất)\n\n**{fm(MM)}** — vắng ' + ', '.join(f'{k:02d}: {mg[k]} kỳ' for k in MM)
+        hm.append(LK[t] in MMOK(g)[:3])
+    print(f'\n### Số May Mắn (3 số vắng lâu nhất, bỏ số vắng ≥25 kỳ và số vừa ra)\n\n**{fm(MM)}** — vắng ' + ', '.join(f'{k:02d}: {mg[k]} kỳ' for k in MM)
           + f'  ·  chính cách này trúng {sum(hm[-50:]) * 2}% ở 50 kỳ, {sum(hm) / 2:.0f}% ở 200 kỳ')
 
 # Dữ liệu cho bảng trực quan
