@@ -31,7 +31,7 @@ A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
 _ct = os.environ.get('GOIY_CT', '1:5' if A.game == 'power' else '')   # Power: ±1 qua 5 kỳ +1 điểm (anh duyệt 08/10/2026; pool 15 ≥3: 23→24%/24→28%, ≥4: 6→7%/4→7% ở 100/200 kỳ)
 CT = (tuple(int(x) for x in _ct.split(':')[0].split(',')), int(_ct.split(':')[1])) if _ct else None
-G = A.G or (15 if A.cu and A.game == 'loto' else 999 if A.game == 'power' and not A.cu else 20)   # Power: vắng ≥20 đang NGƯỢC (200 kỳ: ra 14.7/11.0%, loại đúng chỉ 51%) → bỏ (05/10)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
+G = A.G or (15 if A.cu and A.game == 'loto' else 25 if A.game == 'power' and not A.cu else 20)   # Power: anh chốt 08/10/2026 loại số vắng ≥25 kỳ (loại đúng 70–72% ở 100/200/500 kỳ)   # Power: vắng ≥20 đang NGƯỢC (200 kỳ: ra 14.7/11.0%, loại đúng chỉ 51%) → bỏ (05/10)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
 if os.environ.get('GOIY_CUT'):   # chấm lùi: bỏ n kỳ cuối, gợi ý như đứng ở quá khứ
     D = {k: (v[:-int(os.environ['GOIY_CUT'])] if isinstance(v, list) else v) for k, v in D.items()}

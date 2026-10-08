@@ -22,7 +22,7 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 - Thao tác xoá trong app luôn cần xác nhận.
 
 ## Đặc thù Power
-- Quay **lồng cầu, bi vật lý** → giả thuyết **trọng lượng bi**: số vắng ≥20 kỳ bị loại khỏi pool; bộ bi có thể đổi nên ưu tiên 10/20/50 kỳ gần.
+- Quay **lồng cầu, bi vật lý** → giả thuyết **trọng lượng bi**: số **vắng ≥25 kỳ** bị loại khỏi pool (anh chốt 08/10/2026; loại đúng 70–72% ở 100/200/500 kỳ, dù số bị loại ra 12,6–15% — anh vẫn chọn loại); bộ bi có thể đổi nên ưu tiên 10/20/50 kỳ gần.
 - Lịch quay: Thứ 3, 5, 7 (18h). Anh chơi **mọi kỳ** — cần chỗ dựa lâu dài ("1000 kỳ trúng 1 kỳ là đổi đời").
 - **Đà tổng có dấu vết** (tương quan tổng kỳ liền nhau 50 kỳ ≈ +0.36, đang vùng thấp dưới mốc giữa 168) → vé chọn tổng theo khoảng đà.
 - PP26 Bóng đối xứng và PP16 Gan là tốt nhất 50 kỳ gần (tháng 10/2026); bỏ khó ra và bỏ vắng ≥20 đã đúng hoàn toàn ở kỳ 03/10.
@@ -65,3 +65,4 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 
 Sửa app: nguồn `build/loto_template.html` → `python3 build/assemble.py`. Bố cục app: Gợi ý kỳ tới (bảng gọn, `build/bang.js`) → Dãy của anh → Nhập kết quả → Công cụ nghiên cứu (nâng cao, gom các phần cũ).
 Khi chấm sổ: chấm thêm từng **khẳng định** đã lưu (`claims` trong goiy_log) — đúng hay sai.
+- **Cộng/trừ qua nhiều kỳ (anh duyệt 08/10/2026):** 12 số nhiều phiếu nhất từ ±1 của 5 kỳ gần +1 điểm (`GOIY_CT`/`GOIY_CTW`). Dò quy luật chỉ xét 100/200/500 kỳ.
