@@ -2212,3 +2212,9 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 | Ra ít nhất 100 kỳ gần | 0.86 · 0.76 · 0.75 | 3 | 39% | 01 05 08 18 34 40 |
 | Cặp hay đi cùng nhất (gắn kết) | 0.79 · 0.84 · 0.77 | 7 | 49% | 07 13 20 29 37 44 |
 | Bộ "trung tâm" (hay trùng ≥3 số với kỳ cũ) | 0.76 · 0.76 · 0.87 | 4 | 46% | 04 10 13 20 27 37 |
+
+## 08/10/2026 — Cộng/trừ qua nhiều kỳ (Power) → điểm cộng trong goiy.py
+- Anh: Power/Mega chỉ xét 100/200/500 kỳ (bi thay liên tục).
+- Quét ±d × k kỳ (congtru_*.py, power_ct200.py): bền nhất Power ±1 qua 5 kỳ, ±1/±16 qua 5 kỳ; ±16 đang vào nhịp 200 kỳ gần.
+- Gắn vào goiy.py (GOIY_CT/GOIY_CTW): Power mặc định ±1 qua 5 kỳ, +1 điểm. Pool 15: TB 1.80→1.84 (100), 1.75→1.83 (200); ≥3 số 23→24% / 24→28%; ≥4 số 6→7% / 4→7%.
+- Mega: số bị luật loại nhưng ±14 (10 kỳ)/±6 (5 kỳ) trỏ tới vẫn ra 14,4–14,8% → đề xuất luật cứu (chưa làm).

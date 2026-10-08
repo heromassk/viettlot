@@ -29,7 +29,7 @@ ap.add_argument('--mt', type=int, default=0, choices=(0, 9, 12), help='vé ma tr
 ap.add_argument('--pm', action='store_true', help='ma trận lấy từ pool ±1/±10 số kỳ trước (xếp theo điểm) thay vì pool điểm')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
-_ct = os.environ.get('GOIY_CT', '')
+_ct = os.environ.get('GOIY_CT', '1:5' if A.game == 'power' else '')   # Power: ±1 qua 5 kỳ +1 điểm (anh duyệt 08/10/2026; pool 15 ≥3: 23→24%/24→28%, ≥4: 6→7%/4→7% ở 100/200 kỳ)
 CT = (tuple(int(x) for x in _ct.split(':')[0].split(',')), int(_ct.split(':')[1])) if _ct else None
 G = A.G or (15 if A.cu and A.game == 'loto' else 999 if A.game == 'power' and not A.cu else 20)   # Power: vắng ≥20 đang NGƯỢC (200 kỳ: ra 14.7/11.0%, loại đúng chỉ 51%) → bỏ (05/10)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
@@ -191,7 +191,7 @@ WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0
 WSC = float(os.environ.get('GOIY_SC', '0'))   # lô kép (Loto), Pascal (Power): thử 05/10 — pool không đổi rõ → tắt, chỉ theo dõi trong sổ
 WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
-WCT = float(os.environ.get('GOIY_CTW', '0'))   # điểm cộng cho số trong pool cộng/trừ (GOIY_CT='1,16:5')
+WCT = float(os.environ.get('GOIY_CTW', '1' if A.game == 'power' else '0'))   # điểm cộng cho số trong pool cộng/trừ (GOIY_CT='1,16:5')
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
         {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua', 'chin'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])
 import random
