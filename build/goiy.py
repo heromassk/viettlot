@@ -394,7 +394,7 @@ if A.mt and not os.environ.get('GOIY_CUT'):
     for W in (10, 20, 50, 100, 200):
         x = hh[-W:]; MTB[W] = dict(tb=round(sum(h for h, _ in x) / W, 2), g3=round(sum(h >= 3 for h, _ in x) / W * 100), g4=round(sum(h >= 4 for h, _ in x) / W * 100), pool=round(sum(p for _, p in x) / W, 2))
     MTB['doan'] = [round(sum(h for h, _ in hh[i:i + 100][:100]) / 100, 2) for i in (0, 100)]
-    print(f'Ma trận {A.mt} số → {len(tickets)} vé, chấm lùi (vé tốt nhất mỗi kỳ): ' + ' · '.join(f"{W} kỳ TB {v['tb']} / ≥3: {v['g3']}% / ≥4: {v['g4']}%" for W, v in MTB.items() if W != 'doan') + f"  ·  2 đoạn 100 kỳ TB {MTB['doan']}\n")
+    print(f'Ma trận {A.mt} số → {len(tickets)} vé, chấm lùi (vé tốt nhất mỗi kỳ): ' + ' · '.join(f"{W} kỳ TB {v['tb']} (pool {v['pool']}) / ≥3: {v['g3']}% / ≥4: {v['g4']}%" for W, v in MTB.items() if W != 'doan') + f"  ·  2 đoạn 100 kỳ TB {MTB['doan']}\n")
 pc = lambda v: '—' if v is None else f'{v:.0f}%'
 rows = [('hot', 'Nóng (c10≥3 hoặc c20≥2×kỳ vọng)', 'tỉ lệ ra/số'),
         ('ke', 'Kề ±1 kỳ trước', 'tỉ lệ ra/số'),
