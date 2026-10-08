@@ -100,7 +100,10 @@ def signals(t):
             sig['g610'] = {n for n, x in f.items() if 6 <= x['gap'] <= 10}
             sig['tuan'] = R[t - 3] - R[t - 1]   # số của kỳ cùng thứ tuần trước: ra lại ít hơn 3/3 khúc (thu_them.py)
             c100 = {n: sum(n in R[u] for u in range(t - min(100, WB), t)) for n in range(1, NB + 1)}
-            sig['it100'] = set(sorted(c100, key=lambda n: (c100[n], n))[:1])   # ra ít nhất 100 kỳ → loại (93/93/91%, loai_nho.py)
+            it_c = [n for n in c100 if not (PIT3 and any(n in R[t - j] for j in (1, 2, 3)))]   # luật 3: số ít ra vừa ra lại thì không loại 3 kỳ (anh 08/10/2026)
+            sig['it100'] = set(sorted(it_c, key=lambda n: (c100[n], n))[:1])   # ra ít nhất 100 kỳ → loại (93/93/91%, loai_nho.py)
+            sig['l3'] = (R[t - 1] & R[t - 2] & R[t - 3]) if PL3 else set()   # luật 1: ra 3 kỳ liền → kỳ thứ 4 nghỉ (0/5.3/7.5%)
+            sig['l2p'] = (R[t - 1] & R[t - 2]) - R[t - 3]                     # luật 2: ra đúng 2 kỳ liền → hay ra tiếp (14.8/14.8/12.4%)
         elif A.game == 'mega':
             sig['duoi'] = {n for n in range(1, NB + 1) if n % 10 in {x % 10 for x in last}} - last
             sig['lien2'] = R[t - 1] & R[t - 2]          # ra 2 kỳ liền → loại (đúng 92% kỳ, 100 kỳ gần)
@@ -176,7 +179,7 @@ def score(f, s, extra=None):
             - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ())) \
             + 1 * (n in s.get('ben', ())) + WSC * (n in s.get('kep', ())) + WSC * (n in s.get('pascal', ()))
         v += sum(WTD * sg for sg, st in s.get('_td', {}).values() if n in st)
-        v += WCT * (n in s.get('ct', ())) + WNC * (n in s.get('nc', ()))
+        v += WCT * (n in s.get('ct', ())) + WNC * (n in s.get('nc', ())) + WL2 * (n in s.get('l2p', ()))
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
@@ -184,7 +187,7 @@ def score(f, s, extra=None):
     return sc
 
 
-LOAI = {'power': ('it100',), 'mega': ('lien2', 'lt3', 'zprev', 'thua'), 'loto': ('tx15', 'vang1', 'nong35', 'thua')}
+LOAI = {'power': ('it100', 'l3'), 'mega': ('lien2', 'lt3', 'zprev', 'thua'), 'loto': ('tx15', 'vang1', 'nong35', 'thua')}
 def loai_of(s):
     out = set()
     for k in LOAI[A.game]: out |= s.get(k, set())
@@ -201,6 +204,9 @@ WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0
 WSC = float(os.environ.get('GOIY_SC', '0'))   # lô kép (Loto), Pascal (Power): thử 05/10 — pool không đổi rõ → tắt, chỉ theo dõi trong sổ
 WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
+_pw = A.game == 'power'   # 3 luật số lặp (anh duyệt 08/10/2026; chấm lùi: không tụt, vé ma trận 50/100 kỳ nhích 1.38→1.40/1.39)
+PL3 = os.environ.get('GOIY_L3', '1' if _pw else '0') == '1'; PIT3 = os.environ.get('GOIY_IT3', '1' if _pw else '0') == '1'
+WL2 = float(os.environ.get('GOIY_L2W', '1' if _pw else '0'))   # điểm cộng số ra 2 kỳ liền (Power)
 WNC = float(os.environ.get('GOIY_NCW', '0'))   # điểm cộng cho số ×÷m qua k kỳ (GOIY_NC='2:3')
 WCT = float(os.environ.get('GOIY_CTW', '1' if A.game == 'power' else '0'))   # điểm cộng cho số trong pool cộng/trừ (GOIY_CT='1,16:5')
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
