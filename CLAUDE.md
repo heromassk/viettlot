@@ -10,6 +10,7 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - Luật loại chấm trên chuỗi kỳ dài: số "lâu lâu mới ra" có ra 1 kỳ thì chỉ thua kỳ đó. **Số/bộ đang trong thời gian nghỉ thì loại.**
 - Luật về bi (Power, Mega, Max 3D): họ thay bi 1–2 tháng/lần → **tối đa 100 kỳ**, so 4 khung 10/20/50/100. Khi dò quy luật (vd cộng/trừ) chỉ xét **100, 200, 500 kỳ đổ lại**, không xét sâu hơn (anh, 08/10/2026).
 - **Vé Power/Mega: chẵn/lẻ chỉ 2-4, 4-2, 3-3** — không gợi ý vé 1:5, 5:1 (anh, 06/10/2026).
+- **Power: mua ma trận pool 12 → 6 vé** (anh 08/10/2026: "5 vé cũng phải dùng ma trận để bao số"; `goiy.py power --mt 12`). 
 - **Số vé mỗi kỳ cố định (~5 vé)** (anh, 06/10/2026: "chơi bền thì không thể mua nhiều"; hôm đó lỡ mua 10 vé Power vì nôn nóng). Khi anh muốn mua nhiều hơn, nhắc nhẹ; chỉ gợi ý tăng khi bảng báo nhịp pool tốt.
 - Tôn trọng tâm linh, linh cảm. Thao tác xoá trong app luôn cần xác nhận.
 

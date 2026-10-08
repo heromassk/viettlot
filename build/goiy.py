@@ -25,7 +25,7 @@ ap.add_argument('--bo', default='', help='số anh muốn loại tay kỳ này, 
 ap.add_argument('--cu', action='store_true', help='cách cũ: tắt các luật loại trừ bổ sung (để so)')
 ap.add_argument('--json', help='ghi dữ liệu gợi ý dạng JSON (cho bảng trực quan)')
 ap.add_argument('--save', action='store_true', help='ghi gợi ý vào build/goiy_log.jsonl')
-ap.add_argument('--mt', type=int, default=0, choices=(0, 9, 12), help='vé ma trận: 12 số → 6 vé (4 nhóm×3, mỗi vé 2 nhóm) hoặc 9 số → 3 vé')
+ap.add_argument('--mt', type=int, default=0, choices=(0, 9, 10, 12), help='vé ma trận: 12 số → 6 vé (4 nhóm×3, mỗi vé 2 nhóm) hoặc 9 số → 3 vé')
 ap.add_argument('--pm', action='store_true', help='ma trận lấy từ pool ±1/±10 số kỳ trước (xếp theo điểm) thay vì pool điểm')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
@@ -280,10 +280,29 @@ def _parts(m):
             for tail in rec([x for x in rest[1:] if x not in (b, c)]): yield [(a, b, c)] + tail
     return list(rec(list(range(m))))
 PARTS = {9: _parts(9), 12: _parts(12)}
+from itertools import permutations
+def _pairs(r):
+    if not r: yield []; return
+    for b in r[1:]:
+        for tail in _pairs([x for x in r[1:] if x not in (r[0], b)]): yield [(r[0], b)] + tail
+# 10 số → 5 cặp xếp vòng tròn, vé i = cặp i, i+1, i+2 → 5 vé; mọi 2 cặp đều chung ít nhất 1 vé (anh 08/10/2026: 5 vé cũng phải bao số)
+CYC10 = []
+for pr in _pairs(list(range(10))):
+    for perm in permutations(range(1, 5)):
+        if perm[0] < perm[-1]: CYC10.append([pr[0]] + [pr[i] for i in perm])
 
 def mt_tickets(nums, chk=None, w=None):
     """Chọn cách chia nhóm: mọi vé chẵn/lẻ 2-4/4-2/3-3 (+ chk nếu có), điểm các vé đều nhau nhất."""
     m = len(nums); w = w or {n: m - i for i, n in enumerate(nums)}; best = None
+    if m == 10:
+        for cy in CYC10:
+            gs = [[nums[i] for i in g] for g in cy]
+            tks = [sorted(gs[i] + gs[(i + 1) % 5] + gs[(i + 2) % 5]) for i in range(5)]
+            bad = sum(abs(sum(x % 2 for x in tk) - 3) > 1 for tk in tks) * 100 + (sum(not chk(tk) for tk in tks) if chk else 0)
+            sw = [sum(w[x] for x in tk) for tk in tks]
+            v = (bad, max(sw) - min(sw))
+            if best is None or v < best[0]: best = (v, tks)
+        return best[1]
     for pt in PARTS[m]:
         gs = [[nums[i] for i in g] for g in pt]
         tks = [sorted(a + b) for a, b in combinations(gs, 2)]
