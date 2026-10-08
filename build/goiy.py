@@ -29,6 +29,8 @@ ap.add_argument('--mt', type=int, default=0, choices=(0, 9, 12), help='vé ma tr
 ap.add_argument('--pm', action='store_true', help='ma trận lấy từ pool ±1/±10 số kỳ trước (xếp theo điểm) thay vì pool điểm')
 A = ap.parse_args()
 key, NB, KB, NAME = GAMES[A.game]
+_ct = os.environ.get('GOIY_CT', '')
+CT = (tuple(int(x) for x in _ct.split(':')[0].split(',')), int(_ct.split(':')[1])) if _ct else None
 G = A.G or (15 if A.cu and A.game == 'loto' else 999 if A.game == 'power' and not A.cu else 20)   # Power: vắng ≥20 đang NGƯỢC (200 kỳ: ra 14.7/11.0%, loại đúng chỉ 51%) → bỏ (05/10)   # ý anh 04/10: loại số vắng ≥20 (cả 3 trò)   # Mega: vắng ≥30 đúng 94% kỳ (suyluan 04/10)   # Loto: số vắng lâu không nên loại (04/10)
 D = json.load(open(os.path.join(HERE, 'all_data.json')))[key]
 if os.environ.get('GOIY_CUT'):   # chấm lùi: bỏ n kỳ cuối, gợi ý như đứng ở quá khứ
@@ -63,6 +65,15 @@ def signals(t):
     e20 = 20 * P
     hot = {n for n, x in f.items() if x['c10'] >= 3 or x['c20'] >= math.ceil(2 * e20)}
     ke = {m for n in last for m in (n - 1, n + 1) if 1 <= m <= NB} - last
+    ct = set()
+    if CT:   # cộng/trừ qua nhiều kỳ (anh, 08/10/2026): 12 số nhiều phiếu nhất từ ±d qua k kỳ
+        v = {}
+        for j in range(1, CT[1] + 1):
+            for x in R[t - j]:
+                for d in CT[0]:
+                    for m in (x - d, x + d):
+                        if 1 <= m <= NB: v[m] = v.get(m, 0) + 1
+        ct = set(sorted((m for m in v if m not in last), key=lambda m: (-v[m], m))[:12])
     de = {n for n, x in f.items() if x['z'] > 1}
     kho = {n for n, x in f.items() if x['z'] < -1.5}
     vang = {n for n, x in f.items() if x['gap'] >= G}
@@ -103,6 +114,7 @@ def signals(t):
             sig['vang1'] = {max(f, key=lambda n: (f[n]['gap'], -n))}                                   # vắng lâu nhất → loại (89/90/89%)
             sig['nong35'] = {n for n in range(1, NB + 1) if sum(n in R[u] for u in range(t - 5, t)) >= 3}  # ra 3 lần/5 kỳ → loại (92/95/91%)
     sig['_td'] = td_sets(t)
+    sig['ct'] = ct
     return f, sig
 
 
@@ -154,6 +166,7 @@ def score(f, s, extra=None):
             - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ())) \
             + 1 * (n in s.get('ben', ())) + WSC * (n in s.get('kep', ())) + WSC * (n in s.get('pascal', ()))
         v += sum(WTD * sg for sg, st in s.get('_td', {}).values() if n in st)
+        v += WCT * (n in s.get('ct', ()))
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
@@ -178,6 +191,7 @@ WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0
 WSC = float(os.environ.get('GOIY_SC', '0'))   # lô kép (Loto), Pascal (Power): thử 05/10 — pool không đổi rõ → tắt, chỉ theo dõi trong sổ
 WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
+WCT = float(os.environ.get('GOIY_CTW', '0'))   # điểm cộng cho số trong pool cộng/trừ (GOIY_CT='1,16:5')
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
         {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua', 'chin'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])
 import random
@@ -575,7 +589,7 @@ if A.json:
              sc={n: round(sc[n], 2) for n in range(1, NB + 1)}, rank=rank, pool=pool, k=A.k,
              why=WHY, gap={n: f[n]['gap'] for n in range(1, NB + 1)}, c10={n: f[n]['c10'] for n in range(1, NB + 1)},
              vang=sorted(s['vang'] | loai_of(s) | BO), hot=sorted(s['hot']), kho=sorted(s['kho']), hotOut=hot_out,
-             tiers={k: v for k, v in B[200]['tiers'].items()}, tiers50={k: v for k, v in B[50]['tiers'].items()},
+             tiers={k: v for k, v in B[200]['tiers'].items()}, tiers50={k: v for k, v in B[50]['tiers'].items()}, tiers100=summ(RECS[-100:])['tiers'],
              last10=B[10]['pool'][2], hist10=[dict(d=D['dates'][i], r=sorted(R[i]), x=(D['lk'][i] if 'lk' in D else None)) for i in range(T - 10, T)],
              claims=CLR, sumRange=[SLO, SHI], da=DA, c50=round(c50, 2),
              tickets=[dict(kind=k, x=tk, lv=lv, sum=sum(tk)) for k, tk, lv in tickets], core=core, mm=MM,
