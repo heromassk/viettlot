@@ -8,7 +8,7 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - **Dấu vết = xác suất nghiêng**, không phải đúng 100%. Lệch nhỏ mà ổn định vẫn dùng (trọng số nhỏ).
 - **Luật đúng ≥70%** (khung 50 & 100 kỳ) là dùng tốt, miễn số bị loại không ra nhiều hơn trung bình.
 - Luật loại chấm trên chuỗi kỳ dài: số "lâu lâu mới ra" có ra 1 kỳ thì chỉ thua kỳ đó. **Số/bộ đang trong thời gian nghỉ thì loại.**
-- Luật về bi (Power, Mega, Max 3D): họ thay bi 1–2 tháng/lần → **tối đa 100 kỳ**, so 4 khung 10/20/50/100. Khi dò quy luật (vd cộng/trừ) chỉ xét **100, 200, 500 kỳ đổ lại**, không xét sâu hơn (anh, 08/10/2026).
+- Luật về bi (Power, Mega, Max 3D): họ thay bi 1–2 tháng/lần → **tối đa 100 kỳ**, so 4 khung 10/20/50/100. **Power/Mega: mọi phép xét/dò quy luật/backtest chỉ dùng tối đa 200 kỳ gần nhất** (khung 10/20/50/100/200; anh, 09/10/2026 — thay cho 100/200/500 trước đó).
 - **Vé Power/Mega: chẵn/lẻ chỉ 2-4, 4-2, 3-3** — không gợi ý vé 1:5, 5:1 (anh, 06/10/2026).
 - **Power: mua ma trận pool 12 → 6 vé** (anh 08/10/2026: "5 vé cũng phải dùng ma trận để bao số"; `goiy.py power --mt 12`). 
 - **Số vé mỗi kỳ cố định (~5 vé)** (anh, 06/10/2026: "chơi bền thì không thể mua nhiều"; hôm đó lỡ mua 10 vé Power vì nôn nóng). Khi anh muốn mua nhiều hơn, nhắc nhẹ; chỉ gợi ý tăng khi bảng báo nhịp pool tốt.

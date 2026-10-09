@@ -2223,3 +2223,9 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 - 08/10: Power thêm 3 luật số lặp (anh duyệt): loại số ra 3 kỳ liền (l3), +1 điểm số ra đúng 2 kỳ liền (l2p), số "ra ít nhất 100 kỳ" vừa ra lại thì không loại 3 kỳ (PIT3). Chấm lùi: pool không tụt, vé ma trận 50/100 kỳ 1.38→1.40/1.39, ≥3 8→10% / 7→8%.
 - 08/10 tối: Loto kiểm dấu vết trùng (MM lặp kỳ trước 10–11% > TB 8,3%, 13h/21h như nhau; số chính ra 2 kỳ liền → ra tiếp 15,7–18,8%). Anh: "Bỏ đi. Nó ra vậy đỡ sao được" → không sửa luật Loto, giữ nguyên trạng thái đã bỏ Loto.
 - 09/10: Số kép (11 22 33 44 [55]): ~1/2 số kỳ có kép, đa số đi 1 mình (Mega 500 kỳ: 188 kỳ 1 kép, 34 kỳ 2 kép, 4 kỳ 3 kép; Power 170/52/4). Anh: vé tối đa 1 kép. Mega: pool ma trận chỉ giữ 1 kép → vé tốt nhất 100 kỳ 1.63→1.67, ≥3 13→17%. Power: giữ pool cũ (bỏ kép làm tụt 1.39→1.33), luật kép chỉ ưu tiên khi chia nhóm.
+
+## 09/10/2026 — Pipeline Mega học trọng số (build/mega_pipeline.py), ≤200 kỳ
+- Tầng cộng/trừ (±0..±5, ±1 qua 5 kỳ, ±13/14) + luật (vắng, nóng, lien2, lt3, zprev, kép, lộn, đuôi), hồi quy logistic học 100 kỳ trước, cập nhật dần.
+- Chấm lùi 100 kỳ, pool 12: học trọng số TB 1,50 (≥3: 13%) — cách hiện tại (goiy.py) TB 1,76 (≥3: 25%). Ma trận 6 vé: 1,43 vs 1,67.
+- Trộn điểm học vào thứ hạng hiện tại (λ 0,5/1/2): 100 kỳ 1,70/1,66/1,69 vs 1,76 → không thêm gì. Giữ cách hiện tại.
+- Trọng số học được nghiêng: vắng 11–15 +, ±13/14 qua 5 kỳ +, kề ±1 kỳ trước +, kép −, số lớn nhất kỳ trước −.

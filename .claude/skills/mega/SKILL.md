@@ -65,3 +65,5 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 
 Sửa app: nguồn `build/loto_template.html` → `python3 build/assemble.py`. Bố cục app: Gợi ý kỳ tới (bảng gọn, `build/bang.js`) → Dãy của anh → Nhập kết quả → Công cụ nghiên cứu (nâng cao, gom các phần cũ).
 Khi chấm sổ: chấm thêm từng **khẳng định** đã lưu (`claims` trong goiy_log) — đúng hay sai.
+
+- **Tối đa 200 kỳ** (anh, 09/10/2026): mọi phép xét/backtest Power/Mega chỉ dùng ≤200 kỳ gần nhất.
