@@ -2232,3 +2232,10 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 - 09/10 học tiếp: học chậm (lr 0,005, cập nhật 1 lượt/kỳ) và chỉ xếp lại trong top 20 của goiy.py → pool12 100 kỳ 1,77 (≥3: 26%, ≥4: 4%) vs hiện tại 1,76 (25%, ≥4 —). Hai nửa 1,64 · 1,90. Ma trận 6 vé 1,60 vs 1,67. Học nhanh/học trên cả 45 số đều kém (1,46–1,66). Dùng bản này cho ô Máy học Mega, sổ tiến làm lại từ 09/10.
 - 09/10 học nhiều vòng (1→300 vòng trên 100 kỳ cũ, thêm cờ từng số): tự do 45 số → kỳ đã học 1,80→2,01 (≥3: 21→33%) nhưng 100 kỳ chưa học 1,52→1,61 (≥3 ~16%). Trong top 20: đã học 1,80→1,82, chưa học 1,75→1,74. Học nhiều vòng chỉ thuộc bài cũ, không đoán kỳ mới tốt hơn → giữ học chậm từng kỳ.
 - 09/10 số chung app gợi ý ∩ máy học (pool 12, 100 kỳ): ra 15,3%/số (2 nửa 14,6·16,0) vs chỉ một bên 13,7–13,9%. Gắn điểm cộng vào goiy.py (GOIY_ML): ma trận 6 vé 100 kỳ 0 → 1,67 (≥3 17%), 0,2 → 1,59, 0,5 → 1,64, 1 → 1,58 → để 0, chỉ đánh dấu số chung khi báo anh.
+
+## 09/10/2026 — Cặp số liên tiếp trong 1 kỳ (anh hỏi), ≤200 kỳ
+- Kỳ có ≥1 cặp liền (vd 35-36): Mega 50/100/200 kỳ 38/49/50%, ≥2 cặp 4/8/10%; Power 40/35/42%, ≥2 cặp 2/3/6%. 3 số liền: Mega 9, Power 6 kỳ/200 (vé đã chặn ≥3 số liên tiếp).
+- Kỳ trước có cặp → kỳ sau có: Mega 49% (không có → 50%), Power 40% (43%). Không báo trước.
+- Nhịp: Mega 100 kỳ có cặp / 200; khoảng cách tới kỳ có cặp kế 1:49, 2:24, 3:13, 4:6, 5:4, ≥6:3; chuỗi liền nhau dài nhất 6. Power 84/200; khoảng cách 1:34, 2:26, 3:10, 4:5, 5:3, ≥6:5; chuỗi vắng dài nhất 13.
+- Vắng cặp đúng k kỳ → kỳ sau có: Mega 24/50 · 13/26 · 6/13 · 4/7 · 2/3; Power 27/50 · 10/23 · 5/13 · 3/8 · 0/5. ≈ một nửa, không thấy nhịp ra liên tiếp hay cách kỳ đều đặn.
+- Dùng: vé tối đa 1 cặp liên tiếp (2 cặp chỉ 2–10% kỳ). Chưa cộng/trừ điểm cho số liền kề trong cùng kỳ.
