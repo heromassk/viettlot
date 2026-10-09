@@ -2245,3 +2245,13 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 - Luật bị trật: lt3 loại 41 (luật vẫn đúng 51/62 kỳ ở 100 kỳ, 104/124 ở 200); "cùng đuôi −" trừ 07, 23 (đuôi 7, 3 của 37, 43) — số cùng đuôi ra 13,6/12,5/12,1/12,5%/số ở 20/50/100/200 kỳ, luật yếu, 20 kỳ gần ra nhiều hơn mức chia đều.
 - Tâm linh có 05, 23, 32 (6–7 phiếu) nhưng không đủ điểm vào pool.
 - Pool 12 trúng 0: 11/100 kỳ trong chấm lùi → kỳ trật thường gặp, không đổi luật vì 1 kỳ.
+
+## 10/10/2026 — Mega cộng/trừ & lộn xét ngắn 1/3/5 kỳ (anh: "3 kì thôi")
+| Luật (bỏ số kỳ trước) | Số ứng viên/kỳ | Ra %/số 20·50·100·200 kỳ |
+|---|---|---|
+| ±1, 3 kỳ | 22,5 | 13,5 · 13,2 · 13,1 · 13,5 |
+| ±13/14, 3 kỳ | 26 | 13,9 · 14,0 · 13,7 · 13,8 |
+| Lộn, 1 kỳ | 2,2 | 8,5 · 11,8 · 13,6 · 14,0 |
+| **Lộn, 3 kỳ** | **5,5** | **17,5 · 15,2 · 15,1 · 14,7** (≥2 số ra: 25·20·21·20% kỳ) |
+| Lộn, 5 kỳ | 8,3 | 14,6 · 13,5 · 13,9 · 13,6 |
+- Lộn trong 3 kỳ: nhóm nhỏ, tỉ lệ ra nhỉnh và đều 4 khung → ứng viên cộng điểm nhỏ (chưa gắn, chờ chấm vé). ±1/±13/14 phủ quá rộng, không lọc được.
