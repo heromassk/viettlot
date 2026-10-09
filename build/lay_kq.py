@@ -71,3 +71,5 @@ if not XEM:
     subprocess.run([sys.executable, os.path.join(B, 'ngaythang.py')], check=True, stdout=subprocess.DEVNULL)
     for g in ('loto', 'power', 'mega'): subprocess.run([sys.executable, os.path.join(B, 'loto_ngaythang.py'), g], check=True, stdout=subprocess.DEVNULL)
     print('Ngày tháng: đã cập nhật build/ngaythang.md')
+if not XEM:
+    for g in ('mega', 'power'): subprocess.run([sys.executable, os.path.join(B, 'hoso.py'), g], check=True, stdout=subprocess.DEVNULL)   # hồ sơ số + sổ khoảng cách (anh 09/10)
