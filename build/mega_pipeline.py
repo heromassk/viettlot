@@ -83,9 +83,9 @@ def pool12(w, t, extra=None):
 
 # Walk-forward 100 kỳ cuối: học trên 100 kỳ trước mỗi kỳ, trọng số chuyển tiếp
 w = fit([0.0] * (K + 1), range(START, START + 100), ep=15)
-res = []
+res = []; MLP = {}
 for t in range(START + 100, T):
-    pl, _ = pool12(w, t)
+    pl, _ = pool12(w, t); MLP[t] = pl
     tks = mt(pl)
     res.append((t, len(set(pl) & R[t]), max(len(set(tk) & R[t]) for tk in tks)))
     w = fit(w, [t], ep=1)          # học thêm kỳ vừa ra, đổi từ từ
@@ -127,7 +127,8 @@ for e in log:
         r = R[e['t']]; e['kq'] = sorted(r); e['trung'] = len(set(e['pool']) & r); e['ve'] = max(len(set(tk) & r) for tk in e['tickets'])
 if not log or log[-1]['t'] != T: log.append(dict(t=T, sau=D['dates'][-1], pool=sorted(pl), tickets=tks))
 open(LOG, 'w').write(''.join(json.dumps(e, ensure_ascii=False) + '\n' for e in log))
-APP = dict(sau=D['dates'][-1], pool=sorted(pl), tickets=tks, w=sorted(([nm, round(v, 2)] for nm, v in zip(NAMES, w)), key=lambda x: -abs(x[1])),
+MLP[T] = pl
+APP = dict(ml={str(k): v for k, v in MLP.items()}, sau=D['dates'][-1], pool=sorted(pl), tickets=tks, w=sorted(([nm, round(v, 2)] for nm, v in zip(NAMES, w)), key=lambda x: -abs(x[1])),
            bt={W: frame(res, W) for W in (10, 20, 50, 100)}, cur={W: frame(G, W) for W in (10, 20, 50, 100)} if G else {},
            last=[[D['dates'][t], sorted(R[t]), h, v] for t, h, v in res[-10:]], tien=[e for e in log if 'trung' in e][-20:])
 json.dump(APP, open(os.path.join(HERE, 'mega_pipeline.json'), 'w'), ensure_ascii=False)
