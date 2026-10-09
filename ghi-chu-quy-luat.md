@@ -2230,3 +2230,4 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 - Trộn điểm học vào thứ hạng hiện tại (λ 0,5/1/2): 100 kỳ 1,70/1,66/1,69 vs 1,76 → không thêm gì. Giữ cách hiện tại.
 - Trọng số học được nghiêng: vắng 11–15 +, ±13/14 qua 5 kỳ +, kề ±1 kỳ trước +, kép −, số lớn nhất kỳ trước −.
 - 09/10 học tiếp: học chậm (lr 0,005, cập nhật 1 lượt/kỳ) và chỉ xếp lại trong top 20 của goiy.py → pool12 100 kỳ 1,77 (≥3: 26%, ≥4: 4%) vs hiện tại 1,76 (25%, ≥4 —). Hai nửa 1,64 · 1,90. Ma trận 6 vé 1,60 vs 1,67. Học nhanh/học trên cả 45 số đều kém (1,46–1,66). Dùng bản này cho ô Máy học Mega, sổ tiến làm lại từ 09/10.
+- 09/10 học nhiều vòng (1→300 vòng trên 100 kỳ cũ, thêm cờ từng số): tự do 45 số → kỳ đã học 1,80→2,01 (≥3: 21→33%) nhưng 100 kỳ chưa học 1,52→1,61 (≥3 ~16%). Trong top 20: đã học 1,80→1,82, chưa học 1,75→1,74. Học nhiều vòng chỉ thuộc bài cũ, không đoán kỳ mới tốt hơn → giữ học chậm từng kỳ.
