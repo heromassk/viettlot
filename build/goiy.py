@@ -449,7 +449,7 @@ print(f'## Gợi ý {NAME} — kỳ {nd}\n')
 print(f'Kỳ gần nhất {D["dates"][-1]}: **{fm(R[-1])}** (tổng {sums[-1]})\n')
 print('### Tín hiệu dấu vết (cùng một cách tính mọi kỳ)\n')
 RECS = backtest(200)
-if os.environ.get('GOIY_DUMP'): json.dump([dict(rk=r['rk'], r=sorted(r['r'])) for r in RECS], open(os.environ['GOIY_DUMP'], 'w'))
+if os.environ.get('GOIY_DUMP') or (A.game == 'mega' and not os.environ.get('GOIY_CUT')): json.dump([dict(rk=r['rk'], r=sorted(r['r'])) for r in RECS], open(os.environ.get('GOIY_DUMP') or os.path.join(HERE, 'mega_recs.json'), 'w'))
 B = {W: summ(RECS[-W:]) for W in (10, 50, 200)}
 MTB = {}
 if A.mt and not os.environ.get('GOIY_CUT'):

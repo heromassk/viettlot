@@ -10,7 +10,8 @@ bj=open(os.path.join(B,'bang.js'),encoding='utf-8').read()
 css=bj[bj.index('const BANG_CSS=`')+16:bj.index('`;',bj.index('const BANG_CSS=`'))]
 TD=json.load(open(os.path.join(B,'theodoi.json'),encoding='utf-8')) if os.path.exists(os.path.join(B,'theodoi.json')) else {}
 M3=open(os.path.join(B,'max3d_app.json'),encoding='utf-8').read() if os.path.exists(os.path.join(B,'max3d_app.json')) else '{}'
-t=t.replace('/*MAX3D*/',M3).replace('/*THEODOI*/',json.dumps(TD,ensure_ascii=False)).replace('/*GOIY*/',json.dumps(GO,ensure_ascii=False)).replace('/*BANGJS*/',bj).replace('/*BANGCSS*/',css)
+HM=open(os.path.join(B,'mega_pipeline.json'),encoding='utf-8').read() if os.path.exists(os.path.join(B,'mega_pipeline.json')) else '{}'
+t=t.replace('/*HOC*/',HM).replace('/*MAX3D*/',M3).replace('/*THEODOI*/',json.dumps(TD,ensure_ascii=False)).replace('/*GOIY*/',json.dumps(GO,ensure_ascii=False)).replace('/*BANGJS*/',bj).replace('/*BANGCSS*/',css)
 full=t.replace('/*DATA*/',open(os.path.join(B,'all_data.json')).read()).replace('/*LUNAR*/',open(os.path.join(B,'lunar.js'),encoding='utf-8').read())
 open(os.path.join(ROOT,'index_loto.html'),'w',encoding='utf-8').write(full)
 a=full.replace('<!DOCTYPE html>\n<html lang="vi">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n','').replace('</head>\n<body>\n','').replace('</body>\n</html>\n','')

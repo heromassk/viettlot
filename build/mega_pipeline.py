@@ -114,4 +114,16 @@ extra = {n: 0.03 for n in LINH}
 pl, sc = pool12(w, T, extra)
 print(f'\n### Pool 12 kỳ tới: **{" ".join(f"{n:02d}" for n in sorted(pl))}**\n')
 for tk in mt(pl): print(' '.join(f'{n:02d}' for n in tk))
-json.dump(dict(w=dict(zip(NAMES + ['b'], w)), pool=pl, res=res), open(os.path.join(HERE, 'mega_pipeline.json'), 'w'))
+tks = mt(pl)
+def frame(xs, W): x = xs[-W:]; return [round(sum(r[1] for r in x) / W, 2), round(sum(r[1] >= 3 for r in x) / W * 100), round(sum(r[2] for r in x) / W, 2), round(sum(r[2] >= 3 for r in x) / W * 100)]
+# Sổ tiến: chấm pool học đã lưu khi có kết quả mới, rồi lưu pool kỳ tới (cố định cách tính, không sửa lùi)
+LOG = os.path.join(HERE, 'hoc_log.jsonl'); log = [json.loads(l) for l in open(LOG)] if os.path.exists(LOG) else []
+for e in log:
+    if 'trung' not in e and e['t'] < T:
+        r = R[e['t']]; e['kq'] = sorted(r); e['trung'] = len(set(e['pool']) & r); e['ve'] = max(len(set(tk) & r) for tk in e['tickets'])
+if not log or log[-1]['t'] != T: log.append(dict(t=T, sau=D['dates'][-1], pool=sorted(pl), tickets=tks))
+open(LOG, 'w').write(''.join(json.dumps(e, ensure_ascii=False) + '\n' for e in log))
+APP = dict(sau=D['dates'][-1], pool=sorted(pl), tickets=tks, w=sorted(([nm, round(v, 2)] for nm, v in zip(NAMES, w)), key=lambda x: -abs(x[1])),
+           bt={W: frame(res, W) for W in (10, 20, 50, 100)}, cur={W: frame(G, W) for W in (10, 20, 50, 100)} if G else {},
+           last=[[D['dates'][t], sorted(R[t]), h, v] for t, h, v in res[-10:]], tien=[e for e in log if 'trung' in e][-20:])
+json.dump(APP, open(os.path.join(HERE, 'mega_pipeline.json'), 'w'), ensure_ascii=False)

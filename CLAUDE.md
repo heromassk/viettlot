@@ -38,3 +38,5 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - Kỳ chờ kết quả, gợi ý đã lưu trong `goiy_log.jsonl`: Power 06/10, Mega 07/10, Max 3D Pro 06/10 (đoán thử, không mua). Có kết quả → chạy `lay_kq.py` (hoặc add_result) để chấm.
 - Max 3D: đã hiện pool + 3 cặp gợi ý kèm lý do trong 2 ô app (Max 3D+: loại bộ ra 5 kỳ, tiến liên tiếp, tam hoa, giữ 340 bộ nặng 50 kỳ; Pro: loại bộ ra 30 kỳ, tiến, tam hoa, 00x, giữ 400 bộ nặng 100 kỳ + quẻ lộn ĐB kỳ trước). Khi anh báo kết quả Max 3D+/Pro: `python3 build/max3d_cham.py plus|pro "dd/mm/yyyy" <20 bộ theo thứ tự ĐB 2, Nhất 4, Nhì 6, Ba 8>` (chấm cặp gợi ý + pool, ghi `build/max3d_cham.jsonl`, thêm kỳ vào dữ liệu) rồi chạy lại chuỗi max3d_app → max3d_tl → max3d_app → assemble. Ảnh kết quả từ app Vietlott SMS: tab Max 3D+ hiện ĐB 2 bộ, Nhất 4, Nhì 6, Ba 8.
 - Đề xuất chưa được duyệt: số May Mắn Loto "MM kỳ trước + 2 vắng lâu" (hiện giữ "3 vắng lâu nhất").
+
+- **Máy học Mega** (anh, 09/10/2026): `build/mega_pipeline.py` học trọng số ≤200 kỳ, ô "Máy học Mega" trong app, sổ tiến `build/hoc_log.jsonl`. lay_kq.py tự chạy. Chạy song song để chấm tiến, chưa thay pool chính (chấm lùi kém hơn cách hiện tại).
