@@ -259,7 +259,7 @@ def backtest(W=200):
         sct = score(f, s); rk = pool_of(sct, s, 20)
         sig = {k: (len(s[k] & R[t]), len(s[k])) for k in SIGS}
         cl = [(lab, fn(R[t]), sum(fn(m) for m in MC) / len(MC)) for lab, _, fn in claims(t, rk)]
-        recs.append(dict(rk=(pm_pool(t, sct) if A.pm else rk)[:12], r=R[t], sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 20)}, cl=cl))
+        recs.append(dict(rk=(pm_pool(t, sct) if A.pm else rk)[:20], r=R[t], sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 20)}, cl=cl))
     return recs
 
 def summ(recs):
@@ -318,10 +318,21 @@ def mt_tickets(nums, chk=None, w=None):
         if best is None or v < best[0]: best = (v, tks)
     return best[1]
 
+def mt_pool(rk, m):
+    """Pool ma trận: theo thứ hạng, chỉ giữ 1 số kép (anh 09/10: vé tối đa 1 kép → 2 kép ở 2 nhóm khác nhau sẽ chung 1 vé)."""
+    out, kep = [], 0
+    for n in rk:
+        if A.game == 'mega' and n % 11 == 0:   # Power: chấm lùi tụt (1.39→1.33) nên không áp
+            if kep >= 1: continue
+            kep += 1
+        out.append(n)
+        if len(out) == m: break
+    return out
+
 def mt_bt(recs, m):
     out = []
     for r in recs:
-        tks = mt_tickets(r['rk'][:m])
+        tks = mt_tickets(mt_pool(r['rk'], m))
         out.append((max(len(set(tk) & r['r']) for tk in tks), len(set(r['rk'][:m]) & r['r'])))
     return out
 
@@ -401,6 +412,7 @@ def bad_ticket(tk):
             or (KB == 6 and max(dec.values()) >= 4) or max(tk) < NB * 2 // 3):
         return True
     if KB == 6 and abs(odd - 3) > 1: return True                  # anh (06/10/2026): chẵn/lẻ chỉ 2-4, 4-2, 3-3 — không 1:5, 5:1
+    if KB == 6 and sum(x % 11 == 0 for x in tk) >= 2: return True   # anh (09/10/2026): vé tối đa 1 số kép (≥2 kép chỉ 8–15% kỳ, 100/200/500 kỳ)
     if A.game == 'power' and len(dec) < 4: return True          # rải ≥4 hàng chục: 78–80% kỳ thật, giữ 75% vé
     if A.game == 'mega':                                          # khẳng định Mega có dấu vết (khang_dinh.py)
         if not x & (R[-1] | R[-2]) or not x & HOT10: return True
@@ -428,7 +440,7 @@ for i in range(2):   # 2 vé trải: 1 số lõi + phần pool ít dùng
     tk, lv = pick([core[i]], [n for n in pool if n not in core], KB - 1, used); tickets.append(('trải', tk, lv)); DONE.append(tk)
     for n in tk: used[n] = used.get(n, 0) + 1
 if A.mt:   # vé ma trận thay cho 5 vé lõi+vệ tinh
-    tickets = [(f'ma trận {A.mt} số', tk, 0) for tk in mt_tickets((pm_pool(T, sc) if A.pm else rank)[:A.mt], lambda tk: not bad_ticket(tk), sc)]
+    tickets = [(f'ma trận {A.mt} số', tk, 0) for tk in mt_tickets(mt_pool(pm_pool(T, sc) if A.pm else rank, A.mt), lambda tk: not bad_ticket(tk), sc)]
 
 # ---------- In ----------
 fm = lambda xs: ' '.join(f'{n:02d}' for n in sorted(xs)) or '—'
