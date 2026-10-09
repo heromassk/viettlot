@@ -39,7 +39,7 @@ START = T - 200
 F = {t: feats(t) for t in range(START, T + 1)}
 K = len(NAMES)
 def p_of(w, x): z = w[-1] + sum(a * b for a, b in zip(w, x)); return 1 / (1 + math.exp(-max(-30, min(30, z))))
-def fit(w, ts, ep=8, lr=0.05, l2=0.01):
+def fit(w, ts, ep=8, lr=0.005, l2=0.01):   # học chậm (09/10: lr 0.05 → 1,50; 0.005 → 1,77)
     w = list(w)
     for _ in range(ep):
         for t in ts:
@@ -66,8 +66,12 @@ def mt(nums):
         sw = [sum(w[x] for x in tk) for tk in tks]; v = (bad, max(sw) - min(sw))
         if best is None or v < best[0]: best = (v, tks)
     return best[1]
+def top20(t):   # máy học chỉ xếp lại trong top 20 của cách hiện tại (goiy.py)
+    if GREC and t < T: return set(GREC[t - T]["rk"])
+    if t == T and os.path.exists(os.path.join(HERE, 'goiy_latest', 'mega.json')): return set(json.load(open(os.path.join(HERE, 'goiy_latest', 'mega.json')))['rank'][:20])
+    return set(range(1, NB + 1))
 def pool12(w, t, extra=None):
-    lo = LOAI(t); sc = {n: p_of(w, x) + (extra or {}).get(n, 0) for n, x in F[t].items() if n not in lo}
+    lo = LOAI(t); tp = top20(t); sc = {n: p_of(w, x) + (n in tp) + (extra or {}).get(n, 0) for n, x in F[t].items() if n not in lo}
     out, kep = [], 0
     for n in sorted(sc, key=lambda n: (-sc[n], n)):
         if n % 11 == 0:
@@ -84,7 +88,7 @@ for t in range(START + 100, T):
     pl, _ = pool12(w, t)
     tks = mt(pl)
     res.append((t, len(set(pl) & R[t]), max(len(set(tk) & R[t]) for tk in tks)))
-    w = fit(w, [t], ep=3)          # học thêm kỳ vừa ra, đổi từ từ
+    w = fit(w, [t], ep=1)          # học thêm kỳ vừa ra, đổi từ từ
     w0 = w
 def tb(xs, i, W): x = xs[-W:]; return sum(r[i] for r in x) / W, sum(r[i] >= 3 for r in x) / W * 100, sum(r[i] >= 4 for r in x) / W * 100
 print('## Pipeline Mega (học trọng số) — chấm lùi 100 kỳ\n')
