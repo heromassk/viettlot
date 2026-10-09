@@ -2239,3 +2239,9 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 - Nhịp: Mega 100 kỳ có cặp / 200; khoảng cách tới kỳ có cặp kế 1:49, 2:24, 3:13, 4:6, 5:4, ≥6:3; chuỗi liền nhau dài nhất 6. Power 84/200; khoảng cách 1:34, 2:26, 3:10, 4:5, 5:3, ≥6:5; chuỗi vắng dài nhất 13.
 - Vắng cặp đúng k kỳ → kỳ sau có: Mega 24/50 · 13/26 · 6/13 · 4/7 · 2/3; Power 27/50 · 10/23 · 5/13 · 3/8 · 0/5. ≈ một nửa, không thấy nhịp ra liên tiếp hay cách kỳ đều đặn.
 - Dùng: vé tối đa 1 cặp liên tiếp (2 cặp chỉ 2–10% kỳ). Chưa cộng/trừ điểm cho số liền kề trong cùng kỳ.
+
+## 09/10/2026 — Mega trật 0/6 (05 07 12 23 32 41): mổ xẻ
+- Hạng trong bảng điểm trước kỳ (bỏ 33,43, linh 15 36): 41 hạng 7 (bị loại "ra kỳ trước & t−3"), 12 hạng 19, 32 hạng 20, 23 hạng 31, 07 hạng 32, 05 hạng 41 (vắng 40 kỳ, "khó ra").
+- Luật bị trật: lt3 loại 41 (luật vẫn đúng 51/62 kỳ ở 100 kỳ, 104/124 ở 200); "cùng đuôi −" trừ 07, 23 (đuôi 7, 3 của 37, 43) — số cùng đuôi ra 13,6/12,5/12,1/12,5%/số ở 20/50/100/200 kỳ, luật yếu, 20 kỳ gần ra nhiều hơn mức chia đều.
+- Tâm linh có 05, 23, 32 (6–7 phiếu) nhưng không đủ điểm vào pool.
+- Pool 12 trúng 0: 11/100 kỳ trong chấm lùi → kỳ trật thường gặp, không đổi luật vì 1 kỳ.
