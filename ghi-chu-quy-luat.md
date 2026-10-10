@@ -2273,3 +2273,7 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 | Power | 3,25·2,88·2,95·2,91 | 65·56·59·60% | 40·26·31·30% | 20·12·13·10% |
 - ≥4 số trên 80% kỳ: không đạt (Mega ~46%, Power ~30%). Mega pool 25 đạt ~80% ở mức ≥3 số. Chấm bằng `GOIY_RK=25`.
 - 10/10 loại trước rồi mới chọn pool 25 (gộp các luật loại trong sổ, chấm 200 kỳ): mỗi luật riêng đúng 88–98% kỳ, nhưng gộp 8 luật ≥90% → loại ~5 số, cả nhóm trúng 0 số chỉ 54–61% kỳ, mất 0,5 số/kỳ; gộp 14–15 luật ≥80% → loại ~9 số, đúng 28–30% kỳ, mất ~1 số/kỳ. Áp lên pool 25: Power ≥4 số 30→26%, Mega 46→40% (pool còn ~23 số). Sai số cộng dồn khi chồng nhiều luật → không tăng tỉ lệ.
+- 10/10 nghiên cứu sâu pool 25 (`build/pool25_sau.py`): 35 đặc trưng/số (nhịp vắng, c5–c100, đà, lien2/lt3, max/min kỳ trước, kề ±1, ±1 & ±13/14 trong 3 kỳ, lộn 3 kỳ, chéo game, cùng đuôi, kép, hạng app, hàng chục), hồi quy logistic, học 100 kỳ cũ → kiểm 100 kỳ mới.
+  - Mega: cách hiện tại 100 kỳ mới ≥4 45% ≥5 17%; học 1 lần ≥4 42–44%; cuốn chiếu (học lại mỗi 10 kỳ) **≥4 48% ≥5 18%**, TB 3,41.
+  - Power: cách hiện tại ≥4 31% ≥5 13%; học 1 lần ≥4 25–26%; cuốn chiếu **≥4 34%** nhưng ≥5 8%.
+  - Kỳ đã học lên tới ≥4 53–55% (Mega) nhưng kỳ mới chỉ ~45–48% → phần tăng chủ yếu là "thuộc bài". Trọng số Mega nghiêng: lộn 3 kỳ +, vắng 1 kỳ +, vắng 11–15 +, ±13/14 +, cùng đuôi −, c100 −. Power: hạng app +, vắng ≥26 +, chéo Mega +.
