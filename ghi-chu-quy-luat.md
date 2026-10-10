@@ -2255,3 +2255,12 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 | **Lộn, 3 kỳ** | **5,5** | **17,5 · 15,2 · 15,1 · 14,7** (≥2 số ra: 25·20·21·20% kỳ) |
 | Lộn, 5 kỳ | 8,3 | 14,6 · 13,5 · 13,9 · 13,6 |
 - Lộn trong 3 kỳ: nhóm nhỏ, tỉ lệ ra nhỉnh và đều 4 khung → ứng viên cộng điểm nhỏ (chưa gắn, chờ chấm vé). ±1/±13/14 phủ quá rộng, không lọc được.
+
+## 10/10/2026 — Chéo Mega ↔ Power (anh: Mega 09/10 có 07, 12 của Power 08/10)
+| Khung | Mega ra số của Power kỳ ngay trước (%/số · kỳ có ≥2 số) | Power ra số (≤45) của Mega kỳ ngay trước |
+|---|---|---|
+| 20 | 12,7 · 10% | 13,3 · 15% |
+| 50 | 14,6 · 16% | 13,3 · 14% |
+| 100 | 14,2 · 15% | 13,2 · 15% |
+| 200 | 13,4 · 14% | 12,2 · 14% |
+- Mega lặp chính kỳ Mega trước: 13,2 (100) · 12,8 (200). Chéo Power→Mega nhỉnh nhẹ ở 50/100 kỳ nhưng 20 kỳ thấp → theo dõi, chưa cộng điểm.
