@@ -2277,3 +2277,4 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
   - Mega: cách hiện tại 100 kỳ mới ≥4 45% ≥5 17%; học 1 lần ≥4 42–44%; cuốn chiếu (học lại mỗi 10 kỳ) **≥4 48% ≥5 18%**, TB 3,41.
   - Power: cách hiện tại ≥4 31% ≥5 13%; học 1 lần ≥4 25–26%; cuốn chiếu **≥4 34%** nhưng ≥5 8%.
   - Kỳ đã học lên tới ≥4 53–55% (Mega) nhưng kỳ mới chỉ ~45–48% → phần tăng chủ yếu là "thuộc bài". Trọng số Mega nghiêng: lộn 3 kỳ +, vắng 1 kỳ +, vắng 11–15 +, ±13/14 +, cùng đuôi −, c100 −. Power: hạng app +, vắng ≥26 +, chéo Mega +.
+- 10/10 Power pool theo cỡ (cách hiện tại, 100 kỳ): 12 → ≥3 11% ≥4 1% · 15 → 23%/6% · 18 → 32%/12% · 20 → 40%/15% · 25 → 59%/31%. Thử thêm cho ≥4 trong pool 25: cân theo hàng chục 31%, chỉ đánh kỳ máy "tự tin" (30/50 kỳ cao nhất) 30–34% — không tăng.
