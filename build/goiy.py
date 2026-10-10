@@ -260,10 +260,10 @@ def backtest(W=200):
     recs = []
     for t in range(T - W, T):
         f, s = signals(t)
-        sct = score(f, s); rk = pool_of(sct, s, 20)
+        sct = score(f, s); rk = pool_of(sct, s, int(os.environ.get('GOIY_RK', '20')))
         sig = {k: (len(s[k] & R[t]), len(s[k])) for k in SIGS}
         cl = [(lab, fn(R[t]), sum(fn(m) for m in MC) / len(MC)) for lab, _, fn in claims(t, rk)]
-        recs.append(dict(rk=(pm_pool(t, sct) if A.pm else rk)[:20], r=R[t], sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 20)}, cl=cl))
+        recs.append(dict(rk=(pm_pool(t, sct) if A.pm else rk)[:int(os.environ.get('GOIY_RK', '20'))], r=R[t], sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 20)}, cl=cl))
     return recs
 
 def summ(recs):
