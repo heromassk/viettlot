@@ -2264,3 +2264,4 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 | 100 | 14,2 · 15% | 13,2 · 15% |
 | 200 | 13,4 · 14% | 12,2 · 14% |
 - Mega lặp chính kỳ Mega trước: 13,2 (100) · 12,8 (200). Chéo Power→Mega nhỉnh nhẹ ở 50/100 kỳ nhưng 20 kỳ thấp → theo dõi, chưa cộng điểm.
+- Power lặp chính kỳ Power trước: 11,7 (50) · 10,3 (100) · 11,4 (200)%/số → Power ra số của Mega kỳ trước (13,2–13,3% ở 20/50/100, 12,2 ở 200) nhỉnh hơn, khá đều. Ứng viên Power 10/10 từ Mega 09/10: 05 07 12 23 32 41.
