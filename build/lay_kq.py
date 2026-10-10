@@ -73,4 +73,5 @@ if not XEM:
     print('Ngày tháng: đã cập nhật build/ngaythang.md')
 if not XEM:
     for g in ('mega', 'power'): subprocess.run([sys.executable, os.path.join(B, 'hoso.py'), g], check=True, stdout=subprocess.DEVNULL)   # hồ sơ số + sổ khoảng cách (anh 09/10)
+    subprocess.run([sys.executable, os.path.join(B, 'pool25_power.py')], check=True, stdout=subprocess.DEVNULL)   # pool 25 Power (anh 10/10)
     subprocess.run([sys.executable, os.path.join(B, 'mega_pipeline.py')] + (['--goiy', os.path.join(B, 'mega_recs.json')] if os.path.exists(os.path.join(B, 'mega_recs.json')) else []), check=True, stdout=subprocess.DEVNULL)   # máy học Mega (anh 09/10)

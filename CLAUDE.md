@@ -41,3 +41,5 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - Đề xuất chưa được duyệt: số May Mắn Loto "MM kỳ trước + 2 vắng lâu" (hiện giữ "3 vắng lâu nhất").
 
 - **Máy học Mega** (anh, 09/10/2026): `build/mega_pipeline.py` học trọng số ≤200 kỳ, ô "Máy học Mega" trong app, sổ tiến `build/hoc_log.jsonl`. lay_kq.py tự chạy. Chạy song song để chấm tiến, chưa thay pool chính (chấm lùi kém hơn cách hiện tại).
+
+- **Pool 25 Power** (anh duyệt 10/10/2026): `build/pool25_power.py` — cộng hạng chéo Mega 7 kỳ + vắng ≈25 + vắng ≈27 kỳ; 100 kỳ gần ≥4 số 42%, ≥3 số 72% (100 kỳ cũ hơn chỉ 23%). Ô "Pool 25 Power" trong app, sổ tiến `build/pool25_power_log.jsonl`; lay_kq/add_result tự chạy. Thay nếu ≥4 dưới 35% liên tục 20 kỳ. Quét 2.891–5.491 phương pháp: `build/pool25_quet.py`. Nhãn hồ sơ số không giúp loại thêm trong pool này.

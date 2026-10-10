@@ -26,4 +26,5 @@ t=t[:m.start(2)]+json.dumps(j,ensure_ascii=False,separators=(',',':'))+t[m.end(2
 csv=os.path.join(ROOT,key+'_history.csv');row=','.join([date[:10]]+['%02d'%v for v in main]+(['%02d'%x] if key=='loto535' else []))
 old=open(csv,encoding='utf-8').read();open(csv,'w',encoding='utf-8').write(row+'\n'+old)
 theodoi.snap(g)   # chụp luật cho kỳ tới
+(g=='power' and subprocess.run([sys.executable,os.path.join(B,'pool25_power.py')],stdout=subprocess.DEVNULL))
 subprocess.run([sys.executable,os.path.join(B,'assemble.py')],check=True);print('da them',key,date,main,x)

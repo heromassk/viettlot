@@ -73,6 +73,10 @@ input.n{width:52px;text-align:center;}
   <summary><h2>Max 3D Pro</h2></summary>
   <div id="m3proIn"></div>
 </details>
+<details class="card" id="p25Card">
+  <summary><h2>Pool 25 Power</h2></summary>
+  <div id="p25In"></div>
+</details>
 <details class="card" id="hocCard">
   <summary><h2>Máy học Mega</h2></summary>
   <div id="hocIn"></div>
@@ -289,6 +293,13 @@ const GOIY=/*GOIY*/;
 const THEODOI=/*THEODOI*/;
 const M3=/*MAX3D*/;
 const HOC=/*HOC*/;
+const P25=/*P25*/;
+function renderP25(){const el=$('p25In');if(!el||!P25.pool)return;const f=a=>a.map(n=>String(n).padStart(2,'0')).join(' ');const F=P25.frames['Pool 25'];
+ el.innerHTML=`<p class="mut">Cộng hạng 3 cách: chéo Mega 7 kỳ + vắng ≈25 + vắng ≈27 kỳ (anh duyệt 10/10/2026). Thay nếu ≥4 số dưới 35% liên tục 20 kỳ.</p>
+ <p>Kỳ ${P25.ky}: <b>${f(P25.pool)}</b></p>
+ <table><tr><th>Khung</th><th>≥3 số</th><th>≥4 số</th></tr>${['10','20','50','100'].map(W=>`<tr><td>${W}</td><td>${Math.round(F[W][1])}%</td><td>${Math.round(F[W][2])}%</td></tr>`).join('')}</table>
+ <p class="mut">Nhãn hồ sơ: ${Object.entries(P25.nhan).filter(([n,l])=>l!=='Bình thường').map(([n,l])=>String(n).padStart(2,'0')+' '+l).join(' · ')||'—'}</p>
+ <h3>Sổ tiến</h3>${P25.tien.length?`<table><tr><th>Kỳ</th><th>KQ</th><th>Trúng</th></tr>${P25.tien.map(e=>`<tr><td>${e.ky}</td><td>${f(e.kq)}</td><td>${e.trung}</td></tr>`).join('')}</table>`:'<p class="mut">Chưa có kỳ chấm.</p>'}`;}
 function renderHoc(){const el=$('hocIn');if(!el||!HOC.pool)return;const f=a=>a.map(n=>String(n).padStart(2,'0')).join(' ');
  const fr=(o,W)=>o&&o[W]?`${o[W][0]} · ${o[W][1]}% | ${o[W][2]} · ${o[W][3]}%`:'—';
  el.innerHTML=`<p class="mut">Học trọng số trên 100 kỳ trước mỗi kỳ (≤200 kỳ), đổi dần mỗi kỳ. Tầng: cộng/trừ → luật → (tâm linh cộng lúc gợi ý). Sau kỳ ${HOC.sau}.</p>
@@ -486,7 +497,7 @@ function renderAll(){
   $('status').textContent=`Dữ liệu ${M.all.length} kỳ (${M.all[0].date} → ${M.all[M.all.length-1].date}) · đang nghiên cứu ${M.W} kỳ gần nhất · kỳ tới: ${fmt(M.nd)}`;
   $('winBtns').innerHTML=[100,200,300,500,1000].map(n=>`<span class="chip${n===S.win?' on':''}" data-n="${n}">${n>=M.all.length&&n===1000?'tất cả':n}</span>`).join('');
   $('winBtns').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.win=+e.dataset.n;renderAll();});
-  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();renderTD();renderM3();renderHoc();renderKB();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
+  renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();renderTD();renderM3();renderHoc();renderP25();renderKB();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
 }
 function renderAdd(){
   const a=ex();$('addList').innerHTML=a.length?`<div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ đã thêm</th><th class="l">Số</th><th></th></tr></thead><tbody>${a.map((e,i)=>`<tr><td class="l">${e.date}</td><td class="l">${e.r.map(n=>`<span class="b">${p2(n)}</span>`).join('')}${GC.extra&&e.lk!=null?` <span class="b lk">${p2(e.lk)}</span>`:''}</td><td><button class="btn" data-del="${i}">Xóa</button></td></tr>`).join('')}</tbody></table></div>`:'';
