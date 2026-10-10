@@ -2272,3 +2272,4 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 | Mega | 3,40·3,46·3,43·3,40 | 75·82·82·79% | 50·48·45·46% | 20·18·17·16% |
 | Power | 3,25·2,88·2,95·2,91 | 65·56·59·60% | 40·26·31·30% | 20·12·13·10% |
 - ≥4 số trên 80% kỳ: không đạt (Mega ~46%, Power ~30%). Mega pool 25 đạt ~80% ở mức ≥3 số. Chấm bằng `GOIY_RK=25`.
+- 10/10 loại trước rồi mới chọn pool 25 (gộp các luật loại trong sổ, chấm 200 kỳ): mỗi luật riêng đúng 88–98% kỳ, nhưng gộp 8 luật ≥90% → loại ~5 số, cả nhóm trúng 0 số chỉ 54–61% kỳ, mất 0,5 số/kỳ; gộp 14–15 luật ≥80% → loại ~9 số, đúng 28–30% kỳ, mất ~1 số/kỳ. Áp lên pool 25: Power ≥4 số 30→26%, Mega 46→40% (pool còn ~23 số). Sai số cộng dồn khi chồng nhiều luật → không tăng tỉ lệ.
