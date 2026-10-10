@@ -2265,3 +2265,10 @@ Kỳ ra từ 3 số trở lên thuộc nhóm "dương + tổng" (12 lần gần 
 | 200 | 13,4 · 14% | 12,2 · 14% |
 - Mega lặp chính kỳ Mega trước: 13,2 (100) · 12,8 (200). Chéo Power→Mega nhỉnh nhẹ ở 50/100 kỳ nhưng 20 kỳ thấp → theo dõi, chưa cộng điểm.
 - Power lặp chính kỳ Power trước: 11,7 (50) · 10,3 (100) · 11,4 (200)%/số → Power ra số của Mega kỳ trước (13,2–13,3% ở 20/50/100, 12,2 ở 200) nhỉnh hơn, khá đều. Ứng viên Power 10/10 từ Mega 09/10: 05 07 12 23 32 41.
+
+## 10/10/2026 — Pool 25 số (anh hỏi: ≥4 số trên 80% kỳ?)
+| Game | Khung 20·50·100·200: TB trúng | ≥3 số | ≥4 số | ≥5 số |
+|---|---|---|---|---|
+| Mega | 3,40·3,46·3,43·3,40 | 75·82·82·79% | 50·48·45·46% | 20·18·17·16% |
+| Power | 3,25·2,88·2,95·2,91 | 65·56·59·60% | 40·26·31·30% | 20·12·13·10% |
+- ≥4 số trên 80% kỳ: không đạt (Mega ~46%, Power ~30%). Mega pool 25 đạt ~80% ở mức ≥3 số. Chấm bằng `GOIY_RK=25`.
