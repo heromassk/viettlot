@@ -66,16 +66,24 @@ for l in LABS:
     lab_rate[l] = (h, a)
 # kỳ tới
 pn = pool(T); Ln = {n: lab(T, n) for n in pn}
+import sys
+TLF = sys.argv[sys.argv.index('--tl') + 1] if '--tl' in sys.argv else None   # phiếu tâm linh kỳ tới (tamlinh.js power)
+VOT = json.load(open(TLF))['votes'] if TLF else None
+p20 = sorted(n for n in pn if VOT[n] != 3) if VOT else None   # pool 20: bỏ số có đúng 3 phiếu tâm linh (anh 10/10: ≥4 ~30%, 2 nửa 30·30)
 LOG = os.path.join(B, 'pool25_power_log.jsonl'); log = [json.loads(l) for l in open(LOG)] if os.path.exists(LOG) else []
 for e in log:
-    if 'trung' not in e and e['t'] < T: e['kq'] = sorted(R[e['t']]); e['trung'] = len(set(e['pool']) & R[e['t']])
+    if 'trung' not in e and e['t'] < T:
+        e['kq'] = sorted(R[e['t']]); e['trung'] = len(set(e['pool']) & R[e['t']])
+        if e.get('pool20'): e['trung20'] = len(set(e['pool20']) & R[e['t']])
 nd = DT[T].strftime('%d/%m/%Y')
 if not log or log[-1]['t'] != T: log.append(dict(t=T, ky=nd, pool=sorted(pn), nhan=Ln))
+if p20: log[-1]['pool20'] = p20
 open(LOG, 'w').write(''.join(json.dumps(e, ensure_ascii=False) + '\n' for e in log))
-APP = dict(ky=nd, pool=sorted(pn), nhan={str(n): Ln[n] for n in pn}, frames={k: {str(W): [round(x, 2) for x in v] for W, v in f.items()} for k, f in F.items()},
+APP = dict(ky=nd, pool=sorted(pn), pool20=p20 or (log[-1].get('pool20') if log and log[-1]['t'] == T else None), nhan={str(n): Ln[n] for n in pn}, frames={k: {str(W): [round(x, 2) for x in v] for W, v in f.items()} for k, f in F.items()},
            lab_rate={k: v for k, v in lab_rate.items()}, tien=[e for e in log if 'trung' in e][-20:])
 json.dump(APP, open(os.path.join(B, 'pool25_power.json'), 'w'), ensure_ascii=False)
 print(f'## Pool 25 Power — kỳ {nd}\n\n**{" ".join(f"{n:02d}" for n in sorted(pn))}**\n')
+print(f'Pool 20 (bỏ số 3 phiếu tâm linh): **{" ".join(f"{n:02d}" for n in p20)}**\n' if p20 else '')
 print('| Cách | Khung 10 · 20 · 50 · 100: ≥4 số | ≥3 số | Trúng TB | Cỡ pool |\n|---|---|---|---|---|')
 for k, f in F.items():
     print(f'| {k} | ' + ' · '.join(f'{f[W][2]:.0f}%' for W in (10, 20, 50, 100)) + ' | ' + ' · '.join(f'{f[W][1]:.0f}%' for W in (10, 20, 50, 100)) +

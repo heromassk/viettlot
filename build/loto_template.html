@@ -296,10 +296,10 @@ const HOC=/*HOC*/;
 const P25=/*P25*/;
 function renderP25(){const el=$('p25In');if(!el||!P25.pool)return;const f=a=>a.map(n=>String(n).padStart(2,'0')).join(' ');const F=P25.frames['Pool 25'];
  el.innerHTML=`<p class="mut">Cộng hạng 3 cách: chéo Mega 7 kỳ + vắng ≈25 + vắng ≈27 kỳ (anh duyệt 10/10/2026). Thay nếu ≥4 số dưới 35% liên tục 20 kỳ.</p>
- <p>Kỳ ${P25.ky}: <b>${f(P25.pool)}</b></p>
+ <p>Kỳ ${P25.ky}: <b>${f(P25.pool)}</b></p>${P25.pool20?`<p>Pool 20 (bỏ số đúng 3 phiếu tâm linh; ≥4 số ~30%): <b>${f(P25.pool20)}</b></p>`:''}
  <table><tr><th>Khung</th><th>≥3 số</th><th>≥4 số</th></tr>${['10','20','50','100'].map(W=>`<tr><td>${W}</td><td>${Math.round(F[W][1])}%</td><td>${Math.round(F[W][2])}%</td></tr>`).join('')}</table>
  <p class="mut">Nhãn hồ sơ: ${Object.entries(P25.nhan).filter(([n,l])=>l!=='Bình thường').map(([n,l])=>String(n).padStart(2,'0')+' '+l).join(' · ')||'—'}</p>
- <h3>Sổ tiến</h3>${P25.tien.length?`<table><tr><th>Kỳ</th><th>KQ</th><th>Trúng</th></tr>${P25.tien.map(e=>`<tr><td>${e.ky}</td><td>${f(e.kq)}</td><td>${e.trung}</td></tr>`).join('')}</table>`:'<p class="mut">Chưa có kỳ chấm.</p>'}`;}
+ <h3>Sổ tiến</h3>${P25.tien.length?`<table><tr><th>Kỳ</th><th>KQ</th><th>Pool 25</th><th>Pool 20</th></tr>${P25.tien.map(e=>`<tr><td>${e.ky}</td><td>${f(e.kq)}</td><td>${e.trung}</td><td>${e.trung20??'—'}</td></tr>`).join('')}</table>`:'<p class="mut">Chưa có kỳ chấm.</p>'}`;}
 function renderHoc(){const el=$('hocIn');if(!el||!HOC.pool)return;const f=a=>a.map(n=>String(n).padStart(2,'0')).join(' ');
  const fr=(o,W)=>o&&o[W]?`${o[W][0]} · ${o[W][1]}% | ${o[W][2]} · ${o[W][3]}%`:'—';
  el.innerHTML=`<p class="mut">Học trọng số trên 100 kỳ trước mỗi kỳ (≤200 kỳ), đổi dần mỗi kỳ. Tầng: cộng/trừ → luật → (tâm linh cộng lúc gợi ý). Sau kỳ ${HOC.sau}.</p>
