@@ -121,6 +121,7 @@ def signals(t):
     sig['_td'] = td_sets(t)
     sig['ml'] = set(_ML.get(str(t), [])) if A.game == 'mega' else set()   # số máy học cũng chọn (anh 09/10/2026: trùng thì mạnh hơn)
     sig['ct'] = ct
+    sig['ct23'] = {x + e for x in last for e in (2, -2, 3, -3) if 1 <= x + e <= NB} - last   # ±2/±3 kỳ trước (anh 11/10/2026)
     nc = set()
     if NC:   # nhân/chia (anh, 08/10/2026): số kỳ trước ×m hoặc ÷m (chia hết) qua k kỳ, bỏ số kỳ trước
         for j in range(1, NC[1] + 1):
@@ -174,6 +175,7 @@ def follow(t):
 _MLF = os.path.join(HERE, 'mega_pipeline.json')
 _ML = json.load(open(_MLF)).get('ml', {}) if os.path.exists(_MLF) else {}
 WML = float(os.environ.get('GOIY_ML', '0'))
+WCT23 = float(os.environ.get('GOIY_CT23', '0'))
 def score(f, s, extra=None):
     sc = {}
     for n in range(1, NB + 1):
@@ -183,7 +185,7 @@ def score(f, s, extra=None):
             - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ())) \
             + 1 * (n in s.get('ben', ())) + WSC * (n in s.get('kep', ())) + WSC * (n in s.get('pascal', ()))
         v += sum(WTD * sg for sg, st in s.get('_td', {}).values() if n in st)
-        v += WCT * (n in s.get('ct', ())) + WNC * (n in s.get('nc', ())) + WL2 * (n in s.get('l2p', ())) + WML * (n in s.get('ml', ()))
+        v += WCT * (n in s.get('ct', ())) + WNC * (n in s.get('nc', ())) + WL2 * (n in s.get('l2p', ())) + WML * (n in s.get('ml', ())) + WCT23 * (n in s.get('ct23', ()))
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
         if extra:
             v += extra.get(n, 0)
