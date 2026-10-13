@@ -5,6 +5,15 @@ Chấm: cặp gợi ý đã lưu (max3d_goiy_log.jsonl) trúng giải gì (lĩnh
 Ghi: build/max3d_cham.jsonl; thêm kỳ vào max3d_data.json / max3dpro_data.json (nếu chưa có)."""
 import json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
+if sys.argv[1] == '--tudong':   # sửa 13/10: chấm mọi gợi ý đã lưu mà kỳ đó đã có kết quả trong dữ liệu (lay_kq gọi)
+    import subprocess
+    done = {(j['game'], j['date']) for j in map(json.loads, open(os.path.join(HERE, 'max3d_cham.jsonl'), encoding='utf-8')) if j} if os.path.exists(os.path.join(HERE, 'max3d_cham.jsonl')) else set()
+    for j in map(json.loads, open(os.path.join(HERE, 'max3d_goiy_log.jsonl'), encoding='utf-8')):
+        D = json.load(open(os.path.join(HERE, 'max3d_data.json' if j['game'] == 'plus' else 'max3dpro_data.json')))
+        if (j['game'], j['next']) not in done and j['next'] in D['dates']:
+            subprocess.run([sys.executable, os.path.abspath(__file__), j['game'], j['next']] + D['res'][D['dates'].index(j['next'])], check=True, stdout=subprocess.DEVNULL)
+            print('chấm', j['game'], j['next'])
+    sys.exit()
 g, date, R = sys.argv[1], sys.argv[2], sys.argv[3:]
 assert len(R) == 20 and all(len(s) == 3 and s.isdigit() for s in R), 'cần đủ 20 bộ 3 chữ số'
 PZ = {'plus': {'Đặc biệt': 1e9, 'Nhất': 40e6, 'Nhì': 10e6, 'Ba': 5e6, 'Tư': 1e6, 'Năm': 150e3, 'Sáu': 40e3},
@@ -14,10 +23,10 @@ def prize(a, b):
     if g == 'pro':
         if a == D[0] and b == D[1]: o.append('Đặc biệt')
         if a == D[1] and b == D[0]: o.append('Phụ Đặc biệt')
-    elif a in D and b in D: o.append('Đặc biệt')
+    elif (D.count(a) >= 2 if a == b else a in D and b in D): o.append('Đặc biệt')
     for n, grp in (('Nhất', N), ('Nhì', H), ('Ba', B)):
-        if a in grp and b in grp: o.append(n)
-    if a in R and b in R: o.append('Tư')
+        if (grp.count(a) >= 2 if a == b else a in grp and b in grp): o.append(n)
+    if (R.count(a) >= 2 if a == b else a in R and b in R): o.append('Tư')
     o += ['Năm' for x in (a, b) if x in D]; o += ['Sáu' for x in (a, b) if x in N + H + B]
     return o, sum(PZ[n] for n in o)
 log = [json.loads(l) for l in open(os.path.join(HERE, 'max3d_goiy_log.jsonl'), encoding='utf-8') if l.strip()]

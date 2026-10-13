@@ -68,7 +68,9 @@ for l in LABS:
 pn = pool(T); Ln = {n: lab(T, n) for n in pn}
 import sys
 TLF = sys.argv[sys.argv.index('--tl') + 1] if '--tl' in sys.argv else None   # phiếu tâm linh kỳ tới (tamlinh.js power)
-VOT = json.load(open(TLF))['votes'] if TLF else None
+_TL = json.load(open(TLF)) if TLF else None
+if _TL and (len(_TL['votes']) != 56 or _TL.get('last', D['dates'][-1]) != D['dates'][-1]): raise SystemExit(f'DỪNG: {TLF} không phải phiếu Power của kỳ mới nhất — chạy lại node build/tamlinh.js power')   # sửa 13/10
+VOT = _TL['votes'] if _TL else None
 p20 = sorted(n for n in pn if VOT[n] != 3) if VOT else None   # pool 20: bỏ số có đúng 3 phiếu tâm linh (anh 10/10: ≥4 ~30%, 2 nửa 30·30)
 LOG = os.path.join(B, 'pool25_power_log.jsonl'); log = [json.loads(l) for l in open(LOG)] if os.path.exists(LOG) else []
 for e in log:
@@ -77,6 +79,7 @@ for e in log:
         if e.get('pool20'): e['trung20'] = len(set(e['pool20']) & R[e['t']])
 nd = DT[T].strftime('%d/%m/%Y')
 if not log or log[-1]['t'] != T: log.append(dict(t=T, ky=nd, pool=sorted(pn), nhan=Ln))
+else: log[-1].update(pool=sorted(pn), nhan=Ln)   # kỳ chưa quay: cập nhật theo dữ liệu mới nhất (Mega xen giữa) — sửa 13/10, trước bị đóng băng
 if p20: log[-1]['pool20'] = p20
 if VOT: log[-1]['vt'] = VOT   # lưu phiếu thật để đối chiếu phiếu chấm lại quá khứ (tamlinh_ls)
 open(LOG, 'w').write(''.join(json.dumps(e, ensure_ascii=False) + '\n' for e in log))

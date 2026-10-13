@@ -98,12 +98,14 @@ out = {
 }
 json.dump(out, open(os.path.join(HERE, 'max3d_app.json'), 'w'), ensure_ascii=False)
 # lưu gợi ý đã đưa (để chấm sổ khi có kết quả); không ghi trùng kỳ
-lg = os.path.join(HERE, 'max3d_goiy_log.jsonl'); seen = set()
-if os.path.exists(lg): seen = {(j['game'], j['next']) for j in map(json.loads, open(lg, encoding='utf-8')) if j}
-with open(lg, 'a', encoding='utf-8') as fo:
-    for k in ('plus', 'pro'):
-        g = out[k]['goiy']
-        if (k, g['next']) not in seen: fo.write(json.dumps(dict(game=k, next=g['next'], pairs=[p['x'] for p in g['pairs']], kinds=[p['kind'] for p in g['pairs']], pool_n=g['pool_n'], pool=g['pool_all']), ensure_ascii=False) + '\n')
+lg = os.path.join(HERE, 'max3d_goiy_log.jsonl')
+LG = [j for j in map(json.loads, open(lg, encoding='utf-8')) if j] if os.path.exists(lg) else []
+for k in ('plus', 'pro'):   # kỳ chưa có kết quả: ghi đè bằng bản mới nhất (sửa 13/10: cặp tâm linh ở lần chạy thứ 2 trước đây bị bỏ)
+    g = out[k]['goiy']; e = dict(game=k, next=g['next'], pairs=[p['x'] for p in g['pairs']], kinds=[p['kind'] for p in g['pairs']], pool_n=g['pool_n'], pool=g['pool_all'])
+    i = next((i for i, j in enumerate(LG) if j['game'] == k and j['next'] == g['next']), None)
+    if i is None: LG.append(e)
+    else: LG[i] = e
+open(lg, 'w', encoding='utf-8').write(''.join(json.dumps(j, ensure_ascii=False) + '\n' for j in LG))
 for k in ('plus', 'pro'):
     g = out[k]['goiy']; print(out[k]['name'], g['next'], 'pool', g['pool_n'], [ (p['kind'], p['x']) for p in g['pairs']])
 print('ok max3d_app.json', out['plus']['last'], out['pro']['last'])

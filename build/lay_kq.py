@@ -64,6 +64,9 @@ for f, out in (('3d.jsonl', 'max3d_data.json'), ('3d_pro.jsonl', 'max3dpro_data.
         elif d in new['dates'] and new['res'][new['dates'].index(d)] != r: print(f'⚠ {out} {d}: kho khác số anh nhập')
     json.dump(new, open(os.path.join(B, out), 'w'))
     print(f'{out}: {len(ids)} kỳ (thêm {len(ids) - len(old["res"])}), kỳ cuối {rows[ids[-1]][0]}')
+subprocess.run([sys.executable, os.path.join(B, 'max3d_cham.py'), '--tudong'], check=True)   # chấm gợi ý Max 3D đã lưu (sửa 13/10)
+subprocess.run([sys.executable, os.path.join(B, 'max3d_app.py')], check=True, stdout=subprocess.DEVNULL)
+subprocess.run(['node', os.path.join(B, 'max3d_tl.js')], check=True, stdout=subprocess.DEVNULL)   # tâm linh Max 3D cho kỳ mới (sửa 13/10: trước không chạy → cũ)
 subprocess.run([sys.executable, os.path.join(B, 'max3d_app.py')], check=True)
 subprocess.run([sys.executable, os.path.join(B, 'assemble.py')], check=True)
 # Quẻ ngày tháng (anh, 07/10/2026): cập nhật build/ngaythang.md sau mỗi lần lấy kết quả
@@ -74,4 +77,5 @@ if not XEM:
 if not XEM:
     for g in ('mega', 'power'): subprocess.run([sys.executable, os.path.join(B, 'hoso.py'), g], check=True, stdout=subprocess.DEVNULL)   # hồ sơ số + sổ khoảng cách (anh 09/10)
     subprocess.run([sys.executable, os.path.join(B, 'pool25_power.py')], check=True, stdout=subprocess.DEVNULL)   # pool 25 Power (anh 10/10)
+    subprocess.run([sys.executable, os.path.join(B, 'goiy.py'), 'mega', '--mt', '9', '--json', os.path.join(B, 'goiy_latest', 'mega.json')], check=True, stdout=subprocess.DEVNULL)   # làm mới mega_recs + gợi ý Mega trước máy học (sửa 13/10: lệch 1 kỳ)
     subprocess.run([sys.executable, os.path.join(B, 'mega_pipeline.py')] + (['--goiy', os.path.join(B, 'mega_recs.json')] if os.path.exists(os.path.join(B, 'mega_recs.json')) else []), check=True, stdout=subprocess.DEVNULL)   # máy học Mega (anh 09/10)

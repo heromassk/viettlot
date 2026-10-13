@@ -362,7 +362,7 @@ function renderM3k(k){const el=$('m3'+k+'In');if(!el||!M3[k])return;const G=M3[k
 function renderTD(){const el=$('tdIn');if(!el)return;const D=THEODOI[GAME],p2=n=>String(n).padStart(2,'0'),js=a=>a&&a.length?a.map(p2).join(' '):'—';
   if(!D){el.innerHTML='<div class="foot">Chưa có dữ liệu.</div>';return;}
   const H=D.hist||[],P=D.pending,ids=[];const by={};
-  H.forEach(h=>h.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[]};ids.push(r.id);}by[r.id].seq.push(r.ok);by[r.id].applied=r.applied;}));
+  H.forEach(h=>h.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[]};ids.push(r.id);}if(r.ok!==null)by[r.id].seq.push(r.ok);by[r.id].applied=r.applied;}));
   if(P)P.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[]};ids.push(r.id);}by[r.id].applied=r.applied;});
   const dot=ok=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 1px;background:${ok?'var(--good)':'var(--bad)'};"></span>`;
   const rows=ids.map(id=>{const r=by[id],n=r.seq.length,ok=r.seq.filter(Boolean).length,pc=n?Math.round(ok/n*100):null;

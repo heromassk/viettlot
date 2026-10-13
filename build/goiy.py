@@ -41,6 +41,8 @@ R = [set(r) for r in D['res']]          # cũ -> mới
 SES = ['13' if '13h' in x else '21' for x in D['dates']] + ['13' if '21h' in D['dates'][-1] else '21']
 T = len(R)
 APP = json.load(open(A.app)) if A.app else None
+if APP and (len(APP['votes']) != {'power': 56, 'mega': 46, 'loto': 36}[A.game] or ('last' in APP and APP['last'] != json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'all_data.json')))[{'power': 'power655', 'mega': 'mega645', 'loto': 'loto535'}[A.game]]['dates'][-1])):
+    raise SystemExit(f'DỪNG: file tâm linh {A.app} không đúng trò hoặc cũ hơn kết quả mới nhất — chạy lại node build/tamlinh.js {A.game}')   # sửa 13/10
 LINH = {int(x) for x in A.linh.replace(' ', ',').split(',') if x.strip()}
 BO = {int(x) for x in A.bo.replace(' ', ',').split(',') if x.strip()}
 P = KB / NB
@@ -328,17 +330,29 @@ def mt_pool(rk, m):
     """Pool ma trận: theo thứ hạng, chỉ giữ 1 số kép (anh 09/10: vé tối đa 1 kép → 2 kép ở 2 nhóm khác nhau sẽ chung 1 vé)."""
     out, kep = [], 0
     for n in rk:
-        if A.game == 'mega' and n % 11 == 0:   # Power: chấm lùi tụt (1.39→1.33) nên không áp
+        if n % 11 == 0:   # cả Power (sửa 13/10: trước chỉ Mega → vé Power có 2 số kép, trái luật anh)
             if kep >= 1: continue
             kep += 1
         out.append(n)
         if len(out) == m: break
     return out
 
+def _mt_sai(tks): return sum(abs(sum(x % 2 for x in tk) - 3) > 1 or sum(x % 11 == 0 for x in tk) >= 2 for tk in tks)
+def mt_pick(rk, m, chk=None, w=None):
+    """Vé ma trận đúng luật anh (chẵn/lẻ 2-4/4-2/3-3, ≤1 số kép): nếu pool không chia được, thay số hạng thấp nhất
+    trong pool bằng số kế tiếp theo thứ hạng (sửa 13/10: trước vẫn ra/chấm vé sai luật). Dùng chung cho gợi ý và chấm lùi."""
+    base = mt_pool(rk, m); tks = mt_tickets(base, chk, w)
+    if not _mt_sai(tks): return tks
+    rest = [n for n in rk if n not in base and not (n % 11 == 0 and any(x % 11 == 0 for x in base))]
+    for j in range(m - 1, -1, -1):
+        for n in rest[:8]:
+            alt = base[:j] + base[j + 1:] + [n]; t2 = mt_tickets(alt, chk, w)
+            if not _mt_sai(t2): return t2
+    return tks
 def mt_bt(recs, m):
     out = []
     for r in recs:
-        tks = mt_tickets(mt_pool(r['rk'], m))
+        tks = mt_pick(r['rk'], m)
         out.append((max(len(set(tk) & r['r']) for tk in tks), len(set(r['rk'][:m]) & r['r'])))
     return out
 
@@ -446,7 +460,7 @@ for i in range(2):   # 2 vé trải: 1 số lõi + phần pool ít dùng
     tk, lv = pick([core[i]], [n for n in pool if n not in core], KB - 1, used); tickets.append(('trải', tk, lv)); DONE.append(tk)
     for n in tk: used[n] = used.get(n, 0) + 1
 if A.mt:   # vé ma trận thay cho 5 vé lõi+vệ tinh
-    tickets = [(f'ma trận {A.mt} số', tk, 0) for tk in mt_tickets(mt_pool(pm_pool(T, sc) if A.pm else rank, A.mt), lambda tk: not bad_ticket(tk), sc)]
+    tickets = [(f'ma trận {A.mt} số', tk, 0) for tk in mt_pick(pm_pool(T, sc) if A.pm else rank, A.mt, lambda tk: not bad_ticket(tk), sc)]
 
 # ---------- In ----------
 fm = lambda xs: ' '.join(f'{n:02d}' for n in sorted(xs)) or '—'
@@ -524,7 +538,7 @@ for W in (10, 50, 200):
           + ('' if W == 10 else ' · kỳ có ≥1/≥2/≥3/≥4 số: ' + ' / '.join(f'{v:.0f}%' for v in B[W]['dist'])))
 # ---------- Bảng số vắng lâu (≥15 kỳ) — để anh tự nhận định ----------
 def gaps_all(n):
-    h = [u for u in range(T) if n in R[u]]
+    h = [u for u in range(max(0, T - 200), T) if n in R[u]]   # ≤200 kỳ (luật anh; sửa 13/10, trước dùng toàn bộ)
     return [b - a - 1 for a, b in zip(h, h[1:])]
 GA = {n: gaps_all(n) for n in range(1, NB + 1)}
 def hz(gl, g):   # trong các lần nghỉ đã kéo tới ≥g kỳ, bao nhiêu % ra ngay ở kỳ kế (nghỉ đúng g)
@@ -563,7 +577,7 @@ for n in range(1, NB + 1):
     q4 = [sum(n in R[u] for u in range(T - 100 + 25 * i, T - 75 + 25 * i)) for i in range(4)]
     # lịch sử của chính số: những lần nó ra ≥c10 lần trong 10 kỳ thì kỳ kế ra bao nhiêu %
     seen = hit = 0
-    for t in range(max(10, T - 300), T):
+    for t in range(max(10, T - 200), T):   # ≤200 kỳ (sửa 13/10)
         if sum(n in R[u] for u in range(t - 10, t)) >= min(c10, 3): seen += 1; hit += n in R[t]
     lr = c200 / (WB * P) * 100
     if lr >= 115 and sum(x > 25 * P for x in q4) >= 3: kind = 'Nóng bền — có thể bi dễ ra (nặng/nhẹ lệch)'
@@ -615,7 +629,7 @@ if APP and strong_out:   # vé thay thế: vé 1, đổi số điểm thấp nh�
         low = min((x for x in alt if x not in core and x not in strong_out), key=lambda x: sc[x], default=None)
         if low is None: break
         alt[alt.index(low)] = n
-    tickets.append(('cân nhắc tâm linh (thay thế vé 1)', sorted(alt), 0))
+    if not bad_ticket(sorted(alt)): tickets.append(('cân nhắc tâm linh (thay thế vé 1)', sorted(alt), 0))   # sửa 13/10: vé này trước không qua luật vé
 print(f'\n### {len(tickets)} vé (lõi {fm(core)} + vệ tinh)\n')
 for i, (kind, tk, lv) in enumerate(tickets, 1):
     note = RELAX[lv] if lv < 3 else 'không vé nào hợp lệ, lấy theo điểm'

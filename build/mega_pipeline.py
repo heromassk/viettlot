@@ -66,9 +66,15 @@ def mt(nums):
         sw = [sum(w[x] for x in tk) for tk in tks]; v = (bad, max(sw) - min(sw))
         if best is None or v < best[0]: best = (v, tks)
     return best[1]
+GOFF = 0 if not GREC or GREC[-1]['r'] == sorted(R[T - 1]) else (1 if GREC[-1]['r'] == sorted(R[T - 2]) else 0)
 def top20(t):   # máy học chỉ xếp lại trong top 20 của cách hiện tại (goiy.py)
-    if GREC and t < T: return set(GREC[t - T]["rk"])
-    if t == T and os.path.exists(os.path.join(HERE, 'goiy_latest', 'mega.json')): return set(json.load(open(os.path.join(HERE, 'goiy_latest', 'mega.json')))['rank'][:20])
+    if GREC and t < T:   # khớp theo kết quả kỳ (sửa 13/10: recs cũ lệch 1 kỳ làm chấm lùi sai)
+        i = t - T + GOFF
+        if -len(GREC) <= i < 0 and GREC[i]["r"] == sorted(R[t]): return set(GREC[i]["rk"])
+        return set(range(1, NB + 1))
+    if t == T and os.path.exists(os.path.join(HERE, 'goiy_latest', 'mega.json')):
+        J = json.load(open(os.path.join(HERE, 'goiy_latest', 'mega.json')))
+        if J.get('last') == D['dates'][-1]: return set(J['rank'][:20])   # chỉ dùng khi gợi ý đúng kỳ mới nhất
     return set(range(1, NB + 1))
 def pool12(w, t, extra=None):
     lo = LOAI(t); tp = top20(t); sc = {n: p_of(w, x) + (n in tp) + (extra or {}).get(n, 0) for n, x in F[t].items() if n not in lo}

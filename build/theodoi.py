@@ -176,8 +176,8 @@ def cham(game, date, nums, extra=None):
         hit = sorted(set(r['nums']) & res)
         if r['kind'] == 'loai': ok = not hit
         elif r['kind'] == 'atleast': ok = len(hit) >= r['k']
-        elif r['kind'] == 'nhomit': ok = (len(hit) / len(r['nums']) < KB / NB) if r['nums'] else True
-        elif r['kind'] == 'nhomnhieu': ok = (len(hit) / len(r['nums']) > KB / NB) if r['nums'] else False
+        elif r['kind'] == 'nhomit': ok = (len(hit) / len(r['nums']) < KB / NB) if r['nums'] else None   # nhóm rỗng: không chấm (sửa 13/10)
+        elif r['kind'] == 'nhomnhieu': ok = (len(hit) / len(r['nums']) > KB / NB) if r['nums'] else None
         else: ok = len(hit) <= r['k']
         out.append(dict(id=r['id'], lab=r['lab'], kind=r['kind'], nums=r['nums'], hit=hit, ok=ok, applied=r.get('applied', False)))
     rec = dict(date=date, res=sorted(res), rules=out)
@@ -204,7 +204,7 @@ def cham(game, date, nums, extra=None):
     g['hist'] = [h for h in g['hist'] if h['date'] != date] + [rec]
     g.pop('pending', None)
     json.dump(db, open(FILE, 'w', encoding='utf-8'), ensure_ascii=False)
-    okn = sum(r['ok'] for r in out)
+    okn = sum(bool(r['ok']) for r in out)
     print(f'cham {key} {date}: {okn}/{len(out)} luật đúng' + (f" · gợi ý pool15 trúng {rec['goiy']['p15']}, vé tốt nhất {rec['goiy']['best']}" if 'goiy' in rec else ''))
 
 if __name__ == '__main__':
