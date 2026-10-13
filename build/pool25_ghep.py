@@ -9,6 +9,9 @@ g = {'__file__': os.path.join(B, 'pool25_markovloai.py')}; exec(src, g)
 R, T, pool, mk, hq = g['R'], g['T'], g['pool'], g['mk_chung'], g['hq']
 D = json.load(open(os.path.join(B, 'all_data.json')))['power655']['dates']
 TL = {e['date']: e['vt'] for e in json.load(open(os.path.join(B, 'tamlinh_ls_power.json')))}
+# đối chiếu: phiếu chấm lại phải khớp phiếu thật đã lưu trong sổ Pool 25 (lỗi 13/10: lệch 38/55 số mà không ai biết)
+_lech = [e['ky'] for e in map(json.loads, open(os.path.join(B, 'pool25_power_log.jsonl'))) if 'vt' in e and e['ky'] in TL and TL[e['ky']] != e['vt']]
+if _lech: raise SystemExit(f'DỪNG: phiếu tâm linh chấm lại lệch phiếu thật ở kỳ {_lech} — chạy lại node build/tamlinh_ls.js power')
 TS = list(range(T - 100, T)); P = {t: pool(t) for t in TS}
 def hangA(t):                             # tổng hạng 3 cách trong pool (thấp = loại trước)
     p = P[t]; tot = {n: 0 for n in p}

@@ -78,6 +78,7 @@ for e in log:
 nd = DT[T].strftime('%d/%m/%Y')
 if not log or log[-1]['t'] != T: log.append(dict(t=T, ky=nd, pool=sorted(pn), nhan=Ln))
 if p20: log[-1]['pool20'] = p20
+if VOT: log[-1]['vt'] = VOT   # lưu phiếu thật để đối chiếu phiếu chấm lại quá khứ (tamlinh_ls)
 open(LOG, 'w').write(''.join(json.dumps(e, ensure_ascii=False) + '\n' for e in log))
 APP = dict(ky=nd, pool=sorted(pn), pool20=p20 or (log[-1].get('pool20') if log and log[-1]['t'] == T else None), nhan={str(n): Ln[n] for n in pn}, frames={k: {str(W): [round(x, 2) for x in v] for W, v in f.items()} for k, f in F.items()},
            lab_rate={k: v for k, v in lab_rate.items()}, tien=[e for e in log if 'trung' in e][-20:])
