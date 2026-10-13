@@ -10,10 +10,14 @@ function renderBang(J){
   const ball=(n,cls,extra)=>`<span class="bg-b ${cls||''}"${extra||''}>${p2(n)}</span>`;
   const tierCls=n=>t10.has(n)?'t10':t15.has(n)?'t15':t20.has(n)?'t20':vang.has(n)?'tx':'';
   // 1. Lưới số
-  const cols=J.nb===35?7:J.nb===45?9:11;
-  let grid='';for(let n=1;n<=J.nb;n++){
+  // lưới theo hàng chục: mỗi hàng 0x, 1x, 2x… (anh 13/10/2026: "để theo hàng cho dễ nhìn")
+  const cols=11;let grid='';
+  for(let d=0;d*10<=J.nb;d++){grid+=`<div class="bg-dl">${d}x</div>`;
+    for(let u=0;u<10;u++){const n=d*10+u;if(n<1||n>J.nb){grid+='<div></div>';continue;}
     const mk=(strong.has(n)?'<i class="bg-st">★</i>':top.has(n)?'<i class="bg-st2">☆</i>':'')+(hot.has(n)?'<i class="bg-hot"></i>':'')+(linh.has(n)?'<i class="bg-li">✦</i>':'');
-    grid+=`<div class="bg-c ${tierCls(n)}${last.has(n)?' lastd':''}" title="${(J.why[n]||'').replace(/"/g,'')}"><b>${p2(n)}</b>${mk}</div>`;}
+    grid+=`<div class="bg-c ${tierCls(n)}${last.has(n)?' lastd':''}" title="${(J.why[n]||'').replace(/"/g,'')}"><b>${p2(n)}</b>${mk}</div>`;}}
+  const decRows=(arr,cls)=>{const g={};arr.slice().sort((a,b)=>a-b).forEach(n=>{(g[Math.floor(n/10)]=g[Math.floor(n/10)]||[]).push(n);});
+    return Object.keys(g).sort((a,b)=>a-b).map(d=>`<div class="bg-row bg-pool"><b style="display:inline-block;min-width:24px;opacity:.7;font-size:.8rem;">${d}x</b> ${g[d].map(n=>ball(n,cls(n))).join('')}</div>`).join('');};
   // 2. Thang pool
   const tierRow=(k,lab)=>{const a=J.tiers[k],b=J.tiers50[k];return `<div class="bg-tr"><div class="bg-tl"><span class="bg-sw ${k===10?'t10':k===15?'t15':'t20'}"></span>${lab}<small>TB ${a[4].toFixed(2)} số/kỳ</small></div>
     <div class="bg-bars">${[0,1,2].map(j=>`<div class="bg-bar"><span style="width:${a[j]}%;"></span><em>≥${j+1} số: <b>${pct(a[j])}</b> <small>(50 kỳ ${pct(b[j])})</small></em></div>`).join('')}</div></div>`;};
@@ -41,9 +45,8 @@ function renderBang(J){
   <div class="bg-sec"><h4>Pool số kỳ tới</h4>
     <div class="bg-grid" style="grid-template-columns:repeat(${cols},1fr);">${grid}</div>
     <div class="bg-leg"><span><i class="bg-sw t10"></i>Pool 10</span><span><i class="bg-sw t15"></i>đến 15</span><span><i class="bg-sw t20"></i>đến 20</span><span><i class="bg-sw tx"></i>bị loại (vắng lâu / luật loại)</span><span>★ tâm linh mạnh</span><span>☆ tâm linh</span><span><i class="bg-hot"></i> nóng</span><span><i class="bg-sw lastd"></i>vừa ra</span>${linh.size?'<span>✦ linh cảm</span>':''}</div>
-    <div class="bg-row bg-pool"><b>Pool 10:</b> ${rk.slice(0,10).map(n=>ball(n,'t10')).join('')}</div>
-    <div class="bg-row bg-pool"><b>+ đến 15:</b> ${rk.slice(10,15).map(n=>ball(n,'t15')).join('')}</div>
-    <div class="bg-row bg-pool"><b>+ đến 20:</b> ${rk.slice(15,20).map(n=>ball(n,'t20')).join('')}</div>
+    <div class="bg-foot" style="margin:6px 0 2px;">Pool 20 theo hàng (đậm = pool 10, nhạt = đến 15, mờ = đến 20):</div>
+    ${decRows(rk.slice(0,20),tierCls)}
     ${J.hotOut&&J.hotOut.length?`<div class="bg-warn">⚠ Số nóng ngoài pool 15: <b>${J.hotOut.map(p2).join(' ')}</b></div>`:''}
   </div>
   ${J.nhip?`<div class="bg-warn" style="${J.nhip.good?'border-color:#3fb950;background:rgba(63,185,80,.12)':''}">Nhịp pool 5 kỳ gần: ${J.nhip.last.join(', ')} → TB <b>${J.nhip.m5}</b> (ngưỡng tốt ${J.nhip.thr}) → <b>${J.nhip.good?'ĐANG VÀO NHỊP — kỳ nên đánh mạnh':'nhịp thường — đánh nhẹ'}</b></div>`:''}
@@ -65,7 +68,7 @@ const BANG_CSS=`.bg{--ac:#f0b429;color:var(--text,#e8ecf5);font-size:.9rem;}
 .bg-hd{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:center;font-size:1rem;margin-bottom:8px;}
 .bg-sec{background:var(--panel2,#212a40);border:1px solid var(--border,#2c3550);border-radius:12px;padding:10px;margin:10px 0;}
 .bg-foot{color:var(--muted,#8b93a7);font-size:.78rem;line-height:1.45;}
-.bg-grid{display:grid;gap:4px;}
+.bg-grid{display:grid;gap:4px;}.bg-dl{display:flex;align-items:center;justify-content:center;font-size:.75rem;opacity:.7;min-width:22px;}
 .bg-c{position:relative;text-align:center;border-radius:8px;padding:7px 0;background:rgba(255,255,255,.04);border:1px solid var(--border,#2c3550);font-size:.85rem;color:var(--muted,#8b93a7);}
 .bg-c b{font-weight:600;}
 .bg-c.t10{background:var(--ac);color:#111;border-color:var(--ac);}
