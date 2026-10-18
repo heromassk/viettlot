@@ -43,6 +43,28 @@ for rid, o in KQ.items():
     if o['nxt'] and rt[100][2] >= 20 and rt[50][2] >= 10 and rt[50][0] < rt[50][1] and rt[100][0] < rt[100][1]:
         luat.append(dict(id=rid, lab=o['lab'].replace('Bỏ ', ''), nums=o['nxt'], a10=pc[10][0], a50=pc[50][0], a100=pc[100][0],
                          r50=rt[50][0], o50=rt[50][1], r100=rt[100][0], o100=rt[100][1], n100=rt[100][2]))
+# 1b. Mega: số kề ±1 của kỳ Power ngày hôm trước (anh 18/10/2026: Mega ra các số này ~10% so với ~14% số khác ở 50/100 kỳ)
+if GAME == 'mega':
+    import csv, datetime as DT
+    PW = {DT.datetime.strptime(r[0], '%d/%m/%Y').date(): set(map(int, r[1:7])) for r in csv.reader(open(os.path.join(B, '..', 'power655_history.csv'), encoding='utf-8'))}
+    dd = lambda x: DT.datetime.strptime(x[:10], '%d/%m/%Y').date()
+    def pke(d):
+        p = PW.get(d - DT.timedelta(1))
+        return None if not p else {m for x in p for m in (x - 1, x + 1) if 1 <= m <= NB} - p
+    nx = dd(DS[-1]) + DT.timedelta(1)
+    while nx.weekday() not in (2, 4, 6): nx += DT.timedelta(1)
+    nums = pke(nx); H = []
+    for t in range(T - 100, T):
+        k = pke(dd(DS[t]))
+        if k: H.append((len(k & R[t]), len(k), len((set(range(1, NB + 1)) - k) & R[t]), NB - len(k), not (k & R[t])))
+    if nums and len(H) >= 20:
+        rt = {}
+        for W in (50, 100):
+            h = H[-W:]; hn = sum(x[1] for x in h); rn = sum(x[3] for x in h); rt[W] = (round(sum(x[0] for x in h) * 100 / hn, 1), round(sum(x[2] for x in h) * 100 / rn, 1), hn)
+        ac = lambda W: round(sum(x[4] for x in H[-W:]) * 100 / len(H[-W:]))
+        if rt[50][0] < rt[50][1] and rt[100][0] < rt[100][1]:
+            luat.append(dict(id='pkeke', lab='Số kề ±1 của kỳ Power hôm trước', nums=sorted(nums), a10=ac(10), a50=ac(50), a100=ac(100),
+                             r50=rt[50][0], o50=rt[50][1], r100=rt[100][0], o100=rt[100][1], n100=rt[100][2]))
 luat.sort(key=lambda x: x['r100'] - x['o100'])
 
 # 2. nhóm hạng theo điểm tín hiệu của app
