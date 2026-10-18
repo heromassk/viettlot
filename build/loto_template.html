@@ -76,20 +76,8 @@ input.n{width:52px;text-align:center;}
 <h1 id="h1"></h1>
 <div class="sub" id="status"></div>
 
-<details class="card" id="bangCard" open>
-  <summary><h2>Gợi ý kỳ tới</h2></summary>
-  <div id="bangIn"></div>
-</details>
-<details class="card" id="tdCard">
-  <summary><h2>Sổ kiểm chứng suy luận</h2></summary>
-  <div id="tdIn"></div>
-</details>
-<details class="card" id="myCard" open>
-  <summary><h2>Dãy của anh</h2></summary>
-  <div id="myBox" class="sum"></div>
-</details>
 <details class="card" id="addCard">
-  <summary><h2>② Nhập kết quả mới</h2></summary>
+  <summary><h2>Cập nhật kết quả<small id="bkWarn" style="font-size:.75rem;color:var(--bad);font-weight:400;"></small></h2></summary>
   <div class="foot" style="margin-top:0;">Nhập kết quả mỗi kỳ để máy tự đối chiếu và cập nhật mọi tỉ lệ.</div>
   <div class="row" style="margin-bottom:8px;"><span class="lbl">Ngày</span><input type="date" id="addDate"><select id="addHour" aria-label="Giờ quay"><option value="13h">13h</option><option value="21h">21h</option></select></div>
   <div class="row" style="margin-bottom:8px;"><input type="text" id="addNums" inputmode="numeric" placeholder="07 11 24 28 34 11" style="flex:1;min-width:0;max-width:340px;font-size:1rem;letter-spacing:.04em;"><button class="btn pri" id="addGo">Thêm</button></div>
@@ -100,7 +88,25 @@ input.n{width:52px;text-align:center;}
   <h3 style="margin-top:14px;">Sao lưu / Khôi phục</h3>
   <div class="foot" style="margin-top:0;">Sao lưu toàn bộ dữ liệu của cả 3 game (kết quả nhập thêm, gợi ý app đã chốt, dãy của anh) thành 1 file .json. Trên iPhone file nằm trong app Tệp → Tải về, trên Android trong thư mục Download; có thể gửi qua Zalo, email hoặc để lên Google Drive.</div>
   <div class="row" style="margin-top:6px;"><button class="btn pri" id="bkGo">Sao lưu</button><label class="btn" style="cursor:pointer;">Khôi phục từ file<input type="file" id="bkFile" accept=".json,application/json" style="display:none;"></label></div>
+  <div id="bkLast" class="foot"></div>
+  <div id="bkAuto" class="foot"></div>
   <div id="bkMsg" class="foot"></div>
+</details>
+<details class="card" id="poolCard">
+  <summary><h2>Pool</h2></summary>
+  <div id="poolIn"></div>
+</details>
+<details class="card" id="bangCard">
+  <summary><h2>Gợi ý kỳ tới</h2></summary>
+  <div id="bangIn"></div>
+</details>
+<details class="card" id="tdCard">
+  <summary><h2>Sổ kiểm chứng suy luận</h2></summary>
+  <div id="tdIn"></div>
+</details>
+<details class="card" id="myCard">
+  <summary><h2>Dãy của anh</h2></summary>
+  <div id="myBox" class="sum"></div>
 </details>
 <details class="card" id="toolsCard">
   <summary><h2>Công cụ nghiên cứu (nâng cao)</h2></summary>
@@ -303,39 +309,85 @@ function renderM3k(k){const el=$('m3'+k+'In');if(!el||!M3[k])return;const G=M3[k
   <div class="foot">Đỏ = 3 chữ số nhẹ nhất của hàng. ${G.trace}</div>
   <div class="foot">Dữ liệu ${G.n.toLocaleString('vi-VN')} kỳ (${G.first} → ${G.last}).</div>`;
   const go=()=>{S.m3t=Object.assign({},S.m3t,{[k]:$('m3Tk'+k).value});renderM3k(k);};$('m3Go'+k).onclick=go;$('m3Tk'+k).onkeydown=e=>{if(e.key==='Enter')go();};}
-function renderTD(){const el=$('tdIn');if(!el)return;const D=THEODOI[GAME],p2=n=>String(n).padStart(2,'0'),js=a=>a&&a.length?a.map(p2).join(' '):'—';
+// Sổ kiểm chứng: kỳ anh nhập tay → chấm luôn bộ luật đã chụp cho kỳ đó (cách chấm y như theodoi.py grade) (17/10/2026)
+function tdGrade(r,res,NB,KB){const hit=r.nums.filter(n=>res.includes(n)).sort((a,b)=>a-b);let ok;
+  if(r.kind==='loai')ok=!hit.length;else if(r.kind==='atleast')ok=hit.length>=r.k;else if(r.kind==='nhomit'||r.kind==='nhomnhieu')ok=!r.nums.length?null:(r.kind==='nhomit'?hit.length/r.nums.length<KB/NB:hit.length/r.nums.length>KB/NB);else ok=hit.length<=r.k;
+  return Object.assign({},r,{hit,ok});}
+function tdMerge(D){const J=withDraws(GOIY[GAME]);if(!D||!D.pending||!J||!J.stale)return D;const i=J.dates201.indexOf(J.nextBase);if(i<0)return D;
+  const res=J.res201[i],NB=J.nb,KB=J.kb,rules=D.pending.rules.map(r=>tdGrade(r,res,NB,KB)),H=D.hist||[],D2=Object.assign({},D,{hist:H.concat([{date:J.nextBase,res,rules,tay:true}]),pending:null});
+  if(D.w10&&D.w10.rules){const drop=D.w10.dates[0],hd=H.find(h=>h.date===drop),W={dates:D.w10.dates.slice(1).concat([J.nextBase]),rules:{}};
+    Object.entries(D.w10.rules).forEach(([id,o])=>{const g=rules.find(r=>r.id===id),o2=Object.assign({},o,{ok:o.ok.slice(1).concat([g?g.ok:null])});
+      const old=hd&&hd.rules.find(r=>r.id===id);if(old&&old.ok!==null){o2.gh-=old.hit.length;o2.gn-=old.nums.length;}if(g&&g.ok!==null){o2.gh+=g.hit.length;o2.gn+=g.nums.length;}W.rules[id]=o2;});
+    D2.w10=W;}
+  return D2;}
+function renderTD(){const el=$('tdIn');if(!el)return;const D=tdMerge(THEODOI[GAME]),p2=n=>String(n).padStart(2,'0'),js=a=>a&&a.length?a.map(p2).join(' '):'—';
   if(!D){el.innerHTML='<div class="foot">Chưa có dữ liệu.</div>';return;}
   const H=D.hist||[],P=D.pending,ids=[];const by={};
-  H.forEach(h=>h.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[]};ids.push(r.id);}by[r.id].seq.push(r.ok);by[r.id].applied=r.applied;}));
-  if(P)P.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[]};ids.push(r.id);}by[r.id].applied=r.applied;});
-  const dot=ok=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 1px;background:${ok?'var(--good)':'var(--bad)'};"></span>`;
-  const rows=ids.map(id=>{const r=by[id],n=r.seq.length,ok=r.seq.filter(Boolean).length,pc=n?Math.round(ok/n*100):null;
-    const now=P&&P.rules.find(x=>x.id===id);const nowTxt=now?(now.kind==='loai'?(now.nums.length?'bỏ '+js(now.nums):'—'):now.kind==='nhomit'?`nhóm ${js(now.nums)}`:`${now.nums.length} số`):'—';
-    return `<tr><td class="l">${r.applied?'<b style="color:var(--accent)">●</b> ':''}${r.lab}</td><td>${n?`<b style="color:${pc>=85?'var(--good)':pc>=70?'var(--accent)':'var(--bad)'}">${pc}%</b> <small>(${ok}/${n})</small>`:'<small>chưa chấm</small>'}</td><td class="l">${r.seq.slice(-10).map(dot).join('')}</td><td class="l"><small>${nowTxt}</small></td></tr>`;}).join('');
+  // ok=null: kỳ đó luật không có số để xét → không tính. Luật nhóm: chấm bằng tỉ lệ ra cộng dồn của nhóm so với bình quân.
+  const BQ=({loto535:5/35,mega645:6/45,power655:6/55})[GAME]||0;
+  H.forEach(h=>h.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[],gh:0,gn:0};ids.push(r.id);}const b=by[r.id];b.seq.push(r.ok);b.applied=r.applied;if(r.ok!==null){b.gh+=r.hit.length;b.gn+=r.nums.length;}}));
+  if(P)P.rules.forEach(r=>{if(!by[r.id]){by[r.id]={lab:r.lab,kind:r.kind,applied:r.applied,seq:[],gh:0,gn:0};ids.push(r.id);}by[r.id].applied=r.applied;});
+  // Chấm lùi liên tục 10 kỳ gần nhất (theodoi.w10, anh 15/10/2026): thay chuỗi từ sổ bằng 10 kỳ này
+  const W10=D.w10;if(W10)Object.entries(W10.rules).forEach(([id,w])=>{if(!by[id]){by[id]={lab:w.lab,kind:w.kind,applied:false,seq:[],gh:0,gn:0};ids.push(id);}const b=by[id];b.seq=w.ok;b.gh=w.gh;b.gn=w.gn;});
+  const dot=ok=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 1px;background:${ok===null?'var(--muted)':ok?'var(--good)':'var(--bad)'};"></span>`;
+  const isG=k=>k==='nhomit'||k==='nhomnhieu';
+  const rows=ids.map(id=>{const r=by[id],sq=r.seq.filter(x=>x!==null),n=sq.length,ok=sq.filter(Boolean).length,pc=n?Math.round(ok/n*100):null;
+    const now=P&&P.rules.find(x=>x.id===id);const nowTxt=now?(now.kind==='loai'?(now.nums.length?'bỏ '+js(now.nums):'—'):isG(now.kind)?(now.nums.length?`nhóm ${js(now.nums)}`:'—'):`${now.nums.length} số`):'—';
+    let cell;if(isG(r.kind)){if(!r.gn)cell='<small>chưa chấm</small>';else{const rt=r.gh/r.gn,good=r.kind==='nhomit'?rt<BQ:rt>BQ;cell=`<b style="color:${good?'var(--good)':'var(--bad)'}">${(rt*100).toFixed(1)}%</b> <small>ra / BQ ${(BQ*100).toFixed(1)}% (${r.gh}/${r.gn}, ${n} kỳ)</small>`;}}
+    else cell=n?`<b style="color:${pc>=85?'var(--good)':pc>=70?'var(--accent)':'var(--bad)'}">${pc}%</b> <small>(${ok}/${n})</small>`:'<small>chưa chấm</small>';
+    return `<tr><td class="l">${r.applied?'<b style="color:var(--accent)">●</b> ':''}${r.lab}</td><td>${cell}</td><td class="l">${r.seq.slice(-10).map(dot).join('')}</td><td class="l"><small>${nowTxt}</small></td></tr>`;}).join('');
   const G=H.filter(h=>h.goiy).map(h=>h.goiy),av=k=>G.length?(G.reduce((a,g)=>a+g[k],0)/G.length).toFixed(2):'—';
   const gy=G.length?`<div class="sum" style="margin:8px 0;">Gợi ý đã đưa anh · ${G.length} kỳ: pool 10 trúng TB <b>${av('p10')}</b> · pool 15 <b>${av('p15')}</b> · pool 20 <b>${av('p20')}</b> · vé tốt nhất TB <b>${av('best')}</b> (≥3 số: ${G.filter(g=>g.best>=3).length} kỳ) · tâm linh top 12 TB <b>${av('tl')}</b></div>`:'';
-  const det=H.slice().reverse().slice(0,30).map(h=>`<details style="margin:4px 0;"><summary class="lbl" style="cursor:pointer;">${h.date}: <b style="color:var(--text)">${js(h.res)}</b>${h.extra!=null?' · MM '+p2(h.extra):''} — ${h.rules.filter(r=>r.ok).length}/${h.rules.length} luật đúng${h.goiy?` · pool15 ${h.goiy.p15} · vé tốt nhất ${h.goiy.best}`:''}${h.ve_anh?` · vé anh: ${h.ve_anh.map(v=>v.hit.length+(v.mmhit?'+MM':'')).join(', ')}`:''}</summary>
-    <div class="foot" style="line-height:1.6;">${h.rules.map(r=>`${r.ok?'✔':'✘'} ${r.lab}${r.kind==='loai'?`: bỏ ${js(r.nums)}${r.hit.length?` → về <b style="color:var(--bad)">${js(r.hit)}</b>`:''}`:` → trúng ${r.hit.length}`}`).join('<br>')}</div></details>`).join('');
-  el.innerHTML=`<div class="foot" style="margin-top:0;">Mỗi kỳ, trước khi quay, app chụp lại số mà từng luật loại (hoặc khẳng định). Khi có kết quả thì chấm đúng/sai và lưu ở đây để theo dõi lâu dài. <b style="color:var(--accent)">●</b> = luật đang áp dụng trong gợi ý. Chấm luật loại: kỳ đúng = không số bị loại nào về.</div>
-    ${gy}<div class="tw"><table><thead><tr><th class="l">Luật</th><th>Đúng</th><th class="l">10 kỳ gần</th><th class="l">Kỳ tới${P?' (sau '+P.after+')':''}</th></tr></thead><tbody>${rows}</tbody></table></div>
+  const det=H.slice().reverse().slice(0,30).map(h=>`<details style="margin:4px 0;"><summary class="lbl" style="cursor:pointer;">${h.date}: <b style="color:var(--text)">${js(h.res)}</b>${h.extra!=null?' · MM '+p2(h.extra):''} — ${h.rules.filter(r=>r.ok===true).length}/${h.rules.filter(r=>r.ok!==null).length} luật đúng${h.goiy?` · pool15 ${h.goiy.p15} · vé tốt nhất ${h.goiy.best}`:''}${h.ve_anh?` · vé anh: ${h.ve_anh.map(v=>v.hit.length+(v.mmhit?'+MM':'')).join(', ')}`:''}</summary>
+    <div class="foot" style="line-height:1.6;">${h.rules.map(r=>`${r.ok===null?'·':r.ok?'✔':'✘'} ${r.lab}${r.kind==='loai'?`: bỏ ${js(r.nums)}${r.hit.length?` → về <b style="color:var(--bad)">${js(r.hit)}</b>`:''}`:` → trúng ${r.hit.length}`}`).join('<br>')}</div></details>`).join('');
+  el.innerHTML=`<div class="foot" style="margin-top:0;">Mỗi kỳ, trước khi quay, app chụp lại số mà từng luật loại (hoặc khẳng định). Khi có kết quả thì chấm đúng/sai và lưu ở đây để theo dõi lâu dài. <b style="color:var(--accent)">●</b> = luật đang áp dụng trong gợi ý. Chấm luật loại: kỳ đúng = không số bị loại nào về. Cột Đúng và chấm màu: chấm lùi liên tục 10 kỳ gần nhất, mỗi kỳ dựng luật chỉ bằng dữ liệu trước kỳ đó (tự cập nhật mỗi khi thêm kết quả).</div>
+    ${gy}<div class="tw"><table><thead><tr><th class="l">Luật</th><th>Đúng ${W10?'10 kỳ gần':''}</th><th class="l">${W10?W10.dates[0]+' → '+W10.dates[W10.dates.length-1]:'10 kỳ gần'}</th><th class="l">Kỳ tới${P?' (sau '+P.after+')':''}</th></tr></thead><tbody>${rows}</tbody></table></div>
     ${H.length?`<h4 style="margin:10px 0 4px;">Từng kỳ đã chấm</h4>${det}`:`<div class="foot">Chưa có kỳ nào được chấm — sổ bắt đầu từ kỳ tới.</div>`}`;}
 /*BANGJS*/
-function renderBangCard(){const el=$('bangIn');if(!el)return;const J=GOIY[GAME];let h=renderBang(J);
-  if(J&&S.M&&S.M.nd&&J.next!==S.M.nd)h=`<div class="bg-warn" style="margin-bottom:8px;">Bảng này cho kỳ ${J.next}; kỳ tới của app là ${S.M.nd}. Bảng sẽ cập nhật khi chạy lại gợi ý.</div>`+h;
-  el.innerHTML=h;}
+// Kỳ anh nhập tay ở khung "Cập nhật kết quả" được ghép vào bảng / pool / sổ (anh 17/10/2026: "cập nhật kết quả không hoạt động")
+function userDraws(){try{const st=getS(GAME);return (DB?(st.dbRows||[]):lsGet()).filter(x=>x&&x.date&&Array.isArray(x.r));}catch(e){return [];}}
+function withDraws(J0){if(!J0||!J0.res201)return J0;const have=new Set(J0.dates201||[]),add=userDraws().filter(x=>!have.has(x.date)).sort((a,b)=>key(a.date)-key(b.date));
+  const J=Object.assign({},J0);J.userN=add.length;J.nextDone=false;
+  if(add.length){J.res201=J0.res201.concat(add.map(x=>x.r.slice().sort((a,b)=>a-b)));J.dates201=J0.dates201.concat(add.map(x=>x.date));if(J0.lk201)J.lk201=J0.lk201.concat(add.map(x=>x.lk==null?null:x.lk));
+    const L=add[add.length-1];J.last=L.date;J.lastRes=L.r.slice().sort((a,b)=>a-b);J.userLast=L.date;J.nextDone=J.dates201.includes(J0.next);
+    if(J.nextDone&&J0.pools&&J0.poolThuc&&J0.poolThuc.hist){const i=J.dates201.indexOf(J0.next);   // pool app của kỳ vừa nhập vào bảng "Pool trúng mấy số ở 20 kỳ gần"
+      J.poolThuc=Object.assign({},J0.poolThuc,{hist:[{d:J0.next,r:J.res201[i],lk:J.lk201?J.lk201[i]:null,pools:J0.pools}].concat(J0.poolThuc.hist).slice(0,20)});}
+    if(J.nextDone&&J0.pools&&J0.poolThuc&&J0.poolThuc.hits){const i=J.dates201.indexOf(J0.next),r=J.res201[i],st={};   // độ trúng mọi cỡ pool 10/20/50/100 kỳ tính lại có kỳ vừa nhập
+      Object.entries(J0.poolThuc.hits).forEach(([K,hs0])=>{const P=J0.pools[K];if(!P)return;const hs=hs0.concat([P.filter(n=>r.includes(n)).length]);st[K]={};
+        [10,20,50,100].forEach(W=>{const a=hs.slice(-W);st[K][W]=[Math.round(a.reduce((x,y)=>x+y,0)/W*100)/100].concat([2,3,4,5,6].map(j=>Math.round(a.filter(h=>h>=j).length*100/W)));});});
+      J.poolThuc=Object.assign({},J.poolThuc||J0.poolThuc,{stat:st});}
+    if(J.nextDone&&J0.game==='loto'&&J.lk201){const LK=J.lk201,N=LK.length,pick=t=>{const c=(k,w)=>{let s=0;for(let u=Math.max(0,t-w);u<t;u++)if(LK[u]===k)s++;return s;};   // số may mắn: ±3 quanh kỳ trước, nóng 10 kỳ, hòa → 50 kỳ
+        return [...Array(12).keys()].map(k=>k+1).filter(k=>t<1||Math.abs(k-LK[t-1])<=3).sort((a,b)=>c(b,10)-c(a,10)||c(b,50)-c(a,50)||a-b).slice(0,3);};
+      J.mm=pick(N);J.mmGap={};for(let k=1;k<=12;k++){let g=0;while(g<N&&LK[N-1-g]!==k)g++;J.mmGap[k]=g;}
+      const hm=[],hr=[],MH=[];for(let u=N-100;u<N;u++){const pk=pick(u);hm.push(pk.includes(LK[u]));hr.push(pk.indexOf(LK[u]));MH.push({d:J.dates201[u],goi:pk,ra:LK[u],dung:pk.includes(LK[u])});}   // chạy lại 100 kỳ như goiy.py
+      J.mmHist=MH.slice(-20).reverse();J.mmRate={};[10,20,50,100].forEach(W=>{J.mmRate[W]=Math.round(hm.slice(-W).filter(x=>x).length*100/W);});
+      J.mmRank={};[50,100].forEach(W=>{J.mmRank[W]=J.mm.map((_,q)=>Math.round(hr.slice(-W).filter(x=>x===q).length*100/W));});}
+    if(J.nextDone){J.nextBase=J0.next;J.stale=true;let n=J0.next,g=0;while(J.dates201.includes(n)&&g++<20)n=nextKy(n);J.next=n;}}   // kỳ tới = kỳ kế tiếp sau kỳ vừa nhập
+  return J;}
+// kỳ kế tiếp theo lịch của game: Loto 13h → 21h → 13h hôm sau; Mega T4·T6·CN; Power T3·T5·T7
+function nextKy(s){const p=s.slice(0,10).split('/').map(Number),d=new Date(p[2],p[1]-1,p[0]),pad=n=>String(n).padStart(2,'0'),fmt=x=>`${pad(x.getDate())}/${pad(x.getMonth()+1)}/${x.getFullYear()}`;
+  if(GC.hours){if(s.endsWith('13h'))return fmt(d)+' 21h';d.setDate(d.getDate()+1);return fmt(d)+' 13h';}
+  for(let i=0;i<8;i++){d.setDate(d.getDate()+1);if((GC.days||[]).includes(d.getDay()))break;}return fmt(d);}
+function renderBangCard(){const el=$('bangIn');if(!el)return;const J0=GOIY[GAME],J=withDraws(J0);let h=renderBang(J);
+  if(J0&&S.M&&S.M.nd&&J0.next!==S.M.nd)h=`<div class="bg-warn" style="margin-bottom:8px;">Bảng này cho kỳ ${J0.next}; kỳ tới của app là ${S.M.nd}. Bảng sẽ cập nhật khi chạy lại gợi ý.</div>`+h;
+  el.innerHTML=h;if(typeof bgFold==='function')bgFold(el);
+  const pe=$('poolIn');if(pe){pe.innerHTML=window.__bgPool||'';if(typeof bgFold==='function')bgFold(pe);}}
 const GAMES={
  loto535:{label:'Loto 5/35',sub:'13h · 21h mỗi ngày',N:35,C:5,extra:'MM',extraName:'số may mắn',extraN:12,hours:true,coll:'draws',pcoll:'preds',ls:'loto_extra_v1',mcoll:'mine'},
  mega645:{label:'Mega 6/45',sub:'T4 · T6 · CN',N:45,C:6,extra:null,days:[3,5,0],coll:'draws_mega645',pcoll:'preds_mega645',ls:'mega_extra_v1',mcoll:'mine_mega645'},
  power655:{label:'Power 6/55',sub:'T3 · T5 · T7',N:55,C:6,extra:'ĐB',extraName:'số đặc biệt',extraN:55,extraSeries:false,days:[2,4,6],coll:'draws_power655',pcoll:'preds_power655',ls:'power_extra_v1',mcoll:'mine_power655'}};
-let GAME,GC,RAW,PN,SN,NM,CC,FEAT,DB=null;const SG={};
+let GAME,GC,RAW,PN,SN,NM,CC,FEAT,DB=null;
+// DÃY 6 SỐ (Loto, anh 14/10/2026): mọi phân tích theo dãy (tổng, chẵn/lẻ, nhỏ/lớn, khoảng cách, vị trí…) dùng 5 số chính xếp tăng + số may mắn ở cuối.
+// Phần chọn số 1–35 (pool, tần suất, Markov…) vẫn chỉ dùng 5 số chính. DC = độ dài dãy, DPN = tên vị trí, DY(d) = dãy của 1 kỳ.
+let DC,DPN;const DY=d=>DC>CC?[...d.r,d.lk||0]:d.r,isBig=(v,i)=>DC>CC&&i===CC?v>=7:v>=Math.ceil(NM/2);const SG={};
 /*LUNAR*/
 const $=id=>document.getElementById(id);
 const p2=n=>String(n).padStart(2,'0');
 const WD=['CN','T2','T3','T4','T5','T6','T7'];
 let S;
-function getS(g){return SG[g]||(SG[g]={win:500,need:70,lvl:80,ruleSer:'u',logK:3,dirK:5,cons:new Set()});}
+function getS(g){return SG[g]||(SG[g]={win:100,need:70,lvl:80,ruleSer:'u',logK:3,dirK:5,cons:new Set()});}
 function setGame(g){
-  GAME=g;GC=GAMES[g];RAW=ALL[g];CC=GC.C;NM=GC.N;PN=['u','v','w','x','y','z'].slice(0,CC);SN=GC.extra&&GC.extraSeries!==false?[...PN,GC.extra]:PN.slice();S=getS(g);setTH();FEAT=buildFEAT();
+  GAME=g;GC=GAMES[g];RAW=ALL[g];CC=GC.C;NM=GC.N;PN=['u','v','w','x','y','z'].slice(0,CC);DC=g==='loto535'?CC+1:CC;DPN=DC>CC?[...PN,'MM']:PN;SN=GC.extra&&GC.extraSeries!==false?[...PN,GC.extra]:PN.slice();S=getS(g);setTH();FEAT=buildFEAT();
   try{localStorage.setItem('xs_tab',g);}catch(e){}
   $('gameTabs').innerHTML=Object.keys(GAMES).map(k=>`<button class="gtab${k===g?' on':''}" data-g="${k}">${GAMES[k].label}<small>${GAMES[k].sub}</small></button>`).join('');
   $('gameTabs').querySelectorAll('.gtab').forEach(b=>b.onclick=()=>{if(b.dataset.g!==GAME)setGame(b.dataset.g);});
@@ -356,7 +408,7 @@ function ex(){return DB?(S.dbRows||[]):lsGet();}
 function docId(date){const p=pd(date);return `${p.y}-${p2(p.m)}-${p2(p.d)}`+(p.h?`_${p.h}h`:'');}
 async function saveDraw(e){
   if(DB){const body={date:e.date,r:e.r,at:new Date().toISOString()};if(GC.extra)body.lk=e.lk;await DB.collection(GC.coll).doc(docId(e.date)).set(body);return;}
-  const a=lsGet().filter(x=>x.date!==e.date);a.push(e);lsSet(a);
+  const a=lsGet().filter(x=>x.date!==e.date);a.push(e);lsSet(a);if(typeof bkAuto==='function')bkAuto(false);
 }
 async function delDraw(date){if(DB){await DB.collection(GC.coll).doc(docId(date)).delete();return;}lsSet(lsGet().filter(x=>x.date!==date));}
 function storeNote(){$('storeNote').textContent=DB?'Kết quả nhập ở đây được lưu luôn trên trang: mở ở máy nào, trình duyệt nào cũng có, và máy học lại ngay.':'Đang mở bản file trên máy: kết quả nhập được lưu trong trình duyệt này.';}
@@ -396,7 +448,8 @@ function build(){
   const R=D.map(d=>d.r),LK=D.map(d=>d.lk),dates=D.map(d=>d.date),info=dates.map(dayInfo);
   const ser={};PN.forEach((k,i)=>ser[k]=R.map(r=>r[i]));if(SN.includes(GC.extra))ser[GC.extra]=LK;
   const nd=nextDate(all[all.length-1].date),ni=dayInfo(nd);
-  return S.M={all,W,D,R,LK,dates,info,ser,nd,ni};
+  const Y=D.map(DY);   // dãy 6 số (Loto) cho phân tích theo dãy
+  return S.M={all,W,D,R,LK,Y,dates,info,ser,nd,ni};
 }
 // ---------- dac diem de do quy luat huong ----------
 // tra ve mang dac diem cho thoi diem t (biet ky t, du doan ky t+1); ctx = thong tin ky t+1 (gio, thu, ngay am)
@@ -406,8 +459,8 @@ function featAt(M,k,t,ctx,qs){
   f['chênh']=BN[band(d(t))];
   f['mẫu 3 kỳ']=sg(d(t-2))+sg(d(t-1))+sg(d(t));
   let m=1;for(const q of qs)if(s[t]>=q)m++;f['mức']=`mức ${m}/5`;
-  let up=0;for(let i=0;i<CC;i++)if(R[t][i]>R[t-1][i])up++;f['số vị trí vừa tăng']=CC===5?(up<=1?'0–1':up<=3?'2–3':'4+'):(up<=2?'0–2':up<=4?'3–4':'5–6');
-  const dS=R[t].reduce((a,b)=>a+b,0)-R[t-1].reduce((a,b)=>a+b,0);f['tổng các số']=BN[band(Math.trunc(dS/3))];
+  const Y=M.Y;let up=0;for(let i=0;i<DC;i++)if(Y[t][i]>Y[t-1][i])up++;f['số vị trí vừa tăng']=DC===5?(up<=1?'0–1':up<=3?'2–3':'4+'):(up<=2?'0–2':up<=4?'3–4':'5–6');
+  const dS=Y[t].reduce((a,b)=>a+b,0)-Y[t-1].reduce((a,b)=>a+b,0);f['tổng các số']=BN[band(Math.trunc(dS/3))];
   const pi=PN.indexOf(k);if(pi>=0){const x=pi<CC-1?R[t][pi+1]-R[t][pi]:R[t][pi]-R[t][pi-1];const c1=Math.round(3*NM/35),c2=Math.round(8*NM/35);f['cách số bên cạnh']=x<=c1?`sát ≤${c1}`:x<=c2?`vừa ${c1+1}–${c2}`:`xa ≥${c2+1}`;}
   if(GC.hours)f['giờ kỳ tới']=ctx.h+'h';f['thứ kỳ tới']=WD[ctx.wd];f['ngày âm kỳ tới']=ctx.ld<=10?'âm 1–10':ctx.ld<=20?'âm 11–20':'âm 21–30';
   return f;
@@ -442,7 +495,7 @@ function condTxt(c){return c.map(([n,v])=>`${n} = <b>${v}</b>`).join(' và ');}
 function renderAll(){
   const M=build();
   $('status').textContent=`Dữ liệu ${M.all.length} kỳ (${M.all[0].date} → ${M.all[M.all.length-1].date}) · đang nghiên cứu ${M.W} kỳ gần nhất · kỳ tới: ${fmt(M.nd)}`;
-  $('winBtns').innerHTML=[100,200,300,500,1000].map(n=>`<span class="chip${n===S.win?' on':''}" data-n="${n}">${n>=M.all.length&&n===1000?'tất cả':n}</span>`).join('');
+  $('winBtns').innerHTML=[50,100].map(n=>`<span class="chip${n===S.win?' on':''}" data-n="${n}">${n}</span>`).join('');   // tối đa 100 kỳ (anh 15/10/2026)
   $('winBtns').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.win=+e.dataset.n;renderAll();});
   renderAdd();renderPool();S.simC={};S.hcum=null;S.rkC={};S.whSel={};renderParity();renderTarot();renderDir();renderSuggest();renderBangCard();renderTD();renderM3();simFill();renderSgLog();renderLog();renderRanges();renderRecent();renderIntra();renderNarrow();trSetup();
 }
@@ -526,24 +579,24 @@ function renderRanges(){
 }
 function renderRecent(){
   const M=S.M,W=M.W,rows=[];
-  for(let t=W-1;t>=Math.max(1,W-40);t--){rows.push(`<tr><td class="l" style="white-space:nowrap;">${fmt(M.dates[t])}<div class="foot" style="margin:0;">âm ${M.info[t].ld}/${M.info[t].lm}</div></td>${SN.map(k=>{const s=M.ser[k],d=s[t]-s[t-1];return `<td><span class="b${k===GC.extra?' lk':''}">${p2(s[t])}</span><div class="foot" style="margin:0;">${d>0?`<span class="up">▲${d}</span>`:d<0?`<span class="dn">▼${-d}</span>`:'='}</div></td>`;}).join('')}<td>${M.R[t].reduce((a,b)=>a+b,0)}</td></tr>`);}
+  for(let t=W-1;t>=Math.max(1,W-40);t--){rows.push(`<tr><td class="l" style="white-space:nowrap;">${fmt(M.dates[t])}<div class="foot" style="margin:0;">âm ${M.info[t].ld}/${M.info[t].lm}</div></td>${SN.map(k=>{const s=M.ser[k],d=s[t]-s[t-1];return `<td><span class="b${k===GC.extra?' lk':''}">${p2(s[t])}</span><div class="foot" style="margin:0;">${d>0?`<span class="up">▲${d}</span>`:d<0?`<span class="dn">▼${-d}</span>`:'='}</div></td>`;}).join('')}<td>${M.Y[t].reduce((a,b)=>a+b,0)}</td></tr>`);}
   $('recTbl').innerHTML=`<thead><tr><th class="l">Kỳ</th>${SN.map(k=>`<th>${k}</th>`).join('')}<th>Tổng</th></tr></thead><tbody>${rows.join('')}</tbody>`;
 }
 // dai luong trong cung ky
-function buildFEAT(){const f=[],n=CC,L='ABCDE';for(let i=0;i<n;i++)f.push({n:PN[i],g:'Vị trí',f:r=>r[i]});
+function buildFEAT(){const f=[],n=DC,L='ABCDEF',PN=DPN;for(let i=0;i<n;i++)f.push({n:PN[i],g:'Vị trí',f:r=>r[i]});
   for(let i=0;i<n-1;i++)f.push({n:`${L[i]} = ${PN[i+1]}−${PN[i]}`,g:'Khoảng cách liền nhau',f:r=>r[i+1]-r[i]});
   for(let i=0;i<n;i++)for(let j=i+2;j<n;j++)f.push({n:`${PN[j]}−${PN[i]}`,g:'Hiệu số',f:r=>r[j]-r[i]});
   for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)f.push({n:`${PN[i]}+${PN[j]}`,g:'Tổng 2 số',f:r=>r[i]+r[j]});
   for(let i=0;i<n-2;i++)f.push({n:`${PN[i]}+${PN[i+1]}+${PN[i+2]}`,g:'Tổng 3 số liền',f:r=>r[i]+r[i+1]+r[i+2]});
   const hi=Math.ceil(NM/2);
-  f.push({n:'Tổng các số',g:'Khác',f:r=>{let s=0;for(let i=0;i<n;i++)s+=r[i];return s;}});f.push({n:'Số lẻ',g:'Khác',f:r=>{let c=0;for(let i=0;i<n;i++)c+=r[i]%2;return c;}});f.push({n:`Số ≥ ${hi}`,g:'Khác',f:r=>{let c=0;for(let i=0;i<n;i++)if(r[i]>=hi)c++;return c;}});
-  f.push({n:'Khoảng cách lớn nhất',g:'Khác',f:r=>{let m=0;for(let i=1;i<n;i++)m=Math.max(m,r[i]-r[i-1]);return m;}});f.push({n:'Khoảng cách nhỏ nhất',g:'Khác',f:r=>{let m=99;for(let i=1;i<n;i++)m=Math.min(m,r[i]-r[i-1]);return m;}});
+  f.push({n:'Tổng các số',g:'Khác',f:r=>{let s=0;for(let i=0;i<n;i++)s+=r[i];return s;}});f.push({n:'Số lẻ',g:'Khác',f:r=>{let c=0;for(let i=0;i<n;i++)c+=r[i]%2;return c;}});f.push({n:`Số ≥ ${hi}`+(DC>CC?' (MM ≥ 7)':''),g:'Khác',f:r=>{let c=0;for(let i=0;i<n;i++)if(isBig(r[i],i))c++;return c;}});
+  f.push({n:'Khoảng cách lớn nhất',g:'Khác',f:r=>{let m=0;for(let i=1;i<CC;i++)m=Math.max(m,r[i]-r[i-1]);return m;}});f.push({n:'Khoảng cách nhỏ nhất',g:'Khác',f:r=>{let m=99;for(let i=1;i<CC;i++)m=Math.min(m,r[i]-r[i-1]);return m;}});
   return f;}
 function binom(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);}
 function combs(){   // moi bo so co the co (Loto: du 324.632 bo); Mega/Power qua nhieu bo nen lay mau 150.000 bo ngau nhien de uoc tinh
-  if(S.COMBS)return S.COMBS;const tot=binom(NM,CC);S.combTot=tot;const a=[];
+  if(S.COMBS)return S.COMBS;const tot=binom(NM,CC)*(DC>CC?GC.extraN:1);S.combTot=tot;const a=[];
   if(tot<=400000){S.combExact=true;const cur=[];(function rec(s){if(cur.length===CC){a.push(cur.slice());return;}for(let v=s;v<=NM-(CC-cur.length)+1;v++){cur.push(v);rec(v+1);cur.pop();}})(1);}
-  else{S.combExact=false;let sd=20261002;const rnd=()=>{sd=(Math.imul(sd,1103515245)+12345)>>>0;return sd/4294967296;};for(let k=0;k<150000;k++){const z=new Set();while(z.size<CC)z.add(1+Math.floor(rnd()*NM));a.push([...z].sort((x,y)=>x-y));}}
+  else{S.combExact=false;let sd=20261002;const rnd=()=>{sd=(Math.imul(sd,1103515245)+12345)>>>0;return sd/4294967296;};for(let k=0;k<150000;k++){const z=new Set();while(z.size<CC)z.add(1+Math.floor(rnd()*NM));const c=[...z].sort((x,y)=>x-y);if(DC>CC)c.push(1+Math.floor(rnd()*GC.extraN));a.push(c);}}
   return S.COMBS=a;}
 function combTxt(kc,len){return S.combExact?`<b>${kc.toLocaleString('vi-VN')}</b> / ${S.combTot.toLocaleString('vi-VN')} bộ (${(kc/len*100).toFixed(2)}%)`:`khoảng <b>${Math.round(kc/len*S.combTot).toLocaleString('vi-VN')}</b> / ${S.combTot.toLocaleString('vi-VN')} bộ (${(kc/len*100).toFixed(2)}%, ước tính từ mẫu 150.000 bộ)`;}
 function featVals(fi){const F=FEAT[fi];S.fv=S.fv||{};if(!S.fv[fi])S.fv[fi]=Int16Array.from(combs(),F.f);return S.fv[fi];}
@@ -552,8 +605,8 @@ function renderIntra(){
   $('intraNeed').innerHTML=[60,70,80,90].map(x=>`<span class="chip${x===S.need?' on':''}" data-n="${x}">${x}%</span>`).join('');
   $('intraNeed').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.need=+e.dataset.n;renderIntra();});
   if(!$('intraCard').open){$('intraTbl').innerHTML='';return;}
-  combs();$('intraTot').textContent=S.combExact?`${S.combTot.toLocaleString('vi-VN')} bộ ${CC} số`:`${S.combTot.toLocaleString('vi-VN')} bộ ${CC} số (ước tính từ mẫu 150.000 bộ)`;
-  let g0='';const rows=FEAT.map((F,fi)=>{const v=M.R.map(F.f),r=narrow(v,need),hit=v.map(x=>inR(x,r)),blk=[0,1,2,3,4].map(b=>{const a=Math.floor(b*n/5),e=Math.floor((b+1)*n/5);let h=0;for(let i=a;i<e;i++)h+=hit[i];return h/(e-a)*100;});
+  combs();$('intraTot').textContent=S.combExact?`${S.combTot.toLocaleString('vi-VN')} bộ ${DC} số`:`${S.combTot.toLocaleString('vi-VN')} bộ ${DC} số${DC>CC?' (5 số + số may mắn)':''} (ước tính từ mẫu 150.000 bộ)`;
+  let g0='';const rows=FEAT.map((F,fi)=>{const v=M.Y.map(F.f),r=narrow(v,need),hit=v.map(x=>inR(x,r)),blk=[0,1,2,3,4].map(b=>{const a=Math.floor(b*n/5),e=Math.floor((b+1)*n/5);let h=0;for(let i=a;i<e;i++)h+=hit[i];return h/(e-a)*100;});
     const r1=narrow(v.slice(0,mid),need);let h2=0;for(let i=mid;i<n;i++)h2+=inR(v[i],r1);
     const cv=featVals(fi);let kc=0;for(let i=0;i<cv.length;i++)if(cv[i]>=r.lo&&cv[i]<=r.hi)kc++;
     const hd=F.g!==g0?`<tr><td colspan="6" class="l" style="color:var(--accent);font-weight:700;">${F.g}</td></tr>`:'';g0=F.g;
@@ -566,16 +619,16 @@ function renderNarrow(){
   $('narLvl').innerHTML=[70,80,90,95].map(x=>`<span class="chip${x===S.lvl?' on':''}" data-n="${x}">${x}%</span>`).join('');
   $('narLvl').querySelectorAll('.chip').forEach(e=>e.onclick=()=>{S.lvl=+e.dataset.n;renderNarrow();});
   $('narDirK').textContent=S.dirK;
-  S.rng=FEAT.map(F=>narrow(M.R.map(F.f),lvl));
+  S.rng=FEAT.map(F=>narrow(M.Y.map(F.f),lvl));
   $('narCons').innerHTML=FEAT.map((F,fi)=>`<label><input type="checkbox" data-fi="${fi}"${S.cons.has(fi)?' checked':''}>${F.n} <span class="foot" style="margin:0;">${S.rng[fi].lo}–${S.rng[fi].hi}</span></label>`).join('');
   $('narCons').querySelectorAll('input').forEach(c=>c.onchange=()=>{const fi=+c.dataset.fi;if(c.checked)S.cons.add(fi);else S.cons.delete(fi);narCalc();});
   if($('narCard').open)narCalc();else $('narSum').innerHTML='';
 }
-function dirCons(){const out=[];if(!$('narDir').checked)return out;PN.forEach((k,i)=>{const p=S.pred[k];if(p&&p.rng&&p.diff>=S.dirK)out.push({i,lo:p.rng.lo,hi:p.rng.hi,k,dir:p.dir});});return out;}
+function dirCons(){const out=[];if(!$('narDir').checked)return out;DPN.forEach((k,i)=>{const p=S.pred[k];if(p&&p.rng&&p.diff>=S.dirK)out.push({i,lo:p.rng.lo,hi:p.rng.hi,k,dir:p.dir});});return out;}
 function narCalc(){
   const M=S.M,n=M.W,mid=Math.floor(n/2),lvl=S.lvl/100,cs=[...S.cons],dc=dirCons();
-  let hit=0;for(const r of M.R)if(cs.every(fi=>inR(FEAT[fi].f(r),S.rng[fi])))hit++;
-  const r1=cs.map(fi=>narrow(M.R.slice(0,mid).map(FEAT[fi].f),lvl));let h2=0;for(let t=mid;t<n;t++)if(cs.every((fi,j)=>inR(FEAT[fi].f(M.R[t]),r1[j])))h2++;
+  let hit=0;for(const r of M.Y)if(cs.every(fi=>inR(FEAT[fi].f(r),S.rng[fi])))hit++;
+  const r1=cs.map(fi=>narrow(M.Y.slice(0,mid).map(FEAT[fi].f),lvl));let h2=0;for(let t=mid;t<n;t++)if(cs.every((fi,j)=>inR(FEAT[fi].f(M.Y[t]),r1[j])))h2++;
   const C=combs();let kc=0;const fv=cs.map(featVals);const keep=new Uint8Array(C.length);
   for(let i=0;i<C.length;i++){let ok=true;for(let j=0;j<cs.length;j++){const v=fv[j][i],r=S.rng[cs[j]];if(v<r.lo||v>r.hi){ok=false;break;}}if(ok)for(const d of dc){const v=C[i][d.i];if(v<d.lo||v>d.hi){ok=false;break;}}if(ok){keep[i]=1;kc++;}}
   S.keep=keep;
@@ -584,8 +637,8 @@ function narCalc(){
 }
 function narAuto(){ // tham lam: moi buoc chon rang buoc giu % ky dung (nua dau -> nua sau) cao nhat tren % bo con lai
   const M=S.M,n=M.W,mid=Math.floor(n/2),lvl=S.lvl/100,C=combs();
-  const okR=FEAT.map(F=>{const r=narrow(M.R.slice(0,mid).map(F.f),lvl);return M.R.slice(mid).map(x=>inR(F.f(x),r));});
-  const okC=FEAT.map((F,fi)=>{const r=narrow(M.R.slice(0,mid).map(F.f),lvl),v=featVals(fi),o=new Uint8Array(C.length);for(let i=0;i<C.length;i++)o[i]=v[i]>=r.lo&&v[i]<=r.hi;return o;});
+  const okR=FEAT.map(F=>{const r=narrow(M.Y.slice(0,mid).map(F.f),lvl);return M.Y.slice(mid).map(x=>inR(F.f(x),r));});
+  const okC=FEAT.map((F,fi)=>{const r=narrow(M.Y.slice(0,mid).map(F.f),lvl),v=featVals(fi),o=new Uint8Array(C.length);for(let i=0;i<C.length;i++)o[i]=v[i]>=r.lo&&v[i]<=r.hi;return o;});
   let curR=new Array(n-mid).fill(true),curC=new Uint8Array(C.length).fill(1);const chosen=[];
   for(let step=0;step<6;step++){let best=null;
     FEAT.forEach((F,fi)=>{if(chosen.includes(fi))return;let r=0,c=0;for(let i=0;i<curR.length;i++)if(curR[i]&&okR[fi][i])r++;for(let i=0;i<C.length;i++)if(curC[i]&&okC[fi][i])c++;const sc=Math.log(Math.max(r,1e-9)/curR.length)-Math.log(Math.max(c,1)/C.length);if(!best||sc>best.sc)best={fi,sc,r};});
@@ -594,11 +647,11 @@ function narAuto(){ // tham lam: moi buoc chon rang buoc giu % ky dung (nua dau 
 }
 function narTop(){
   const M=S.M,C=combs(),keep=S.keep;if(!keep){narCalc();}
-  const fr=PN.map((k,i)=>{const c=new Array(NM+1).fill(0.5);M.R.forEach(r=>c[r[i]]++);const s=c.reduce((a,b)=>a+b,0);return c.map(x=>Math.log(x/s));});
-  const cand=[];for(let i=0;i<C.length;i++){if(!S.keep[i])continue;const c=C[i];let sc=0;for(let j=0;j<CC;j++)sc+=fr[j][c[j]];cand.push({c,sc});}
-  cand.sort((a,b)=>b.sc-a.sc);const top=[];for(const x of cand){if(top.length>=10)break;if(top.every(y=>y.c.filter(v=>x.c.includes(v)).length<=2))top.push(x);}   // cac bo trung nhau toi da 2 so de da dang
+  const fr=DPN.map((k,i)=>{const c=new Array(NM+1).fill(0.5);M.Y.forEach(r=>c[r[i]]++);const s=c.reduce((a,b)=>a+b,0);return c.map(x=>Math.log(x/s));});
+  const cand=[];for(let i=0;i<C.length;i++){if(!S.keep[i])continue;const c=C[i];let sc=0;for(let j=0;j<DC;j++)sc+=fr[j][c[j]];cand.push({c,sc});}
+  cand.sort((a,b)=>b.sc-a.sc);const top=[];for(const x of cand){if(top.length>=10)break;if(top.every(y=>y.c.slice(0,CC).filter(v=>x.c.slice(0,CC).includes(v)).length<=2))top.push(x);}   // cac bo trung nhau toi da 2 so de da dang
   const EN=GC.extraN||1,lkc=new Array(EN+1).fill(0);if(GC.extra)M.LK.forEach(x=>{if(x)lkc[x]++;});const p=GC.extra?S.pred[GC.extra]:null;let lkOrder=[...Array(EN).keys()].map(x=>x+1).filter(x=>!p||!p.rng||p.diff<S.dirK||(x>=p.rng.lo&&x<=p.rng.hi)).sort((a,b)=>lkc[b]-lkc[a]);
-  $('narTopOut').innerHTML=top.length?`<div class="tw" style="margin-top:6px;"><table><thead><tr><th>#</th><th class="l">Bộ số</th><th>Tổng</th></tr></thead><tbody>${top.map((t,i)=>`<tr><td>${i+1}</td><td class="l">${t.c.map(n=>`<span class="b">${p2(n)}</span>`).join('')}</td><td>${t.c.reduce((a,b)=>a+b,0)}</td></tr>`).join('')}</tbody></table></div>${GC.extra?`<div class="foot">${GC.extraName[0].toUpperCase()+GC.extraName.slice(1)} gợi ý (hay ra nhất${p&&p.rng&&p.diff>=S.dirK?`, trong khoảng hướng ${p.rng.lo}–${p.rng.hi}`:''}): ${lkOrder.slice(0,3).map(x=>`<span class="b lk">${p2(x)}</span>`).join('')}</div>`:''}`:'<div class="foot">Vùng không còn bộ nào.</div>';
+  $('narTopOut').innerHTML=top.length?`<div class="tw" style="margin-top:6px;"><table><thead><tr><th>#</th><th class="l">Bộ số</th><th>Tổng</th></tr></thead><tbody>${top.map((t,i)=>`<tr><td>${i+1}</td><td class="l">${t.c.map((n,j)=>`<span class="b${j>=CC?' lk':''}">${p2(n)}</span>`).join('')}</td><td>${t.c.reduce((a,b)=>a+b,0)}</td></tr>`).join('')}</tbody></table></div>${GC.extra&&DC===CC?`<div class="foot">${GC.extraName[0].toUpperCase()+GC.extraName.slice(1)} gợi ý (hay ra nhất${p&&p.rng&&p.diff>=S.dirK?`, trong khoảng hướng ${p.rng.lo}–${p.rng.hi}`:''}): ${lkOrder.slice(0,3).map(x=>`<span class="b lk">${p2(x)}</span>`).join('')}</div>`:''}`:'<div class="foot">Vùng không còn bộ nào.</div>';
 }
 
 // ---------- POOL SO: cac phuong phap cham diem 35 so (PP15-PP27) ----------
@@ -684,7 +737,8 @@ function sgMake(M,pool,pred,lvl){
   const rng={};PN.forEach(k=>rng[k]=narrow(M.ser[k],lvl/100));
   const fi=n=>FEAT.findIndex(F=>F.n===n);
   const cons=[[fi('Tổng các số'),0.8],[fi('Số lẻ'),0.9],...FEAT.map((F,i)=>F.g==='Khoảng cách liền nhau'?[i,0.9]:null).filter(Boolean)];
-  const crng=cons.map(([i,l])=>({i,r:narrow(M.R.map(FEAT[i].f),l)}));
+  const crng=cons.map(([i,l])=>({i,r:narrow(M.Y.map(FEAT[i].f),l)}));
+  const LKS=DC>CC?(()=>{const c=new Array(GC.extraN+1).fill(0);M.LK.forEach(v=>{if(v)c[v]++;});return [...Array(GC.extraN).keys()].map(v=>v+1).sort((a,b)=>c[b]-c[a]||a-b);})():null;
   const fr=PN.map((k,i)=>{const c=new Array(NM+1).fill(0.5);M.R.forEach(r=>c[r[i]]++);const s=c.reduce((a,b)=>a+b,0);return c.map(x=>Math.log(x/s));});
   const prank={};pool.forEach((v,i)=>prank[v]=1-i/Math.max(1,pool.length));
   const tries=[{dir:true,lv:lvl},{dir:false,lv:lvl},{dir:false,lv:90},{dir:false,lv:95},{dir:false,lv:95,free:true},{dir:false,lv:100,free:true}];
@@ -693,7 +747,8 @@ function sgMake(M,pool,pred,lvl){
     if(PN.some(k=>R[k].lo>R[k].hi))continue;
     const cand=[];
     const cur=[];(function rec(s){const L=cur.length;if(L===CC){const x=cur.slice();
-        if(tr.free||crng.every(o=>{const v=FEAT[o.i].f(x);return v>=o.r.lo&&v<=o.r.hi;}))cand.push({x,sc:x.reduce((s,v,i)=>s+fr[i][v]+1.5*prank[v],0)});return;}
+        const fit=y=>crng.every(o=>{const v=FEAT[o.i].f(y);return v>=o.r.lo&&v<=o.r.hi;});let lk6=null;
+        if(tr.free||(DC>CC?(lk6=LKS.find(l=>fit([...x,l])))!=null:fit(x)))cand.push({x,lk6,sc:x.reduce((s,v,i)=>s+fr[i][v]+1.5*prank[v],0)});return;}
       for(let a=s;a<=n-(CC-L);a++){const v=P[a],k=PN[L];if(v<R[k].lo)continue;if(v>R[k].hi)break;cur.push(v);rec(a+1);cur.pop();}})(0);
     if(cand.length<5)continue;
     cand.sort((p,q)=>q.sc-p.sc);const pick=[];for(const c of cand){if(pick.length>=5)break;if(pick.every(y=>y.x.filter(v=>c.x.includes(v)).length<=3))pick.push(c);}
@@ -703,7 +758,7 @@ function sgMake(M,pool,pred,lvl){
     const lkv=M.LK.filter(v=>v),lkc=new Array(GC.extraN+1).fill(0);lkv.forEach(v=>lkc[v]++);const lr=SN.includes(GC.extra)?narrow(lkv,lvl/100):{lo:1,hi:GC.extraN},pl=pred&&pred[GC.extra];let lo=lr.lo,hi=lr.hi;
     if(tr.dir&&pl&&pl.rng&&pl.diff>=5){lo=Math.max(lo,pl.rng.lo);hi=Math.min(hi,pl.rng.hi);if(lo>hi){lo=lr.lo;hi=lr.hi;}}
     const lks=[];for(let v=lo;v<=hi;v++)lks.push(v);lks.sort((a,b)=>lkc[b]-lkc[a]||a-b);
-    return {tickets:pick.map((c,i)=>{const own=lks.filter(v=>GC.extraN!==NM||!c.x.includes(v));return {x:c.x,lk:own[i%own.length]};}),R,lk:{lo,hi},tr,ncand:cand.length,crng};
+    return {tickets:pick.map((c,i)=>{const own=lks.filter(v=>GC.extraN!==NM||!c.x.includes(v));return {x:c.x,lk:c.lk6!=null?c.lk6:own[i%own.length]};}),R,lk:{lo,hi},tr,ncand:cand.length,crng};
   }
   return null;
 }
@@ -713,24 +768,24 @@ function sgFacts(M,ga,K){
   const {out}=S.PS,ids=PM.map(p=>p[0]).filter(id=>out[id]&&out[id][ga]);
   const cons=new Float64Array(NM+1);ids.forEach(id=>topK(out[id][ga],K).forEach(v=>cons[v]++));for(let v=1;v<=NM;v++)cons[v]/=ids.length;
   const W=M.R.length,pf=PN.map((k,i)=>{const c=new Float64Array(NM+1);M.R.forEach(r=>c[r[i]]++);for(let v=0;v<=NM;v++)c[v]/=W;return c;});
-  const odd=new Float64Array(CC+1),sums=M.R.map(r=>r.reduce((a,b)=>a+b,0)),mg=new Float64Array(NM);M.R.forEach(r=>{odd[r.filter(v=>v%2).length]++;let m=99;for(let i=1;i<CC;i++)m=Math.min(m,r[i]-r[i-1]);mg[m]++;});
+  const odd=new Float64Array(DC+1),sums=M.Y.map(r=>r.reduce((a,b)=>a+b,0)),mg=new Float64Array(NM);M.R.forEach((r,t)=>{odd[M.Y[t].filter(v=>v%2).length]++;let m=99;for(let i=1;i<CC;i++)m=Math.min(m,r[i]-r[i-1]);mg[m]++;});
   const sw=Math.max(3,Math.round(5*NM/35));
   const last=new Int32Array(NM+1).fill(-1),gs=new Float64Array(NM+1),gn=new Int32Array(NM+1),h30=new Int32Array(NM+1);
   M.R.forEach((r,t)=>r.forEach(v=>{if(last[v]>=0){gs[v]+=t-last[v];gn[v]++;}last[v]=t;if(t>=W-30)h30[v]++;}));
   return {cons,nIds:ids.length,pf,odd:Array.from(odd,x=>x/W),mg:Array.from(mg,x=>x/W),sums,sw,W,last,cyc:Array.from(gs,(s,v)=>gn[v]?s/gn[v]:0),h30};
 }
-function sgScore(x,F,pred){
-  const c={};
+function sgScore(x,F,pred,lk){
+  const c={},y=DC>CC&&lk?[...x,lk]:x;   // y = dãy 6 số (Loto) cho hình dạng
   c.cons=x.reduce((s,v)=>s+F.cons[v],0)/CC;                                   // dong thuan cac phuong phap pool
   c.pos=x.reduce((s,v,i)=>s+F.pf[i][v],0)/CC;                                 // tan suat so tai dung vi tri
   let df=0;PN.forEach((k,i)=>{const p=pred&&pred[k];if(p&&p.rng&&p.diff>=3){const w=Math.min(p.diff,10)/10;df+=(x[i]>=p.rng.lo&&x[i]<=p.rng.hi?1:-1)*w;}});c.dir=df/CC;  // hop huong
-  const s=x.reduce((a,b)=>a+b,0);let mg=99;for(let i=1;i<CC;i++)mg=Math.min(mg,x[i]-x[i-1]);
-  c.shape=(F.sums.filter(v=>Math.abs(v-s)<=F.sw).length/F.W+F.odd[x.filter(v=>v%2).length]+(F.mg[mg]||0))/3;   // muc "dien hinh" cua hinh dang
+  const s=y.reduce((a,b)=>a+b,0);let mg=99;for(let i=1;i<CC;i++)mg=Math.min(mg,x[i]-x[i-1]);
+  c.shape=(F.sums.filter(v=>Math.abs(v-s)<=F.sw).length/F.W+F.odd[y.filter(v=>v%2).length]+(F.mg[mg]||0))/3;   // muc "dien hinh" cua hinh dang
   return c;
 }
 const SGW={cons:1,pos:1,dir:1,shape:1},SGN={cons:'Đồng thuận',pos:'Vị trí',dir:'Hướng',shape:'Hình dạng'},SGL={cons:'Đồng thuận = bao nhiêu phương pháp pool cùng chọn các số của dãy',pos:'Vị trí = tần suất mỗi số ra đúng ở vị trí đó',dir:'Hướng = số khớp hướng tăng/giảm dự đoán',shape:'Hình dạng = tổng, số lẻ, khoảng cách nhỏ nhất hay gặp đến đâu'};
 function sgRank(tickets,F,pred){
-  const sc=tickets.map(t=>sgScore(t.x,F,pred)),keys=Object.keys(SGW);
+  const sc=tickets.map(t=>sgScore(t.x,F,pred,t.lk)),keys=Object.keys(SGW);
   const rk={};keys.forEach(k=>{const o=sc.map((c,i)=>[c[k],i]).sort((a,b)=>b[0]-a[0]);rk[k]=new Array(sc.length);o.forEach(([v,i],j)=>rk[k][i]=(sc.length-1-j)/(sc.length-1||1));});
   const o=tickets.map((t,i)=>({...t,c:sc[i],rk:Object.fromEntries(keys.map(k=>[k,rk[k][i]])),tot:keys.reduce((s,k)=>s+SGW[k]*rk[k][i],0),i0:i})).sort((a,b)=>b.tot-a.tot||a.i0-b.i0);
   if(o.length<2)return o;const ov=(a,b)=>a.x.filter(v=>b.x.includes(v)).length;
@@ -762,17 +817,24 @@ function posPool(ga,target){const all=S.M.all,prk=posRanks(),o={},cal=posCal(tar
     const ord=[];for(let v=1;v<=NM;v++)ord.push(v);ord.sort((a,b)=>c[b]-c[a]||a-b);
     o[k]={set:ord.slice(0,m).sort((a,b)=>a-b),m,rate,n,cnt:c,ord,mg:cal[k]};});
   return o;}
-function shapeInfo(ga){const all=S.M.all,lo=Math.max(0,ga-500),sums=[],odd=new Array(CC+1).fill(0);
-  for(let t=lo;t<ga;t++){const r=all[t].r;sums.push(r.reduce((a,b)=>a+b,0));odd[r.filter(v=>v%2).length]++;}
+function shapeInfo(ga){const all=S.M.all,lo=Math.max(0,ga-500),sums=[],odd=new Array(DC+1).fill(0);
+  for(let t=lo;t<ga;t++){const r=DY(all[t]);sums.push(r.reduce((a,b)=>a+b,0));odd[r.filter(v=>v%2).length]++;}
   const n=sums.length,sr=narrow(sums,0.8),srt=sums.slice().sort((a,b)=>a-b),q1=srt[Math.floor(n/3)],q2=srt[Math.floor(2*n/3)],lvOf=s=>s<q1?0:s>q2?2:1;
   const sp=sums[n-1],lv=lvOf(sp);let a=0,b=0;for(let j=1;j<n;j++){if(lvOf(sums[j-1])!==lv)continue;b++;if(lv===0?sums[j]>sums[j-1]:lv===2?sums[j]<sums[j-1]:true)a++;}
   let sh=0;sums.forEach(s=>{if(s>=sr.lo&&s<=sr.hi)sh++;});
-  const ord=[...Array(CC+1).keys()].sort((x,y)=>odd[y]-odd[x]),oddSet=[];let acc=0;for(const k of ord){if(acc>=0.75*n)break;oddSet.push(k);acc+=odd[k];}
+  const ord=[...Array(DC+1).keys()].sort((x,y)=>odd[y]-odd[x]),oddSet=[];let acc=0;for(const k of ord){if(acc>=0.75*n)break;oddSet.push(k);acc+=odd[k];}
   return {n,sr,srP:sh/n,sp,lv,lvN:['thấp','trung bình','cao'][lv],dir:lv===0?'tăng':lv===2?'giảm':'',dirP:b?a/b:0,dirN:b,q1,q2,odd:odd.map(x=>x/n),oddSet:oddSet.sort((a,b)=>a-b),oddP:acc/n};}
 function sgMake2(ga,poolT,pred,target){
   const VX=vangSet(ga),all=S.M.all,PP=posPool(ga,target),SH=shapeInfo(ga),pt=new Set(poolT),n=Math.min(500,ga);
   const lg=PN.map((k,i)=>{const c=PP[k].cnt,a=new Float64Array(NM+1);for(let v=1;v<=NM;v++)a[v]=Math.log((c[v]+.5)/n);return a;});
   const ok=(x,lev)=>{const s=x.reduce((a,b)=>a+b,0),od=x.filter(v=>v%2).length;if(lev>=2)return true;if(s<SH.sr.lo||s>SH.sr.hi||!SH.oddSet.includes(od))return false;if(lev===1||!SH.dir)return true;return SH.dir==='tăng'?s>SH.sp:s<SH.sp;};
+  let lk=null;
+  if(GC.extra){const lkv=[];for(let t=Math.max(0,ga-500);t<ga;t++)if(all[t].lk)lkv.push(all[t].lk);const lkc=new Array(GC.extraN+1).fill(0);lkv.forEach(v=>lkc[v]++);
+    const lr=SN.includes(GC.extra)&&lkv.length>30?narrow(lkv,target):{lo:1,hi:GC.extraN},pl=pred&&pred[GC.extra];let lo=lr.lo,hi=lr.hi;
+    if(pl&&pl.rng&&pl.diff>=5){lo=Math.max(lo,pl.rng.lo);hi=Math.min(hi,pl.rng.hi);if(lo>hi){lo=lr.lo;hi=lr.hi;}}
+    const lks=[];for(let v=lo;v<=hi;v++)lks.push(v);lks.sort((a,b)=>lkc[b]-lkc[a]||a-b);lk={lo,hi};
+    S._lks=lks;}
+  const LKO=DC>CC&&lk?S._lks:null;   // Loto dãy 6 số: thứ tự số may mắn hay ra
   const used=new Float64Array(NM+1),tickets=[],seen=new Set();let lev0=0;
   for(let j=0;j<5;j++){
     let beam=[{x:[],s:0}];
@@ -781,15 +843,11 @@ function sgMake2(ga,poolT,pred,target){
         const s=b.s+lg[i][v]+(pt.has(v)?0.4:0)-1.5*used[v]+(p&&p.rng&&p.diff>=5&&v>=p.rng.lo&&v<=p.rng.hi?0.3:0);nb.push({x:b.x.concat(v),s});}}};
       ext(cand);if(!nb.length)ext(PP[k].ord.slice(0,Math.min(NM,PP[k].m*2)));if(!nb.length)ext(PP[k].ord);
       nb.sort((a,b)=>b.s-a.s);beam=nb.slice(0,600);});
-    let pick=null,lev=0;for(lev=0;lev<=2&&!pick;lev++)pick=beam.find(b=>ok(b.x,lev)&&!seen.has(b.x.join(',')));lev--;
-    if(!pick)break;lev0=Math.max(lev0,lev);seen.add(pick.x.join(','));tickets.push({x:pick.x,lev});pick.x.forEach(v=>used[v]++);}
+    let pick=null,lev=0,plk=null;const ok6=(x,l)=>{if(!LKO)return ok(x,l);plk=LKO.find(m=>ok([...x,m],l));return plk!=null;};
+    for(lev=0;lev<=2&&!pick;lev++)pick=beam.find(b=>ok6(b.x,lev)&&!seen.has(b.x.join(',')));lev--;
+    if(!pick)break;lev0=Math.max(lev0,lev);seen.add(pick.x.join(','));tickets.push(LKO?{x:pick.x,lev,lk:plk}:{x:pick.x,lev});pick.x.forEach(v=>used[v]++);}
   const R={};PN.forEach(k=>R[k]={lo:PP[k].set[0],hi:PP[k].set[PP[k].set.length-1],set:PP[k].set,m:PP[k].m,rate:PP[k].rate,mg:PP[k].mg});
-  let lk=null;
-  if(GC.extra){const lkv=[];for(let t=Math.max(0,ga-500);t<ga;t++)if(all[t].lk)lkv.push(all[t].lk);const lkc=new Array(GC.extraN+1).fill(0);lkv.forEach(v=>lkc[v]++);
-    const lr=SN.includes(GC.extra)&&lkv.length>30?narrow(lkv,target):{lo:1,hi:GC.extraN},pl=pred&&pred[GC.extra];let lo=lr.lo,hi=lr.hi;
-    if(pl&&pl.rng&&pl.diff>=5){lo=Math.max(lo,pl.rng.lo);hi=Math.min(hi,pl.rng.hi);if(lo>hi){lo=lr.lo;hi=lr.hi;}}
-    const lks=[];for(let v=lo;v<=hi;v++)lks.push(v);lks.sort((a,b)=>lkc[b]-lkc[a]||a-b);lk={lo,hi};
-    tickets.forEach((c,i)=>{const own=lks.filter(v=>GC.extraN!==NM||!c.x.includes(v));c.lk=own[i%own.length];});}
+  if(GC.extra&&S._lks)tickets.forEach((c,i)=>{if(c.lk!=null)return;const own=S._lks.filter(v=>GC.extraN!==NM||!c.x.includes(v));c.lk=own[i%own.length];});
   return {tickets,R,PP,SH,lk,lev:lev0,tr:{dir:true,lv:target,free:lev0>=2},crng:[],ncand:tickets.length};
 }
 
@@ -1095,26 +1153,26 @@ function mySaveNow(){const nd=S.M.nd,doc={date:nd,tickets:(S.myT||[]).filter(t=>
   const a=myGet().filter(d=>d.date!==nd);if(doc.tickets.length)a.push(doc);try{localStorage.setItem('vt_mine_'+GAME,JSON.stringify(a));}catch(e){}if($('myHist'))myHistShow();}
 function mySave(){clearTimeout(S.mySaveT);S.mySaveT=setTimeout(mySaveNow,700);}
 // dac trung hinh dang cua moi ky (cache theo so ky)
-function myFeat(){const all=S.M.all,L=all.length;if(S.myF&&S.myF.L===L)return S.myF;const h=Math.floor(NM/2);
-  const f=all.map(d=>{const r=d.r.slice().sort((a,b)=>a-b);let cons=0;for(let i=1;i<r.length;i++)if(r[i]-r[i-1]===1)cons++;
-    return {r,s:r.reduce((a,b)=>a+b,0),odd:r.filter(v=>v%2).length,big:r.filter(v=>v>h).length,cons,spr:r[r.length-1]-r[0],tl:new Set(r.map(v=>v%10)).size,dc:new Set(r.map(v=>Math.floor(v/10))).size};});
+function myFeat(){const all=S.M.all,L=all.length;if(S.myF&&S.myF.L===L)return S.myF;
+  const f=all.map(d=>myFeatOf(DC>CC?[...d.r,d.lk||0]:d.r));
   S.myF={L,f};return S.myF;}
-function myFeatOf(x){const r=x.slice().sort((a,b)=>a-b),h=Math.floor(NM/2);let cons=0;for(let i=1;i<r.length;i++)if(r[i]-r[i-1]===1)cons++;
-  return {r,s:r.reduce((a,b)=>a+b,0),odd:r.filter(v=>v%2).length,big:r.filter(v=>v>h).length,cons,spr:r[r.length-1]-r[0],tl:new Set(r.map(v=>v%10)).size,dc:new Set(r.map(v=>Math.floor(v/10))).size};}
+function myFeatOf(x){   // x = 5/6 số chính (+ MM ở cuối nếu Loto dãy 6 số); cặp liền, biên, đuôi, nhóm chục chỉ tính số chính
+  const six=DC>CC&&x.length===DC,m=(six?x.slice(0,CC):x).slice().sort((a,b)=>a-b),r=six?[...m,x[CC]]:m;let cons=0;for(let i=1;i<m.length;i++)if(m[i]-m[i-1]===1)cons++;
+  return {r,s:r.reduce((a,b)=>a+b,0),odd:r.filter(v=>v%2).length,big:r.filter((v,i)=>isBig(v,i)).length,cons,spr:m[m.length-1]-m[0],tl:new Set(m.map(v=>v%10)).size,dc:new Set(m.map(v=>Math.floor(v/10))).size};}
 // thong ke cua cua so [a,b)
-function myStats(a,b){const F=myFeat().f,n=b-a,sb=CC<=5?5:7,st={n,sumH:new Float64Array(400),spH:new Float64Array(NM+1),odd:new Float64Array(CC+1),big:new Float64Array(CC+1),cons:new Float64Array(CC),tl:new Float64Array(CC+1),dc:new Float64Array(7),pos:[...Array(CC)].map(()=>new Float64Array(NM+1))};
+function myStats(a,b){const F=myFeat().f,n=b-a,sb=CC<=5?5:7,st={n,sumH:new Float64Array(400),spH:new Float64Array(NM+1),odd:new Float64Array(DC+1),big:new Float64Array(DC+1),cons:new Float64Array(CC),tl:new Float64Array(CC+1),dc:new Float64Array(7),pos:[...Array(DC)].map(()=>new Float64Array(NM+1))};
   for(let t=a;t<b;t++){const o=F[t];st.sumH[o.s]++;st.spH[o.spr]++;st.odd[o.odd]++;st.big[o.big]++;st.cons[o.cons]++;st.tl[o.tl]++;st.dc[o.dc]++;o.r.forEach((v,i)=>st.pos[i][v]++);}
   const band=(H,w)=>{const P=new Float64Array(H.length+1);for(let i=0;i<H.length;i++)P[i+1]=P[i]+H[i];const g=s=>P[Math.min(H.length,s+w+1)]-P[Math.max(0,s-w)];let mx=0;for(let s=0;s<H.length;s++)mx=Math.max(mx,g(s));return {g,mx};};
   st.SB=band(st.sumH,sb);st.PB=band(st.spH,3);st.sb=sb;return st;}
 function myScore(st,x){const o=myFeatOf(x),n=st.n,mx=a=>Math.max(...a),pc=v=>v/n;
   const it=[['Tổng',o.s,st.SB.g(o.s)/st.SB.mx,`${(pc(st.SB.g(o.s))*100).toFixed(0)}% số kỳ có tổng trong ±${st.sb}`],
-    ['Chẵn : lẻ',`${CC-o.odd} : ${o.odd}`,st.odd[o.odd]/mx(st.odd),`${(pc(st.odd[o.odd])*100).toFixed(0)}% số kỳ có ${o.odd} số lẻ`],
-    ['Nhỏ : lớn',`${CC-o.big} : ${o.big}`,st.big[o.big]/mx(st.big),`${(pc(st.big[o.big])*100).toFixed(0)}% số kỳ có ${o.big} số > ${Math.floor(NM/2)}`],
+    ['Chẵn : lẻ',`${DC-o.odd} : ${o.odd}`,st.odd[o.odd]/mx(st.odd),`${(pc(st.odd[o.odd])*100).toFixed(0)}% số kỳ có ${o.odd} số lẻ`],
+    ['Nhỏ : lớn',`${DC-o.big} : ${o.big}`,st.big[o.big]/mx(st.big),`${(pc(st.big[o.big])*100).toFixed(0)}% số kỳ có ${o.big} số > ${Math.floor(NM/2)}${DC>CC?' (MM ≥ 7)':''}`],
     ['Cặp liền nhau',o.cons,st.cons[Math.min(o.cons,CC-1)]/mx(st.cons),`${(pc(st.cons[Math.min(o.cons,CC-1)])*100).toFixed(0)}% số kỳ có ${o.cons} cặp liền`],
     ['Biên (lớn nhất − nhỏ nhất)',o.spr,st.PB.g(o.spr)/st.PB.mx,`${(pc(st.PB.g(o.spr))*100).toFixed(0)}% số kỳ có biên trong ±3`],
     ['Số đuôi khác nhau',o.tl,st.tl[o.tl]/mx(st.tl),`${(pc(st.tl[o.tl])*100).toFixed(0)}% số kỳ như vậy`],
     ['Số nhóm chục',o.dc,st.dc[o.dc]/mx(st.dc),`${(pc(st.dc[o.dc])*100).toFixed(0)}% số kỳ như vậy`],
-    ['Vị trí từng số',o.r.map(p2).join(' '),o.r.reduce((s,v,i)=>s+st.pos[i][v]/mx(st.pos[i]),0)/CC,o.r.map((v,i)=>`${PN[i]} ${(pc(st.pos[i][v])*100).toFixed(0)}%`).join(' · ')]];
+    ['Vị trí từng số',o.r.map(p2).join(' '),o.r.reduce((s,v,i)=>s+st.pos[i][v]/mx(st.pos[i]),0)/o.r.length,o.r.map((v,i)=>`${DPN[i]} ${(pc(st.pos[i][v])*100).toFixed(0)}%`).join(' · ')]];
   return {it,sc:it.reduce((s,a)=>s+a[2],0)/it.length*100};}
 // hoc tiem nang: lam lai tren cac ky cu voi ve ngau nhien, xem diem hinh dang + so trong pool co lien quan so trung khong
 function myLearn(W,cb){const all=S.M.all,L=all.length,{out}=S.PS,sel=S.sg?S.sg.sel:null,K=S.sgK||15,key=[GAME,L,W,sel,K].join('|');
@@ -1122,7 +1180,7 @@ function myLearn(W,cb){const all=S.M.all,L=all.length,{out}=S.PS,sel=S.sg?S.sg.s
   const T=Math.min(300,L-W-1),rows=[],g0=GAME;let t=L-T;let seed=12345;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
   const step=()=>{if(GAME!==g0){S.myLBusy=null;return;}if(busyUser()){setTimeout(step,250);return;}const t1=performance.now();
     while(t<L&&performance.now()-t1<20){const st=myStats(t-W,t),pool=sel&&out[sel]&&out[sel][t]?new Set(topK(out[sel][t],K)):null,r=all[t].r;
-      for(let k=0;k<30;k++){const s=new Set();while(s.size<CC)s.add(1+Math.floor(rnd()*NM));const x=[...s];rows.push([myScore(st,x).sc,pool?x.filter(v=>pool.has(v)).length:0,x.filter(v=>r.includes(v)).length]);}t++;}
+      for(let k=0;k<30;k++){const s=new Set();while(s.size<CC)s.add(1+Math.floor(rnd()*NM));const x=[...s];rows.push([myScore(st,DC>CC?[...x,1+Math.floor(rnd()*GC.extraN)]:x).sc,pool?x.filter(v=>pool.has(v)).length:0,x.filter(v=>r.includes(v)).length]);}t++;}
     if(t<L){nextStep(step,t1);return;}
     // hoi quy tuyen tinh: trung ~ a + b*diem/100 + c*so trong pool
     let n=rows.length,S1=[0,0,0],M=[[0,0,0],[0,0,0],[0,0,0]];rows.forEach(([s,p,h])=>{const z=[1,s/100,p];for(let i=0;i<3;i++){S1[i]+=z[i]*h;for(let j=0;j<3;j++)M[i][j]+=z[i]*z[j];}});
@@ -1170,7 +1228,7 @@ function myEvalShow(){const el=$('myEval'),W=Math.min(S.myW,S.M.all.length-1),L=
   if(!full.length){el.innerHTML=`<div class="foot">Chọn đủ ${CC} số cho một dãy để app chấm điểm.</div>`;return;}
   const st=myStats(L-W,L),pool=new Set(S.sg.pool),base=CC*CC/NM,pc=x=>(x*100).toFixed(0)+'%';
   const learn=S.myL&&S.myL.key===[GAME,L,W,S.sg.sel,S.sgK||15].join('|')?S.myL:null;
-  const rows=S.myT.map((t,i)=>[t,i]).filter(([t])=>t.x.length===CC).map(([t,i])=>{const R=myScore(st,t.x),inP=t.x.filter(v=>pool.has(v)).length;t.sc=Math.round(R.sc);
+  const rows=S.myT.map((t,i)=>[t,i]).filter(([t])=>t.x.length===CC).map(([t,i])=>{const R=myScore(st,DC>CC&&t.lk?[...t.x,t.lk]:t.x),inP=t.x.filter(v=>pool.has(v)).length;t.sc=Math.round(R.sc);
     const pt=learn?learn.beta[0]+learn.beta[1]*R.sc/100+learn.beta[2]*inP:null;t.pt=pt==null?null:+pt.toFixed(3);
     const bar=s=>`<span style="display:inline-block;width:60px;height:6px;border-radius:3px;background:var(--panel2);vertical-align:middle;"><span style="display:block;width:${Math.round(s*100)}%;height:6px;border-radius:3px;background:${s>=0.6?'var(--good)':s>=0.3?'var(--accent)':'var(--bad)'};"></span></span>`;
     const info=t.x.slice().sort((a,b)=>a-b).map(v=>[v,myNumInfo(v)]);
@@ -1181,7 +1239,7 @@ function myEvalShow(){const el=$('myEval'),W=Math.min(S.myW,S.M.all.length-1),L=
     return `<div class="sum" style="margin-top:8px;border-left:3px solid ${MY_COL[GAME]};"><div class="row" style="justify-content:space-between;"><b>Dãy ${i+1}: ${t.x.slice().sort((a,b)=>a-b).map(p2).join(' ')}${t.lk?` <span style="color:${MY_LK};">· MM ${p2(t.lk)}</span>`:''}</b>
        <span>${(()=>{const da=myDa(),sm=t.x.reduce((a,b)=>a+b,0),lo=sm<=da.mid;const inR=sm>=da.rg[0]&&sm<=da.rg[1];return `<span class="pill ${da.on?(lo===da.lo?'up':'dn'):'nn'}" style="margin-right:6px;">tổng ${sm} · ${lo?'thấp':'cao'}${da.on?(lo===da.lo?(inR?' · hợp đà':' · hợp đà nhưng quá '+(lo?'thấp':'cao')):' · ngược đà'):''}</span>`;})()}Hình dạng <b style="font-size:1.1rem;">${Math.round(R.sc)}</b>/100 · trong pool <b>${inP}/${CC}</b>${pt!=null?` · tiềm năng <b>${pt.toFixed(2)}</b> số (chung ${base.toFixed(2)})`:''}</span></div>
       <div class="tw" style="margin-top:6px;"><table><tbody>${R.it.map(a=>`<tr><td class="l">${a[0]}</td><td><b>${a[1]}</b></td><td>${bar(a[2])} ${Math.round(a[2]*100)}</td><td class="l foot" style="margin:0;">${a[3]}</td></tr>`).join('')}</tbody></table></div>
-      <details style="margin-top:6px;" open><summary class="lbl" style="cursor:pointer;">Đánh giá từng số</summary>${numRows}
+      <details style="margin-top:6px;"><summary class="lbl" style="cursor:pointer;">Đánh giá từng số</summary>${numRows}
       <div class="foot">PP = số phương pháp có số này trong pool ${S.sgK||15} số của mình. z: lệch so với trung bình trên toàn bộ ${S.M.all.length} kỳ (|z| ≥ 2 tô màu). Nóng / nguội = 20 kỳ và 50 kỳ gần nhất cùng ra nhiều / ít.</div></details></div>`;}).join('');
   const da=myDa(),daBox=`<div class="sum" style="margin-top:8px;border-left:3px solid ${da.on?'var(--accent)':'var(--border)'};"><b>Đà tổng ${da.w} kỳ gần nhất</b> ${da.on?'<span class="pill up">đang có đà</span>':'<span class="pill nn">không có đà rõ</span>'}
     <div style="margin-top:4px;">Tổng dính kỳ trước: <b>${da.r>=0?'+':''}${da.r.toFixed(2)}</b> (p ${da.p<0.005?'< 0.005':da.p.toFixed(2)}) · ${Math.round(da.same*100)}% kỳ cùng phía mức giữa ${da.mid} với kỳ trước (bình thường 50%) · tổng TB ${da.m.toFixed(0)}.</div>
@@ -1214,24 +1272,55 @@ function myHistShow(){const el=$('myHist');if(!el)return;const res=new Map(S.M.a
     <tr><td class="l"><b>App: 2 dãy ★</b></td><td>${A.star.length}</td><td><b>${av(A.star)}</b></td><td>${ge(A.star,2)}</td><td>${ge(A.star,3)}</td>${LN?`<td>${A.apLk}/${A.apLkN}</td>`:''}</tr>
     <tr><td class="l">App: cả 5 dãy</td><td>${A.all.length}</td><td>${av(A.all)}</td><td>${ge(A.all,2)}</td><td>${ge(A.all,3)}</td>${LN?'<td></td>':''}</tr>
     <tr><td class="l foot" style="margin:0;">Chọn bừa (lý thuyết)</td><td></td><td>${base.toFixed(2)}</td><td>${Math.round((1-hy(0)-hy(1))*100)}%</td><td>${Math.round((1-hy(0)-hy(1)-hy(2))*100)}%</td>${LN?`<td>1/${GC.extraN}</td>`:''}</tr></tbody></table></div>`;
-  el.innerHTML=saved+`<details style="margin-top:8px;" open><summary class="lbl" style="cursor:pointer;">Đối chiếu dãy của anh và gợi ý của app: ${dates.length} kỳ đã có kết quả</summary>${sum}
+  el.innerHTML=saved+`<details style="margin-top:8px;"><summary class="lbl" style="cursor:pointer;">Đối chiếu dãy của anh và gợi ý của app: ${dates.length} kỳ đã có kết quả</summary>${sum}
     <div class="tw" style="margin-top:6px;"><table><thead><tr><th class="l">Kỳ · kết quả</th><th class="l">Dãy của anh (xanh = trúng)</th><th class="l">Gợi ý của app</th></tr></thead><tbody>${rows}</tbody></table></div>
     <div class="foot">Số đậm cuối mỗi dãy = số trúng. ${A.me.length<30?'Cần khoảng 30 dãy trở lên mới so được ai chọn tốt hơn; ít hơn thì chênh lệch chủ yếu do may rủi.':''}</div></details>`;}
 // ================= SAO LUU / KHOI PHUC toan bo du lieu nguoi dung (3 game) =================
 function bkLs(k){try{const a=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
 function bkCollect(){const out={app:'vietlott-nghien-cuu',ver:1,at:new Date().toISOString(),games:{},prefs:{}};
   Object.keys(GAMES).forEach(g=>{const st=getS(g),c=GAMES[g];out.games[g]={draws:DB?(st.dbRows||[]):bkLs(c.ls),preds:DB?(st.preds||[]):bkLs('vt_pred_'+g),mine:DB?(st.mineDb||[]):bkLs('vt_mine_'+g)};});
-  ['vt_tt','vt_kx','vt_tq_who'].forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null)out.prefs[k]=v;}catch(e){}});return out;}
-function bkCount(o){let d=0,p=0,m=0;Object.values(o.games||{}).forEach(x=>{d+=(x.draws||[]).length;p+=(x.preds||[]).length;m+=(x.mine||[]).length;});return {d,p,m};}
+  ['vt_tt','vt_kx','vt_tq_who'].forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null)out.prefs[k]=v;}catch(e){}});
+  out.ver=2;out.sopool={};out.sove={};['loto','mega','power'].forEach(g=>{out.sopool[g]=ppBook(g);out.sove[g]=svBook(g);});return out;}
+function bkCount(o){let d=0,p=0,m=0,sp=0,sv=0;Object.values(o.games||{}).forEach(x=>{d+=(x.draws||[]).length;p+=(x.preds||[]).length;m+=(x.mine||[]).length;});Object.values(o.sopool||{}).forEach(b=>sp+=Object.keys(b||{}).length);Object.values(o.sove||{}).forEach(b=>sv+=Object.keys(b||{}).length);return {d,p,m,sp,sv};}
+const bkTxt=c=>`${c.d} kết quả nhập thêm, ${c.p} gợi ý app, ${c.m} kỳ có dãy của anh, ${c.sp} kỳ có pool đã lưu, ${c.sv} kỳ có bộ vé đã chốt`;
 async function bkSave(){const o=bkCollect(),c=bkCount(o),name=`vietlott-saoluu-${new Date().toISOString().slice(0,10)}.json`,txt=JSON.stringify(o);
   $('bkMsg').textContent='Đang chuẩn bị file…';
-  try{const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;if(dl){await dl.save({filename:name,data:txt});$('bkMsg').innerHTML=`✓ Đã lưu file <b>${name}</b>: ${c.d} kết quả nhập thêm, ${c.p} gợi ý app, ${c.m} kỳ có dãy của anh.`;return;}}
+  try{const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;if(dl){await dl.save({filename:name,data:txt});$('bkMsg').innerHTML=`✓ Đã lưu file <b>${name}</b>: ${bkTxt(c)}.`;bkMark(name,c);return;}}
   catch(e){if(e&&e.code==='declined'){$('bkMsg').textContent='Đã hủy lưu file.';return;}if(e&&e.code==='rate_limited'){$('bkMsg').textContent='Đang có một hộp thoại lưu file mở, thử lại sau giây lát.';return;}}
   try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);
-    $('bkMsg').innerHTML=`✓ Đã tải file <b>${name}</b>: ${c.d} kết quả nhập thêm, ${c.p} gợi ý app, ${c.m} kỳ có dãy của anh.`;}catch(e){$('bkMsg').textContent='Không lưu được file ở chế độ xem này.';}}
+    $('bkMsg').innerHTML=`✓ Đã tải file <b>${name}</b>: ${bkTxt(c)}.`;bkMark(name,c);}catch(e){$('bkMsg').textContent='Không lưu được file ở chế độ xem này.';}}
+// Sao lưu gần nhất (anh 16/10/2026: "chỉ cần hiện bản sao lưu mới nhất"): ghi nhớ trong trình duyệt, hiện cố định + nhắc khi quá lâu
+const BK_NHAC=3;
+function bkMark(name,c){try{localStorage.setItem('vl_bk_last',JSON.stringify({at:new Date().toISOString(),name,c}));}catch(e){}bkShowLast();}
+function bkShowLast(){const el=$('bkLast'),w=$('bkWarn');if(!el)return;let L=null;try{L=JSON.parse(localStorage.getItem('vl_bk_last')||'null');}catch(e){}
+  if(!L||!L.at){el.innerHTML='<span class="no">Chưa sao lưu lần nào.</span> Bấm Sao lưu để lưu file về máy.';if(w)w.textContent=' · chưa sao lưu';return;}
+  const d=new Date(L.at),days=Math.floor((Date.now()-d.getTime())/864e5);
+  el.innerHTML=`Sao lưu gần nhất: <b>${d.toLocaleString('vi-VN')}</b> (${days<1?'hôm nay':days+' ngày trước'}) · file <b>${L.name}</b>${L.c?` · ${bkTxt(L.c)}`:''}${days>=BK_NHAC?` <span class="no">— đã ${days} ngày chưa sao lưu lại</span>`:''}`;
+  if(w)w.textContent=days>=BK_NHAC?` · đã ${days} ngày chưa sao lưu`:'';}
+// ---- Tự động sao lưu (máy tính, Chrome/Edge): anh chọn 1 file một lần, app tự ghi đè file đó sau mỗi lần lưu và định kỳ (anh 16/10/2026) ----
+function bkIdb(){return new Promise((res,rej)=>{const r=indexedDB.open('vl_bk',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function bkHGet(){try{const db=await bkIdb();return await new Promise(res=>{const q=db.transaction('h').objectStore('h').get('handle');q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null);});}catch(e){return null;}}
+async function bkHSet(h){try{const db=await bkIdb();await new Promise(res=>{const tx=db.transaction('h','readwrite');tx.objectStore('h').put(h,'handle');tx.oncomplete=res;tx.onerror=res;});}catch(e){}}
+async function bkHDel(){try{const db=await bkIdb();await new Promise(res=>{const tx=db.transaction('h','readwrite');tx.objectStore('h').delete('handle');tx.oncomplete=res;tx.onerror=res;});}catch(e){}}
+let bkBusy=false;
+async function bkAuto(force){if(bkBusy)return;bkBusy=true;try{const h=await bkHGet();if(!h){bkAutoShow();return;}
+    let p=await h.queryPermission({mode:'readwrite'});if(p!=='granted'&&force)p=await h.requestPermission({mode:'readwrite'});
+    if(p!=='granted'){bkAutoShow('cho');return;}
+    const w=await h.createWritable();await w.write(JSON.stringify(bkCollect()));await w.close();
+    try{localStorage.setItem('vl_bk_auto',JSON.stringify({at:new Date().toISOString(),name:h.name}));}catch(e){}bkAutoShow();
+  }catch(e){bkAutoShow('loi');}finally{bkBusy=false;}}
+async function bkAutoPick(){if(!window.showSaveFilePicker){bkAutoShow('khong');return;}
+  try{const h=await window.showSaveFilePicker({suggestedName:'vietlott-saoluu-tudong.json',types:[{description:'File sao lưu',accept:{'application/json':['.json']}}]});await bkHSet(h);await bkAuto(true);}catch(e){}}
+async function bkAutoOff(){await bkHDel();try{localStorage.removeItem('vl_bk_auto');}catch(e){}bkAutoShow();}
+async function bkAutoShow(tt){const el=$('bkAuto');if(!el)return;
+  if(!window.showSaveFilePicker){el.innerHTML='Tự động sao lưu: <b>chưa hỗ trợ trên trình duyệt này</b> (chỉ có trên Chrome/Edge máy tính). Trên điện thoại anh bấm Sao lưu bằng tay, app sẽ nhắc khi quá 3 ngày.';return;}
+  const h=await bkHGet();let L=null;try{L=JSON.parse(localStorage.getItem('vl_bk_auto')||'null');}catch(e){}
+  if(!h){el.innerHTML='Tự động sao lưu: <b>đang tắt</b>. <button class="btn" onclick="bkAutoPick()">Chọn file để tự lưu</button> <span class="foot" style="margin:0;">Chọn 1 lần, ví dụ trong OneDrive; app tự ghi đè file đó sau mỗi lần lưu pool, chốt vé, nhập kết quả và mỗi 30 phút.</span>';return;}
+  const note=tt==='cho'?' <span class="no">— trình duyệt cần anh cho phép ghi lại</span> <button class="btn" onclick="bkAuto(true)">Cho phép ghi lại</button>':tt==='loi'?' <span class="no">— lần ghi gần nhất bị lỗi</span> <button class="btn" onclick="bkAuto(true)">Thử lại</button>':'';
+  el.innerHTML=`Tự động sao lưu: <b>đang bật</b> → file <b>${h.name}</b>${L&&L.at?` · ghi lần cuối <b>${new Date(L.at).toLocaleString('vi-VN')}</b>`:''}${note} <button class="btn" onclick="bkAutoOff()">Tắt</button>`;}
 function bkPick(f){const r=new FileReader();r.onload=()=>{let o;try{o=JSON.parse(r.result);}catch(e){$('bkMsg').innerHTML='<span class="no">File không đọc được (không phải file sao lưu).</span>';return;}
     if(!o||o.app!=='vietlott-nghien-cuu'||!o.games){$('bkMsg').innerHTML='<span class="no">Đây không phải file sao lưu của app này.</span>';return;}
-    const c=bkCount(o);S.bkPend=o;$('bkMsg').innerHTML=`File sao lưu lúc <b>${o.at?new Date(o.at).toLocaleString('vi-VN'):'?'}</b>: ${c.d} kết quả nhập thêm, ${c.p} gợi ý app, ${c.m} kỳ có dãy của anh.<br>Khôi phục sẽ <b>thêm</b> các mục này vào dữ liệu hiện có (kỳ trùng ngày thì lấy theo file; gợi ý app đã chốt thì giữ nguyên). Không xóa gì.
+    const c=bkCount(o);S.bkPend=o;$('bkMsg').innerHTML=`File sao lưu lúc <b>${o.at?new Date(o.at).toLocaleString('vi-VN'):'?'}</b>: ${bkTxt(c)}.<br>Khôi phục sẽ <b>thêm</b> các mục này vào dữ liệu hiện có (kỳ trùng ngày thì lấy theo file; gợi ý app đã chốt thì giữ nguyên). Không xóa gì.
       <div class="row" style="margin-top:6px;"><button class="btn" id="bkYes" style="border-color:var(--bad);color:var(--bad);">Chắc chắn khôi phục</button><button class="btn" id="bkNo">Không</button></div>`;
     $('bkYes').onclick=bkRestore;$('bkNo').onclick=()=>{S.bkPend=null;$('bkMsg').textContent='Đã hủy khôi phục.';$('bkFile').value='';};};r.readAsText(f);}
 async function bkRestore(){const o=S.bkPend;if(!o)return;S.bkPend=null;$('bkMsg').textContent='Đang khôi phục…';let n=0,fail=0;
@@ -1241,12 +1330,15 @@ async function bkRestore(){const o=S.bkPend;if(!o)return;S.bkPend=null;$('bkMsg'
       for(const e of P)await put(c.pcoll,e,true);if(c.mcoll)for(const e of M)await put(c.mcoll,e,false);}
     else{const mg=(k,arr,keep)=>{const cur=bkLs(k),m=new Map(cur.map(e=>[e.date,e]));arr.forEach(e=>{if(keep&&m.has(e.date))return;m.set(e.date,e);n++;});try{localStorage.setItem(k,JSON.stringify([...m.values()]));}catch(er){fail++;}};
       mg(c.ls,D.map(e=>({date:e.date,r:e.r,lk:e.lk})),false);mg('vt_pred_'+g,P,true);mg('vt_mine_'+g,M,false);}}
+  // 2 sổ mới: kỳ đã khóa (đã chấm) giữ nguyên; kỳ chưa khóa lấy bản có thời gian lưu mới hơn
+  const mgBook=(src,get,put)=>Object.keys(src||{}).forEach(g=>{const cur=get(g),inc=src[g]||{};Object.keys(inc).forEach(k=>{const a=cur[k],b=inc[k];if(!b)return;if(a&&(a.lock||(a.t||0)>=(b.t||0)))return;cur[k]=b;n++;});put(g,cur);});
+  mgBook(o.sopool,ppBook,ppPut);mgBook(o.sove,svBook,svPut);
   Object.entries(o.prefs||{}).forEach(([k,v])=>{try{if(localStorage.getItem(k)==null)localStorage.setItem(k,v);}catch(e){}});
   $('bkMsg').innerHTML=`✓ Đã khôi phục ${n} mục${fail?`, <span class="no">${fail} mục lỗi</span>`:''}.`;$('bkFile').value='';S.myFor=null;S.preds=null;if(!DB)renderAll();}
 function renderR10(sel,K){const el=$('r10In');if(!el)return;const all=S.M.all,L=all.length,{out}=S.PS,ex=GC.extra,rows=[];
   $('r10').querySelector('summary').textContent=`Lịch sử 10 kỳ gần nhất (đối chiếu pool ${K} số theo ${sel})`;
-  for(let t=L-1;t>=Math.max(0,L-10);t--){const d=all[t],r=d.r,s=r.reduce((a,b)=>a+b,0),od=r.filter(v=>v%2).length,pool=out[sel]&&out[sel][t]?topK(out[sel][t],K):[],h=r.filter(v=>pool.includes(v)).length;
-    rows.push(`<tr><td class="l" style="white-space:nowrap;">${d.date.slice(0,5)}${d.date.length>10?d.date.slice(10):""}</td><td class="l" style="white-space:nowrap;">${r.map(v=>`<span class="b" style="font-size:.75rem;${pool.includes(v)?'background:var(--good);color:#04200a;':''}">${p2(v)}</span>`).join('')}${ex&&d.lk?` <span class="b lk" style="font-size:.75rem;">${p2(d.lk)}</span>`:''}</td><td>${s}</td><td>${CC-od}:${od}</td><td class="${h>=3?'ok':h<=1?'no':''}"><b>${pool.length?h:'—'}</b></td></tr>`);}
+  for(let t=L-1;t>=Math.max(0,L-10);t--){const d=all[t],r=d.r,dy=DY(d),s=dy.reduce((a,b)=>a+b,0),od=dy.filter(v=>v%2).length,pool=out[sel]&&out[sel][t]?topK(out[sel][t],K):[],h=r.filter(v=>pool.includes(v)).length;
+    rows.push(`<tr><td class="l" style="white-space:nowrap;">${d.date.slice(0,5)}${d.date.length>10?d.date.slice(10):""}</td><td class="l" style="white-space:nowrap;">${r.map(v=>`<span class="b" style="font-size:.75rem;${pool.includes(v)?'background:var(--good);color:#04200a;':''}">${p2(v)}</span>`).join('')}${ex&&d.lk?` <span class="b lk" style="font-size:.75rem;">${p2(d.lk)}</span>`:''}</td><td>${s}</td><td>${DC-od}:${od}</td><td class="${h>=3?'ok':h<=1?'no':''}"><b>${pool.length?h:'—'}</b></td></tr>`);}
   el.innerHTML=`<div class="tw" style="margin-top:4px;"><table><thead><tr><th class="l">Kỳ</th><th class="l">Kết quả${ex?` · ${ex}`:''}</th><th>Tổng</th><th>C:L</th><th>Pool</th></tr></thead><tbody>${rows.join('')}</tbody></table></div><div class="foot" style="margin:2px 0 0;">Xanh = số nằm trong pool ${K} số mà cùng phương pháp đã gợi ý cho kỳ đó (tính chỉ từ các kỳ trước).</div>`;}
 // ---------- POOL GON 7 / 9 SO + KIEM SO NGUOI DUNG CAN NHAC ----------
 function smallStats(sel,K,span){const {out,N,R}=S.PS,d=[0,0,0];let n=0;for(let t=N-span;t<N;t++){if(!out[sel][t])continue;const h=topK(out[sel][t],K).filter(v=>R[t].includes(v)).length;n++;if(h>=1)d[0]++;if(h>=2)d[1]++;if(h>=3)d[2]++;}return d.map(x=>x/n);}
@@ -1341,9 +1433,9 @@ const nextStep=(f,t1)=>setTimeout(f,performance.now()-t1>30?120:0);
 function renderParity(){
   if(!$('psCard').open)return;
   const all=S.M.all,L=all.length,lo=Math.max(0,L-500),D=all.slice(lo),n=D.length,pc=x=>(x*100).toFixed(0)+'%';
-  const sum=r=>r.reduce((a,b)=>a+b,0),odd=r=>r.filter(v=>v%2).length,S0=D.map(d=>sum(d.r)),O=D.map(d=>odd(d.r));
+  const sum=r=>r.reduce((a,b)=>a+b,0),odd=r=>r.filter(v=>v%2).length,S0=D.map(d=>sum(DY(d))),O=D.map(d=>odd(DY(d))),CC=DC;   // Loto: dãy 6 số (5 số + MM)
   const srt=S0.slice().sort((a,b)=>a-b),q1=srt[Math.floor(n/3)],q2=srt[Math.floor(2*n/3)],lv=s=>s<q1?0:s>q2?2:1,LV=['thấp','trung bình','cao'];
-  const last=all[L-1],sl=sum(last.r),ol=odd(last.r),lvl=lv(sl);
+  const last=all[L-1],sl=sum(DY(last)),ol=odd(DY(last)),lvl=lv(sl);
   // tong ky toi theo muc ky truoc: khoang 70% hep nhat cua cac tong ky sau khi ky truoc cung muc
   const nxt=[];for(let i=1;i<n;i++)if(lv(S0[i-1])===lvl)nxt.push(S0[i]);
   const r70=narrow(nxt,0.7),r80=narrow(nxt,0.8),u70=narrow(S0,0.7);
@@ -1369,7 +1461,7 @@ function renderParity(){
    <div class="tw"><table><thead><tr><th class="l">Số lẻ : số chẵn</th><th class="l">Mọi kỳ (500)</th><th class="l">Sau kỳ có ${ol} lẻ (${cN} lần)</th></tr></thead><tbody>${[...Array(CC+1).keys()].map(k=>`<tr${k===ol?' style="outline:2px solid var(--good);outline-offset:-2px;"':''}><td class="l"><b>${k} lẻ : ${CC-k} chẵn</b></td><td class="l" style="min-width:110px;">${pc(oc[k]/n)}${bar(oc[k]/n,'var(--muted)')}</td><td class="l" style="min-width:110px;"><b>${cN?pc(ocN[k]/cN):'—'}</b>${cN?bar(ocN[k]/cN):''}</td></tr>`).join('')}</tbody></table></div>
    <div class="sum">Dự đoán: <b>${top.sort((a,b)=>a-b).map(k=>`${k} lẻ`).join(', ')}</b> — chiếm ${pc(acc/n)} số kỳ. <span class="foot">Số lẻ kỳ trước hầu như không ảnh hưởng kỳ sau (cột phải gần giống cột giữa), nên dự đoán dựa trên tỉ lệ chung.</span></div>
    <h3>15 kỳ gần nhất</h3>
-   <div class="tw"><table><thead><tr><th class="l">Kỳ</th><th>Tổng</th><th>Mức</th><th>Chẵn : lẻ</th></tr></thead><tbody>${recent.map(d=>{const s=sum(d.r),o=odd(d.r);return `<tr><td class="l" style="white-space:nowrap">${d.date}</td><td><b>${s}</b></td><td>${LV[lv(s)]}</td><td>${CC-o} : ${o}</td></tr>`;}).join('')}</tbody></table></div>`;
+   <div class="tw"><table><thead><tr><th class="l">Kỳ</th><th>Tổng</th><th>Mức</th><th>Chẵn : lẻ</th></tr></thead><tbody>${recent.map(d=>{const s=sum(DY(d)),o=odd(DY(d));return `<tr><td class="l" style="white-space:nowrap">${d.date}</td><td><b>${s}</b></td><td>${LV[lv(s)]}</td><td>${CC-o} : ${o}</td></tr>`;}).join('')}</tbody></table></div>`;
 }
 
 function dayName(s){const [d,m,y]=s.slice(0,10).split('/').map(Number);return WD[new Date(y,m-1,d).getDay()];}
@@ -1743,7 +1835,7 @@ $('addGo').onclick=addResult;$('simGo').onclick=simOne;$('simRun').onclick=()=>s
 $('narAuto').onclick=narAuto;$('narClear').onclick=()=>{S.cons=new Set();renderNarrow();};$('narTop').onclick=narTop;$('narDir').onchange=narCalc;
 $('intraCard').ontoggle=renderIntra;$('narCard').ontoggle=()=>{if($('narCard').open)narCalc();};
 let tab0='loto535';try{const v=localStorage.getItem('xs_tab');if(GAMES[v])tab0=v;}catch(e){}
-setGame(tab0);connectDb();$('bkGo').onclick=bkSave;$('bkFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)bkPick(f);};
+setGame(tab0);connectDb();$('bkGo').onclick=bkSave;bkShowLast();bkAutoShow();bkAuto(false);setInterval(()=>bkAuto(false),30*60*1000);$('bkFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(f)bkPick(f);};
 </script>
 </body>
 </html>

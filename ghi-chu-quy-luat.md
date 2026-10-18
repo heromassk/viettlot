@@ -1586,3 +1586,38 @@ Kết luận: Max 3D+ bộ quanh ra ngang chia đều (kỳ kế ×0,57–1,04, 
 - Max 3D Pro 03/10/2026: ĐB 509 954 · Nhất 467 123 573 811 · Nhì 579 176 078 659 477 730 · Ba 607 598 017 166 408 320 593 633
 
 Kết luận: 20 bộ Pro kỳ trước → Max 3D kỳ sau ×0,86 (ít lặp, ~−2,4 độ lệch chuẩn); 20 bộ Max 3D kỳ trước → Pro kỳ sau ×1,09 (lặp nhiều hơn nhẹ, cả lịch sử và 300 kỳ gần). Hai chiều ngược nhau → chưa kết luận chung bộ quay tạo dấu vết; chữ số theo hàng không liên quan. Theo dõi trong sổ.
+
+
+# Số May Mắn Loto — số lượng chọn và cách chọn (14/10/2026, `build/somayman_soluong.py`, 945 kỳ, chạy tiến)
+Anh: "cho 2 số mà tỉ lệ thấp quá". So 14 cách cố định + gộp phiếu (Borda), chọn 2–8 số, khung 10/20/50/100/200/500 kỳ.
+- **2 số:** cách đang dùng (nóng 10 kỳ trong ±3 quanh MM kỳ trước) vẫn ổn định nhất trong 14 cách: 30/40/30/24/22/20%. Các cách khác thấp nhất 10–18%. Tỉ lệ cao ở khung 10–20 kỳ không giữ được ở khung dài.
+- **Tỉ lệ đi theo số lượng chọn** (cách ổn định nhất ở mỗi mức, khung 100 / 200 / 500): 3 số 33/32/30% · 4 số 37/38/37% · 5 số 47/48/45% (sát MM kỳ trước) · 6 số 57/57/53% · 7 số 61/62/60% · 8 số 67–73/70/67–69%.
+- **8 số gộp phiếu (Borda):** 90/85/82/73/71/69% — cách duy nhất đạt ≥70% ở cả khung 50 và 100. Tương đương luật loại "bỏ 4 số cuối bảng phiếu".
+- Dấu vết dùng được: MM hay về gần MM kỳ trước (cách "sát MM kỳ trước" và giới hạn ±3 đều đứng đầu ở 4–8 số).
+- Phát hiện về vé: gợi ý 14/10 có 7 vé nhưng MM chỉ luân phiên 2 số (05 04 05 04…). Mỗi vé một MM khác nhau theo thứ hạng thì kỳ có ít nhất 1 vé đúng MM ≈ 60–62% (khung 100–500) thay vì 20–24%.
+- Chưa áp vào gợi ý (chờ anh duyệt).
+- **Anh chốt (14/10/2026): tối đa 3 số May Mắn, có thứ tự ưu tiên.** Áp vào `goiy.py`: nóng 10 kỳ trong ±3 quanh MM kỳ trước, lấy 3 số theo thứ hạng; thứ tự = ưu tiên. Ưu tiên 1 về 18/17/13/11% (50/100/200/500 kỳ), ưu tiên 2: 12/7/9/10%, ưu tiên 3: 12/9/10/9% — chỉ ưu tiên 1 tách rõ ở cả 4 khung. Chia vé theo `MM_PRI` (ưu tiên 1 nhiều vé nhất). App hiện "ưu tiên 1/2/3" + tỉ lệ từng thứ hạng (`bang.js`).
+
+
+# Số May Mắn Loto — luật ±3 quanh số kỳ trước (anh 16/10/2026: "số may mắn vẫn đúng luật +-3 đó. ghi chú lại mà gợi ý số may mắn cho đúng")
+- **Luật:** số may mắn kỳ sau nằm trong ±3 quanh số may mắn kỳ trước. Ví dụ 16/10 13h: kỳ trước 12 → ra 09 (lệch 3) ✔. Chuỗi 6 kỳ gần: 9 6 7 10 12 9 — kỳ nào cũng lệch ≤3.
+- **Chấm lại ngày 16/10/2026 (`loto535_history.csv`, tỉ lệ số may mắn kỳ sau còn trong ±3):** 10 kỳ 90% · 20 kỳ 90% · 50 kỳ 70% · 100 kỳ 56%. Đoạn gần đây rất đúng, 100 kỳ thì thấp hơn (đoạn xa kém) → vẫn là luật nghiêng mạnh ở hiện tại, theo dõi khung 100 kỳ.
+- **Cách gợi ý (đã có trong `goiy.py`, hàm `mm_pick`):** chỉ lấy số trong ±3 quanh số kỳ trước, xếp theo số lần ra 10 kỳ, hòa → 50 kỳ, lấy tối đa 3 số theo thứ tự ưu tiên 1→3; vé 1–7 chia ưu tiên 1 ×3, ưu tiên 2 ×2, ưu tiên 3 ×2. Mọi vé phải dùng số may mắn nằm trong ±3, không đưa số ngoài khoảng.
+- Số may mắn kỳ vừa ra được đưa vào dữ liệu ngay khi nhập kết quả (add_result), nên gợi ý kỳ kế tiếp luôn tính quanh số mới nhất.
+
+
+# Loto — số THÁNG không bị luật "ra 3 lần trong 5 kỳ" loại (17/10/2026, `build/thang_test.py`)
+Anh: "bên loto ngày tháng đang mạnh". Đo số suy ra từ ngày quay (100 kỳ đến 17/10 21h): số tháng ra mỗi số 70% / 35% / 28% / 21% số kỳ (10/20/50/100) so với các số còn lại 13–14%; số ngày, ngày ±1, ngày lộn không mạnh; ngày+tháng nhỉnh ở 50/100 kỳ nhưng 10 kỳ yếu.
+Chấm tiến pool (kỳ ≥3 · ≥4 số, 10/50/100 kỳ): cộng điểm số tháng (+1, +0.5), ngày+tháng (+1), và kết hợp đều làm giảm ít nhất một ô ≥4. Riêng "số tháng không bị loại 3 lần/5 kỳ" không giảm ô nào, tăng mọi cỡ (pool 12 ≥3: 25→29/100 kỳ; pool 25 ≥4: 62→64) → **áp vào goiy.py** (signals, nhánh Loto). Theo dõi: luật cố định, không dò tham số.
+
+
+# Mega — thử các cách phân tích từ tra cứu 15 ngôn ngữ (17/10/2026)
+**Luật dạng vé** (luat_ve.py, NEWF['mega'], khoảng hẹp nhất phủ ≥90% của 100 kỳ trước; chấm tiến 100 kỳ — đúng 50/100 kỳ · bỏ bao nhiêu % tổ hợp):
+AC 6–10: 94/94% · 5% — biên độ 22–41: 88/88% · 15% — khoảng cách nhỏ nhất 1–3: 90/92% · 7% — khoảng cách lớn nhất 6–19: 88/90% · 15% — số đuôi khác nhau 4–6: 98/98% · 3% — tổng đuôi 14–34: 96/86% · 12% — nhóm chia 3 đông nhất 2–4: 94/96% · 4% — ít nhất 0–2: 100/93% · 0%.
+Bộ chọn (≥85% ở 10/50/100 kỳ, ghim kép ≤1) KHÔNG nhận luật nào: bộ hiện tại (khác dạng hàng, tổng, kép ≤1) đã ở sát 85%, thêm luật nào cũng tụt dưới. Để làm ứng viên, chọn lại mỗi lần cập nhật.
+**Tín hiệu pool** (tinhieu_test.py): bạn đi cùng của số vừa ra +1, cặp cùng vắng −1, số đối xứng (46−n) +1, cách nửa dải (n±22) +1 — đều làm GIẢM kỳ ≥3/≥4 ở hầu hết cỡ pool; chỉ đối xứng và nửa dải tăng nhẹ riêng pool 20 → không áp (chọn riêng 1 cỡ trong 24 phép thử dễ là may).
+**Power, Loto (17/10/2026, cùng cách):** luật dạng mới đúng cao (Power: chia 3 ít nhất 100%, đông nhất 98%, số đuôi 97%, khoảng cách nhỏ nhất 93%, AC 92%, khoảng cách lớn nhất 89%, tổng đuôi 85%, biên độ 83%; Loto: 100/99/98/94/93/88/88/87%) nhưng bộ chọn không nhận (Power đã dưới 85% vì 3 ghim của anh — chấm tiến 60%; Loto chỉ giữ kép ≤1 — chấm tiến 76%). Tín hiệu pool: Power gần như không đổi (pool trộn Markov 50/50), chỉ lệch 1 kỳ ở một ô; Loto mỗi cách tăng vài cỡ nhưng giảm cỡ khác → không áp. Giữ 8 luật dạng mới làm ứng viên ở cả 3 game (NEWF).
+**Sửa cách chọn bộ luật vé (17/10/2026, anh: "tỉ lệ đều tốt mà lại làm tổng thể yếu đi"):** chon_nhom trước đây từ chối mọi luật (kể cả đúng 100%) khi bộ ghim đã dưới 85% ở một khung. Nay: khung nào cả bộ ≥85% thì phải giữ ≥85%; khung nào đang dưới thì luật mới chỉ cần không làm tụt thêm.
+- **Power: anh bỏ ghim nhịp riêng** (52/71 = 73%) → bộ: nhịp tổng, biên tổng (ghim) + khác dạng hàng, ≤1 cặp liền nhau, nhóm chia 3 ít nhất. Lọt 10/50/100: 60/60/71 → 70/86/88%; chấm tiến 60 → 82%; thu hẹp tổ hợp 20 → 26%.
+- **Loto: anh chọn A** → bộ: kép ≤1 + AC 4–6, số đuôi khác nhau 3–5, chia 3 đông nhất 2–3 / ít nhất 0–1 (+ maxh, lt, trung khi bật). Lọt 80/92/95 → 80/86/86%; chấm tiến 76 → 72%; thu hẹp 5 → 21% (anh chấp nhận đổi lọt lấy vé chặt hơn).
+- Mega: giữ bộ cũ (khác dạng hàng, tổng, kép ≤1 — 100/86/85%, chấm tiến 88%).
