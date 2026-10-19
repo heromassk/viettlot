@@ -1630,3 +1630,4 @@ Mỗi kỳ lấy các số không ra trong x kỳ trước làm pool, đếm k�
 - Cùng giờ x=15: 1 số vắng ra 16–25% ở 20–100 kỳ gần nhưng 12.6–13.6% ở 2 đoạn trước → chưa ổn định, theo dõi.
 - Kết luận: không dùng làm pool chính; có thể dùng làm dạng "mỗi kỳ có ≥1 số vắng ≥10 kỳ" (~70%, sát ngưỡng).
 - **Lấy 8 kỳ (anh chọn, 19/10/2026):** nhóm vắng ~10 số, trúng TB 1.50; ≥1 số 87–90%, ≥2 số 40–49%; 1 số vắng ra 14.6/15.6/15.4% so với 14.2/13.8/13.9% ở 3 đoạn 100 kỳ → nhỏ mà ổn định. Đã đưa vào gợi ý: +0.5 điểm (`GOIY_V8`), mỗi vé ≥1 số vắng 8 kỳ, sổ kiểm chứng `kd_vang8`/`nhom_vang8`.
+- **So x = 6…12 kỳ (19/10/2026):** lệch "1 số vắng ra − 1 số đã ra" ở 3 đoạn 100 kỳ (gần → xa): x6 +0.5/+1.6/+2.3 · x7 +0.0/+2.4/+2.0 · **x8 +0.5/+1.8/+1.5** · x9 −0.7/+2.4/+0.5 · x10 −1.7/+1.7/+0.8 · x11 −1.0/+0.8/+0.6 · x12 −1.2/+0.6/−0.5. Chỉ 6 và 8 dương cả 3 đoạn; "≥1 số vắng": x6 94–96%, x8 87%, x9 75–80%, x11 62–66%, x12 53–59%. Giữ 8.
