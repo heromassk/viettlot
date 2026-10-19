@@ -1664,3 +1664,10 @@ Mỗi kỳ chấm lại, lấy k số đầu bảng điểm (chỉ dữ liệu t
 | 10 | 252 | 1.68 | 21 | 6 | 0 |
 | 12 | 792 | 1.91 | 29 | 8 | 0 |
 Không kỳ nào đủ 5 số trong 12 số đầu. Bao lớn tốn nhiều vé mà chỉ tăng số kỳ ≥3/≥4 số chậm → rải vé bao phủ pool rẻ hơn.
+
+# Loto: số kẹp giữa (a, a+2 → a+1) có về trong 2 kỳ tới? (anh 19/10/2026, `build/kep_giua2.py`)
+So % ra của số kẹp với các số khác không có ở kỳ đó (trung bình ~14.3% ở 1 kỳ, ~26.7% trong 2 kỳ). 3 đoạn 100 kỳ (gần → xa) · toàn bộ:
+- **Cả 2 giờ (liền nhau):** trong 2 kỳ 20.7 / 25.5 / 24.0% · 24.5% (số khác ~27%) → số kẹp về ÍT hơn một chút, ổn định (khớp luật `nhom_lokep` đang áp).
+- **Chỉ 13h (2 kỳ 13h tới):** 44.8 / 22.0 / 28.9% · 31.9% → 100 kỳ gần về rất nhiều nhưng đoạn 2 ngược lại → chưa ổn định, theo dõi.
+- **Chỉ 21h:** ngay kỳ 21h sau chỉ 7.1 / 4.9 / 7.7% · 8.8% (số khác ~14.3%) → **ổn định cả 3 đoạn: số kẹp kỳ 21h hầu như không về ở kỳ 21h kế tiếp** (loại đúng ~92–95%). Trong 2 kỳ 21h: 23.2 / 12.2 / 23.1%.
+- Mẫu nhỏ (40–58 số kẹp mỗi đoạn), cần theo dõi thêm trong sổ kiểm chứng.
