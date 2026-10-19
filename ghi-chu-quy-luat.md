@@ -1644,3 +1644,10 @@ Mỗi kỳ lấy các số không ra trong x kỳ trước làm pool, đếm k�
 - **Power:** x=7, 8, 10, 12 dương cả 4 khung (trừ x=8 khung 10 kỳ +0.1). x=12: nhóm ~13 số, trúng TB 1.56, ≥1/≥2 số 84/50%, lệch +2.1/+3.0/+2.3/+1.8, 2 nửa +1.2/+2.3.
 - Thử cộng điểm vào goiy.py (`GOIY_VX`, `GOIY_WVX`, mặc định tắt): Mega x=8 +1 điểm → pool 15 ≥3 số 44→50% (50 kỳ), 40→46% (100 kỳ); x=12 +1 → 52%/45%. Power: pool 15 không đổi (27% / 32%) ở mọi x và trọng số 0.5–3 — pool Power đã gộp hạng với chuỗi ra/vắng bậc 3, 5.
 - **Anh duyệt 19/10/2026, đã áp:** Mega +1 điểm số vắng 8 kỳ + mỗi vé ≥1 số vắng 8 kỳ; Power chỉ luật vé ≥1 số vắng 12 kỳ (đúng 84%). Mặc định trong goiy.py: VX Loto 8 / Mega 8 / Power 12; điểm Loto 0.5 / Mega 1 / Power 0.
+
+# Kết hợp số vắng x kỳ với số kề ±1 kỳ trước / t−2 (anh 19/10/2026, `build/vang_ke.py`)
+Nhóm giao = vắng x kỳ (Loto, Mega 8; Power 12) VÀ kề ±1 số của kỳ trước / kỳ t−2 / cả hai. So % ra của 1 số trong giao với số vắng không kề.
+- **Loto** (±1 kỳ trước hoặc t−2, ~4–5 số): 100 kỳ gần giao 12.2% < vắng không kề 16.7%; đoạn 2, 3 ngược lại (17.3% > 14.3%, 13.8%) → đổi chiều, không ổn định. ±1 kỳ trước: 11.0 / 19.7 / 17.0%.
+- **Mega** (100 kỳ): giao 11–14% < vắng không kề 15–17.5% ở cả 3 cách; nhưng nửa 50 kỳ xa thì giao nhỉnh hơn → không ổn định.
+- **Power**: ±1 kỳ trước giao 12.7% (50 kỳ) = vắng không kề 12.7%; 100 kỳ 13.7% > 11.9%; ±1 t−2 kém (9–10.5%) → không rõ.
+- Nhóm giao chỉ 1–5 số nên tỉ lệ dao động mạnh. Không đưa vào gợi ý; chỉ ghi tham khảo.
