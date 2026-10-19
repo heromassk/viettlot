@@ -10,7 +10,7 @@ GM = {'power': ('power655', 55, 6), 'mega': ('mega645', 45, 6), 'loto': ('loto53
 # Luật đang ÁP DỤNG trong gợi ý (goiy.py) — để app đánh dấu
 APPLIED = {'power': {'it100', 'nong35', 'nhip2', 'lt3', 'tx15', 'tx10', 'zprev', 'nhom_lokep', 'nhom_kep', 'nhom_pascal', 'nhom_cau2'},
            'mega': {'vang20', 'thua15', 'lien2', 'lt3', 'zprev', 'nong35', 'tx15', 'nong10', 'nhieu100', 'nhip2'},
-           'loto': {'vang20', 'thua15', 'vang1', 'nong35', 'lt3', 'nhip2', 'nhipmin100', 'nhom_nhip80', 'nhom_nhip', 'nhom_lokep', 'nhom_k7', 'nhom_k9', 'nhom_kep', 'nhom_pascal', 'nhom_keplk', 'txph13'}}
+           'loto': {'vang20', 'thua15', 'vang1', 'nong35', 'lt3', 'nhip2', 'nhipmin100', 'nhom_nhip80', 'nhom_nhip', 'nhom_lokep', 'nhom_k7', 'nhom_k9', 'nhom_kep', 'nhom_pascal', 'nhom_keplk', 'txph13', 'kd_vang8', 'nhom_vang8'}}
 FILE = os.path.join(HERE, 'theodoi.json')
 
 def load():
@@ -173,6 +173,8 @@ CLAIMS = [
     ('nhom_lokep', 'Soi cầu: lô kẹp (kỳ trước có a, a+2 → a+1) ra ÍT hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', {a + 1 for a in R[t - 1] if a + 2 in R[t - 1] and a + 1 not in R[t - 1]}, 0)),
     ('kd_ngaychay', 'Có ≥1 số của dấu vết ngày đang chạy (thứ, ngày, tháng dương/âm về ≥3/10 hoặc ≥4/20 kỳ)', lambda R, t, c, NB, KB: ('atleast', ngay_chay(R, t, NB), 1)),
     ('nhom_pwmg', 'Mega: số vừa có ở Power kỳ trước VÀ Mega kỳ trước ra NHIỀU hơn bình quân', lambda R, t, c, NB, KB: ('nhomnhieu', power_mega(R, t) if NB == 45 else set(), 0)),
+    ('kd_vang8', 'Có ≥1 số vắng 8 kỳ (không ra trong 8 kỳ gần) — anh 19/10/2026', lambda R, t, c, NB, KB: ('atleast', set(range(1, NB + 1)) - set().union(*R[t - 8:t]), 1)),
+    ('nhom_vang8', 'Nhóm số vắng 8 kỳ ra NHIỀU hơn bình quân (anh 19/10/2026)', lambda R, t, c, NB, KB: ('nhomnhieu', set(range(1, NB + 1)) - set().union(*R[t - 8:t]), 0)),
     ('nhom_nhip', 'Nhóm nhịp riêng "lúc vắng thế này chưa từng ra" ra ít hơn bình quân', lambda R, t, c, NB, KB: ('nhomit', nhip_off(R, t, NB), 0)),
 ]
 

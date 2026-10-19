@@ -24,7 +24,32 @@ function hist20HTML(J,K){
   <div class="bg-foot">Số khoanh màu = nằm trong pool và trùng kết quả (vàng đậm: top 10 · viền: 11–15 · nét đứt: 16–20). Bấm 1 kỳ để xem pool kỳ đó. ${PH?'Pool đúng như app đang chọn (bộ cộng điểm từng cỡ, luật hàng, giới hạn kép), mỗi kỳ chỉ dùng dữ liệu trước nó.':'Pool tín hiệu thô, chưa cộng điểm từng cỡ.'}${J.mmHist&&J.mmHist.length?' MM gợi ý = 3 số may mắn app gợi ý cho kỳ đó, ✔ = có số trúng.':''}</div>`;}
 function h20Set(k){if(typeof window==='undefined')return;window.__h20K=k;const el=document.getElementById('h20');if(el&&window.__h20J)el.innerHTML=hist20HTML(window.__h20J,k);}
 const POOLK=[10,12,15,18,20,25,30,35];
-function k10Set(n){if(typeof window==='undefined')return;window.__k10N=n;if(typeof renderBangCard==='function')renderBangCard();}
+function k10Set(n){if(typeof window==='undefined')return;window.__k10N=n;rgOff('k');if(typeof renderBangCard==='function')renderBangCard();}
+// Chọn kỳ theo khoảng ngày (anh 19/10/2026): blk 'k' = bảng x kỳ gần nhất, 'p' = pool. Loto chọn được 13h/21h ở đầu và cuối khoảng.
+function rgGet(blk){if(typeof window==='undefined')return null;const r=(window.__rg||{})[blk];return r&&r.on?r:null;}
+function rgRe(){if(typeof renderBangCard==='function')renderBangCard();}
+function rgTog(blk){if(typeof window==='undefined')return;window.__rg=window.__rg||{};const r=window.__rg[blk]||{};r.on=!r.on;window.__rg[blk]=r;rgRe();}
+function rgSet(blk,k,v){if(typeof window==='undefined')return;window.__rg=window.__rg||{};const r=window.__rg[blk]||{on:true};r[k]=v;window.__rg[blk]=r;rgRe();}
+function rgOff(blk){if(typeof window!=='undefined'&&window.__rg&&window.__rg[blk])window.__rg[blk].on=false;}
+function rgKey(s){const m=String(s).match(/(\d+)\/(\d+)\/(\d+)(?:\s*(\d+)h)?/);return m?(+m[3])*1e6+(+m[2])*1e4+(+m[1])*100+(m[4]?+m[4]:50):0;}
+function rgIso(s){const m=String(s).match(/(\d+)\/(\d+)\/(\d+)/);return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:'';}
+function rgIsoKey(iso,h,def){const m=String(iso||'').match(/(\d+)-(\d+)-(\d+)/);if(!m)return null;return (+m[1])*1e6+(+m[2])*1e4+(+m[3])*100+(h==='13h'?13:h==='21h'?21:def);}
+// chỉ số các kỳ trong res201: theo khoảng ngày nếu đang bật, không thì n kỳ gần nhất; gio = '' | '13h' | '21h' (Loto)
+function rgPick(J,blk,n,gio){const DA=J.dates201||[],ok=i=>!gio||String(DA[i]).endsWith(gio),r=rgGet(blk),out=[];
+  if(r){const lo=J.game==='loto',f=rgDef(J,blk,n,gio),a=rgIsoKey(r.f||f.f,lo?(r.fh||f.fh):'',0),b=rgIsoKey(r.t||f.t,lo?(r.th||f.th):'',99);
+    for(let i=0;i<DA.length;i++){const k=rgKey(DA[i]);if(k>=a&&k<=b&&ok(i))out.push(i);}return out;}
+  for(let i=DA.length-1;i>=0&&out.length<n;i--)if(ok(i))out.unshift(i);return out;}
+// mặc định khi mới bật: đến = kỳ mới nhất, từ = kỳ đầu của n kỳ đang xem
+function rgDef(J,blk,n,gio){const DA=J.dates201||[];const ix=[];for(let i=DA.length-1;i>=0&&ix.length<n;i--)if(!gio||String(DA[i]).endsWith(gio))ix.unshift(i);
+  const a=DA[ix.length?ix[0]:0]||'',b=DA[DA.length-1]||'';return {f:rgIso(a),fh:/21h/.test(a)?'21h':'13h',t:rgIso(b),th:/13h/.test(b)?'13h':'21h'};}
+function rgUI(J,blk,n,gio){const r=rgGet(blk),lo=J.game==='loto',DA=J.dates201||[];
+  const chip=`<span class="bg-h20k${r?' on':''}" onclick="rgTog('${blk}')">Chọn ngày</span>`;if(!r)return chip;
+  const f=rgDef(J,blk,n,gio),mn=rgIso(DA[0]),mx=rgIso(DA[DA.length-1]),st='background:var(--panel2,#212a40);color:var(--text,#e8ecf5);border:1px solid var(--border,#2c3550);border-radius:8px;padding:3px 4px;font-size:.8rem;';
+  const d=(k,v)=>`<input type="date" style="${st}" min="${mn}" max="${mx}" value="${v}" onchange="rgSet('${blk}','${k}',this.value)">`;
+  const h=(k,v)=>lo?`<select style="${st}" onchange="rgSet('${blk}','${k}',this.value)">${['13h','21h'].map(x=>`<option${x===v?' selected':''}>${x}</option>`).join('')}</select>`:'';
+  return `${chip}<span style="display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:.8rem;">Từ ${h('fh',r.fh||f.fh)}${d('f',r.f||f.f)} đến ${h('th',r.th||f.th)}${d('t',r.t||f.t)}</span>`;}
+function rgLabel(J,ix){const DA=J.dates201||[];if(!ix.length)return 'không có kỳ nào';const s=d=>{const m=String(d).match(/(\d+\/\d+)\/\d+(?:\s*(\d+h))?/);return m?(m[2]?m[2]+' ':'')+m[1]:d;};return `từ ${s(DA[ix[0]])} đến ${s(DA[ix[ix.length-1]])}`;}
+function ppGio(g){if(typeof window==='undefined')return;window.__ppH=g;rgRe();}   // Loto: pool chỉ lấy kỳ 13h / 21h / cả 2 (anh 19/10/2026)
 function k10Gio(g){if(typeof window==='undefined')return;window.__k10G=g;if(typeof renderBangCard==='function')renderBangCard();}   // Loto: lọc x kỳ gần nhất theo giờ quay '' (cả 2) / 13h / 21h (anh 19/10/2026)
 // Sổ pool của anh (16/10/2026): MỖI KỲ, MỖI GAME chỉ MỘT pool được dùng — lưu lại thì thay bản cũ của kỳ đó. Chỉ nằm trong trình duyệt.
 function kyKey(k){const m=String(k).match(/(\d+)\/(\d+)\/(\d+)(?:\s+(\d+)h)?/);return m?(+m[3])*1e8+(+m[2])*1e6+(+m[1])*1e4+(+(m[4]||0)):0;}   // kỳ mới nhất = số lớn nhất
@@ -124,7 +149,7 @@ function svBlock(J,sub){
 function vlSet(n){window.__vlX=n;window.__vlN=(window.__vlN||0)+1;ppRe();}
 function vlTog(k){window['__vl'+k]=window['__vl'+k]===false;window.__vlN=(window.__vlN||0)+1;ppRe();}
 function vlAgain(){window.__vlN=(window.__vlN||0)+1;ppRe();}
-function ppSet(n){if(typeof window==='undefined')return;window.__ppN=n;if(typeof renderBangCard==='function')renderBangCard();}
+function ppSet(n){if(typeof window==='undefined')return;window.__ppN=n;rgOff('p');if(typeof renderBangCard==='function')renderBangCard();}
 function poolSet(k){if(typeof window==='undefined')return;window.__poolK=k;if(typeof renderBangCard==='function')renderBangCard();}
 
 // ---- Check dạng (anh 14/10/2026): % các dạng trong 50/100 kỳ đã qua + kiểm 1 dãy ----
@@ -304,9 +329,9 @@ function renderBang(J){
     J.hangOn&&J.hangOn.length&&(PK===10||PK===15)?`Hàng ${J.hangOn.map(h=>h+'x').join(', ')} ra nhiều 10 kỳ → pool ${PK} chỉ giữ 1 số mỗi hàng đó`:'',
     J.poolCach?`Thứ tự gộp 50/50 với ${J.poolCach}`:''].filter(Boolean).map(x=>`<div class="bg-foot">${x}</div>`).join('');
   // 10 kỳ gần trên pool (anh 15/10/2026): số ra ≥2 lần trong 10 kỳ tô màu theo số lần lặp (2 / 3 / 4 / ≥5), ra 1 lần không tô
-  const KN=(typeof window!=='undefined'&&[5,10,15,20,25,30,50].includes(window.__k10N))?window.__k10N:20;
+  const KN0=(typeof window!=='undefined'&&[5,10,15,20,25,30,50].includes(window.__k10N))?window.__k10N:20;
   const KG=J.game==='loto'&&typeof window!=='undefined'&&['13h','21h'].includes(window.__k10G)?window.__k10G:'';   // lọc giờ quay (chỉ Loto)
-  const IX=[];{const RA=J.res201||[],DA=J.dates201||[];for(let i=RA.length-1;i>=0&&IX.length<50;i--)if(!KG||String(DA[i]).endsWith(KG))IX.unshift(i);}
+  const KR=rgGet('k'),IX=KR?rgPick(J,'k',KN0,KG):rgPick(J,'k',50,KG),KN=KR?IX.length:KN0;   // khoảng ngày đang bật → hiện đủ các kỳ trong khoảng
   const R10=IX.map(i=>J.res201[i]),D10=IX.map(i=>J.dates201[i]),L10=IX.map(i=>(J.lk201||[])[i]),P10=IX.map((i,k)=>KG?(k?J.res201[IX[k-1]]:(()=>{for(let j=i-1;j>=0;j--)if(String(J.dates201[j]).endsWith(KG))return J.res201[j];})()):J.res201[i-1]),C10={};   // P10 = kỳ liền trước trong danh sách đang xem (lọc giờ thì so với kỳ cùng giờ trước)   // hiển thị 20 kỳ (anh 16/10/2026); màu lặp tính theo đúng số kỳ đang chọn (5/10/15/20/25/30/50)
   R10.slice(-KN).forEach(r=>r.forEach(n=>C10[n]=(C10[n]||0)+1));
   // MỖI số lặp (≥2 lần) một màu riêng (anh 15/10/2026: "sao lại dùng chung màu cho nhiều số") — tránh màu cam của số may mắn
@@ -337,8 +362,9 @@ function renderBang(J){
   const lball=n=>MAU[n]?`<span class="bg-b" style="background:${MAU[n]};border-color:${MAU[n]};color:${CHU[n]};">${p2(n)}</span>`:null;
   const pm1=(h,n,pv)=>{if(!pv||!h)return h;const P=new Set(pv);if(P.has(n))return h;const u=P.has(n-1),d=P.has(n+1);const c=u&&d?'pm3':u?'pm1':d?'pm2':'';return c?h.replace('class="bg-b','class="bg-b '+c):h;};   // +1: n = số kỳ trước +1 · −1: n = số kỳ trước −1 (anh 18/10/2026)
   const HCOL=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c77dff','#ff9f43'];   // mỗi hàng chục một màu: 0 đỏ · 1 vàng · 2 xanh lá · 3 xanh dương · 4 tím · 5 cam
-  const k10H=R10.length?`<div class="bg-dgh"><b>${KN} kỳ gần nhất${KG?' · chỉ '+KG:''}</b> <small>— màu tính trong ${KN} kỳ đang xem: số ra ≥2 lần có một màu riêng, ra 1 lần không tô</small></div>
-    <div class="bg-row bg-chips">${[5,10,15,20,25,30,50].map(n=>`<span class="bg-h20k${n===KN?' on':''}" onclick="k10Set(${n})">${n} kỳ</span>`).join('')}</div>
+  const k10H=R10.length?`<div class="bg-dgh"><b>${KR?`${rgLabel(J,IX)} · ${KN} kỳ`:`${KN} kỳ gần nhất`}${KG?' · chỉ '+KG:''}</b> <small>— màu tính trong ${KN} kỳ đang xem: số ra ≥2 lần có một màu riêng, ra 1 lần không tô</small></div>
+    <div class="bg-row bg-chips">${[5,10,15,20,25,30,50].map(n=>`<span class="bg-h20k${!KR&&n===KN?' on':''}" onclick="k10Set(${n})">${n} kỳ</span>`).join('')}</div>
+    <div class="bg-row bg-chips">${rgUI(J,'k',KN0,KG)}</div>
     ${J.game==='loto'?`<div class="bg-row bg-chips">${[['','13h &amp; 21h'],['13h','Chỉ 13h'],['21h','Chỉ 21h']].map(([g,t])=>`<span class="bg-h20k${g===KG?' on':''}" onclick="k10Gio('${g}')">${t}</span>`).join('')}</div>`:''}
     ${R10.map((r,i)=>[r,D10[i],L10[i],P10[i]]).slice(-KN).reverse().map(([r,d,lk,pv])=>`<div class="bg-row bg-pool bg-k10"><small class="bg-k10d">${String(d).replace(/\/\d{4}/,'')}</small>${ltWrap(r,n=>pm1(lball(n)||ball(n,''),n,pv))}${J.game==='loto'&&lk!=null?ball(lk,'mm'):''}${(()=>{const a=[...r].sort((x,y)=>x-y),c=a.filter(n=>n%2===0).length;return `<small class="bg-k10i">${a.map(n=>{const h=Math.floor(n/10);return `<i style="color:${HCOL[h%HCOL.length]};">${h}</i>`;}).join('-')} <b>${a.reduce((x,y)=>x+y,0)}</b> ${c}C:${a.length-c}L</small>`;})()}</div>`).join('')}
     <div class="bg-foot" style="margin:2px 0 0;">Dấu đen +1 / −1 / ±1 góc dưới bóng = số đó hơn / kém / kề hai phía một số của kỳ liền trước (số lặp không dấu). Bên phải mỗi kỳ: hàng chục từng số · tổng · số chẵn (C) / lẻ (L), tính 5 số chính.${KG?` Đang lọc chỉ kỳ ${KG}: màu lặp và dấu ±1 so với kỳ ${KG} liền trước.`:''}${J.game==='loto'?' Bóng cam = số may mắn.':''}</div>`:'';
@@ -348,9 +374,10 @@ function renderBang(J){
     `${BAN}${(()=>{
     // Pool từ x kỳ gần nhất, lưới cố định 0x…(anh 16/10/2026): số trong pool sáng màu game, chạm để bỏ/chọn, Lưu = pool của anh
     const PN=(typeof window!=='undefined'&&[5,10,15,20,25,30,50].includes(window.__ppN))?window.__ppN:10;
-    const RR=(J.res201||[]).slice(-PN);if(!RR.length)return '';
+    const PH=J.game==='loto'&&typeof window!=='undefined'&&['13h','21h'].includes(window.__ppH)?window.__ppH:'',PR=rgGet('p'),PIX=rgPick(J,'p',PN,PH);
+    const RR=PIX.map(i=>J.res201[i]),PLB=PR?`${rgLabel(J,PIX)} (${PIX.length} kỳ${PH?', chỉ '+PH:''})`:`${PN} kỳ gần nhất${PH?' (chỉ '+PH+')':''}`;if(!RR.length&&!PR)return '';
     const cnt={};RR.forEach(r=>r.forEach(n=>cnt[n]=(cnt[n]||0)+1));
-    const ns=Object.keys(cnt).map(Number).sort((a,b)=>a-b);window.__ppX=ns;window.__ppG=J.game;window.__ppK=J.next;
+    const ns=Object.keys(cnt).map(Number).sort((a,b)=>a-b);if(typeof window!=='undefined')window.__ppX=ns;window.__ppG=J.game;window.__ppK=J.next;
     const sv=ppGet(J.game,J.next),ed=!!window.__ppEd&&Array.isArray(window.__ppW),lit=new Set(ed?window.__ppW:(sv||ns));
     // dấu ngay trên số (anh 17/10/2026): ✕ = app loại hẳn kỳ này, chấm tím = tâm linh mạnh — để cân nhắc số có thêm cơ sở
     const WL=((J.poolWhy&&(J.poolWhy['18']||Object.values(J.poolWhy)[0]))||{}).loai||[],PLO=new Map(WL.filter(x=>x.loai==='hẳn').map(x=>[x.n,x.why])),PTL=new Set((J.tl&&J.tl.strong)||[]);
@@ -362,10 +389,11 @@ function renderBang(J){
       const x=`<span class="bg-ppx">${b}${c>=2?`<sup>${c}</sup>`:''}${PTL.has(n)?'<i class="pp-t"></i>':''}</span>`;return n%11===0&&on?`<span class="bg-kep">${x}</span>`:x;};
     const rows=[...Array(Math.floor(J.nb/10)+1).keys()].map(d=>`<div class="bg-row bg-pool bg-hang bg-ppr"><b>${d}x:</b>${[...Array(10).keys()].map(u=>{const n=d*10+u;return n<1||n>J.nb?'<span class="bg-ppe"></span>':cell(n);}).join('')}</div>`).join('');
     const btn=(t,f)=>`<span class="bg-h20k" onclick="${f}">${t}</span>`;
-    const tools=ed?btn('Lưu pool','ppSave()')+btn('Hủy','ppCancel()')+btn(`Lấy lại pool ${PN} kỳ`,'ppFromX()'):btn('Sửa pool','ppStart()')+(sv?btn('Xóa pool kỳ này','ppDel()'):'');
-    const ttl=ed?`Đang sửa — ${lit.size} số`:sv?`Pool của anh cho kỳ ${J.next} (đã lưu) — ${lit.size} số`:`Pool số đã ra trong ${PN} kỳ gần nhất — ${ns.length} số`;
-    return `${vlBlock(J,[...lit].sort((a,b)=>a-b),sv||ed?'pool của anh':`pool ${PN} kỳ gần nhất`,sub)}<div class="bg-dgh" style="margin-top:12px;"><b>${ttl}</b> <small>${ed?'— chạm số sáng để bỏ, chạm số tối để chọn, xong bấm Lưu pool':'— số sáng = trong pool; số nhỏ ở góc = số lần ra trong '+PN+' kỳ (từ 2 lần)'}</small></div>
-    <div class="bg-row bg-chips"><small>Lấy từ:</small>${[5,10,15,20,25,30,50].map(n=>`<span class="bg-h20k${n===PN?' on':''}" onclick="ppSet(${n})">${n} kỳ</span>`).join('')}</div>${rows}${PLO.size||PTL.size||PNG.size?sub(`Giải thích`,`<div class="bg-foot" style="margin:4px 0 0;">${PLO.size?`<b style="background:#111;color:#fff;border-radius:6px;padding:0 4px;">số đen</b> = app loại${J.stale?` (kỳ ${J.nextBase})`:''}: ${[...PLO].sort((a,b)=>a[0]-b[0]).map(([n,w])=>`<b>${p2(n)}</b>: ${w.replace(/ · /g,', ')}`).join(' | ')}`:''}${PLO.size&&PTL.size?'<br>':''}${PTL.size?`<b>●</b> chấm trắng = tâm linh mạnh: ${[...PTL].sort((a,b)=>a-b).map(p2).join(' ')}`:''}${PNG.size?`<br><b style="color:#b46cff;">chữ tím</b> = tình nghi: ${[...PNG].sort((a,b)=>a[0]-b[0]).map(([n,w])=>`<b>${p2(n)}</b>: ${w.join('; ')}`).join(' | ')}`:''}</div>`):''}<div class="bg-row bg-chips" style="margin-top:6px;">${tools}</div>${(()=>{
+    const tools=ed?btn('Lưu pool','ppSave()')+btn('Hủy','ppCancel()')+btn(`Lấy lại pool ${PR?'theo ngày đã chọn':PN+' kỳ'}`,'ppFromX()'):btn('Sửa pool','ppStart()')+(sv?btn('Xóa pool kỳ này','ppDel()'):'');
+    const ttl=ed?`Đang sửa — ${lit.size} số`:sv?`Pool của anh cho kỳ ${J.next} (đã lưu) — ${lit.size} số`:`Pool số đã ra ${PR?PLB:'trong '+PLB} — ${ns.length} số`;
+    return `${vlBlock(J,[...lit].sort((a,b)=>a-b),sv||ed?'pool của anh':`pool ${PLB}`,sub)}<div class="bg-dgh" style="margin-top:12px;"><b>${ttl}</b> <small>${ed?'— chạm số sáng để bỏ, chạm số tối để chọn, xong bấm Lưu pool':'— số sáng = trong pool, số xám = ngoài pool; số nhỏ ở góc = số lần ra trong khoảng đang chọn (từ 2 lần)'}</small></div>
+    <div class="bg-row bg-chips"><small>Lấy từ:</small>${[5,10,15,20,25,30,50].map(n=>`<span class="bg-h20k${!PR&&n===PN?' on':''}" onclick="ppSet(${n})">${n} kỳ</span>`).join('')}</div>
+    <div class="bg-row bg-chips">${rgUI(J,'p',PN,PH)}</div>${J.game==='loto'?`<div class="bg-row bg-chips">${[['','13h &amp; 21h'],['13h','Chỉ 13h'],['21h','Chỉ 21h']].map(([g,t])=>`<span class="bg-h20k${g===PH?' on':''}" onclick="ppGio('${g}')">${t}</span>`).join('')}</div>`:''}${rows}${PLO.size||PTL.size||PNG.size?sub(`Giải thích`,`<div class="bg-foot" style="margin:4px 0 0;">${PLO.size?`<b style="background:#111;color:#fff;border-radius:6px;padding:0 4px;">số đen</b> = app loại${J.stale?` (kỳ ${J.nextBase})`:''}: ${[...PLO].sort((a,b)=>a[0]-b[0]).map(([n,w])=>`<b>${p2(n)}</b>: ${w.replace(/ · /g,', ')}`).join(' | ')}`:''}${PLO.size&&PTL.size?'<br>':''}${PTL.size?`<b>●</b> chấm trắng = tâm linh mạnh: ${[...PTL].sort((a,b)=>a-b).map(p2).join(' ')}`:''}${PNG.size?`<br><b style="color:#b46cff;">chữ tím</b> = tình nghi: ${[...PNG].sort((a,b)=>a[0]-b[0]).map(([n,w])=>`<b>${p2(n)}</b>: ${w.join('; ')}`).join(' | ')}`:''}</div>`):''}<div class="bg-row bg-chips" style="margin-top:6px;">${tools}</div>${(()=>{
       const bk=ppBook(J.game),ks=Object.keys(bk);if(!ks.length)return '';
       const idx={};(J.dates201||[]).forEach((d,i)=>idx[d]=i);
       let dirty=false;
