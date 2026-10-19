@@ -1622,3 +1622,10 @@ Bộ chọn (≥85% ở 10/50/100 kỳ, ghim kép ≤1) KHÔNG nhận luật nà
 - **Power: anh bỏ ghim nhịp riêng** (52/71 = 73%) → bộ: nhịp tổng, biên tổng (ghim) + khác dạng hàng, ≤1 cặp liền nhau, nhóm chia 3 ít nhất. Lọt 10/50/100: 60/60/71 → 70/86/88%; chấm tiến 60 → 82%; thu hẹp tổ hợp 20 → 26%.
 - **Loto: anh chọn A** → bộ: kép ≤1 + AC 4–6, số đuôi khác nhau 3–5, chia 3 đông nhất 2–3 / ít nhất 0–1 (+ maxh, lt, trung khi bật). Lọt 80/92/95 → 80/86/86%; chấm tiến 76 → 72%; thu hẹp 5 → 21% (anh chấp nhận đổi lọt lấy vé chặt hơn).
 - Mega: giữ bộ cũ (khác dạng hàng, tổng, kép ≤1 — 100/86/85%, chấm tiến 88%).
+
+## Loto: pool "số đang vắng x kỳ" (ý anh 19/10/2026, `build/vang_x.py`)
+Mỗi kỳ lấy các số không ra trong x kỳ trước làm pool, đếm kỳ đó trúng mấy số. 954 kỳ.
+- Tỉ lệ ra của **1 số đang vắng** gần bằng **1 số vừa ra trong x kỳ**: x=10 liền nhau 14.7% / 14.2% (toàn bộ); 100 kỳ gần 12.9% / 14.7%; đoạn 2–3: 15.6% / 14.0%, 15.0% / 14.1% → không nghiêng ổn định.
+- Pool vắng 10 kỳ (liền nhau) TB 7–8 số, trúng TB ~1.0 số; ≥1 số 72% (3 đoạn 68/72/72%), ≥2 số 28%, ≥3 số 6%.
+- Cùng giờ x=15: 1 số vắng ra 16–25% ở 20–100 kỳ gần nhưng 12.6–13.6% ở 2 đoạn trước → chưa ổn định, theo dõi.
+- Kết luận: không dùng làm pool chính; có thể dùng làm dạng "mỗi kỳ có ≥1 số vắng ≥10 kỳ" (~70%, sát ngưỡng).
