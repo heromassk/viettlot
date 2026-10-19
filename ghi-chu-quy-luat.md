@@ -1674,8 +1674,9 @@ So % ra của số kẹp với các số khác không có ở kỳ đó (trung b
 - **Khung 20 / 50 kỳ (19/10/2026):** cả 2 giờ trong 2 kỳ 40% (4/10) / 25% (7/28), số khác ~26% · **chỉ 13h trong 2 kỳ 13h: 53% (8/15) / 47% (14/30)**, số khác ~26% · chỉ 21h kỳ 21h sau: 0/10 / 2/29 (7%), số khác ~14%. 13h đang mạnh ở 20–100 kỳ gần nhưng đoạn 2 ngược → theo dõi.
 
 # Quan hệ các số trong cùng 1 kỳ (anh 19/10/2026, `build/quanhe_hang.py`)
-% kỳ có dạng đó (3 đoạn 100 kỳ gần → xa) so với mức tự nhiên (mọi bộ số có thể):
-- Loto: a+b=c 40/39/35% (tự nhiên 39%) · a+b=c+d 30/22/22% (28%) · gấp đôi 35/28/22% (26%) · 3 số cách đều 32/31/35% (37%).
-- Mega: a+b=c 57/43/49% (53%) · a+b=c+d 50/51/52% (54%) · gấp đôi 28/28/26% (30%) · cách đều 50/51/56% (51%).
-- Power: a+b=c 52/40/42% (45%) · a+b=c+d 50/47/49% (46%) · gấp đôi 24/27/29% (25%) · cách đều 42/38/42% (44%).
-- Kết luận: các quan hệ này ra đúng mức tự nhiên, không có dấu vết. Riêng Loto "gấp đôi" tăng dần 22→28→35% — theo dõi, chưa dùng.
+Số kỳ có quan hệ, khung 20 / 50 / 100 kỳ gần (anh: chỉ đếm, không so với ngẫu nhiên / mức tự nhiên):
+| Game | a+b=c | a+b=c+d | gấp đôi | 3 số cách đều |
+|---|---|---|---|---|
+| Loto | 12 / 21 / 40 | 10 / 20 / 30 | 13 / 23 / 35 | 3 / 10 / 32 |
+| Mega | 8 / 23 / 57 | 14 / 27 / 50 | 4 / 9 / 28 | 9 / 23 / 50 |
+| Power | 11 / 26 / 52 | 11 / 24 / 50 | 4 / 11 / 24 | 7 / 17 / 42 |
