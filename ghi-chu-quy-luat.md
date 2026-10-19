@@ -412,6 +412,7 @@ Kết quả (bình quân mỗi số: Loto 14.3, Mega 13.3, Power 10.9%):
 | 04/10 13h | 02 19 22 32 35 · MM 04 | 0/4 | 1/7 (32) | 2/8 (22 35) | 3/3 bỏ đúng | 4/5 (19 về, vắng 15+) | sai: tổng 110 ngoài 77–106 | **3 (22 32 35)**; pool 10: 2 · tâm linh 12: **3 (19 22 32)** | 1 số |
 | 05/10 13h | 09 14 15 16 35 · MM 02 | — | — | — | luật ● 8/9 đúng (tx10 sai: 16 về) | — | — | **3 (14 15 35)**; pool 10: 2 (15 35) · pool 20: 4 · tâm linh 12: 3 · MM 06 01 10 trật (02 lặp lại kỳ trước) | 1 số; vé anh: 1 số mỗi vé (35 / 15) |
 | 19/10 13h | 05 19 23 28 31 · MM 04 | — | — | — | sổ kiểm chứng 23/31 luật đúng | — | — | 2 (05 28); pool 10: 2 (05 28) · pool 20: 3 (05 19 28) · tâm linh 12: 2 (05 31) · MM 09 06 07 trật (ra 04) | 1 số (vé 1, vé 7: 05) |
+| 19/10 21h | 11 14 17 26 28 · MM 07 | — | — | — | sổ kiểm chứng 27/34 luật đúng | — | — | 2 (11 14); pool 10: 1 (11) · pool 20: 3 (11 14 28) · tâm linh 12: 2 (11 14) · vắng 8 kỳ: 2 (11 26) · **MM 07 trúng** (ưu tiên 2) | 2 số + MM (vé 6: 10 11 14 21 34 + 07) |
 
 ## Sổ chấm phương pháp Mega 6/45 (bắt đầu 04/10/2026; chi tiết từng luật trong app → "Sổ kiểm chứng suy luận")
 | Kỳ | Kết quả | Luật loại (đã áp dụng) | Bị loại | Pool 10 / 15 / 20 | Vé tốt nhất | Tâm linh 12 | Bao 7 anh | Ghi chú |
