@@ -21,6 +21,7 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - Max 3D / 3D+ / Pro: dữ liệu `build/max3d_data.json`, `build/max3dpro_data.json`; ô trong app + gợi ý 3 cặp kèm lý do từ `build/max3d_app.py` (lưu gợi ý đã đưa vào `build/max3d_goiy_log.jsonl`); tâm linh `build/max3d_tamlinh.py`; các script `build/max3d_*.py`. Sau mỗi lần `lay_kq.py`: `python3 build/max3d_app.py` → `node build/max3d_tl.js` (17 phương pháp tâm linh, ra `build/max3d_tl.json`) → `python3 build/max3d_app.py` lần nữa (ghép cặp tâm linh) → `assemble.py`.
 
 ## App đã đăng
+- **Link hiện dùng (tài khoản mới, 19/10/2026):** https://claude.ai/artifact/JQaEpNPaGoodyS8YthwX5X — cập nhật bằng cách đăng lại `build/nghien-cuu-loto.html` (khai báo capabilities db + downloads). Link ULkC95JvE2BsKHfXyypXHF (13/10) có thêm ô Pool 25 Power, Máy học Mega, Kiểm bộ số chưa có trong code.
 - https://claude.ai/artifact/X8ZmKZJ3RGDKZF7j8wbxFr — thuộc tài khoản cũ. Tài khoản mới không ghi đè được link này trừ khi được chia sẻ quyền sửa; nếu không, đăng thành link mới từ `build/nghien-cuu-loto.html`.
 
 ## Việc đang dở (05/10/2026)
