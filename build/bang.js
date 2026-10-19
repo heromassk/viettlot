@@ -124,8 +124,8 @@ function qhBlock(J,ball,p2,HCOL){const RA=J.res201||[],DA=J.dates201||[],L=J.lk2
   const rows=[];let nS=0,nD=0,nK=0,kv=0,kt=0;
   IX.forEach(i=>{const r=[...RA[i]].sort((a,b)=>a-b),S=new Set(r);
     const sums=[],dbl=[],SUMC=new Set(),DBLC=new Set();
-    for(let x=0;x<r.length;x++)for(let y=x+1;y<r.length;y++){const c=r[x]+r[y];if(S.has(c)){sums.push(`${p2(r[x])}+${p2(r[y])}=${p2(c)}`);SUMC.add(c);}}
-    r.forEach(a=>{if(S.has(2*a)){dbl.push(`${p2(a)}×2=${p2(2*a)}`);DBLC.add(2*a);}});
+    for(let x=0;x<r.length;x++)for(let y=x+1;y<r.length;y++){const c=r[x]+r[y];if(S.has(c)){sums.push(`${p2(r[x])}+${p2(r[y])}`);SUMC.add(c);}}
+    r.forEach(a=>{if(S.has(2*a)){dbl.push(`${p2(a)}×2`);DBLC.add(2*a);}});
     const kp=kep(r),KS=new Set();kp.forEach(m=>{KS.add(m-1);KS.add(m+1);});
     const p1=prevI(i,1),p2i=prevI(i,2),VE=new Set([...(p1>=0?kep(RA[p1]):[]),...(p2i>=0?kep(RA[p2i]):[])].filter(n=>S.has(n)));
     if(sums.length)nS++;if(dbl.length)nD++;if(kp.length)nK++;
@@ -137,7 +137,7 @@ function qhBlock(J,ball,p2,HCOL){const RA=J.res201||[],DA=J.dates201||[],L=J.lk2
     const h=MAU[n]?`<span class="bg-b${cls}" style="background:${MAU[n]};border-color:${MAU[n]};color:${CHU[n]};">${p2(n)}</span>`:ball(n,cls.trim());return U?h.replace(`>${p2(n)}</span>`,`><i class="qku">${p2(n)}</i></span>`):h;};   // cặp kẹp: gạch ngắn (80% bề rộng số) ngay dưới số
   const body=rows.slice().reverse().map(o=>{const a=o.r,c=a.filter(n=>n%2===0).length,i=o.i;
     const tags=[o.kp.length?`<span style="color:#c58bff">kẹp ${o.kp.map(p2).join(' ')}</span>`:'',o.VE.size?`<span style="color:#c58bff">về ${[...o.VE].map(p2).join(' ')}</span>`:'',...o.sums.map(x=>`<span style="color:#ffb347">${x}</span>`),...o.dbl.map(x=>`<span style="color:#4dd0c8">${x}</span>`)].filter(Boolean);
-    return `<div class="bg-row bg-pool bg-k10" style="margin:2px 0;"><small class="bg-k10d">${String(DA[i]).replace(/\/\d{4}/,'')}</small>${a.map(n=>qb(n,o)).join('')}<small style="white-space:nowrap;font-size:.62rem;margin-left:8px;">${tags.join(' · ')}</small></div>`;}).join('');
+    return `<div class="bg-row bg-pool bg-k10" style="margin:2px 0;"><small class="bg-k10d"${lo?'':' style="flex:0 0 28px;"'}>${String(DA[i]).replace(/\/\d{4}/,'')}</small>${a.map(n=>qb(n,o)).join('')}<small style="white-space:nowrap;font-size:.5rem;letter-spacing:-.2px;margin-left:3px;">${tags.join('\u200a·\u200a')}</small></div>`;}).join('');
   const open=W.__qhOpen;
   return `<details class="bg-wh" style="margin:6px 0;"${open?' open':''} ontoggle="qhTog(this)"><summary><b>Quan hệ trong kỳ</b> <small>— cặp kẹp, số kẹp về trong 2 kỳ, tổng, nhân đôi</small></summary>
    <div class="bg-row bg-chips">${[5,10,15,20,25,30,50].map(n=>`<span class="bg-h20k${!QR&&n===N0?' on':''}" onclick="qhSet(${n})">${n} kỳ</span>`).join('')}</div>
