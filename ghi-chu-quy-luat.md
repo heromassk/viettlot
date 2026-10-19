@@ -1652,3 +1652,15 @@ Nhóm giao = vắng x kỳ (Loto, Mega 8; Power 12) VÀ kề ±1 số của kỳ
 - **Mega** (100 kỳ): giao 11–14% < vắng không kề 15–17.5% ở cả 3 cách; nhưng nửa 50 kỳ xa thì giao nhỉnh hơn → không ổn định.
 - **Power**: ±1 kỳ trước giao 12.7% (50 kỳ) = vắng không kề 12.7%; 100 kỳ 13.7% > 11.9%; ±1 t−2 kém (9–10.5%) → không rõ.
 - Nhóm giao chỉ 1–5 số nên tỉ lệ dao động mạnh. Không đưa vào gợi ý; chỉ ghi tham khảo.
+
+# Loto: bao số theo thứ hạng pool (anh 19/10/2026, `GOIY_BAO=1 python3 build/goiy.py loto …`)
+Mỗi kỳ chấm lại, lấy k số đầu bảng điểm (chỉ dữ liệu trước kỳ đó). Bao k = C(k,5) vé × 10.000đ. 100 kỳ đến 19/10/2026 21h:
+| Bao | Vé | Trúng TB | Kỳ có ≥3 số | ≥4 số | 5 số |
+|---|---|---|---|---|---|
+| 6 | 6 | 0.95 | 6 | 2 | 0 |
+| 7 | 21 | 1.12 | 8 | 2 | 0 |
+| 8 | 56 | 1.29 | 9 | 3 | 0 |
+| 9 | 126 | 1.53 | 13 | 4 | 0 |
+| 10 | 252 | 1.68 | 21 | 6 | 0 |
+| 12 | 792 | 1.91 | 29 | 8 | 0 |
+Không kỳ nào đủ 5 số trong 12 số đầu. Bao lớn tốn nhiều vé mà chỉ tăng số kỳ ≥3/≥4 số chậm → rải vé bao phủ pool rẻ hơn.
