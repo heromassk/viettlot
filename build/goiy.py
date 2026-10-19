@@ -105,10 +105,8 @@ def signals(t):
                 import datetime as _dt
                 _l = _dt.datetime.strptime(_ds[-1][:10], '%d/%m/%Y'); _m = (_l + _dt.timedelta(days=1 if _ds[-1].endswith('21h') else 0)).month
             sig['nong35'].discard(_m)
-    if A.game in ('mega', 'power') and not A.cu and WVX:   # số vắng x kỳ (thử 19/10/2026, vang_x_bi.py)
+    if not A.cu:   # số không ra trong VX kỳ gần (anh 19/10/2026; vang_x.py Loto 8 kỳ, vang_x_bi.py Mega 8 kỳ / Power 12 kỳ)
         sig['vang8'] = set(range(1, NB + 1)) - set().union(*R[t - VX:t])
-    if A.game == 'loto' and not A.cu:   # số không ra trong 8 kỳ gần (anh 19/10/2026, vang_x.py: ra nhỉnh hơn số đã ra ở cả 3 đoạn 100 kỳ)
-        sig['vang8'] = set(range(1, NB + 1)) - set().union(*R[t - 8:t])
     sig['_td'] = td_sets(t)
     if WMK and not A.cu: sig['_mk'] = mk_rank(t)
     if MIXM and not A.cu: sig['_mix'] = [MIXF[m](t) for m in MIXM.split(',')]
@@ -244,9 +242,10 @@ WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0
 WSC = float(os.environ.get('GOIY_SC', '0'))   # lô kép (Loto), Pascal (Power): thử 05/10 — pool không đổi rõ → tắt, chỉ theo dõi trong sổ
 WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
-WV8 = float(os.environ.get('GOIY_V8', '0.5'))
-VX = int(os.environ.get('GOIY_VX', '8')); WVX = float(os.environ.get('GOIY_WVX', '0'))
-if A.game in ('mega', 'power'): WV8 = WVX   # Loto: + điểm nhỏ cho số vắng 8 kỳ (anh 19/10/2026)
+# Số vắng VX kỳ (anh duyệt 19/10/2026): + điểm WV8 và mỗi vé ≥1 số trong nhóm. Loto 8 kỳ +0.5 · Mega 8 kỳ +1 · Power 12 kỳ chỉ luật vé
+# (pool Power đã gộp hạng chuỗi ra/vắng, cộng điểm không đổi pool).
+VX = int(os.environ.get('GOIY_VX', {'loto': 8, 'mega': 8, 'power': 12}[A.game]))
+WV8 = float(os.environ.get('GOIY_V8', {'loto': 0.5, 'mega': 1, 'power': 0}[A.game]))   # Loto: + điểm nhỏ cho số vắng 8 kỳ (anh 19/10/2026)
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
         {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua', 'chin'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])
 import random
@@ -278,7 +277,7 @@ def claims(t, rk):
         while g < t and n not in R[t - 1 - g]: g += 1
         gp[n] = g
     hot10 = set(sorted(c20, key=lambda n: (-c20[n], gp[n], n))[:10])
-    v8 = set(range(1, NB + 1)) - set().union(*R[t - 8:t])
+    v8 = set(range(1, NB + 1)) - set().union(*R[t - VX:t])
     ke = {m for n in last for m in (n - 1, n, n + 1) if 1 <= m <= NB}
     # (15/10/2026) bỏ khẳng định "Pool 10/15/20 có …": chấm bằng pool thô, không phải pool đang hiện — xem bảng pool thật (pool_app.py)
     return [
@@ -289,7 +288,7 @@ def claims(t, rk):
         (f'Chẵn/lẻ cân ({NDAY // 2}±1 số lẻ' + (', dãy 6 số gồm MM)' if DAY6 else ')'), None, lambda x: abs(odd_n(x) - NDAY / 2) <= 1),
         (f'Nhỏ/lớn cân ({NDAY // 2}±1 số ≤{NB // 2}' + ('; MM ≤6)' if DAY6 else ')'), None, lambda x: abs(small_n(x) - NDAY / 2) <= 1),
         (f'Rải ≥{KB - 2} hàng chục', None, lambda x: len({n // 10 for n in x}) >= KB - 2),
-    ] + ([('Có ≥1 số vắng 8 kỳ (không ra trong 8 kỳ gần)', v8, lambda x: bool(x & v8))] if A.game == 'loto' else [])
+    ] + [(f'Có ≥1 số vắng {VX} kỳ (không ra trong {VX} kỳ gần)', v8, lambda x: bool(x & v8))]
 
 def backtest(W=100):
     """Chạy tiến W kỳ: mỗi kỳ ghi số trúng của từng tín hiệu, pool 10/15/20 và từng khẳng định."""
@@ -540,7 +539,7 @@ if RAIVE:
         if _lv: KHUON['tien'], KHUON['tien10'] = _lv.get('tien'), _lv.get('tien10')   # % lọt CHẤM TIẾN (chọn bằng kỳ trước, thử kỳ sau)
     _SPECS = _BV['specs']
     _prev = sorted(R[-1])
-    _V8 = (set(range(1, NB + 1)) - set().union(*R[T - 8:T])) if A.game == 'loto' and not A.cu else set()   # mỗi vé ≥1 số vắng 8 kỳ (anh 19/10/2026)
+    _V8 = (set(range(1, NB + 1)) - set().union(*R[T - VX:T])) if not A.cu else set()   # mỗi vé ≥1 số vắng VX kỳ (anh 19/10/2026)
     def _okv(x, mm): return _ev(x, mm) not in CL_TRANH and all(_KH.check(sp, x, mm, _prev, NB, KB) for sp in _SPECS) and (not _V8 or bool(set(x) & _V8))
     VELUAT = dict(specs=_SPECS, cl=sorted(CL_TRANH), prev=_prev)
     _CAND = list(_P18) + [n for n in (POOLS.get(25) or rank) if n not in _P18]

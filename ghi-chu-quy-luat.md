@@ -1643,4 +1643,4 @@ Mỗi kỳ lấy các số không ra trong x kỳ trước làm pool, đếm k�
 - **Mega:** x = 5…12 lệch dương ở cả 4 khung. x=8: nhóm ~14 số, trúng TB 2.08, ≥1/≥2/≥3 số 96/66/33%, lệch +6.0/+3.2/+1.4/+2.2, 2 nửa +3.0/+1.4. x=15 âm (khớp luật loại vắng lâu).
 - **Power:** x=7, 8, 10, 12 dương cả 4 khung (trừ x=8 khung 10 kỳ +0.1). x=12: nhóm ~13 số, trúng TB 1.56, ≥1/≥2 số 84/50%, lệch +2.1/+3.0/+2.3/+1.8, 2 nửa +1.2/+2.3.
 - Thử cộng điểm vào goiy.py (`GOIY_VX`, `GOIY_WVX`, mặc định tắt): Mega x=8 +1 điểm → pool 15 ≥3 số 44→50% (50 kỳ), 40→46% (100 kỳ); x=12 +1 → 52%/45%. Power: pool 15 không đổi (27% / 32%) ở mọi x và trọng số 0.5–3 — pool Power đã gộp hạng với chuỗi ra/vắng bậc 3, 5.
-- Đề xuất (chờ anh duyệt): Mega +1 điểm số vắng 8 kỳ + mỗi vé ≥1 số vắng 8 kỳ; Power chỉ dùng cho vé (≥1 số vắng 12 kỳ, đúng 84%).
+- **Anh duyệt 19/10/2026, đã áp:** Mega +1 điểm số vắng 8 kỳ + mỗi vé ≥1 số vắng 8 kỳ; Power chỉ luật vé ≥1 số vắng 12 kỳ (đúng 84%). Mặc định trong goiy.py: VX Loto 8 / Mega 8 / Power 12; điểm Loto 0.5 / Mega 1 / Power 0.
