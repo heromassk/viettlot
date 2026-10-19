@@ -1,5 +1,5 @@
 # Quan hệ các số trong cùng 1 kỳ (anh 19/10/2026): a+b=c, a+b=c+d, gấp đôi (b=2a), cấp số 3 số (a,b,c cách đều).
-# % kỳ có dạng đó ở 3 đoạn 100 kỳ (gần → xa) + toàn bộ; mức tự nhiên = % trên mọi bộ số có thể (đếm đủ tổ hợp / mẫu lớn).
+# Đếm số kỳ có dạng đó (anh: không so với ngẫu nhiên). Phần 'mức tự nhiên' bên dưới chỉ là bản cũ, không dùng khi báo anh.
 import json,itertools,random
 ALL=json.load(open('build/all_data.json'))
 def rel(s):

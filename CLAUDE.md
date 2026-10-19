@@ -3,7 +3,7 @@
 Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt, ngắn gọn, dùng bảng. Đọc kỹ các skill trong `.claude/skills/` (loto, mega, power, suyluan) trước khi làm — nguyên tắc của anh nằm ở đầu mỗi skill.
 
 ## Nguyên tắc cốt lõi của anh (không được làm trái)
-- Không so với "bốc ngẫu nhiên / bỏ bừa" như thước đo thắng thua; phương pháp phải có cơ sở, **cố định cách tính qua các kỳ**, chấm bằng tỉ lệ đúng của chính nó và độ ổn định (khung 10/20/50/100 kỳ, 3 đoạn 100 kỳ).
+- Không so với "bốc ngẫu nhiên / bỏ bừa" — kể cả "mức tự nhiên", "mọi bộ số có thể", "kỳ vọng" (anh nhắc lại 19/10/2026: ngẫu nhiên không có cơ sở). Anh hỏi bao nhiêu kỳ thì chỉ đếm số kỳ ở khung 20/50/100; phương pháp phải có cơ sở, **cố định cách tính qua các kỳ**, chấm bằng tỉ lệ đúng của chính nó và độ ổn định (khung 10/20/50/100 kỳ, 3 đoạn 100 kỳ).
 - **Chơi bền, không chơi ăn ngay**: không đổi luật/pool vì 1 kỳ; có kỳ trúng kỳ trật.
 - **Dấu vết = xác suất nghiêng**, không phải đúng 100%. Lệch nhỏ mà ổn định vẫn dùng (trọng số nhỏ).
 - **Luật đúng ≥70%** (khung 50 & 100 kỳ) là dùng tốt, miễn số bị loại không ra nhiều hơn trung bình.
