@@ -1671,3 +1671,4 @@ So % ra của số kẹp với các số khác không có ở kỳ đó (trung b
 - **Chỉ 13h (2 kỳ 13h tới):** 44.8 / 22.0 / 28.9% · 31.9% → 100 kỳ gần về rất nhiều nhưng đoạn 2 ngược lại → chưa ổn định, theo dõi.
 - **Chỉ 21h:** ngay kỳ 21h sau chỉ 7.1 / 4.9 / 7.7% · 8.8% (số khác ~14.3%) → **ổn định cả 3 đoạn: số kẹp kỳ 21h hầu như không về ở kỳ 21h kế tiếp** (loại đúng ~92–95%). Trong 2 kỳ 21h: 23.2 / 12.2 / 23.1%.
 - Mẫu nhỏ (40–58 số kẹp mỗi đoạn), cần theo dõi thêm trong sổ kiểm chứng.
+- **Khung 20 / 50 kỳ (19/10/2026):** cả 2 giờ trong 2 kỳ 40% (4/10) / 25% (7/28), số khác ~26% · **chỉ 13h trong 2 kỳ 13h: 53% (8/15) / 47% (14/30)**, số khác ~26% · chỉ 21h kỳ 21h sau: 0/10 / 2/29 (7%), số khác ~14%. 13h đang mạnh ở 20–100 kỳ gần nhưng đoạn 2 ngược → theo dõi.
