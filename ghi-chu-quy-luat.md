@@ -1632,3 +1632,8 @@ Mỗi kỳ lấy các số không ra trong x kỳ trước làm pool, đếm k�
 - **Lấy 8 kỳ (anh chọn, 19/10/2026):** nhóm vắng ~10 số, trúng TB 1.50; ≥1 số 87–90%, ≥2 số 40–49%; 1 số vắng ra 14.6/15.6/15.4% so với 14.2/13.8/13.9% ở 3 đoạn 100 kỳ → nhỏ mà ổn định. Đã đưa vào gợi ý: +0.5 điểm (`GOIY_V8`), mỗi vé ≥1 số vắng 8 kỳ, sổ kiểm chứng `kd_vang8`/`nhom_vang8`.
 - **So x = 6…12 kỳ (19/10/2026):** lệch "1 số vắng ra − 1 số đã ra" ở 3 đoạn 100 kỳ (gần → xa): x6 +0.5/+1.6/+2.3 · x7 +0.0/+2.4/+2.0 · **x8 +0.5/+1.8/+1.5** · x9 −0.7/+2.4/+0.5 · x10 −1.7/+1.7/+0.8 · x11 −1.0/+0.8/+0.6 · x12 −1.2/+0.6/−0.5. Chỉ 6 và 8 dương cả 3 đoạn; "≥1 số vắng": x6 94–96%, x8 87%, x9 75–80%, x11 62–66%, x12 53–59%. Giữ 8.
 - **Tách 13h / 21h (19/10/2026):** chia 3 đoạn 50 kỳ cùng giờ. Liền nhau 8 kỳ lệch dương cả 3 đoạn ở cả 2 giờ (13h +0.5/+3.5/+1.1; 21h +0.4/+0.2/+1.9), ≥1 số 86–90% (13h), 84–88% (21h). Lấy x kỳ CÙNG GIỜ không tốt hơn: 13h cùng giờ 3 kỳ dương cả 3 đoạn nhưng nhóm 22 số (quá rộng); cùng giờ 5–8 kỳ đổi chiều qua các đoạn ở cả 13h và 21h. Giữ 8 kỳ liền nhau cho cả 2 giờ.
+
+# Số May Mắn Loto — thử dấu vết mới ngoài ±3 (anh 19/10/2026, `build/somayman_moi2.py`)
+- ±3 quanh MM kỳ trước là dấu vết thật: 1 số trong ±3 ra 9.4/9.6/8.8% so với 7.3/7.0/7.9% số ngoài (3 đoạn 100 kỳ).
+- Thử 20+ cách chọn 3 số (vắng lâu/ít trong ±3, sát/xa MM trước, chênh lệch Δ hay gặp, Markov MM→MM, ±3 quanh MM cùng giờ, giao 2 cửa sổ, MM vắng 4/8 kỳ, số chính ≤12, tổng/đuôi tổng kỳ trước, nóng 5/15/20 kỳ, kết hợp nóng + Δ). Không cách nào hơn cách đang dùng (±3, nóng 10 kỳ: 31/32/33% ở 3 đoạn, 30% ở 500 kỳ). Gần nhất: Δ hay gặp 30/29/30%; ±3 nóng 20 kỳ 30/31/34%. MM vắng 4/8 kỳ tụt mạnh ở đoạn xa (14%, 13%) → không dùng.
+- Giữ nguyên cách đang dùng.
