@@ -35,6 +35,8 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 
 - **Kỳ đánh mạnh (anh, 04/10/2026: "kỳ nào dữ liệu ổn thì đánh mạnh"):** chỉ báo "Nhịp pool" — 5 kỳ gần pool 15 trúng TB ≥ ngưỡng 1/3 tốt nhất (≈2.4) thì kỳ tới pool 15 trúng TB 2.40, ≥3 số 51–52% (cả 2 nửa 400 kỳ) so với 32–45% lúc thường. Độ "đồng thuận điểm" và phiên 13h/21h KHÔNG phân biệt được kỳ tốt. Kỳ đánh mạnh: thêm bộ 10 vé phủ pool 10 (tham lam phủ bộ 3).
 
+- **Số vắng 8 kỳ (anh 19/10/2026, `build/vang_x.py`):** số không ra trong 8 kỳ gần ra nhỉnh hơn số đã ra ở cả 3 đoạn 100 kỳ (14.6–15.6% so với 13.8–14.2%) → **+0.5 điểm** (`GOIY_V8`; 0.5 làm pool 15 ≥3 số 42→50% ở 50 kỳ, 44→50% ở 100 kỳ; 1.0 trở lên kém hơn). **Mỗi vé ≥1 số vắng 8 kỳ** (khẳng định đúng 87% / 90% ở 100 / 50 kỳ). Sổ kiểm chứng: `kd_vang8`, `nhom_vang8`. Lấy 10 kỳ thì nhóm vắng ra kém hơn ở 100 kỳ gần — không dùng.
+
 ## Tâm linh (bắt buộc trình bày)
 - Phiếu từ 20 quẻ (`build/tamlinh.js`). Top 12 phiếu +1 điểm; **tâm linh mạnh ★** (phiếu ≥ mức của số thứ 5) +1.5 điểm.
 - **Số tâm linh mạnh bị luật vắng loại thì không loại hẳn** (được "cứu", để điểm quyết định) — anh: "tâm linh có số bị loại mà phiếu nhiều thì cần cân nhắc".

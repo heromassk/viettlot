@@ -105,6 +105,8 @@ def signals(t):
                 import datetime as _dt
                 _l = _dt.datetime.strptime(_ds[-1][:10], '%d/%m/%Y'); _m = (_l + _dt.timedelta(days=1 if _ds[-1].endswith('21h') else 0)).month
             sig['nong35'].discard(_m)
+    if A.game == 'loto' and not A.cu:   # số không ra trong 8 kỳ gần (anh 19/10/2026, vang_x.py: ra nhỉnh hơn số đã ra ở cả 3 đoạn 100 kỳ)
+        sig['vang8'] = set(range(1, NB + 1)) - set().union(*R[t - 8:t])
     sig['_td'] = td_sets(t)
     if WMK and not A.cu: sig['_mk'] = mk_rank(t)
     if MIXM and not A.cu: sig['_mix'] = [MIXF[m](t) for m in MIXM.split(',')]
@@ -211,6 +213,7 @@ def score(f, s, extra=None):
         v += WCHIN * (n in s.get('chin', ())) - WG610 * (n in s.get('g610', ())) \
             - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ())) \
             + 1 * (n in s.get('ben', ())) + WSC * (n in s.get('kep', ())) + WSC * (n in s.get('pascal', ()))
+        v += WV8 * (n in s.get('vang8', ()))
         v += sum(WTD * sg for sg, st in s.get('_td', {}).values() if n in st)
         v += WMK * s.get('_mk', {}).get(n, 0)
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
@@ -239,6 +242,7 @@ WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0
 WSC = float(os.environ.get('GOIY_SC', '0'))   # lô kép (Loto), Pascal (Power): thử 05/10 — pool không đổi rõ → tắt, chỉ theo dõi trong sổ
 WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
+WV8 = float(os.environ.get('GOIY_V8', '0.5'))   # Loto: + điểm nhỏ cho số vắng 8 kỳ (anh 19/10/2026)
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
         {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua', 'chin'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])
 import random
@@ -270,6 +274,7 @@ def claims(t, rk):
         while g < t and n not in R[t - 1 - g]: g += 1
         gp[n] = g
     hot10 = set(sorted(c20, key=lambda n: (-c20[n], gp[n], n))[:10])
+    v8 = set(range(1, NB + 1)) - set().union(*R[t - 8:t])
     ke = {m for n in last for m in (n - 1, n, n + 1) if 1 <= m <= NB}
     # (15/10/2026) bỏ khẳng định "Pool 10/15/20 có …": chấm bằng pool thô, không phải pool đang hiện — xem bảng pool thật (pool_app.py)
     return [
@@ -280,7 +285,7 @@ def claims(t, rk):
         (f'Chẵn/lẻ cân ({NDAY // 2}±1 số lẻ' + (', dãy 6 số gồm MM)' if DAY6 else ')'), None, lambda x: abs(odd_n(x) - NDAY / 2) <= 1),
         (f'Nhỏ/lớn cân ({NDAY // 2}±1 số ≤{NB // 2}' + ('; MM ≤6)' if DAY6 else ')'), None, lambda x: abs(small_n(x) - NDAY / 2) <= 1),
         (f'Rải ≥{KB - 2} hàng chục', None, lambda x: len({n // 10 for n in x}) >= KB - 2),
-    ]
+    ] + ([('Có ≥1 số vắng 8 kỳ (không ra trong 8 kỳ gần)', v8, lambda x: bool(x & v8))] if A.game == 'loto' else [])
 
 def backtest(W=100):
     """Chạy tiến W kỳ: mỗi kỳ ghi số trúng của từng tín hiệu, pool 10/15/20 và từng khẳng định."""
@@ -531,7 +536,8 @@ if RAIVE:
         if _lv: KHUON['tien'], KHUON['tien10'] = _lv.get('tien'), _lv.get('tien10')   # % lọt CHẤM TIẾN (chọn bằng kỳ trước, thử kỳ sau)
     _SPECS = _BV['specs']
     _prev = sorted(R[-1])
-    def _okv(x, mm): return _ev(x, mm) not in CL_TRANH and all(_KH.check(sp, x, mm, _prev, NB, KB) for sp in _SPECS)
+    _V8 = (set(range(1, NB + 1)) - set().union(*R[T - 8:T])) if A.game == 'loto' and not A.cu else set()   # mỗi vé ≥1 số vắng 8 kỳ (anh 19/10/2026)
+    def _okv(x, mm): return _ev(x, mm) not in CL_TRANH and all(_KH.check(sp, x, mm, _prev, NB, KB) for sp in _SPECS) and (not _V8 or bool(set(x) & _V8))
     VELUAT = dict(specs=_SPECS, cl=sorted(CL_TRANH), prev=_prev)
     _CAND = list(_P18) + [n for n in (POOLS.get(25) or rank) if n not in _P18]
     from itertools import combinations as _cb
