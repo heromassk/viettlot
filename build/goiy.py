@@ -584,6 +584,12 @@ print(f'Kỳ gần nhất {D["dates"][-1]}: **{fm(R[-1])}** (tổng {sums[-1]})\
 print('### Tín hiệu dấu vết (cùng một cách tính mọi kỳ)\n')
 RECS = backtest(100)   # tối đa 100 kỳ
 B = {W: summ(RECS[-W:]) for W in (10, 50, 100)}
+if os.environ.get('GOIY_BAO'):   # bao k số theo thứ hạng pool (anh 19/10/2026): mỗi kỳ chấm lại, kỳ có ≥3 / ≥4 / đủ KB số trong k số đầu
+    from math import comb as _cmb
+    for _k in (6, 7, 8, 9, 10, 12):
+        for _W in (50, 100):
+            _m = [len(set(r['rk'][:_k]) & R[r['t']]) for r in RECS[-_W:]]
+            print(f'BAO {_k} ({_cmb(_k, KB)} vé) {_W} kỳ: TB {sum(_m) / _W:.2f} | ≥3 {sum(x >= 3 for x in _m)} ≥4 {sum(x >= 4 for x in _m)} ={KB} {sum(x >= KB for x in _m)}')
 pc = lambda v: '—' if v is None else f'{v:.0f}%'
 rows = [('hot', 'Nóng (c10≥3 hoặc c20≥2×kỳ vọng)', 'tỉ lệ ra/số'),
         ('ke', 'Kề ±1 kỳ trước', 'tỉ lệ ra/số'),
