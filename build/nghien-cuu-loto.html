@@ -114,7 +114,7 @@ input.n{width:52px;text-align:center;}
 .vlx{color:#ff6b6b;font-weight:700;}.vln{color:#f0b429;font-weight:700;}.vlt{color:var(--muted,#8b93a7);}
 .bg-wh{border-top:1px solid var(--border,#2c3550);padding:6px 0;}.bg-wh summary{cursor:pointer;font-size:.84rem;line-height:1.5;}.bg-wh summary small{color:var(--muted,#8b93a7);}
 .bg-h20w>summary{cursor:pointer;list-style:none;}.bg-h20w>summary::-webkit-details-marker{display:none;}.bg-h20w>summary h4{display:inline;}.bg-h20w>summary h4::after{content:' ▸';}.bg-h20w[open]>summary h4::after{content:' ▾';}.bg-h20w[open]>summary{margin-bottom:8px;}
-.bg-g10{border-collapse:collapse;font-size:.78rem;width:100%;}.bg-g10 th,.bg-g10 td{padding:3px 6px;border-bottom:1px solid var(--border,#2c3550);text-align:center;white-space:nowrap;}.bg-g10 th{color:var(--muted,#8b93a7);font-weight:500;}
+.bg-g10{border-collapse:collapse;font-size:.78rem;width:100%;}.bg-g10.th3 th,.bg-g10.th3 td{padding:3px 3px;}.bg-g10 th,.bg-g10 td{padding:3px 6px;border-bottom:1px solid var(--border,#2c3550);text-align:center;white-space:nowrap;}.bg-g10 th{color:var(--muted,#8b93a7);font-weight:500;}
 .bg-dgw{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:6px;}
 .bg-dg{border:1px solid var(--border,#2c3550);border-radius:8px;padding:6px 8px;}.bg-dgh{margin-bottom:4px;font-size:.85rem;}
 .bg-dgm{font-size:.78rem;padding:1px 6px;border-radius:8px;background:rgba(255,255,255,.08);}.bg-dgm.ok{background:rgba(63,185,80,.25);}.bg-dgm.bad{background:rgba(248,81,73,.25);}
@@ -497,6 +497,28 @@ function vxBlock(J){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game,p2=
    <div class="bg-foot" style="margin:4px 0 0;">${lo?'<b style="color:#ff9f43">Số cam</b> = số may mắn (không tính vào pool). ':''}Dòng nhỏ dưới mỗi kỳ = pool vắng ${X} kỳ${G?' '+G:''} trước kỳ đó, <b style="color:var(--ac)">số tô màu</b> = số trúng, <span style="${TV}">vòng tròn vàng</span> (cột kết quả) = trùng số kỳ${G?' '+G:''} trước; khung trong pool = kề số kỳ${G?' '+G:''} trước: <span style="${KS(KC.m)}">−1</span> <span style="${KS(KC.p)}">+1</span> <span style="${KS(KC.b)}">±1</span>.<br>${n} kỳ: pool TB <b>${(sz/n).toFixed(1)}</b> số · trúng TB <b>${(ht/n).toFixed(1)}</b> số/kỳ · ≥1 số <b>${pc(1)}</b> · ≥2 số <b>${pc(2)}</b> · ≥3 số <b>${pc(3)}</b> kỳ.<br>Số có khung (vắng + kề ±1): TB <b>${(ks/n).toFixed(1)}</b> số/kỳ, trúng <b>${kh}/${ks}</b>${ks?` (${Math.round(kh/ks*100)}% mỗi số; cả pool ${sz?Math.round(ht/sz*100):0}%)`:''}.</div>
    <div class="bg-foot" style="margin:2px 0 0;">Pool vắng ${X} kỳ${G?' '+G:''} cho ${nxG?'kỳ '+nxt:'kỳ '+G+' tới'}: <b>${nx.length} số</b> — ${nx.length?fmtV(nx,[],keOf(RA.length)):'—'}</div></details>`;}
 // Số may mắn Loto: chênh so với MM kỳ liền trước (anh 19/10/2026) — nhỏ ở góc dưới bên phải: −3 đỏ, +1 xanh lá, 0 xám
+// Kiểm pool tổng / hiệu (anh 20/10/2026): pool tổng = a+b (≤ số lớn nhất), pool hiệu = |a−b| của mọi cặp số kỳ trước (lọc giờ: kỳ cùng giờ trước).
+function thN(k){if(typeof window==='undefined')return;window.__thN=k;window.__thOpen=true;rgRe();}
+function thGio(v){if(typeof window==='undefined')return;window.__thG=v;window.__thOpen=true;rgRe();}
+function thTog(el){if(typeof window!=='undefined')window.__thOpen=el.open;}
+function thBlock(J){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game,p2=n=>String(n).padStart(2,'0'),W=typeof window!=='undefined'?window:{};if(RA.length<3)return '';
+  const NK=[10,20,50].includes(W.__thN)?W.__thN:20,lo=g==='loto',G=lo&&['13h','21h'].includes(W.__thG)?W.__thG:'',okG=i=>!G||String(DA[i]).endsWith(G);
+  const prevOf=t=>{for(let i=t-1;i>=0;i--)if(okG(i))return RA[i];return null;};
+  const pools=pv=>{const T=new Set(),H=new Set();for(let a=0;a<pv.length;a++)for(let b=a+1;b<pv.length;b++){const x=pv[a]+pv[b],y=Math.abs(pv[a]-pv[b]);if(x<=NB)T.add(x);if(y>=1)H.add(y);}return [[...T].sort((a,b)=>a-b),[...H].sort((a,b)=>a-b)];};
+  const fm=(v,h)=>v.map(n=>h.includes(n)?`<b style="color:var(--ac);">${p2(n)}</b>`:p2(n)).join(' ');
+  const st={T:{sz:0,ht:0,ge:[0,0,0,0]},H:{sz:0,ht:0,ge:[0,0,0,0]}},rows=[];
+  for(let t=RA.length-1;t>=0&&rows.length<NK;t--){if(!okG(t))continue;const pv=prevOf(t);if(!pv)break;const [T,H]=pools(pv),r=RA[t],hT=r.filter(n=>T.includes(n)),hH=r.filter(n=>H.includes(n));
+    [['T',T,hT],['H',H,hH]].forEach(([k,v,h])=>{st[k].sz+=v.length;st[k].ht+=h.length;for(let j=1;j<=3;j++)if(h.length>=j)st[k].ge[j]++;});
+    rows.push(`<tr><td class="l" style="white-space:nowrap">${String(DA[t]).replace(/\/\d{4}/,'')}</td><td class="l" style="white-space:nowrap">${[...r].sort((a,b)=>a-b).map(p2).join(' ')}${lo&&(J.lk201||[])[t]!=null?` <b style="color:#ff9f43">${p2(J.lk201[t])}</b>${mmDelta(J,t,G)}`:''}</td><td>${T.length} · <b>${hT.length}</b></td><td>${H.length} · <b>${hH.length}</b></td></tr>
+      <tr><td style="border-bottom:0;"></td><td class="l" colspan="3" style="text-align:left;border-bottom:0;white-space:normal;line-height:1.45;padding:0 3px 1px;color:var(--muted,#8b93a7);"><small style="color:#ffb347;">Tổng:</small> ${fm(T,hT)||'—'}</td></tr>
+      <tr><td></td><td class="l" colspan="3" style="text-align:left;white-space:normal;line-height:1.45;padding:0 3px 3px;color:var(--muted,#8b93a7);"><small style="color:#4dd0c8;">Hiệu:</small> ${fm(H,hH)||'—'}</td></tr>`);}
+  const n=rows.length;if(!n)return '';const nxt=String(J.next||''),nxG=!G||nxt.endsWith(G),pl=prevOf(RA.length),[nT,nH]=pl?pools(pl):[[],[]];
+  const line=(k,lab,c)=>{const x=st[k];return `<b style="color:${c}">${lab}</b>: pool TB <b>${(x.sz/n).toFixed(1)}</b> số · trúng TB <b>${(x.ht/n).toFixed(1)}</b> số/kỳ · ≥1 số <b>${x.ge[1]}/${n}</b> · ≥2 số <b>${x.ge[2]}/${n}</b> · ≥3 số <b>${x.ge[3]}/${n}</b> kỳ`;};
+  return `<details class="bg-wh" style="margin:6px 0;"${W.__thOpen?' open':''} ontoggle="thTog(this)"><summary><b>Kiểm pool tổng / hiệu</b> <small>— pool tổng = a+b, pool hiệu = số lớn − số nhỏ của mọi cặp số kỳ trước</small></summary>
+   <div class="bg-row bg-chips"><small>Xem:</small>${[10,20,50].map(k=>`<span class="bg-h20k${k===NK?' on':''}" onclick="thN(${k})">${k} kỳ</span>`).join('')}</div>${lo?`<div class="bg-row bg-chips">${[['','13h &amp; 21h'],['13h','Chỉ 13h'],['21h','Chỉ 21h']].map(([v,t])=>`<span class="bg-h20k${v===G?' on':''}" onclick="thGio('${v}')">${t}</span>`).join('')}</div>`:''}
+   <div style="overflow-x:auto;"><table class="bg-g10 th3" style="font-size:.7rem;"><thead><tr><th>Kỳ</th><th>Kết quả</th><th>Tổng<br><small>cỡ · trúng</small></th><th>Hiệu<br><small>cỡ · trúng</small></th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
+   <div class="bg-foot" style="margin:4px 0 0;">${lo?'<b style="color:#ff9f43">Số cam</b> = số may mắn (không tính vào pool). ':''}Hai dòng nhỏ dưới mỗi kỳ = pool tổng và pool hiệu lấy từ kỳ${G?' '+G:''} liền trước, <b style="color:var(--ac)">số in đậm màu</b> = ra ở kỳ đó. Tổng chỉ giữ số ≤ ${NB}.<br>${n} kỳ — ${line('T','Tổng','#ffb347')}<br>${line('H','Hiệu','#4dd0c8')}</div>
+   <div class="bg-foot" style="margin:2px 0 0;">Cho ${nxG?'kỳ '+nxt:'kỳ '+G+' tới'}: <b style="color:#ffb347">Tổng</b> (${nT.length} số) ${nT.map(p2).join(' ')||'—'} · <b style="color:#4dd0c8">Hiệu</b> (${nH.length} số) ${nH.map(p2).join(' ')||'—'}</div></details>`;}
 function mmDv(J,i,gio){const L=J.lk201||[],DA=J.dates201||[];let j=i-1;if(gio)while(j>=0&&!String(DA[j]).endsWith(gio))j--;   // lọc giờ: so với kỳ cùng giờ trước
   if(i<1||j<0||L[i]==null||L[j]==null)return null;return L[i]-L[j];}
 // chênh số may mắn = vòng tròn nhỏ: xanh lá (+), đỏ (−), xám (0) — anh 20/10/2026
@@ -899,7 +921,7 @@ function renderBang(J){
   const lball=n=>MAU[n]?`<span class="bg-b" style="background:${MAU[n]};border-color:${MAU[n]};color:${CHU[n]};">${p2(n)}</span>`:null;
   const pm1=(h,n,pv,cl=['pm1','pm2','pm3'])=>{if(!pv||!h)return h;const P=new Set(pv);if(P.has(n))return h;const u=P.has(n-1),d=P.has(n+1);const c=u&&d?cl[2]:u?cl[0]:d?cl[1]:'';return c?h.replace('class="bg-b','class="bg-b '+c):h;};   // +1: n = số kỳ trước +1 · −1: n = số kỳ trước −1 (anh 18/10/2026)
   const HCOL=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c77dff','#ff9f43'];   // mỗi hàng chục một màu: 0 đỏ · 1 vàng · 2 xanh lá · 3 xanh dương · 4 tím · 5 cam
-  const k10H=R10.length?`${vxBlock(J)}<details class="bg-wh" style="margin:6px 0;"${typeof window!=='undefined'&&window.__k10Open?' open':''} ontoggle="k10Tog(this)"><summary><b>${KR?`${rgLabel(J,IX)} · ${KN} kỳ`:`${KN} kỳ gần nhất`}${KG?' · chỉ '+KG:''}</b> <small>— màu tính trong ${KN} kỳ đang xem: số ra ≥2 lần có một màu riêng, ra 1 lần không tô</small></summary>
+  const k10H=R10.length?`${vxBlock(J)}${thBlock(J)}<details class="bg-wh" style="margin:6px 0;"${typeof window!=='undefined'&&window.__k10Open?' open':''} ontoggle="k10Tog(this)"><summary><b>${KR?`${rgLabel(J,IX)} · ${KN} kỳ`:`${KN} kỳ gần nhất`}${KG?' · chỉ '+KG:''}</b> <small>— màu tính trong ${KN} kỳ đang xem: số ra ≥2 lần có một màu riêng, ra 1 lần không tô</small></summary>
     <div class="bg-row bg-chips">${[5,10,15,20,25,30,50].map(n=>`<span class="bg-h20k${!KR&&n===KN?' on':''}" onclick="k10Set(${n})">${n} kỳ</span>`).join('')}</div>
     <div class="bg-row bg-chips">${rgUI(J,'k',KN0,KG)}</div>
     ${J.game==='loto'?`<div class="bg-row bg-chips">${[['','13h &amp; 21h'],['13h','Chỉ 13h'],['21h','Chỉ 21h']].map(([g,t])=>`<span class="bg-h20k${g===KG?' on':''}" onclick="k10Gio('${g}')">${t}</span>`).join('')}</div>`:''}
@@ -1038,7 +1060,7 @@ const BANG_CSS=`/* khung khoanh vẽ bằng outline → KHÔNG chiếm chỗ, s�
 .vlx{color:#ff6b6b;font-weight:700;}.vln{color:#f0b429;font-weight:700;}.vlt{color:var(--muted,#8b93a7);}
 .bg-wh{border-top:1px solid var(--border,#2c3550);padding:6px 0;}.bg-wh summary{cursor:pointer;font-size:.84rem;line-height:1.5;}.bg-wh summary small{color:var(--muted,#8b93a7);}
 .bg-h20w>summary{cursor:pointer;list-style:none;}.bg-h20w>summary::-webkit-details-marker{display:none;}.bg-h20w>summary h4{display:inline;}.bg-h20w>summary h4::after{content:' ▸';}.bg-h20w[open]>summary h4::after{content:' ▾';}.bg-h20w[open]>summary{margin-bottom:8px;}
-.bg-g10{border-collapse:collapse;font-size:.78rem;width:100%;}.bg-g10 th,.bg-g10 td{padding:3px 6px;border-bottom:1px solid var(--border,#2c3550);text-align:center;white-space:nowrap;}.bg-g10 th{color:var(--muted,#8b93a7);font-weight:500;}
+.bg-g10{border-collapse:collapse;font-size:.78rem;width:100%;}.bg-g10.th3 th,.bg-g10.th3 td{padding:3px 3px;}.bg-g10 th,.bg-g10 td{padding:3px 6px;border-bottom:1px solid var(--border,#2c3550);text-align:center;white-space:nowrap;}.bg-g10 th{color:var(--muted,#8b93a7);font-weight:500;}
 .bg-dgw{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:6px;}
 .bg-dg{border:1px solid var(--border,#2c3550);border-radius:8px;padding:6px 8px;}.bg-dgh{margin-bottom:4px;font-size:.85rem;}
 .bg-dgm{font-size:.78rem;padding:1px 6px;border-radius:8px;background:rgba(255,255,255,.08);}.bg-dgm.ok{background:rgba(63,185,80,.25);}.bg-dgm.bad{background:rgba(248,81,73,.25);}
