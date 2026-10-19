@@ -105,6 +105,8 @@ def signals(t):
                 import datetime as _dt
                 _l = _dt.datetime.strptime(_ds[-1][:10], '%d/%m/%Y'); _m = (_l + _dt.timedelta(days=1 if _ds[-1].endswith('21h') else 0)).month
             sig['nong35'].discard(_m)
+    if A.game in ('mega', 'power') and not A.cu and WVX:   # số vắng x kỳ (thử 19/10/2026, vang_x_bi.py)
+        sig['vang8'] = set(range(1, NB + 1)) - set().union(*R[t - VX:t])
     if A.game == 'loto' and not A.cu:   # số không ra trong 8 kỳ gần (anh 19/10/2026, vang_x.py: ra nhỉnh hơn số đã ra ở cả 3 đoạn 100 kỳ)
         sig['vang8'] = set(range(1, NB + 1)) - set().union(*R[t - 8:t])
     sig['_td'] = td_sets(t)
@@ -242,7 +244,9 @@ WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0
 WSC = float(os.environ.get('GOIY_SC', '0'))   # lô kép (Loto), Pascal (Power): thử 05/10 — pool không đổi rõ → tắt, chỉ theo dõi trong sổ
 WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
-WV8 = float(os.environ.get('GOIY_V8', '0.5'))   # Loto: + điểm nhỏ cho số vắng 8 kỳ (anh 19/10/2026)
+WV8 = float(os.environ.get('GOIY_V8', '0.5'))
+VX = int(os.environ.get('GOIY_VX', '8')); WVX = float(os.environ.get('GOIY_WVX', '0'))
+if A.game in ('mega', 'power'): WV8 = WVX   # Loto: + điểm nhỏ cho số vắng 8 kỳ (anh 19/10/2026)
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
         {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua', 'chin'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])
 import random

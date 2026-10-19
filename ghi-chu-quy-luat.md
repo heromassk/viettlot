@@ -1637,3 +1637,10 @@ Mỗi kỳ lấy các số không ra trong x kỳ trước làm pool, đếm k�
 - ±3 quanh MM kỳ trước là dấu vết thật: 1 số trong ±3 ra 9.4/9.6/8.8% so với 7.3/7.0/7.9% số ngoài (3 đoạn 100 kỳ).
 - Thử 20+ cách chọn 3 số (vắng lâu/ít trong ±3, sát/xa MM trước, chênh lệch Δ hay gặp, Markov MM→MM, ±3 quanh MM cùng giờ, giao 2 cửa sổ, MM vắng 4/8 kỳ, số chính ≤12, tổng/đuôi tổng kỳ trước, nóng 5/15/20 kỳ, kết hợp nóng + Δ). Không cách nào hơn cách đang dùng (±3, nóng 10 kỳ: 31/32/33% ở 3 đoạn, 30% ở 500 kỳ). Gần nhất: Δ hay gặp 30/29/30%; ±3 nóng 20 kỳ 30/31/34%. MM vắng 4/8 kỳ tụt mạnh ở đoạn xa (14%, 13%) → không dùng.
 - Giữ nguyên cách đang dùng.
+
+# Mega / Power: pool "số đang vắng x kỳ" (anh 19/10/2026, `build/vang_x_bi.py`, chỉ 100 kỳ gần — bi thay 1–2 tháng)
+"lệch" = % ra của 1 số vắng − % ra của 1 số đã ra (điểm %), khung 10/20/50/100 kỳ, 2 nửa 50 kỳ (xa / gần).
+- **Mega:** x = 5…12 lệch dương ở cả 4 khung. x=8: nhóm ~14 số, trúng TB 2.08, ≥1/≥2/≥3 số 96/66/33%, lệch +6.0/+3.2/+1.4/+2.2, 2 nửa +3.0/+1.4. x=15 âm (khớp luật loại vắng lâu).
+- **Power:** x=7, 8, 10, 12 dương cả 4 khung (trừ x=8 khung 10 kỳ +0.1). x=12: nhóm ~13 số, trúng TB 1.56, ≥1/≥2 số 84/50%, lệch +2.1/+3.0/+2.3/+1.8, 2 nửa +1.2/+2.3.
+- Thử cộng điểm vào goiy.py (`GOIY_VX`, `GOIY_WVX`, mặc định tắt): Mega x=8 +1 điểm → pool 15 ≥3 số 44→50% (50 kỳ), 40→46% (100 kỳ); x=12 +1 → 52%/45%. Power: pool 15 không đổi (27% / 32%) ở mọi x và trọng số 0.5–3 — pool Power đã gộp hạng với chuỗi ra/vắng bậc 3, 5.
+- Đề xuất (chờ anh duyệt): Mega +1 điểm số vắng 8 kỳ + mỗi vé ≥1 số vắng 8 kỳ; Power chỉ dùng cho vé (≥1 số vắng 12 kỳ, đúng 84%).
