@@ -34,6 +34,8 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 
 - **Bảng "Số ra nhiều gần đây (10/20 kỳ)"** (anh, 04/10/2026): ra 10/20 kỳ, 100/200 kỳ, mức ra 200 kỳ, 4 đoạn 25 kỳ, đang vắng, % ra kỳ kế khi từng nóng tương tự, trạng thái, nhận xét (Nóng bền — có thể bi dễ ra / Nóng, đường dài cũng nhiều / Nóng ngắn hạn / Đang hồi). Luôn nêu cho anh cùng bảng số vắng lâu — liên hệ giả thuyết trọng lượng bi.
 
+- **Số vắng 8 kỳ (anh duyệt 19/10/2026, `build/vang_x_bi.py`, 100 kỳ gần):** số không ra trong 8 kỳ gần ra nhỉnh hơn số đã ra ở cả 4 khung 10/20/50/100 (+6.0/+3.2/+1.4/+2.2 điểm %) → **+1 điểm** (`GOIY_V8`, `GOIY_VX`); pool 15 ≥3 số 44→50% (50 kỳ), 40→46% (100 kỳ). **Mỗi vé ≥1 số vắng 8 kỳ** (đúng 96%). Sổ kiểm chứng `kd_vang8`, `nhom_vang8`. Vắng ≥15 kỳ thì ngược lại (ra ít) — khớp luật loại vắng lâu.
+
 ## Tâm linh (bắt buộc trình bày)
 - Phiếu từ 20 quẻ (`build/tamlinh.js`). Top 12 phiếu +1 điểm; **tâm linh mạnh ★** (phiếu ≥ mức của số thứ 5) +1.5 điểm.
 - **Số tâm linh mạnh bị luật vắng loại thì không loại hẳn** (được "cứu", để điểm quyết định) — anh: "tâm linh có số bị loại mà phiếu nhiều thì cần cân nhắc".
