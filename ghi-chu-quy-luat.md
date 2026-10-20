@@ -1698,3 +1698,10 @@ So % ra 1 số của từng nhóm con với phần còn lại của pool hiệu.
 - **Mega:** hiệu trùng số kỳ t−2 15/15% vs 12/12% · hiệu cũng nằm trong pool tổng 16/17% vs 12/12% (nhóm ~1 số) → nghiêng lên ổn định 2 nửa. Hiệu kề ±1 số kỳ trước 12/8% vs 13/14% → nghiêng xuống.
 - **Power:** hiệu trùng số kỳ t−2 16/13% vs 11/10% → nghiêng lên. Hiệu kề ±1 số kỳ trước 8/8% vs 12/11% → nghiêng xuống (loại).
 - Nhóm nhỏ (1–3 số/kỳ), cần theo dõi thêm; chưa đưa vào gợi ý.
+
+# So nhóm "Có mặt ≥2 pool" (bảng pool) với pool của app (anh 20/10/2026, `build/so_pool2.py`)
+Cùng kỳ, mỗi kỳ dựng từ dữ liệu trước nó; khung 50 / 100 kỳ. Số kỳ có ≥3 số trúng:
+- Loto: ≥2 pool (cỡ ~13.7) 16 / 26 kỳ, TB 2.06 / 1.83 — app pool 12: 13 / 29, TB 1.94 / 1.96 · app pool 15: 27 / 51, TB 2.48 / 2.49.
+- Mega: ≥2 pool (~18.2) 24 / 47, ≥4 số 9 / 19, TB 2.52 / 2.51 — app pool 18: 33 / 61, ≥4 số 21 / 35, TB 2.92 / 2.79.
+- Power: ≥2 pool (~16.5) 11 / 27, TB 1.80 / 1.83 — app pool 15: 17 / 29 · app pool 18: 24 / 41, TB 2.52 / 2.31.
+- Kết luận: pool của app trúng nhiều hơn ở cùng cỡ, cả 3 game. Bảng pool dùng để soi dấu vết / đối chiếu, không thay pool app.
