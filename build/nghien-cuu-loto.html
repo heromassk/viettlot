@@ -455,15 +455,16 @@ function qhTog(el,x=''){if(typeof window!=='undefined')window['__qhOpen'+x]=el.o
 function gdGet(g){const M=(typeof window!=='undefined'&&(window.__gdMem=window.__gdMem||{}))||{};let v=M[g]||null;if(!v){try{v=JSON.parse(localStorage.getItem('vl_gd_'+g)||'null');}catch(e){}}
   if(!v||!Array.isArray(v.L)||!v.L.length)v={cur:0,L:[{x:[],mm:null}]};if(!(v.cur>=0&&v.cur<v.L.length))v.cur=0;v.L.forEach(d=>{if(!Array.isArray(d.x))d.x=[];});M[g]=v;return v;}
 function gdPut(g,v){if(typeof window!=='undefined'){window.__gdMem=window.__gdMem||{};window.__gdMem[g]=v;}try{localStorage.setItem('vl_gd_'+g,JSON.stringify(v));}catch(e){}}
-function gdPick(g,b,s){if(typeof window==='undefined')return;window.__gdPick=g?{g,b,s}:null;rgRe();}
+function gdPick(g,b,s){if(typeof window==='undefined')return;if(typeof window!=='undefined')window.__gdAsk=null;window.__gdPick=g?{g,b,s}:null;rgRe();}
 function gdSetN(n){if(typeof window==='undefined')return;const P=window.__gdPick;if(!P)return;const V=gdGet(P.g),c=V.L[V.cur];
   if(P.s==='mm')c.mm=n;else c.x[P.s]=n;gdPut(P.g,V);
   if(n!=null&&P.s!=='mm'){const K=window.__gdKB&&window.__gdKB[P.g]||6;let nx=-1;for(let k=0;k<K;k++)if(c.x[k]==null){nx=k;break;}window.__gdPick=nx>=0?{...P,s:nx}:(window.__gdLo&&window.__gdLo[P.g]&&c.mm==null?{...P,s:'mm'}:null);}   // tự sang ô trống kế tiếp
   else if(n!=null)window.__gdPick=null;rgRe();}
-function gdSel(g,i){const V=gdGet(g);V.cur=i;gdPut(g,V);if(typeof window!=='undefined')window.__gdPick=null;rgRe();}
-function gdAdd(g){const V=gdGet(g);V.L.push({x:[],mm:null});V.cur=V.L.length-1;gdPut(g,V);rgRe();}
-function gdDel(g){const V=gdGet(g);if(typeof confirm==='function'&&!confirm(`Xoá dãy ${V.cur+1}?`))return;V.L.splice(V.cur,1);if(!V.L.length)V.L=[{x:[],mm:null}];V.cur=Math.min(V.cur,V.L.length-1);gdPut(g,V);if(typeof window!=='undefined')window.__gdPick=null;rgRe();}
-function gdDelAll(g){if(typeof confirm==='function'&&!confirm('Xoá hết các dãy giả định?'))return;gdPut(g,{cur:0,L:[{x:[],mm:null}]});if(typeof window!=='undefined')window.__gdPick=null;rgRe();}
+function gdSel(g,i){if(typeof window!=='undefined')window.__gdAsk=null;const V=gdGet(g);V.cur=i;gdPut(g,V);if(typeof window!=='undefined')window.__gdPick=null;rgRe();}
+function gdAdd(g){if(typeof window!=='undefined')window.__gdAsk=null;const V=gdGet(g);V.L.push({x:[],mm:null});V.cur=V.L.length-1;gdPut(g,V);rgRe();}
+// xoá bấm 2 lần (anh 20/10/2026: confirm() bị chặn trong app) — lần 1 hiện 'Chắc chắn xoá?', lần 2 mới xoá
+function gdDel(g){const V=gdGet(g);if(typeof window!=='undefined'&&window.__gdAsk!=='del'){window.__gdAsk='del';rgRe();return;}window.__gdAsk=null;V.L.splice(V.cur,1);if(!V.L.length)V.L=[{x:[],mm:null}];V.cur=Math.min(V.cur,V.L.length-1);gdPut(g,V);if(typeof window!=='undefined')window.__gdPick=null;rgRe();}
+function gdDelAll(g){if(typeof window!=='undefined'&&window.__gdAsk!=='all'){window.__gdAsk='all';rgRe();return;}window.__gdAsk=null;gdPut(g,{cur:0,L:[{x:[],mm:null}]});if(typeof window!=='undefined')window.__gdPick=null;rgRe();}
 function gdTog(b,el){if(typeof window==='undefined')return;window.__gdOpen=window.__gdOpen||{};window.__gdOpen[b]=el.open;}
 // dòng giả định: lab = nhãn cột ngày, balls(n,slot) = HTML bóng đã chọn, info(f) = phần bên phải; trả về details (danh sách dãy) + bảng chọn số
 function gdRow(J,b,balls,info,mmH,dateSt,lt){if(typeof window==='undefined')return '';const g=J.game,lo=g==='loto',K=J.kb||6,p2=n=>String(n).padStart(2,'0');
@@ -475,7 +476,7 @@ function gdRow(J,b,balls,info,mmH,dateSt,lt){if(typeof window==='undefined')retu
   const mm=lo&&mmH?(c.mm!=null?on(mmH(c.mm),'mm'):`<span class="bg-b gde mm${act==='mm'?' gdon':''}" onclick="${stop}gdPick('${g}','${b}','mm')">MM</span>`):'';
   const op=window.__gdOpen&&window.__gdOpen[b];
   const list=`<div class="gdlst">${V.L.map((d,i)=>{const a=d.x.filter(n=>n!=null).sort((x,y)=>x-y);return `<div onclick="gdSel('${g}',${i})" class="gdit${i===V.cur?' gdcur':''}">Dãy ${i+1}: ${a.length?a.map(p2).join(' '):'(trống)'}${lo&&d.mm!=null?` + <b style="color:#ff9f43">${p2(d.mm)}</b>`:''}${i===V.cur?' · đang hiện':''}</div>`;}).join('')}
-    <div class="bg-row bg-chips" style="margin-top:4px;"><span class="bg-h20k" onclick="gdAdd('${g}')">+ Thêm dãy</span><span class="bg-h20k" onclick="gdDel('${g}')">Xoá dãy này</span><span class="bg-h20k" onclick="gdDelAll('${g}')">Xoá hết</span></div></div>`;
+    <div class="bg-row bg-chips" style="margin-top:4px;"><span class="bg-h20k" onclick="gdAdd('${g}')">+ Thêm dãy</span>${(()=>{const ak=window.__gdAsk,R='style="border-color:#ff4d4f;color:#ff4d4f;font-weight:700;"';return `<span class="bg-h20k" ${ak==='del'?R:''} onclick="gdDel('${g}')">${ak==='del'?`Chắc chắn xoá dãy ${V.cur+1}?`:'Xoá dãy này'}</span><span class="bg-h20k" ${ak==='all'?R:''} onclick="gdDelAll('${g}')">${ak==='all'?'Chắc chắn xoá hết?':'Xoá hết'}</span>${ak?`<span class="bg-h20k" onclick="window.__gdAsk=null;rgRe()">Không</span>`:''}`;})()}</div></div>`;
   let pk='';if(act!=null){const isM=act==='mm',N=isM?12:J.nb,cur=isM?c.mm:c.x[act],used=new Set(isM?[]:c.x.filter((n,k)=>n!=null&&k!==act));
     pk=`<div class="gdp"><div class="bg-foot" style="margin:0 0 4px;">Chọn ${isM?'số may mắn':'số'} cho dãy ${V.cur+1} · số xám = đã có trong dãy</div><div class="gdg">${Array.from({length:N},(_,k)=>k+1).map(n=>used.has(n)?`<span class="bg-b gdx">${p2(n)}</span>`:`<span class="bg-b${isM?' mm':''}${cur===n?' gdon':''}" onclick="gdSetN(${n})">${p2(n)}</span>`).join('')}</div>
       <div class="bg-row bg-chips" style="margin-top:4px;">${cur!=null?`<span class="bg-h20k" onclick="gdSetN(null)">Bỏ số này</span>`:''}<span class="bg-h20k" onclick="gdPick('')">Đóng</span></div></div>`;}
@@ -707,7 +708,8 @@ function ppTog(n){const w=window.__ppW,i=w.indexOf(n);if(i>=0)w.splice(i,1);else
 function ppSave(){const g=window.__ppG,bk=ppBook(g);if(bk[window.__ppK]&&bk[window.__ppK].lock){alert('Kỳ này đã có kết quả và đã khóa, không lưu lại được');window.__ppEd=false;ppRe();return;}bk[window.__ppK]={n:window.__ppW.slice().sort((a,b)=>a-b),t:Date.now()};if(!ppPut(g,bk))alert('Không lưu được trên trình duyệt này');window.__ppEd=false;ppRe();if(typeof bkAuto==='function')bkAuto(false);}
 function ppCancel(){window.__ppEd=false;ppRe();}
 function ppFromX(){window.__ppW=(window.__ppX||[]).slice();ppRe();}
-function ppDel(){if(!confirm('Xóa pool đã lưu của kỳ này?'))return;const g=window.__ppG,bk=ppBook(g);if(bk[window.__ppK]&&bk[window.__ppK].lock)return;delete bk[window.__ppK];ppPut(g,bk);ppRe();if(typeof bkAuto==='function')bkAuto(false);}
+function ppDel(){if(!window.__ppAsk){window.__ppAsk=true;rgRe();return;}window.__ppAsk=false;   // bấm 2 lần thay confirm()
+const g=window.__ppG,bk=ppBook(g);if(bk[window.__ppK]&&bk[window.__ppK].lock)return;delete bk[window.__ppK];ppPut(g,bk);ppRe();if(typeof bkAuto==='function')bkAuto(false);}
 function ppCopy(){const t=JSON.stringify({game:window.__ppG,so:ppBook(window.__ppG)});try{navigator.clipboard.writeText(t).then(()=>alert('Đã sao chép sổ pool'),()=>prompt('Sao chép:',t));}catch(e){prompt('Sao chép:',t);}}
 // ---- Vé bốc ngẫu nhiên từ pool của anh, chỉ giữ vé vừa dạng kỳ tới của app (anh 16/10/2026) ----
 function vlFeat(x,mm,prev,NB){const s=[...x].sort((a,b)=>a-b),d6=mm?s.concat([mm]):s,H=Math.floor(NB/10)+1,hang=Array(H).fill(0);s.forEach(v=>hang[Math.floor(v/10)]++);
@@ -1041,7 +1043,7 @@ function renderBang(J){
       const x=`<span class="bg-ppx">${b}${c>=2?`<sup>${c}</sup>`:''}${PTL.has(n)?'<i class="pp-t"></i>':''}</span>`;return n%11===0&&on?`<span class="bg-kep">${x}</span>`:x;};
     const rows=[...Array(Math.floor(J.nb/10)+1).keys()].map(d=>`<div class="bg-row bg-pool bg-hang bg-ppr"><b>${d}x:</b>${[...Array(10).keys()].map(u=>{const n=d*10+u;return n<1||n>J.nb?'<span class="bg-ppe"></span>':cell(n);}).join('')}</div>`).join('');
     const btn=(t,f)=>`<span class="bg-h20k" onclick="${f}">${t}</span>`;
-    const tools=ed?btn('Lưu pool','ppSave()')+btn('Hủy','ppCancel()')+btn(`Lấy lại pool ${PR?'theo ngày đã chọn':PN+' kỳ'}`,'ppFromX()'):btn('Sửa pool','ppStart()')+(sv?btn('Xóa pool kỳ này','ppDel()'):'');
+    const tools=ed?btn('Lưu pool','ppSave()')+btn('Hủy','ppCancel()')+btn(`Lấy lại pool ${PR?'theo ngày đã chọn':PN+' kỳ'}`,'ppFromX()'):btn('Sửa pool','ppStart()')+(sv?(window.__ppAsk?btn('<b style="color:#ff4d4f">Chắc chắn xóa pool kỳ này?</b>','ppDel()')+btn('Không','window.__ppAsk=false;rgRe()'):btn('Xóa pool kỳ này','ppDel()')):'');
     const ttl=ed?`Đang sửa — ${lit.size} số`:sv?`Pool của anh cho kỳ ${J.next} (đã lưu) — ${lit.size} số`:`Pool số ${PLB} - ${ns.length} số`;
     return `${''/* tạm ẩn thẻ Vé ngẫu nhiên (anh 20/10/2026): vlBlock(J,[...lit].sort((a,b)=>a-b),sv||ed?'pool của anh':`pool ${PLB}`,sub) */}<details class="bg-wh" style="margin:6px 0;"${ed?' open':dOp('pp')} ontoggle="dTog('pp',this)"><summary style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><b>${ttl}</b></summary><div class="bg-foot" style="margin:0 0 4px;">${ed?'Chạm số sáng để bỏ, chạm số tối để chọn, xong bấm Lưu pool.':'Số sáng = trong pool, số xám = ngoài pool; số nhỏ ở góc = số lần ra trong khoảng đang chọn (từ 2 lần).'}</div>
     <div class="bg-row bg-chips"><small>Lấy từ:</small>${[5,10,15,20,25,30,50].map(n=>`<span class="bg-h20k${!PR&&n===PN?' on':''}" onclick="ppSet(${n})">${n} kỳ</span>`).join('')}</div>
