@@ -1730,3 +1730,8 @@ Cùng kỳ, mỗi kỳ dựng từ dữ liệu trước nó; khung 50 / 100 kỳ
 | Mega | 20 / 50 / 100 | 17,9 · 2,60 · 18 · 10 / 18,1 · 2,52 · 42 · 24 / 18,3 · 2,51 · 81 · 47 | 25,4 · 3,25 · 19 · 15 / 25,5 · 3,46 · 48 · 39 / 25,9 · 3,46 · 96 · 78 |
 | Power | 20 / 50 / 100 | 16,6 · 2,10 · 16 · 7 / 16,3 · 1,80 · 33 · 11 / 16,9 · 1,83 · 64 · 27 | 29,9 · 3,75 · 20 · 19 / 29,3 · 3,42 · 48 · 41 / 29,4 · 3,30 · 93 · 75 |
 - App 18 ∩ ≥2 pool (khoảng 20 kỳ có pool app): Loto cỡ 6,9→9,3, trúng 1,14→1,41; Mega cỡ 7,0→9,7, trúng 1,25→1,60; Power cỡ 5,4→9,2, trúng 0,90→1,70.
+
+## 21/10/2026 — Bỏ dòng "Bỏ ra x kỳ"
+- Anh chỉ ra: "Bỏ số ra x kỳ" chính là "Vắng x kỳ", chỉ khác số kỳ. Đem vào đếm ≥2 pool là đếm một dấu vết 2 lần, nên pool ≥2 phình to (số liệu ngày 20/10 ở trên không dùng).
+- Đã xoá dòng "Bỏ ra x kỳ" và "App bỏ ra x kỳ". Pool ≥2 về lại 7 pool. Muốn xem vắng 5 kỳ thì nhập x ở ô của Pool vắng.
+- Dòng tóm tắt mỗi kỳ: "Pool N số - trúng: X · Pool vắng x kỳ - N số - trúng: Y" (trúng ≥4 in đậm xanh lá).
