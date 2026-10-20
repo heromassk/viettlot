@@ -1691,3 +1691,10 @@ Nhóm tổng = a+b (≤ số lớn nhất) của mọi cặp kỳ trước; nhó
 | Mega | tổng ~7, hiệu ~13 | 13 / 31 / 64 | 8 / 15 / 29 | 20 / 46 / 92 | 14 / 29 / 55 | 20 / 50 / 99 | 17 / 38 / 80 |
 | Power | tổng ~8, hiệu ~13 | 14 / 33 / 62 | 4 / 10 / 18 | 17 / 43 / 80 | 12 / 25 / 48 | 19 / 47 / 93 | 14 / 37 / 72 |
 - Khẳng định "kỳ sau có ≥1 số bằng HIỆU 2 số kỳ trước" đúng ≥79% ở 100 kỳ, ≥86% ở 50 kỳ cả 3 game → đạt ngưỡng 70%. "≥1 số bằng TỔNG" chỉ 41–64% → chưa đạt.
+
+# Dấu vết bên trong pool hiệu (anh 20/10/2026, `build/hieu_dauvet.py`)
+So % ra 1 số của từng nhóm con với phần còn lại của pool hiệu. Loto 3 đoạn 100 kỳ; Mega/Power 2 nửa 50 kỳ.
+- **Loto:** không nhóm nào giữ chiều qua 3 đoạn (liền nhau 15/14/14 vs 14/15/15; nhỏ ≤11 16/13/14; trùng t−2 18/7/10; trong pool tổng 8/10/18) → chưa thu hẹp được.
+- **Mega:** hiệu trùng số kỳ t−2 15/15% vs 12/12% · hiệu cũng nằm trong pool tổng 16/17% vs 12/12% (nhóm ~1 số) → nghiêng lên ổn định 2 nửa. Hiệu kề ±1 số kỳ trước 12/8% vs 13/14% → nghiêng xuống.
+- **Power:** hiệu trùng số kỳ t−2 16/13% vs 11/10% → nghiêng lên. Hiệu kề ±1 số kỳ trước 8/8% vs 12/11% → nghiêng xuống (loại).
+- Nhóm nhỏ (1–3 số/kỳ), cần theo dõi thêm; chưa đưa vào gợi ý.
