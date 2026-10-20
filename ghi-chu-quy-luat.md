@@ -1768,3 +1768,15 @@ Mỗi ô ghi: số lần ra / số lần còn chờ (chưa ra ở các kỳ trư
 - Loto, tính liền cả 2 buổi: kẹp chưa ra sau 2 kỳ thì kỳ +3 ra khoảng 20%, cao hơn kỳ +1 và +2 của chính nó. Đúng ở các khung 50/100/300 kỳ (khung 20 kỳ chỉ có 4 lần chờ, 0 lần ra).
 - Loto, tính theo từng buổi: kẹp hay ra nhất ở kỳ +2 cùng buổi (13h: 42% ở 50 kỳ, 33% ở 100 kỳ). Qua kỳ +2 không ra thì kỳ +3 yếu hẳn.
 - Mega: không thấy kỳ +3 mạnh hơn. Power: kỳ +3 mạnh ở 20/50 kỳ (27% và 22%), xuống 14% ở 100 kỳ, chưa ổn định.
+
+## 21/10/2026 — Thêm pool "Số kỳ cách 1 kỳ" vào bảng pool, tính vào ≥2 pool
+Đếm pool ≥2 trước/sau khi tính thêm dòng này (cả 2 buổi với Loto):
+| Game | Khung | Cũ: cỡ · trúng TB · %/số · kỳ ≥2 · kỳ ≥3 | Mới: cỡ · trúng TB · %/số · kỳ ≥2 · kỳ ≥3 |
+|---|---|---|---|
+| Loto | 50 | 13,7 · 2,18 · 15,9% · 36 · 18 | 16,0 · 2,56 · 16,0% · 43 · 25 |
+| Loto | 100 | 13,7 · 1,84 · 13,4% · 60 · 26 | 16,1 · 2,23 · 13,9% · 76 · 39 |
+| Mega | 50 | 18,1 · 2,52 · 13,9% · 42 · 24 | 20,7 · 2,88 · 13,9% · 44 · 31 |
+| Mega | 100 | 18,3 · 2,51 · 13,7% · 81 · 47 | 21,0 · 2,89 · 13,8% · 88 · 66 |
+| Power | 50 | 16,4 · 1,80 · 11,0% · 33 · 11 | 19,0 · 2,20 · 11,6% · 40 · 21 |
+| Power | 100 | 16,9 · 1,80 · 10,6% · 63 · 26 | 19,6 · 2,17 · 11,1% · 76 · 43 |
+- Pool ≥2 to thêm khoảng 2,5 số. Tỉ lệ trúng mỗi số giữ nguyên hoặc nhích lên ở cả 3 game và các khung 20/50/100 kỳ. Số kỳ trúng ≥3 tăng rõ.
