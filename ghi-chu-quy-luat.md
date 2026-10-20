@@ -1735,3 +1735,16 @@ Cùng kỳ, mỗi kỳ dựng từ dữ liệu trước nó; khung 50 / 100 kỳ
 - Anh chỉ ra: "Bỏ số ra x kỳ" chính là "Vắng x kỳ", chỉ khác số kỳ. Đem vào đếm ≥2 pool là đếm một dấu vết 2 lần, nên pool ≥2 phình to (số liệu ngày 20/10 ở trên không dùng).
 - Đã xoá dòng "Bỏ ra x kỳ" và "App bỏ ra x kỳ". Pool ≥2 về lại 7 pool. Muốn xem vắng 5 kỳ thì nhập x ở ô của Pool vắng.
 - Dòng tóm tắt mỗi kỳ: "Pool N số - trúng: X · Pool vắng x kỳ - N số - trúng: Y" (trúng ≥4 in đậm xanh lá).
+
+## 21/10/2026 — Loto: cách ra số của các pool (trừ pool app)
+Dùng đúng poolAt của app trên dữ liệu đủ (955 kỳ). Pool: Vắng 8, Tổng, Hiệu, ±1 kỳ trước, ±1 cách 1 kỳ, Trùng kỳ trước, Kẹp, ≥2 pool. Có 3 kiểu tính kỳ trước: cả 2 buổi, chỉ 13h, chỉ 21h. Chấm trên 3 đoạn 100 kỳ.
+- Tỉ lệ trúng mỗi số của các pool đều trong khoảng 12–17%. Không pool nào hơn hẳn và giữ được qua cả 3 đoạn. Số nằm ở nhiều pool cũng không ra nhiều hơn số nằm ở 1 pool.
+- **Dấu vết ổn định duy nhất: Pool vắng kỳ trước trúng 0 → kỳ này pool vắng yếu hơn.** Đúng 9/9 lần chấm (3 kiểu × 3 đoạn):
+  - cả 2 buổi: 11,4 / 13,0 / 12,4 %/số, so với sau kỳ trúng ≥1: 15,9 / 16,4 / 15,0
+  - 13h: 14,3 / 12,7 / 13,7 so với 14,9 / 13,3 / 15,3
+  - 21h: 14,1 / 10,8 / 10,9 so với 16,0 / 14,0 / 15,0
+  - Mỗi đoạn chỉ có 12–24 kỳ như vậy (khoảng 13 kỳ trong 100 kỳ) → lệch nhỏ, dùng trọng số nhỏ.
+- Chưa ổn định, chỉ đúng ở đoạn 100 kỳ gần nhất:
+  - Kẹp 13h: 24,5% mỗi số, nhưng 2 đoạn trước 16,3% và 11,6%.
+  - Số có mặt ≥4 pool ở 13h: 23,4%, 2 đoạn trước 14,6% và 14,3%.
+  - ±1 kỳ trước sau kỳ trúng 0 thì mạnh hơn: đúng 6/9 lần chấm.
