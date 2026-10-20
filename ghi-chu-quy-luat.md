@@ -413,6 +413,7 @@ Kết quả (bình quân mỗi số: Loto 14.3, Mega 13.3, Power 10.9%):
 | 05/10 13h | 09 14 15 16 35 · MM 02 | — | — | — | luật ● 8/9 đúng (tx10 sai: 16 về) | — | — | **3 (14 15 35)**; pool 10: 2 (15 35) · pool 20: 4 · tâm linh 12: 3 · MM 06 01 10 trật (02 lặp lại kỳ trước) | 1 số; vé anh: 1 số mỗi vé (35 / 15) |
 | 19/10 13h | 05 19 23 28 31 · MM 04 | — | — | — | sổ kiểm chứng 23/31 luật đúng | — | — | 2 (05 28); pool 10: 2 (05 28) · pool 20: 3 (05 19 28) · tâm linh 12: 2 (05 31) · MM 09 06 07 trật (ra 04) | 1 số (vé 1, vé 7: 05) |
 | 19/10 21h | 11 14 17 26 28 · MM 07 | — | — | — | sổ kiểm chứng 27/34 luật đúng | — | — | 2 (11 14); pool 10: 1 (11) · pool 20: 3 (11 14 28) · tâm linh 12: 2 (11 14) · vắng 8 kỳ: 2 (11 26) · **MM 07 trúng** (ưu tiên 2) | 2 số + MM (vé 6: 10 11 14 21 34 + 07) |
+| 20/10 13h | 04 05 06 16 17 · MM 03 | — | — | — | sổ kiểm chứng 25/35 luật đúng · khẳng định 6/8 (sai: nhỏ/lớn cân — cả 5 số ≤17; rải ≥3 hàng chục) | — | — | 2 (05 06); pool 10: 2 · pool 20: 2 · tâm linh 12: 1 (04) · vắng 8 kỳ: 1 (04) · ≥2 pool (cả 2 buổi): 3 (04 06 17) · kẹp 13h 04 (kẹp 18/10 13h) về đúng kỳ +2 cùng buổi · MM 09 04 07 trật (ra 03) | 2 số (vé 1: 05 06; vé 7: 04 05) |
 
 ## Sổ chấm phương pháp Mega 6/45 (bắt đầu 04/10/2026; chi tiết từng luật trong app → "Sổ kiểm chứng suy luận")
 | Kỳ | Kết quả | Luật loại (đã áp dụng) | Bị loại | Pool 10 / 15 / 20 | Vé tốt nhất | Tâm linh 12 | Bao 7 anh | Ghi chú |
@@ -1731,12 +1732,12 @@ Cùng kỳ, mỗi kỳ dựng từ dữ liệu trước nó; khung 50 / 100 kỳ
 | Power | 20 / 50 / 100 | 16,6 · 2,10 · 16 · 7 / 16,3 · 1,80 · 33 · 11 / 16,9 · 1,83 · 64 · 27 | 29,9 · 3,75 · 20 · 19 / 29,3 · 3,42 · 48 · 41 / 29,4 · 3,30 · 93 · 75 |
 - App 18 ∩ ≥2 pool (khoảng 20 kỳ có pool app): Loto cỡ 6,9→9,3, trúng 1,14→1,41; Mega cỡ 7,0→9,7, trúng 1,25→1,60; Power cỡ 5,4→9,2, trúng 0,90→1,70.
 
-## 21/10/2026 — Bỏ dòng "Bỏ ra x kỳ"
+## 20/10/2026 — Bỏ dòng "Bỏ ra x kỳ"
 - Anh chỉ ra: "Bỏ số ra x kỳ" chính là "Vắng x kỳ", chỉ khác số kỳ. Đem vào đếm ≥2 pool là đếm một dấu vết 2 lần, nên pool ≥2 phình to (số liệu ngày 20/10 ở trên không dùng).
 - Đã xoá dòng "Bỏ ra x kỳ" và "App bỏ ra x kỳ". Pool ≥2 về lại 7 pool. Muốn xem vắng 5 kỳ thì nhập x ở ô của Pool vắng.
 - Dòng tóm tắt mỗi kỳ: "Pool N số - trúng: X · Pool vắng x kỳ - N số - trúng: Y" (trúng ≥4 in đậm xanh lá).
 
-## 21/10/2026 — Loto: cách ra số của các pool (trừ pool app)
+## 20/10/2026 — Loto: cách ra số của các pool (trừ pool app)
 Dùng đúng poolAt của app trên dữ liệu đủ (955 kỳ). Pool: Vắng 8, Tổng, Hiệu, ±1 kỳ trước, ±1 cách 1 kỳ, Trùng kỳ trước, Kẹp, ≥2 pool. Có 3 kiểu tính kỳ trước: cả 2 buổi, chỉ 13h, chỉ 21h. Chấm trên 3 đoạn 100 kỳ.
 - Tỉ lệ trúng mỗi số của các pool đều trong khoảng 12–17%. Không pool nào hơn hẳn và giữ được qua cả 3 đoạn. Số nằm ở nhiều pool cũng không ra nhiều hơn số nằm ở 1 pool.
 - **Dấu vết ổn định duy nhất: Pool vắng kỳ trước trúng 0 → kỳ này pool vắng yếu hơn.** Đúng 9/9 lần chấm (3 kiểu × 3 đoạn):
@@ -1749,7 +1750,7 @@ Dùng đúng poolAt của app trên dữ liệu đủ (955 kỳ). Pool: Vắng 8
   - Số có mặt ≥4 pool ở 13h: 23,4%, 2 đoạn trước 14,6% và 14,3%.
   - ±1 kỳ trước sau kỳ trúng 0 thì mạnh hơn: đúng 6/9 lần chấm.
 
-## 21/10/2026 — Số kẹp không ra sau 1–2 kỳ thì kỳ sau nữa có ra? (`build/kep_sau.py`)
+## 20/10/2026 — Số kẹp không ra sau 1–2 kỳ thì kỳ sau nữa có ra? (`build/kep_sau.py`)
 Mỗi ô ghi: số lần ra / số lần còn chờ (chưa ra ở các kỳ trước đó).
 | Game | Khung | Kỳ +1 | Kỳ +2 | Kỳ +3 | Kỳ +4 |
 |---|---|---|---|---|---|
