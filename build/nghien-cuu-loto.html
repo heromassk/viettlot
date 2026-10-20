@@ -643,7 +643,7 @@ function qhBlock(J,ball,p2,HCOL,O={}){const X=O.s||'',QK='q'+X;const RA=J.res201
   const QR=rgGet(QK),IX=rgPick(J,QK,N0,G),N=IX.length;if(!N)return '';
   const prevI=(i,n)=>{let j=i;for(let c=0;c<n;c++){j--;while(j>=0&&!okG(j))j--;if(j<0)return -1;}return j;};
   const kep=S=>{const s=new Set(S),o=[];s.forEach(a=>{if(s.has(a+2)&&!s.has(a+1))o.push(a+1);});return o.sort((x,y)=>x-y);};
-  const {MAU,CHU}=lapMau(IX.map(i=>RA[i]));
+  const GDQ=!X&&typeof window!=='undefined'?(()=>{const V=gdGet(J.game);return (V.L[V.cur].x||[]).filter(v=>v!=null);})():[];const {MAU,CHU}=lapMau([...IX.map(i=>RA[i]),...(GDQ.length?[GDQ]:[])]);   // dãy giả định tính chung màu lặp
   const QF=O.f||{loto:.64,mega:.62,power:.5}[J.game]||.5;   // cỡ chữ lớn nhất mà dòng dài nhất (50 kỳ) vẫn vừa màn 375px (đo 19/10/2026)
   const rows=[];let nS=0,nD=0,nK=0,kv=0,kt=0,k3v=0,k3t=0;
   const mkO=(i,r)=>{const S=new Set(r);
@@ -980,7 +980,8 @@ function renderBang(J){
   const KR=rgGet('k'),IX=KR?rgPick(J,'k',KN0,KG):rgPick(J,'k',50,KG),KN=KR?IX.length:KN0;   // khoảng ngày đang bật → hiện đủ các kỳ trong khoảng
   const sesPrev=(i,n)=>{let j=i;for(let c=0;c<n;c++){j--;if(KG)while(j>=0&&!String(J.dates201[j]).endsWith(KG))j--;if(j<0)return null;}return J.res201[j];},P2=IX.map(i=>sesPrev(i,2));   // kỳ cách 1 kỳ (anh 19/10/2026)
   const R10=IX.map(i=>J.res201[i]),D10=IX.map(i=>J.dates201[i]),L10=IX.map(i=>(J.lk201||[])[i]),P10=IX.map((i,k)=>KG?(k?J.res201[IX[k-1]]:(()=>{for(let j=i-1;j>=0;j--)if(String(J.dates201[j]).endsWith(KG))return J.res201[j];})()):J.res201[i-1]),C10={};   // P10 = kỳ liền trước trong danh sách đang xem (lọc giờ thì so với kỳ cùng giờ trước)   // hiển thị 20 kỳ (anh 16/10/2026); màu lặp tính theo đúng số kỳ đang chọn (5/10/15/20/25/30/50)
-  R10.slice(-KN).forEach(r=>r.forEach(n=>C10[n]=(C10[n]||0)+1));
+  const GDX=typeof window!=='undefined'?(()=>{const V=gdGet(J.game);return (V.L[V.cur].x||[]).filter(v=>v!=null);})():[];   // dãy giả định tính chung màu lặp (anh 20/10/2026)
+  [...R10.slice(-KN),GDX].forEach(r=>r.forEach(n=>C10[n]=(C10[n]||0)+1));
   // MỖI số lặp (≥2 lần) một màu riêng (anh 15/10/2026: "sao lại dùng chung màu cho nhiều số") — tránh màu cam của số may mắn
   const PAL=['#e6194b','#4363d8','#3cb44b','#ffe119','#911eb4','#42d4f4','#f032e6','#bfef45','#469990','#dcbeff','#9a6324','#fabed4','#800000','#aaffc3','#808000','#000075','#a9a9a9','#e6beff','#00ced1','#b8860b','#ff69b4','#7fffd4'];
   const SANG=new Set(['#ffe119','#42d4f4','#bfef45','#dcbeff','#fabed4','#aaffc3','#a9a9a9','#e6beff','#00ced1','#7fffd4']);
@@ -992,7 +993,7 @@ function renderBang(J){
     const rgb=c=>{const s=c.S/100,l=c.L/100,k=n=>(n+c.h/30)%12,a=s*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,9-k(n),1));return [f(0)*255,f(8)*255,f(4)*255];};
     pal.forEach(c=>c.rgb=rgb(c));const chuOf=c=>{const l=c.rgb.map(v=>{v/=255;return v<=.03928?v/12.92:((v+.055)/1.055)**2.4;});return .2126*l[0]+.7152*l[1]+.0722*l[2]>.179?'#111':'#fff';};const dist=(p,q)=>{const x=p.rgb,y=q.rgb,r=(x[0]+y[0])/2;return Math.sqrt((2+r/256)*(x[0]-y[0])**2+4*(x[1]-y[1])**2+(2+(255-r)/256)*(x[2]-y[2])**2);};
     const nb={};LAP.forEach(n=>nb[n]=new Set());
-    const link=(a,c)=>{if(a!==c&&nb[a]&&nb[c]){nb[a].add(c);nb[c].add(a);}},RS=R10.slice(-KN).map(r=>[...r].sort((x,y)=>x-y));
+    const link=(a,c)=>{if(a!==c&&nb[a]&&nb[c]){nb[a].add(c);nb[c].add(a);}},RS=[...R10.slice(-KN),...(GDX.length?[GDX]:[])].map(r=>[...r].sort((x,y)=>x-y));
     RS.forEach((s,k)=>{for(let i=0;i<s.length;i++){for(let j=i+1;j<=i+2&&j<s.length;j++)link(s[i],s[j]);   // cùng dòng: liền kề và cách 1 ô
       const t=RS[k+1];if(t)for(let j=i-1;j<=i+1;j++)if(j>=0&&j<t.length)link(s[i],t[j]);}});   // dòng trên – dưới: cùng cột và chéo 1 ô (anh 17/10/2026)
     const used=new Set(),ord=[...LAP].sort((x,y)=>nb[y].size-nb[x].size||x-y);
