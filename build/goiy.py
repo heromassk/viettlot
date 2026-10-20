@@ -900,7 +900,7 @@ if A.json:
 # Lưu lại gợi ý để chấm sổ khi có kết quả
 if A.save:
     rec = dict(game=A.game, next=nd, last=D['dates'][-1], pool=sorted(pool), rank=rank, core=core,
-               tickets=[tk for _, tk, _ in tickets], ticket_mm=TMM, tamlinh=sorted(top_v) if APP else [], tl_strong=sorted(strong) if APP else [], tl_rescued=rescued if APP else [], linh=sorted(LINH),
+               tickets=[tk for _, tk, _ in tickets], ticket_mm=TMM, tamlinh=sorted(top_v) if APP else [], tl_strong=sorted(strong) if APP else [], tl_votes={n: votes[n] for n in top_v} if APP else {}, tl_rescued=rescued if APP else [], linh=sorted(LINH),
                signals={k: sorted(v) for k, v in s.items() if k not in ('_td', '_mk', '_mix')}, pool_cach=' + '.join(MIXN[m] for m in MIXM.split(',') if m in MIXN), rank_cu=RANK_CU, khuon=_SPECS if RAIVE else None, pools={str(k): v for k, v in POOLS.items()}, sum_range=[SLO, SHI], mm=MM, markov2=WMK > 0,
                claims=[dict(lab=c['lab'], nums=c['nums'], r200=round(c['r200'])) for c in CLR if c['r200'] >= 70])
     with open(os.path.join(HERE, 'goiy_log.jsonl'), 'a') as fo:

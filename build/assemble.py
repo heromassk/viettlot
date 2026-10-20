@@ -14,6 +14,7 @@ if os.path.exists(_LG):
         try:_e=json.loads(_l)
         except Exception:continue
         if _e.get('pools') and _e.get('next'):_PL.setdefault(_e['game'],{})[_e['next']]={k:v for k,v in _e['pools'].items()}
+        if _e.get('next') and _e.get('tamlinh') and _e['next'] in _PL.get(_e['game'],{}):_PL[_e['game']][_e['next']]['_tl']={'top':_e['tamlinh'],'strong':_e.get('tl_strong',[]),'votes':_e.get('tl_votes',{})}   # tâm linh đã đưa kỳ đó (anh 20/10/2026)
     for _g,_k in (('loto','loto535'),('mega','mega645'),('power','power655')):
         if _k in GO and _g in _PL:GO[_k]['poolLog']=dict(list(_PL[_g].items())[-60:])
 bj=open(os.path.join(B,'bang.js'),encoding='utf-8').read()
