@@ -14,6 +14,12 @@ h3{margin:14px 0 6px;font-size:.95rem;}
 .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px;}
 .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px;box-shadow:0 4px 18px rgba(0,0,0,.25);}
 details.card>summary{cursor:pointer;list-style:none;margin-bottom:0;}
+#poolIn .bg-poolblk{background:none!important;border:0!important;padding:0!important;margin:0!important;}
+#poolIn details.pcard{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--pc);border-radius:14px;padding:12px 12px;margin:0 0 16px;box-shadow:0 4px 18px rgba(0,0,0,.25);}
+#poolIn details.pcard>summary{font-size:.84rem;}
+#poolIn details.pcard>summary>b{font-size:1.08rem;color:var(--pc);}
+#poolIn details.pcard[open]>summary{margin-bottom:8px;}
+
 details.card>summary::-webkit-details-marker{display:none;}
 details.card>summary::before{content:'▸ ';color:var(--accent);}
 details.card[open]>summary::before{content:'▾ ';}
@@ -167,10 +173,7 @@ input.n{width:52px;text-align:center;}
   <div id="bkAuto" class="foot"></div>
   <div id="bkMsg" class="foot"></div>
 </details>
-<details class="card" id="poolCard">
-  <summary><h2>Pool</h2></summary>
-  <div id="poolIn"></div>
-</details>
+<div id="poolIn"></div>
 <details class="card" id="bangCard">
   <summary><h2>Gợi ý kỳ tới</h2></summary>
   <div id="bangIn"></div>
@@ -1191,7 +1194,12 @@ function nextKy(s){const p=s.slice(0,10).split('/').map(Number),d=new Date(p[2],
 function renderBangCard(){const el=$('bangIn');if(!el)return;const J0=GOIY[GAME],J=withDraws(J0);let h=renderBang(J);
   if(J0&&S.M&&S.M.nd&&J0.next!==S.M.nd)h=`<div class="bg-warn" style="margin-bottom:8px;">Bảng này cho kỳ ${J0.next}; kỳ tới của app là ${S.M.nd}. Bảng sẽ cập nhật khi chạy lại gợi ý.</div>`+h;
   el.innerHTML=h;if(typeof bgFold==='function')bgFold(el);
-  const pe=$('poolIn');if(pe){pe.innerHTML=window.__bgPool||'';if(typeof bgFold==='function')bgFold(pe);}}
+  const pe=$('poolIn');if(pe){pe.innerHTML=window.__bgPool||'';if(typeof bgFold==='function')bgFold(pe);pCards(pe);}}
+// các block của Pool thành thẻ riêng ngoài trang, mỗi nhãn một màu (anh 20/10/2026)
+function pCards(root){const PC=[[t=>/Vé bốc/.test(t),'#4dabf7'],[t=>/Pool số đã ra|Pool của anh|Đang sửa/.test(t),'#69db7c'],[t=>/Sổ pool/.test(t),'#8ce99a'],[t=>/Kiểm pool vắng/.test(t),'#ffa94d'],[t=>/Kiểm pool tổng/.test(t),'#f783ac'],
+  [t=>/Quan hệ/.test(t)&&/Mega \+ Power/.test(t),'#e599f7'],[t=>/Mega \+ Power/.test(t),'#3bc9db'],[t=>/kỳ gần nhất|kỳ ·/.test(t)&&!/Pool/.test(t),'#ffd43b'],[t=>/Quan hệ/.test(t),'#b197fc'],[t=>/Pool gợi ý/.test(t),'#ff6b6b'],[t=>/Độ trúng/.test(t),'#38d9a9'],[t=>/Pool trúng mấy/.test(t),'#a9e34b'],[t=>/chọn thế nào/.test(t),'#ffc078']];
+  root.querySelectorAll('details').forEach(d=>{const up=d.parentElement&&d.parentElement.closest('details');if(up&&root.contains(up))return;const s=d.querySelector('summary');if(!s)return;const t=s.textContent;
+    const c=(PC.find(([f])=>f(t))||[0,'var(--accent)'])[1];d.classList.add('pcard');d.style.setProperty('--pc',c);});}
 const GAMES={
  loto535:{label:'Loto 5/35',sub:'13h · 21h mỗi ngày',N:35,C:5,extra:'MM',extraName:'số may mắn',extraN:12,hours:true,coll:'draws',pcoll:'preds',ls:'loto_extra_v1',mcoll:'mine'},
  mega645:{label:'Mega 6/45',sub:'T4 · T6 · CN',N:45,C:6,extra:null,days:[3,5,0],coll:'draws_mega645',pcoll:'preds_mega645',ls:'mega_extra_v1',mcoll:'mine_mega645'},
