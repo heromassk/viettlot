@@ -1748,3 +1748,20 @@ Dùng đúng poolAt của app trên dữ liệu đủ (955 kỳ). Pool: Vắng 8
   - Kẹp 13h: 24,5% mỗi số, nhưng 2 đoạn trước 16,3% và 11,6%.
   - Số có mặt ≥4 pool ở 13h: 23,4%, 2 đoạn trước 14,6% và 14,3%.
   - ±1 kỳ trước sau kỳ trúng 0 thì mạnh hơn: đúng 6/9 lần chấm.
+
+## 21/10/2026 — Số kẹp không ra sau 1–2 kỳ thì kỳ sau nữa có ra? (`build/kep_sau.py`)
+Mỗi ô ghi: số lần ra / số lần còn chờ (chưa ra ở các kỳ trước đó).
+| Game | Khung | Kỳ +1 | Kỳ +2 | Kỳ +3 | Kỳ +4 |
+|---|---|---|---|---|---|
+| Loto cả 2 buổi | 50 | 5/27 | 2/22 | **4/20 (20%)** | 2/15 |
+| | 100 | 8/55 | 4/47 | **8/43 (19%)** | 7/34 |
+| | 300 | 21/163 | 17/142 | **25/125 (20%)** | 14/99 |
+| Loto chỉ 13h | 50 | 4/29 | **10/24 (42%)** | 3/14 | 1/11 |
+| | 100 | 11/58 | **15/46 (33%)** | 3/31 | 3/28 |
+| Loto chỉ 21h | 50 | 2/26 | **5/24 (21%)** | 0/19 | 1/19 |
+| | 100 | 4/54 | **8/50 (16%)** | 2/42 | 4/40 |
+| Mega | 100 | 5/50 | 7/44 | 3/37 | 5/34 |
+| Power | 100 | 6/60 | 9/53 | 6/44 | 3/37 |
+- Loto, tính liền cả 2 buổi: kẹp chưa ra sau 2 kỳ thì kỳ +3 ra khoảng 20%, cao hơn kỳ +1 và +2 của chính nó. Đúng ở các khung 50/100/300 kỳ (khung 20 kỳ chỉ có 4 lần chờ, 0 lần ra).
+- Loto, tính theo từng buổi: kẹp hay ra nhất ở kỳ +2 cùng buổi (13h: 42% ở 50 kỳ, 33% ở 100 kỳ). Qua kỳ +2 không ra thì kỳ +3 yếu hẳn.
+- Mega: không thấy kỳ +3 mạnh hơn. Power: kỳ +3 mạnh ở 20/50 kỳ (27% và 22%), xuống 14% ở 100 kỳ, chưa ổn định.
