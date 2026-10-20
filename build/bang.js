@@ -101,11 +101,11 @@ function poolAt(J,G,t){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game;
   const kp=[...new Set([...kep(P),...kep(P2).filter(n=>!P.has(n))])].sort((a,b)=>a-b);
   const d1=String(DA[idx[0]]).replace(/\/\d{4}/,''),d2=String(DA[idx[1]]).replace(/\/\d{4}/,'');
   const rows=[['v',`Vắng ${X} kỳ`,vang],['t','Tổng',[...T].sort((a,b)=>a-b)],['h','Hiệu',[...H].sort((a,b)=>a-b)],['k1',`±1 kỳ trước <small>(${d1})</small>`,ke(P)],['k2',`±1 kỳ cách 1 kỳ <small>(${d2})</small>`,ke(P2)],['tr',`Trùng kỳ trước <small>(${d1})</small>`,[...pv].sort((a,b)=>a-b)],['kp','Số kẹp <small>(chờ trong 2 kỳ)</small>',kp]];
-  // số có mặt ở nhiều pool (anh 20/10/2026): đếm số pool chứa mỗi số, giữ số có mặt ≥3 pool, xếp nhiều → ít
-  const C={};rows.forEach(([,,a])=>a.forEach(n=>C[n]=(C[n]||0)+1));const nh=Object.keys(C).map(Number).filter(n=>C[n]>=3).sort((a,b)=>C[b]-C[a]||a-b);
-  rows.push(['nh','Có mặt ≥3 pool',nh]);
+  // số có mặt ở nhiều pool (anh 20/10/2026): đếm số pool chứa mỗi số, giữ số có mặt ≥2 pool (anh 20/10/2026), xếp nhiều → ít
+  const C={};rows.forEach(([,,a])=>a.forEach(n=>C[n]=(C[n]||0)+1));const nh=Object.keys(C).map(Number).filter(n=>C[n]>=2).sort((a,b)=>C[b]-C[a]||a-b);
+  rows.push(['nh','Có mặt ≥2 pool',nh]);
   return {rows,P,P2,T,C,lo:g==='loto'};}
-const POOLNM={v:'Vắng',t:'Tổng',h:'Hiệu',k1:'±1 kỳ trước',k2:'±1 cách 1 kỳ',tr:'Trùng kỳ trước',kp:'Kẹp',nh:'≥3 pool'};
+const POOLNM={v:'Vắng',t:'Tổng',h:'Hiệu',k1:'±1 kỳ trước',k2:'±1 cách 1 kỳ',tr:'Trùng kỳ trước',kp:'Kẹp',nh:'≥2 pool'};
 // bảng pool (kỳ tới hoặc 1 kỳ cũ): res = kết quả kỳ đó để chấm (số trúng tô màu + cột Trúng)
 function poolTableHTML(A,res,p2,fs,cp){const R=res?new Set(res):null,{P,P2,T,lo}=A;
   const mk=n=>lo?'':(P2.has(n)?'<sup style="color:#3fb950;font-size:.6em;">▲</sup>':'')+(T.has(n)?'<sup style="color:#ffb347;font-size:.6em;">◆</sup>':'')+(!P.has(n)&&(P.has(n-1)||P.has(n+1))?'<sup style="color:#ff4d4f;font-size:.6em;">▼</sup>':'');   // Loto: ẩn dấu (chưa ổn định)
@@ -115,7 +115,7 @@ function poolTableHTML(A,res,p2,fs,cp){const R=res?new Set(res):null,{P,P2,T,lo}
 function nextPoolTable(J,G){const RA=J.res201||[],p2=n=>String(n).padStart(2,'0');const A=poolAt(J,G,RA.length);if(!A)return '';
   const nxt=String(J.next||''),lab=!G||nxt.endsWith(G)?nxt:'kỳ '+G+' tới';
   return `<div style="margin:6px 0 8px;border:1px solid var(--ac);border-radius:10px;padding:6px 6px 4px;"><div style="font-weight:700;margin:0 0 4px;">Pool kỳ tới · ${lab}${G?' <small>(chỉ '+G+')</small>':''}</div>${poolTableHTML(A,null,p2)}
-   <div class="bg-foot" style="margin:2px 0 0;">${A.lo?'':'Pool hiệu: <b style="color:#3fb950">▲</b> trùng kỳ cách 1 kỳ · <b style="color:#ffb347">◆</b> cũng nằm trong pool tổng · <b style="color:#ff4d4f">▼</b> kề ±1 kỳ trước. '}Pool ±1 bỏ số đã có ở chính kỳ đó. <b style="color:#c58bff">Có mặt ≥3 pool</b>: số nhỏ bên cạnh = số pool chứa số đó (tính cả 7 pool ở trên).</div></div>`;}
+   <div class="bg-foot" style="margin:2px 0 0;">${A.lo?'':'Pool hiệu: <b style="color:#3fb950">▲</b> trùng kỳ cách 1 kỳ · <b style="color:#ffb347">◆</b> cũng nằm trong pool tổng · <b style="color:#ff4d4f">▼</b> kề ±1 kỳ trước. '}Pool ±1 bỏ số đã có ở chính kỳ đó. <b style="color:#c58bff">Có mặt ≥2 pool</b>: số nhỏ bên cạnh = số pool chứa số đó (tính cả 7 pool ở trên).</div></div>`;}
 function thN(k){if(typeof window==='undefined')return;window.__thN=k;window.__thOpen=true;rgRe();}
 function thGio(v){if(typeof window==='undefined')return;window.__thG=v;window.__thOpen=true;rgRe();}
 function thTog(el){if(typeof window!=='undefined')window.__thOpen=el.open;}
