@@ -1780,3 +1780,13 @@ Mỗi ô ghi: số lần ra / số lần còn chờ (chưa ra ở các kỳ trư
 | Power | 50 | 16,4 · 1,80 · 11,0% · 33 · 11 | 19,0 · 2,20 · 11,6% · 40 · 21 |
 | Power | 100 | 16,9 · 1,80 · 10,6% · 63 · 26 | 19,6 · 2,17 · 11,1% · 76 · 43 |
 - Pool ≥2 to thêm khoảng 2,5 số. Tỉ lệ trúng mỗi số giữ nguyên hoặc nhích lên ở cả 3 game và các khung 20/50/100 kỳ. Số kỳ trúng ≥3 tăng rõ.
+
+## 21/10/2026 — Thử Mega: trừ điểm số kỳ cách 2 kỳ (cùng thứ tuần trước) → không hơn, đã bỏ
+Pool trúng (≥3 số / ≥4 số / trúng TB), cách cũ → trừ 0,5 điểm:
+| Pool | 50 kỳ | 100 kỳ |
+|---|---|---|
+| 10 | 18/12/1,68 → 24/8/1,74 | 18/7/1,58 → 21/5/1,60 |
+| 15 | 50/24/2,46 → 50/20/2,46 | 46/16/2,31 → 45/15/2,31 |
+| 18 | 58/32/2,76 → 60/32/2,76 | 57/25/2,69 → 58/27/2,70 |
+| 20 | 68/36/2,98 → 70/34/3,00 | 66/34/2,95 → 66/34/2,95 |
+- Trừ 1 điểm cũng tương tự. Trúng TB gần như không đổi, pool 15 (pool chính) kỳ ≥4 số kém đi → không áp dụng, giữ cách cũ. Power vẫn giữ luật cũ −0,5 cho số này.
