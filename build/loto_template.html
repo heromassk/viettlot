@@ -376,7 +376,7 @@ function renderBangCard(){const el=$('bangIn');if(!el)return;const J0=GOIY[GAME]
   el.innerHTML=h;if(typeof bgFold==='function')bgFold(el);
   const pe=$('poolIn');if(pe){pe.innerHTML=window.__bgPool||'';if(typeof bgFold==='function')bgFold(pe);pCards(pe);}}
 // các block của Pool thành thẻ riêng ngoài trang, mỗi nhãn một màu (anh 20/10/2026)
-function pCards(root){const PC=[[t=>/Vé bốc/.test(t),'#4dabf7'],[t=>/Pool số đã ra|Pool của anh|Đang sửa/.test(t),'#69db7c'],[t=>/Sổ pool/.test(t),'#8ce99a'],[t=>/Kiểm pool vắng/.test(t),'#ffa94d'],[t=>/Kiểm pool tổng/.test(t),'#f783ac'],
+function pCards(root){const PC=[[t=>/Vé (bốc )?ngẫu nhiên/.test(t),'#4dabf7'],[t=>/Pool số đã ra|Pool của anh|Đang sửa/.test(t),'#69db7c'],[t=>/Sổ pool/.test(t),'#8ce99a'],[t=>/Kiểm pool vắng/.test(t),'#ffa94d'],[t=>/Kiểm pool tổng/.test(t),'#f783ac'],
   [t=>/Quan hệ/.test(t)&&/Mega \+ Power/.test(t),'#e599f7'],[t=>/Mega \+ Power/.test(t),'#3bc9db'],[t=>/kỳ gần nhất|kỳ ·/.test(t)&&!/Pool/.test(t),'#ffd43b'],[t=>/Quan hệ/.test(t),'#b197fc'],[t=>/Pool gợi ý/.test(t),'#ff6b6b'],[t=>/Độ trúng/.test(t),'#38d9a9'],[t=>/Pool trúng mấy/.test(t),'#a9e34b'],[t=>/chọn thế nào/.test(t),'#ffc078']];
   root.querySelectorAll('details').forEach(d=>{const up=d.parentElement&&d.parentElement.closest('details');if(up&&root.contains(up))return;const s=d.querySelector('summary');if(!s)return;const t=s.textContent;
     const c=(PC.find(([f])=>f(t))||[0,'var(--accent)'])[1];d.classList.add('pcard');d.style.setProperty('--pc',c);});}
