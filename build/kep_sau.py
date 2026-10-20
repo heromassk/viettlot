@@ -1,4 +1,4 @@
-# Số kẹp (a và a+2 cùng ra, a+1 không ra) — ra ở kỳ +1, +2, +3… sau đó? (anh 21/10/2026)
+# Số kẹp (a và a+2 cùng ra, a+1 không ra) — ra ở kỳ +1, +2, +3… sau đó? (anh 20/10/2026)
 import json
 d=json.load(open('build/all_data.json'))
 def run(res,W,K=5):
