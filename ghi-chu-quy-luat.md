@@ -415,6 +415,7 @@ Kết quả (bình quân mỗi số: Loto 14.3, Mega 13.3, Power 10.9%):
 | 19/10 13h | 05 19 23 28 31 · MM 04 | — | — | — | sổ kiểm chứng 23/31 luật đúng | — | — | 2 (05 28); pool 10: 2 (05 28) · pool 20: 3 (05 19 28) · tâm linh 12: 2 (05 31) · MM 09 06 07 trật (ra 04) | 1 số (vé 1, vé 7: 05) |
 | 19/10 21h | 11 14 17 26 28 · MM 07 | — | — | — | sổ kiểm chứng 27/34 luật đúng | — | — | 2 (11 14); pool 10: 1 (11) · pool 20: 3 (11 14 28) · tâm linh 12: 2 (11 14) · vắng 8 kỳ: 2 (11 26) · **MM 07 trúng** (ưu tiên 2) | 2 số + MM (vé 6: 10 11 14 21 34 + 07) |
 | 20/10 13h | 04 05 06 16 17 · MM 03 | — | — | — | sổ kiểm chứng 25/35 luật đúng · khẳng định 6/8 (sai: nhỏ/lớn cân — cả 5 số ≤17; rải ≥3 hàng chục) | — | — | 2 (05 06); pool 10: 2 · pool 20: 2 · tâm linh 12: 1 (04) · vắng 8 kỳ: 1 (04) · ≥2 pool (cả 2 buổi): 3 (04 06 17) · kẹp 13h 04 (kẹp 18/10 13h) về đúng kỳ +2 cùng buổi · MM 09 04 07 trật (ra 03) | 2 số (vé 1: 05 06; vé 7: 04 05) |
+| 20/10 21h | 02 09 11 25 30 · MM 04 | — | — | — | khẳng định 6/8 (sai: ≥1 số nóng 20 kỳ; ≥1 số trùng/kề ±1 kỳ trước) | — | — | 1 (11); pool 10: 1 · pool 20: 4 (02 11 25 30) · pool 18: 3 (02 11 25) · tâm linh 12: 2 (09 11) · vắng 8 kỳ: 2 (02 25) · ≥2 pool: 3 (02 11 25) · **MM 04 trúng** (ưu tiên 1) | 2 số (vé 2: 02 11); 1 số + MM 04: vé 1, 3, 5, 7 |
 
 ## Sổ chấm phương pháp Mega 6/45 (bắt đầu 04/10/2026; chi tiết từng luật trong app → "Sổ kiểm chứng suy luận")
 | Kỳ | Kết quả | Luật loại (đã áp dụng) | Bị loại | Pool 10 / 15 / 20 | Vé tốt nhất | Tâm linh 12 | Bao 7 anh | Ghi chú |
