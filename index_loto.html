@@ -18,6 +18,8 @@ details.card>summary{cursor:pointer;list-style:none;margin-bottom:0;}
 #poolIn details.pcard{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--pc);border-radius:14px;padding:12px 12px;margin:0 0 16px;box-shadow:0 4px 18px rgba(0,0,0,.25);}
 #poolIn details.pcard>summary{font-size:.84rem;}
 #poolIn details.pcard{padding:10px 10px;}
+/* tạm ẩn (anh 20/10/2026): thẻ Cập nhật kết quả, tiêu đề Nghiên cứu…, dòng Dữ liệu… */
+#addCard,#h1,#status{display:none!important;}
 #poolIn .bg-ppr{gap:2px!important;}#poolIn .bg-ppr>b{min-width:24px;}#poolIn .bg-ppr .bg-b,#poolIn .bg-ppe{min-width:23px!important;width:23px!important;height:23px!important;flex:0 0 23px!important;font-size:.72rem!important;}
 #poolIn details.pcard>summary>b{font-size:1.08rem;color:var(--pc);}
 #poolIn details.pcard[open]>summary{margin-bottom:8px;}
@@ -1021,7 +1023,7 @@ function renderBang(J){
     <div class="bg-foot" style="margin:2px 0 0;">Dấu đen +1 / −1 / ±1 góc dưới phải = số đó hơn / kém / kề hai phía một số của kỳ liền trước; <b style="background:#d62828;color:#fff;border-radius:4px;padding:0 3px;">dấu đỏ</b> góc trên trái = so với kỳ cách 1 kỳ (số lặp không dấu). Bên phải mỗi kỳ: hàng chục từng số · tổng · số chẵn (C) / lẻ (L), tính 5 số chính. <b style="color:var(--ac)">Dòng ▸ Dãy</b> trên cùng = dãy giả định của anh cho kỳ tới: bấm vòng tròn để chọn số, viền vàng = trùng kỳ mới nhất, bấm chữ ▸ Dãy để mở danh sách dãy (thêm / xoá / chọn dãy hiện).${KG?` Đang lọc chỉ kỳ ${KG}: màu lặp và dấu ±1 so với kỳ ${KG} liền trước.`:''}${J.game==='loto'?' Bóng cam = số may mắn; vòng nhỏ góc dưới phải bóng cam = hơn / kém số may mắn kỳ liền trước'+(KG?' cùng giờ '+KG:'')+' (<b style="color:#3fb950">+ xanh</b>, <b style="color:#ff4d4f">− đỏ</b>).':''}</div></details>${qhBlock(J,ball,p2,HCOL)}${mpBlocks(J,ball,p2,HCOL)}`:'';
   const secP=(sub,body)=>`<div class="bg-poolblk">${sub?`<div class="bg-subt" style="display:block;margin-bottom:6px;">${sub}</div>`:''}${body}</div>`;   // Pool = block lớn riêng, nằm trên 'Gợi ý kỳ tới' (anh 16/10/2026)
   const BAN=J.stale?`<div class="bg-foot" style="margin:0 0 6px;color:var(--ac);">Pool đang áp dụng cho kỳ <b>${J.next}</b>${(()=>{const i=J.dates201.indexOf(J.nextBase);if(i<0||!J.pools)return '';const r=J.res201[i];return `<br><span style="color:var(--text,#e8ecf5);">Pool app kỳ ${J.nextBase} trúng: ${Object.keys(J.pools).map(Number).sort((x,y)=>x-y).map(k=>`P${k} <b>${J.pools[k].filter(n=>r.includes(n)).length}</b>`).join(' · ')}</span>`;})()}</div>`:'';
-  const S3=secP(ptS?`pool ${PK}: kỳ trúng ≥3 số ${ptS['100'][2]}% · ≥4 số ${ptS['100'][3]}% (100 kỳ)`:'',
+  const S3=secP('',   // bỏ dòng 'pool 18: kỳ trúng…' (anh 20/10/2026)
     `${BAN}${(()=>{
     // Pool từ x kỳ gần nhất, lưới cố định 0x…(anh 16/10/2026): số trong pool sáng màu game, chạm để bỏ/chọn, Lưu = pool của anh
     const PN=(typeof window!=='undefined'&&[5,10,15,20,25,30,50].includes(window.__ppN))?window.__ppN:10;
@@ -1042,7 +1044,7 @@ function renderBang(J){
     const btn=(t,f)=>`<span class="bg-h20k" onclick="${f}">${t}</span>`;
     const tools=ed?btn('Lưu pool','ppSave()')+btn('Hủy','ppCancel()')+btn(`Lấy lại pool ${PR?'theo ngày đã chọn':PN+' kỳ'}`,'ppFromX()'):btn('Sửa pool','ppStart()')+(sv?btn('Xóa pool kỳ này','ppDel()'):'');
     const ttl=ed?`Đang sửa — ${lit.size} số`:sv?`Pool của anh cho kỳ ${J.next} (đã lưu) — ${lit.size} số`:`Pool số ${PLB} - ${ns.length} số`;
-    return `${vlBlock(J,[...lit].sort((a,b)=>a-b),sv||ed?'pool của anh':`pool ${PLB}`,sub)}<details class="bg-wh" style="margin:6px 0;"${ed?' open':dOp('pp')} ontoggle="dTog('pp',this)"><summary style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><b>${ttl}</b></summary><div class="bg-foot" style="margin:0 0 4px;">${ed?'Chạm số sáng để bỏ, chạm số tối để chọn, xong bấm Lưu pool.':'Số sáng = trong pool, số xám = ngoài pool; số nhỏ ở góc = số lần ra trong khoảng đang chọn (từ 2 lần).'}</div>
+    return `${''/* tạm ẩn thẻ Vé ngẫu nhiên (anh 20/10/2026): vlBlock(J,[...lit].sort((a,b)=>a-b),sv||ed?'pool của anh':`pool ${PLB}`,sub) */}<details class="bg-wh" style="margin:6px 0;"${ed?' open':dOp('pp')} ontoggle="dTog('pp',this)"><summary style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><b>${ttl}</b></summary><div class="bg-foot" style="margin:0 0 4px;">${ed?'Chạm số sáng để bỏ, chạm số tối để chọn, xong bấm Lưu pool.':'Số sáng = trong pool, số xám = ngoài pool; số nhỏ ở góc = số lần ra trong khoảng đang chọn (từ 2 lần).'}</div>
     <div class="bg-row bg-chips"><small>Lấy từ:</small>${[5,10,15,20,25,30,50].map(n=>`<span class="bg-h20k${!PR&&n===PN?' on':''}" onclick="ppSet(${n})">${n} kỳ</span>`).join('')}</div>
     <div class="bg-row bg-chips">${rgUI(J,'p',PN,PH)}</div>${J.game==='loto'?`<div class="bg-row bg-chips">${[['','13h &amp; 21h'],['13h','Chỉ 13h'],['21h','Chỉ 21h']].map(([g,t])=>`<span class="bg-h20k${g===PH?' on':''}" onclick="ppGio('${g}')">${t}</span>`).join('')}</div>`:''}${rows}${PLO.size||PTL.size||PNG.size?sub(`Giải thích`,`<div class="bg-foot" style="margin:4px 0 0;">${PLO.size?`<b style="background:#111;color:#fff;border-radius:6px;padding:0 4px;">số đen</b> = app loại${J.stale?` (kỳ ${J.nextBase})`:''}: ${[...PLO].sort((a,b)=>a[0]-b[0]).map(([n,w])=>`<b>${p2(n)}</b>: ${w.replace(/ · /g,', ')}`).join(' | ')}`:''}${PLO.size&&PTL.size?'<br>':''}${PTL.size?`<b>●</b> chấm trắng = tâm linh mạnh: ${[...PTL].sort((a,b)=>a-b).map(p2).join(' ')}`:''}${PNG.size?`<br><b style="color:#b46cff;">chữ tím</b> = tình nghi: ${[...PNG].sort((a,b)=>a[0]-b[0]).map(([n,w])=>`<b>${p2(n)}</b>: ${w.join('; ')}`).join(' | ')}`:''}</div>`):''}<div class="bg-row bg-chips" style="margin-top:6px;">${tools}</div></details>${(()=>{
       const bk=ppBook(J.game),ks=Object.keys(bk);if(!ks.length)return '';
@@ -1202,7 +1204,9 @@ function renderBangCard(){const el=$('bangIn');if(!el)return;const J0=GOIY[GAME]
 function pCards(root){const PC=[[t=>/Vé (bốc )?ngẫu nhiên/.test(t),'#4dabf7'],[t=>/Pool số đã ra|Pool số \d|Pool số \S+ ·|Pool của anh|Đang sửa/.test(t),'#69db7c'],[t=>/Sổ pool/.test(t),'#8ce99a'],[t=>/Kiểm pool vắng/.test(t),'#ffa94d'],[t=>/Kiểm pool tổng/.test(t),'#f783ac'],
   [t=>/Quan hệ/.test(t)&&/Mega \+ Power/.test(t),'#e599f7'],[t=>/Mega \+ Power/.test(t),'#3bc9db'],[t=>/kỳ gần nhất|kỳ ·/.test(t)&&!/Pool/.test(t),'#ffd43b'],[t=>/Quan hệ/.test(t),'#b197fc'],[t=>/Pool gợi ý/.test(t),'#ff6b6b'],[t=>/Độ trúng/.test(t),'#38d9a9'],[t=>/Pool trúng mấy/.test(t),'#a9e34b'],[t=>/chọn thế nào/.test(t),'#ffc078']];
   root.querySelectorAll('details').forEach(d=>{const up=d.parentElement&&d.parentElement.closest('details');if(up&&root.contains(up))return;const s=d.querySelector('summary');if(!s)return;const t=s.textContent;
-    const c=(PC.find(([f])=>f(t))||[0,'var(--accent)'])[1];d.classList.add('pcard');d.style.setProperty('--pc',c);});}
+    const c=(PC.find(([f])=>f(t))||[0,'var(--accent)'])[1];d.classList.add('pcard');d.style.setProperty('--pc',c);
+    const sm=s.querySelector(':scope>small');if(sm)sm.remove();   // nhãn chỉ giữ tên, bỏ giải thích chữ nhỏ (anh 20/10/2026)
+    s.style.whiteSpace='nowrap';s.style.overflow='hidden';s.style.textOverflow='ellipsis';});}
 const GAMES={
  loto535:{label:'Loto 5/35',sub:'13h · 21h mỗi ngày',N:35,C:5,extra:'MM',extraName:'số may mắn',extraN:12,hours:true,coll:'draws',pcoll:'preds',ls:'loto_extra_v1',mcoll:'mine'},
  mega645:{label:'Mega 6/45',sub:'T4 · T6 · CN',N:45,C:6,extra:null,days:[3,5,0],coll:'draws_mega645',pcoll:'preds_mega645',ls:'mega_extra_v1',mcoll:'mine_mega645'},
