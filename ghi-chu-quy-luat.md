@@ -1710,3 +1710,15 @@ Cùng kỳ, mỗi kỳ dựng từ dữ liệu trước nó; khung 50 / 100 kỳ
 - Loto (cả 2 giờ): số "mới" TB 2.2 / 2.4 / 2.3 trên 5; kỳ ≥3 số mới 7 / 22 / 41. 1 số chưa ra 5 kỳ ra 13.3 / 14.5 / 14.3% — 1 số đã ra 15.2 / 14.1 / 14.3% → ngang nhau. 13h, 21h tương tự (21h 20 kỳ gần nghiêng số mới 15.7 vs 12.9%).
 - Mega: số mới TB 3.0 / 3.0 / 3.0 trên 6; kỳ ≥3 số mới 16 / 37 / 72. 1 số mới 13.7 / 13.7 / 13.8% — đã ra 13.0 / 13.0 / 12.9% → nghiêng nhẹ về số mới.
 - Power: số mới TB 3.6 / 3.6 / 3.5 trên 6; kỳ ≥3 số mới 18 / 42 / 82. 1 số mới 11.7 / 11.6 / 11.4% — đã ra 9.9 / 10.0 / 10.3% → nghiêng rõ về số mới (khớp luật vắng 12 kỳ).
+
+## 20/10/2026 — Pool "bỏ số đã ra x kỳ" (x anh tự nhập, mặc định 5)
+- Thêm 2 dòng vào bảng pool (Pool kỳ tới, bảng từng kỳ, Hiệu quả từng pool): **Bỏ ra x kỳ** (số chưa ra x kỳ gần nhất) và **App bỏ ra x kỳ** (pool app 18 trừ các số đã ra x kỳ).
+- Đếm số trúng mỗi kỳ, x = 5. Bỏ ra 5 kỳ:
+
+| Game | Khung | Cỡ pool | Trúng TB/kỳ | ≥2 số | ≥3 số |
+|---|---|---|---|---|---|
+| Loto | 20/50/100 | ~16 | 2,25 / 2,36 / 2,32 | 15 / 39 / 79 | 7 / 22 / 41 |
+| Mega | 20/50/100 | ~22 | 3,00 / 3,02 / 3,04 | 18 / 43 / 92 | 16 / 37 / 72 |
+| Power | 20/50/100 | ~31 | 3,65 / 3,58 / 3,50 | 20 / 47 / 92 | 18 / 42 / 82 |
+
+- App 18 bỏ ra 5 kỳ (khoảng 20 kỳ có pool app): Loto cỡ 7,7, trúng 1,09/kỳ (app 18 trúng 2,59); Mega cỡ 7,7, trúng 1,30 (app 2,90); Power cỡ 9,6, trúng 1,70 (app 2,65).
