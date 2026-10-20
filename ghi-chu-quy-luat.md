@@ -1705,3 +1705,8 @@ Cùng kỳ, mỗi kỳ dựng từ dữ liệu trước nó; khung 50 / 100 kỳ
 - Mega: ≥2 pool (~18.2) 24 / 47, ≥4 số 9 / 19, TB 2.52 / 2.51 — app pool 18: 33 / 61, ≥4 số 21 / 35, TB 2.92 / 2.79.
 - Power: ≥2 pool (~16.5) 11 / 27, TB 1.80 / 1.83 — app pool 15: 17 / 29 · app pool 18: 24 / 41, TB 2.52 / 2.31.
 - Kết luận: pool của app trúng nhiều hơn ở cùng cỡ, cả 3 game. Bảng pool dùng để soi dấu vết / đối chiếu, không thay pool app.
+
+# Số ra ở kỳ mới có hay là số chưa xuất hiện 5 kỳ gần? (anh 20/10/2026, `build/moi5.py`) — khung 20 / 50 / 100
+- Loto (cả 2 giờ): số "mới" TB 2.2 / 2.4 / 2.3 trên 5; kỳ ≥3 số mới 7 / 22 / 41. 1 số chưa ra 5 kỳ ra 13.3 / 14.5 / 14.3% — 1 số đã ra 15.2 / 14.1 / 14.3% → ngang nhau. 13h, 21h tương tự (21h 20 kỳ gần nghiêng số mới 15.7 vs 12.9%).
+- Mega: số mới TB 3.0 / 3.0 / 3.0 trên 6; kỳ ≥3 số mới 16 / 37 / 72. 1 số mới 13.7 / 13.7 / 13.8% — đã ra 13.0 / 13.0 / 12.9% → nghiêng nhẹ về số mới.
+- Power: số mới TB 3.6 / 3.6 / 3.5 trên 6; kỳ ≥3 số mới 18 / 42 / 82. 1 số mới 11.7 / 11.6 / 11.4% — đã ra 9.9 / 10.0 / 10.3% → nghiêng rõ về số mới (khớp luật vắng 12 kỳ).
