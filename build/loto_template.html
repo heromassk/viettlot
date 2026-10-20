@@ -1279,7 +1279,7 @@ function myHistShow(){const el=$('myHist');if(!el)return;const res=new Map(S.M.a
 function bkLs(k){try{const a=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
 function bkCollect(){const out={app:'vietlott-nghien-cuu',ver:1,at:new Date().toISOString(),games:{},prefs:{}};
   Object.keys(GAMES).forEach(g=>{const st=getS(g),c=GAMES[g];out.games[g]={draws:DB?(st.dbRows||[]):bkLs(c.ls),preds:DB?(st.preds||[]):bkLs('vt_pred_'+g),mine:DB?(st.mineDb||[]):bkLs('vt_mine_'+g)};});
-  ['vt_tt','vt_kx','vt_tq_who'].forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null)out.prefs[k]=v;}catch(e){}});
+  ['vt_tt','vt_kx','vt_tq_who','vl_gd_loto','vl_gd_mega','vl_gd_power'].forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null)out.prefs[k]=v;}catch(e){}});
   out.ver=2;out.sopool={};out.sove={};['loto','mega','power'].forEach(g=>{out.sopool[g]=ppBook(g);out.sove[g]=svBook(g);});return out;}
 function bkCount(o){let d=0,p=0,m=0,sp=0,sv=0;Object.values(o.games||{}).forEach(x=>{d+=(x.draws||[]).length;p+=(x.preds||[]).length;m+=(x.mine||[]).length;});Object.values(o.sopool||{}).forEach(b=>sp+=Object.keys(b||{}).length);Object.values(o.sove||{}).forEach(b=>sv+=Object.keys(b||{}).length);return {d,p,m,sp,sv};}
 const bkTxt=c=>`${c.d} kết quả nhập thêm, ${c.p} gợi ý app, ${c.m} kỳ có dãy của anh, ${c.sp} kỳ có pool đã lưu, ${c.sv} kỳ có bộ vé đã chốt`;
