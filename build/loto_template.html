@@ -18,6 +18,8 @@ details.card>summary{cursor:pointer;list-style:none;margin-bottom:0;}
 #poolIn details.pcard{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--pc);border-radius:14px;padding:12px 12px;margin:0 0 16px;box-shadow:0 4px 18px rgba(0,0,0,.25);}
 #poolIn details.pcard>summary{font-size:.84rem;}
 #poolIn details.pcard{padding:10px 10px;}
+/* tạm ẩn (anh 20/10/2026): thẻ Cập nhật kết quả, tiêu đề Nghiên cứu…, dòng Dữ liệu… */
+#addCard,#h1,#status{display:none!important;}
 #poolIn .bg-ppr{gap:2px!important;}#poolIn .bg-ppr>b{min-width:24px;}#poolIn .bg-ppr .bg-b,#poolIn .bg-ppe{min-width:23px!important;width:23px!important;height:23px!important;flex:0 0 23px!important;font-size:.72rem!important;}
 #poolIn details.pcard>summary>b{font-size:1.08rem;color:var(--pc);}
 #poolIn details.pcard[open]>summary{margin-bottom:8px;}
@@ -381,7 +383,9 @@ function renderBangCard(){const el=$('bangIn');if(!el)return;const J0=GOIY[GAME]
 function pCards(root){const PC=[[t=>/Vé (bốc )?ngẫu nhiên/.test(t),'#4dabf7'],[t=>/Pool số đã ra|Pool số \d|Pool số \S+ ·|Pool của anh|Đang sửa/.test(t),'#69db7c'],[t=>/Sổ pool/.test(t),'#8ce99a'],[t=>/Kiểm pool vắng/.test(t),'#ffa94d'],[t=>/Kiểm pool tổng/.test(t),'#f783ac'],
   [t=>/Quan hệ/.test(t)&&/Mega \+ Power/.test(t),'#e599f7'],[t=>/Mega \+ Power/.test(t),'#3bc9db'],[t=>/kỳ gần nhất|kỳ ·/.test(t)&&!/Pool/.test(t),'#ffd43b'],[t=>/Quan hệ/.test(t),'#b197fc'],[t=>/Pool gợi ý/.test(t),'#ff6b6b'],[t=>/Độ trúng/.test(t),'#38d9a9'],[t=>/Pool trúng mấy/.test(t),'#a9e34b'],[t=>/chọn thế nào/.test(t),'#ffc078']];
   root.querySelectorAll('details').forEach(d=>{const up=d.parentElement&&d.parentElement.closest('details');if(up&&root.contains(up))return;const s=d.querySelector('summary');if(!s)return;const t=s.textContent;
-    const c=(PC.find(([f])=>f(t))||[0,'var(--accent)'])[1];d.classList.add('pcard');d.style.setProperty('--pc',c);});}
+    const c=(PC.find(([f])=>f(t))||[0,'var(--accent)'])[1];d.classList.add('pcard');d.style.setProperty('--pc',c);
+    const sm=s.querySelector(':scope>small');if(sm)sm.remove();   // nhãn chỉ giữ tên, bỏ giải thích chữ nhỏ (anh 20/10/2026)
+    s.style.whiteSpace='nowrap';s.style.overflow='hidden';s.style.textOverflow='ellipsis';});}
 const GAMES={
  loto535:{label:'Loto 5/35',sub:'13h · 21h mỗi ngày',N:35,C:5,extra:'MM',extraName:'số may mắn',extraN:12,hours:true,coll:'draws',pcoll:'preds',ls:'loto_extra_v1',mcoll:'mine'},
  mega645:{label:'Mega 6/45',sub:'T4 · T6 · CN',N:45,C:6,extra:null,days:[3,5,0],coll:'draws_mega645',pcoll:'preds_mega645',ls:'mega_extra_v1',mcoll:'mine_mega645'},
