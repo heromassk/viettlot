@@ -517,16 +517,16 @@ function poolAt(J,G,t){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game;
   const d1=String(DA[idx[0]]).replace(/\/\d{4}/,''),d2=String(DA[idx[1]]).replace(/\/\d{4}/,'');
   const rows=[['v',`Vắng ${X} kỳ`,vang],['t','Tổng',[...T].sort((a,b)=>a-b)],['h','Hiệu',[...H].sort((a,b)=>a-b)],['k1',`±1 kỳ trước <small>(${d1})</small>`,ke(P)],['k2',`±1 kỳ cách 1 kỳ <small>(${d2})</small>`,ke(P2)],['tr',`Trùng kỳ trước <small>(${d1})</small>`,[...pv].sort((a,b)=>a-b)],['kp','Số kẹp <small>(chờ trong 2 kỳ)</small>',kp]];
   // số có mặt ở nhiều pool (anh 20/10/2026): đếm số pool chứa mỗi số, giữ số có mặt ≥2 pool (anh 20/10/2026), xếp nhiều → ít
+  // pool bỏ số đã ra x kỳ gần nhất (anh 20/10/2026, x anh tự nhập, mặc định 5); tính vào đếm ≥2 pool (anh 20/10/2026)
+  const X5=m5X(g);POOLNM.m5=`Bỏ ra ${X5} kỳ`;POOLNM.a5=`App bỏ ra ${X5} kỳ`;const S5=new Set();idx.slice(0,X5).forEach(i=>RA[i].forEach(n=>S5.add(n)));const m5=[];for(let n=1;n<=NB;n++)if(!S5.has(n))m5.push(n);
+  if(!(typeof window!=='undefined'&&window.__nhNoM5))rows.push(['m5',`Bỏ số ra ${X5} kỳ`,m5]);
   const C={};rows.forEach(([,,a])=>a.forEach(n=>C[n]=(C[n]||0)+1));const nh=Object.keys(C).map(Number).filter(n=>C[n]>=2).sort((a,b)=>C[b]-C[a]||a-b);
   rows.push(['nh','Có mặt ≥2 pool',nh]);
   // pool app (cỡ đang chọn ở "Pool gợi ý") để đối chiếu (anh 20/10/2026): kỳ tới lấy J.pools, kỳ cũ lấy poolThuc.hist (app lưu 20 kỳ gần)
   const PK=(typeof window!=='undefined'&&window.__poolK)||18;let AP=null;
   if(t>=RA.length)AP=J.pools&&J.pools[PK]?J.pools[PK]:null;else{const lg=(J.poolLog||{})[DA[t]],hh=((J.poolThuc||{}).hist||[]).find(x=>x.d===DA[t]);AP=lg&&lg[PK]?lg[PK]:hh&&hh.pools&&hh.pools[PK]?hh.pools[PK]:null;}   // ưu tiên pool đã đưa (goiy_log), không có thì pool chấm lùi
   const APs=AP?[...AP].sort((a,b)=>a-b):null,NH=new Set(nh);
-  rows.push(['ap',`Pool app ${PK}`,APs]);rows.push(['ai',`App ${PK} ∩ ≥2 pool`,APs?APs.filter(n=>NH.has(n)):null]);
-  // pool bỏ số đã ra x kỳ gần nhất (anh 20/10/2026, x anh tự nhập, mặc định 5): giữ số chưa ra 5 kỳ; không tính vào ≥2 pool
-  const X5=m5X(g);POOLNM.m5=`Bỏ ra ${X5} kỳ`;POOLNM.a5=`App bỏ ra ${X5} kỳ`;const S5=new Set();idx.slice(0,X5).forEach(i=>RA[i].forEach(n=>S5.add(n)));const m5=[];for(let n=1;n<=NB;n++)if(!S5.has(n))m5.push(n);
-  rows.push(['m5',`Bỏ số ra ${X5} kỳ`,m5]);rows.push(['a5',`App ${PK} bỏ số ra ${X5} kỳ`,APs?APs.filter(n=>!S5.has(n)):null]);
+  rows.push(['ap',`Pool app ${PK}`,APs]);rows.push(['ai',`App ${PK} ∩ ≥2 pool`,APs?APs.filter(n=>NH.has(n)):null]);rows.push(['a5',`App ${PK} bỏ số ra ${X5} kỳ`,APs?APs.filter(n=>!S5.has(n)):null]);
   return {rows,P,P2,T,C,lo:g==='loto'};}
 const POOLNM={v:'Vắng',t:'Tổng',h:'Hiệu',k1:'±1 kỳ trước',k2:'±1 cách 1 kỳ',tr:'Trùng kỳ trước',kp:'Kẹp',nh:'≥2 pool',ap:'Pool app',ai:'App ∩ ≥2 pool',m5:'Bỏ ra 5 kỳ',a5:'App bỏ ra 5 kỳ'};
 // bảng pool (kỳ tới hoặc 1 kỳ cũ): res = kết quả kỳ đó để chấm (số trúng tô màu + cột Trúng)
@@ -539,7 +539,7 @@ function nextPoolTable(J,G,ID=''){const RA=J.res201||[],p2=n=>String(n).padStart
   const nxt=String(J.next||''),lab=!G||nxt.endsWith(G)?nxt:'kỳ '+G+' tới';
   const ok=typeof window!=='undefined'&&window.__dOpen&&window.__dOpen['nx'+ID];
   return `<details style="margin:6px 0 8px;border:1px solid var(--ac);border-radius:10px;padding:6px 6px 4px;"${ok?' open':''} ontoggle="dTog('nx${ID}',this)"><summary style="font-weight:700;cursor:pointer;">Pool kỳ tới · ${lab}${G?' <small>(chỉ '+G+')</small>':''}</summary>${m5UI(J.game)}${poolTableHTML(A,null,p2)}
-   <div class="bg-foot" style="margin:2px 0 0;">${A.lo?'':'Pool hiệu: <b style="color:#3fb950">▲</b> trùng kỳ cách 1 kỳ · <b style="color:#ffb347">◆</b> cũng nằm trong pool tổng · <b style="color:#ff4d4f">▼</b> kề ±1 kỳ trước. '}Pool ±1 bỏ số đã có ở chính kỳ đó. <b style="color:#c58bff">Có mặt ≥2 pool</b>: số nhỏ bên cạnh = số pool chứa số đó (tính cả 7 pool ở trên). <b style="color:#f0b429">App ∩ ≥2 pool</b> = số vừa trong pool app (cỡ đang chọn ở Pool gợi ý) vừa có mặt ≥2 pool — cơ sở cao hơn. <b style="color:#2ec4b6">Bỏ ra x kỳ</b> = số chưa ra trong x kỳ gần nhất (x nhập ở trên, mặc định 5); <b style="color:#2ec4b6">App bỏ ra x kỳ</b> = pool app trừ các số đó.</div></details>`;}
+   <div class="bg-foot" style="margin:2px 0 0;">${A.lo?'':'Pool hiệu: <b style="color:#3fb950">▲</b> trùng kỳ cách 1 kỳ · <b style="color:#ffb347">◆</b> cũng nằm trong pool tổng · <b style="color:#ff4d4f">▼</b> kề ±1 kỳ trước. '}Pool ±1 bỏ số đã có ở chính kỳ đó. <b style="color:#c58bff">Có mặt ≥2 pool</b>: số nhỏ bên cạnh = số pool chứa số đó (tính cả 8 pool ở trên, gồm Bỏ ra x kỳ). <b style="color:#f0b429">App ∩ ≥2 pool</b> = số vừa trong pool app (cỡ đang chọn ở Pool gợi ý) vừa có mặt ≥2 pool — cơ sở cao hơn. <b style="color:#2ec4b6">Bỏ ra x kỳ</b> = số chưa ra trong x kỳ gần nhất (x nhập ở trên, mặc định 5); <b style="color:#2ec4b6">App bỏ ra x kỳ</b> = pool app trừ các số đó.</div></details>`;}
 function thN(k){if(typeof window==='undefined')return;window.__thN=k;window.__thOpen=true;rgRe();}
 function thGio(v){if(typeof window==='undefined')return;window.__thG=v;window.__thOpen=true;rgRe();}
 function thTog(el){if(typeof window!=='undefined')window.__thOpen=el.open;}
