@@ -1850,3 +1850,11 @@ Số kỳ trúng ở 20 / 50 / 100 / 200 kỳ: **đang dùng (±3 quanh MM kỳ 
 - Thử (±3, nóng 10 kỳ, chiều nghiêng): 2 số trúng ở 20 / 50 / 100 / 200 kỳ — cách trước 7 / 18 / 27 / 49 · bỏ MM trước 8 / 17 / 25 / 46 · +tổng/hiệu 1 điểm 7 / 20 / 29 / 52 · **bỏ MM trước + tổng/hiệu 2 điểm 9 / 19 / 29 / 53** · ±4 kém hơn.
 - Đã đưa vào `goiy.py`. Kỳ 13h 21/10: MM 07 · 01 (= 4+3, 4−3).
 - Thử chỉ gợi ý 1 chiều (lọc số theo chiều nghiêng / đảo chiều bước trước, thiếu thì bù chiều kia), 2 số trúng 20/50/100/200 kỳ: đang dùng (cộng điểm chiều) 9/19/29/53 · lọc theo chiều nghiêng 9/17/28/51 · lọc đảo chiều bước trước 9/18/23/45 · đảo chiều chỉ 21h 9/17/23/47 · chiều nghiêng, không có thì đảo chiều 9/19/31/52 · mở ±4, ±5 đều kém hơn ở 100/200 kỳ → giữ cách cộng điểm, không lọc cứng.
+
+## 21/10/2026 — Cách chọn số May Mắn riêng cho từng cách xem (`build/mm_buoi.py`)
+Dò 96 biến thể (±2/3/4/cả 12 số, bỏ/giữ MM trước, đếm 10/20 kỳ, tổng/hiệu 0/1/2, chiều nghiêng) trên dãy chỉ 13h và chỉ 21h. 2 số trúng ở 20/50/100/200 kỳ của buổi đó:
+| Buổi | Cách riêng tốt nhất | Cách cả 2 buổi (đang dùng) chấm trên kỳ buổi đó |
+|---|---|---|
+| 13h | 5 / 10 / 19 / 37 (cả 12 số, nóng 10 kỳ 13h) | **7 / 11 / 26 / 42** |
+| 21h | 9 / 15 / 27 / 46 (±4, bỏ MM trước, tổng/hiệu, chiều) | **9 / 18 / 27 / 45** |
+- Cách đang dùng (nhìn liền 2 buổi, có chiều nghiêng theo buổi) vẫn tốt hơn hoặc bằng cách riêng từng buổi → giữ 1 cách cho cả 3 cách xem.
