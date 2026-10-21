@@ -435,11 +435,25 @@ if A.game == 'loto':
     # anh 14/10/2026: "tối đa 3 số may mắn và phải có độ ưu tiên". Cách: nóng 10 kỳ trong ±3 quanh MM kỳ trước
     # (somayman_soluong.py: ổn định nhất trong 14 cách ở 3 số, đúng 42/33/32/30% ở 50/100/200/500 kỳ; hòa → số lần ra 50 kỳ).
     # Thứ tự trả về = ưu tiên 1 → 3. Ưu tiên 1 về nhiều nhất ở cả 4 khung (18/17/13/11%); ưu tiên 2 và 3 gần ngang nhau.
+    # anh 21/10/2026: thêm "chiều nghiêng" (âm dương) theo MM kỳ trước CÙNG BUỔI m — 21h: m ≤6 → số lớn hơn m, m ≥7 → nhỏ hơn m;
+    # 13h: chỉ m ≥7 → nhỏ hơn m (ghi-chu 21/10). Số đúng chiều +1 vào số lần ra 10 kỳ khi xếp. Và chỉ gợi ý 2 số (anh 21/10/2026).
+    # mm_chieu.py: 2 số trúng 35/36/27/24% ở 20/50/100/200 kỳ (cách cũ 30/32/25/22%).
+    MMK = int(os.environ.get('GOIY_MMK', '2'))
+    A_NEXT_LOTO = APP['next'] if APP else next_date(D['dates'][-1])
+    DL = D['dates']
+    def mm_lean(t):
+        nd = DL[t] if t < len(DL) else A_NEXT_LOTO
+        g = nd[-3:]; m = next((LK[u] for u in range(t - 1, -1, -1) if DL[u].endswith(g)), None)
+        if m is None: return None
+        if m >= 7: return lambda k: k < m
+        if m <= 6 and g == '21h': return lambda k: k > m
+        return None
     def mm_pick(t):
         c10 = {k: sum(LK[u] == k for u in range(max(0, t - 10), t)) for k in range(1, 13)}
         c50 = {k: sum(LK[u] == k for u in range(max(0, t - 50), t)) for k in range(1, 13)}
         ok = [k for k in range(1, 13) if t < 1 or abs(k - LK[t - 1]) <= 3]
-        return sorted(ok, key=lambda k: (-c10[k], -c50[k], k))[:3]
+        f = mm_lean(t)
+        return sorted(ok, key=lambda k: (-c10[k] - (1 if f and f(k) else 0), -c50[k], k))[:MMK]
     MM = mm_pick(len(LK))
     hm = []; MMH = []; hr = []   # chạy lại 100 kỳ: mỗi kỳ chỉ dùng số may mắn các kỳ trước
     for t in range(len(LK) - 100, len(LK)):
@@ -809,9 +823,9 @@ for i, (kind, tk, lv) in enumerate(tickets, 1):
 
 # Số May Mắn Loto (đã tính ở trên)
 if A.game == 'loto':
-    print(f'\n### Số May Mắn (3 số, theo thứ tự ưu tiên — nóng 10 kỳ trong ±3 quanh số kỳ trước)\n\n'
+    print(f'\n### Số May Mắn ({len(MM)} số, theo thứ tự ưu tiên — nóng 10 kỳ trong ±3 quanh số kỳ trước, cộng chiều nghiêng cùng buổi)\n\n'
           + ' · '.join(f'ưu tiên {i + 1}: **{k:02d}** (vắng {mg[k]} kỳ, về {MMRANK[50][i]}% / {MMRANK[100][i]}% ở 50/100 kỳ)' for i, k in enumerate(MM))
-          + f'\n\nCả 3 số: chính cách này trúng {sum(hm[-50:]) * 2}% ở 50 kỳ, {sum(hm[-100:])}% ở 100 kỳ.'
+          + f'\n\nCả {len(MM)} số: chính cách này trúng {sum(hm[-50:]) * 2}% ở 50 kỳ, {sum(hm[-100:])}% ở 100 kỳ.'
           + ' Chia vé (không tính vé thay thế): ' + ', '.join(f'ưu tiên {i + 1} ({k:02d}) {sum(1 for (kd, _, _), m in zip(tickets, TMM) if m == k and not kd.startswith("cân nhắc"))} vé' for i, k in enumerate(MM)) + '.')
 
 # ---------- Rải vé bao phủ trên pool (anh, 13/10/2026; bao_phu.py, kiểu Đại học Manchester) ----------
@@ -891,7 +905,7 @@ if A.json:
              hist20=[dict(d=D["dates"][r["t"]], r=sorted(R[r["t"]]), lk=LKA[r["t"]] if DAY6 else None, rk=r["rk"][:20]) for r in reversed(RECS[-20:])],   # 20 kỳ gần: pool chạy lại từng kỳ (mới nhất trước)
              last10=B[10]['pool'][2], claims=CLR, sumRange=[SLO, SHI], da=DA_INFO, c50=round(c50, 2),
              ticketsK=TICKETS_K, veLuat=VELUAT, nghi=((json.load(open(os.path.join(HERE, 'nghi.json'), encoding='utf-8')).get(A.game)) if os.path.exists(os.path.join(HERE, 'nghi.json')) else None), tickets=[dict(kind=k, x=tk, lv=lv, sum=sum(tk) + (TMM[j] or 0 if j < len(TMM) else 0), lk=TMM[j] if j < len(TMM) else None) for j, (k, tk, lv) in enumerate(tickets)], day6=DAY6, core=core, mm=MM,
-             mmGap={k: mg[k] for k in MM} if MM else {}, mmRate=MMRATE if MM else None, mmRank={str(W): v for W, v in MMRANK.items()} if MM else None, mmHist=list(reversed(MMH[-20:])) if MM else None, linh=sorted(LINH),
+             mmGap={k: mg[k] for k in MM} if MM else {}, mmRate=MMRATE if MM else None, mmRank={str(W): v for W, v in MMRANK.items()} if MM else None, mmGoi={m['d']: m['goi'] for m in MMH} if MM else {}, mmHist=list(reversed(MMH[-20:])) if MM else None, linh=sorted(LINH),
              tl=dict(votes=votes, top=top_v, strong=strong, rescued=rescued, out=strong_out,
                      day=day, nm=len(APP.get('methods', [])), dung=TLDUNG) if APP else None,
              vl=VL, nong=NONG, nhip=NHIP, sig=[dict(lab=lab, nums=sorted(s[k]), how=how, r=[B[W][k][0] for W in (10, 50, 100)]) for k, lab, how in rows])
