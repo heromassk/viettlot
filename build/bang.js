@@ -138,9 +138,9 @@ function poolAt(J,G,t){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game;
   rows.push(['nh','Có mặt ≥2 pool',nh]);
   // pool app (cỡ đang chọn ở "Pool gợi ý") để đối chiếu (anh 20/10/2026): kỳ tới lấy J.pools, kỳ cũ lấy poolThuc.hist (app lưu 20 kỳ gần)
   const PK=(typeof window!=='undefined'&&window.__poolK)||18;let AP=null;
-  if(t>=RA.length)AP=J.pools&&J.pools[PK]?J.pools[PK]:null;else{const lg=(J.poolLog||{})[DA[t]],hh=((J.poolThuc||{}).hist||[]).find(x=>x.d===DA[t]);AP=lg&&lg[PK]?lg[PK]:hh&&hh.pools&&hh.pools[PK]?hh.pools[PK]:null;}   // ưu tiên pool đã đưa (goiy_log), không có thì pool chấm lùi
+  if(t>=RA.length)AP=J.pools&&J.pools[PK]?J.pools[PK]:null;else{const lg=(J.poolLog||{})[DA[t]],hh=((J.poolThuc||{}).hist||[]).find(x=>x.d===DA[t]);AP=lg&&lg[PK]?lg[PK]:hh&&hh.pools&&hh.pools[PK]?hh.pools[PK]:(PK<=20&&J.rkHist&&J.rkHist[DA[t]]?J.rkHist[DA[t]].slice(0,PK):null);}   // kỳ cũ chưa lưu: thứ hạng app chấm lùi   // ưu tiên pool đã đưa (goiy_log), không có thì pool chấm lùi
   // pool tâm linh (anh 20/10/2026): top 12 phiếu đã đưa kỳ đó; mức sao: theo phiếu nếu có, không thì ★ mạnh = đậm, còn lại = nhạt
-  let TLo=null;if(t>=RA.length){if(J.tl&&J.tl.top)TLo={top:J.tl.top,strong:J.tl.strong||[],votes:Object.fromEntries(J.tl.top.map(n=>[n,(J.tl.votes||[])[n]]))};}else{const lg=(J.poolLog||{})[DA[t]];if(lg&&lg._tl)TLo=lg._tl;}
+  let TLo=null;if(t>=RA.length){if(J.tl&&J.tl.top)TLo={top:J.tl.top,strong:J.tl.strong||[],votes:Object.fromEntries(J.tl.top.map(n=>[n,(J.tl.votes||[])[n]]))};}else{const lg=(J.poolLog||{})[DA[t]];if(lg&&lg._tl)TLo=lg._tl;else if(J.tlHist&&J.tlHist[DA[t]]){const h=J.tlHist[DA[t]];TLo={top:h.top,strong:[],votes:h.votes};}}   // kỳ cũ chưa lưu: phiếu tâm linh chấm lùi
   const TLs=new Map();if(TLo){const V=TLo.votes||{},vs=TLo.top.map(n=>+V[n]||0),mx=Math.max(0,...vs),mn=Math.min(...vs),st=new Set(TLo.strong||[]);TLo.top.forEach(n=>{const v=+V[n]||0;TLs.set(n,mx>mn?.45+.55*(v-mn)/(mx-mn):(st.has(n)?1:.5));});}
   const APs=AP?[...AP].sort((a,b)=>a-b):null,NH=new Set(nh);
   // số may mắn gợi ý (Loto, anh 21/10/2026): kỳ tới = J.mm, kỳ cũ = gợi ý chấm lùi cùng cách (J.mmGoi); trúng so với số may mắn thật, không tính vào ≥2 pool
