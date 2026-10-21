@@ -1947,3 +1947,14 @@ Số kỳ đúng ở 20 / 50 / 100 kỳ (Loto · Mega · Power):
 → 5 luật đầu đúng ≥86% ở 50 và 100 kỳ, dùng được làm luật loại vé (giống các luật dạng vé đang có: giúp vé gọn, tự chúng không tăng trúng).
 - Áp dụng (anh duyệt 21/10/2026): 4 luật Fibonacci vào bộ lọc vé `goiy.py` (`fib_ok`: ≤2 số Fib, có ≥1 khoảng cách Fib, không phải mọi khoảng cách Fib, không có chuỗi 4 số kiểu Fib) cho cả 3 game. Vé đổi: Loto 21/10 21h vé 1 (03 05 07 10 11 → 01 05 07 10 11), vé 3 (02 06 15 22 28 → 02 05 06 15 22); Power 22/10 vé 4 (01 03 21 28 37 40 → 03 11 21 28 37 40).
 - App: thẻ **Kiểm tra Dãy** (trên 20 kỳ gần nhất) kiểm dãy giả định đang hiện theo 13 luật (9 luật dạng vé + 4 luật Fib), kèm số kỳ đúng ở 20/50/100 kỳ.
+
+## 21/10/2026 — Lucas, Fibonacci tổng quát, chuỗi Fib trên 2/3 kỳ, Pisano (`build/fibo4.py`)
+1 số trong nhóm ra % kỳ so với số còn lại (20 / 50 / 100 kỳ):
+| Nhóm | Loto | Mega | Power |
+|---|---|---|---|
+| Dãy Lucas (1 2 3 4 7 11 18 29 47) | 14,4/14,2/13,9 vs 14,3/14,3/14,4 | 12,5/12,5/12,0 vs 13,5/13,5/13,6 | **17,2/13,8/12,7 vs 9,7/10,3/10,6** |
+| Fib tổng quát từ kỳ trước (a+b, a+2b, 2a+3b; ~6–12 số) | **9,9/12,9/13,8 vs 15,3/14,6/14,4 (thấp)** | **19,1/17,5/15,9 vs 12,1/12,5/12,8 (cao)** | 10,7/11,9/11,4 vs 11,0/10,7/10,8 |
+| Số kế tiếp chuỗi a,b,a+b trên 2 kỳ (~1–2 số) | 14,3/12,2/15,3 vs 14,3/14,4/14,3 | 16,1/17,9/15,3 vs 13,2/13,2/13,3 | 3,9/11,7/12,4 vs 11,2/10,9/10,9 |
+| Số kế tiếp chuỗi trên 3 kỳ (~3–6 số) | 13,3/13,9/17,4 vs 14,4/14,3/14,0 | 11,8/11,3/12,1 vs 13,5/13,5/13,4 | 8,2/11,9/11,6 vs 11,2/10,8/10,8 |
+- Đuôi tổng kỳ = đuôi (tổng 2 kỳ trước) kiểu Pisano: Loto 1/3/12, Mega 4/7/11, Power 4/7/13 (trên 20/50/100) → không có.
+- Dấu vết ổn định cả 3 khung: **Mega Fib tổng quát cao**, **Mega chuỗi 2 kỳ cao** (ít số), **Power Lucas cao**, **Loto Fib tổng quát thấp**, Mega Lucas hơi thấp.
