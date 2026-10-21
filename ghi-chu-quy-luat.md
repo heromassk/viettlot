@@ -1926,4 +1926,4 @@ Số Fibonacci: 1 2 3 5 8 13 21 34 (55 với Power). Tỉ lệ 1 số ra mỗi k
   - Số cách số kỳ trước ±1/2/3/5/8 so với ±4/6/7: Loto 13,6 / 13,3 / 14,0% vs 15,3 / 14,4 / 14,6% (kém hơn); Mega 14,3 / 13,4 / 13,3% vs 14,3 / 13,3 / 12,9%; Power 10,3 / 10,8 / 11,0% vs 9,3 / 9,9 / 10,6% (nhỉnh nhẹ cả 3 khung).
   - Tổng kỳ này ≈ ×1,618 hoặc ×0,618 tổng kỳ trước (lệch ≤5%): Loto 5 / 10 / 13 kỳ; Mega 2 / 3 / 4; Power 1 / 2 / 9.
   → Không có cách dùng Fibonacci nào cho dấu vết rõ trên dữ liệu 3 game; Power ±Fib nhỉnh nhẹ (0,4–1 điểm %).
-- So với bốc ngẫu nhiên (anh hỏi thẳng, `build/fibo3.py`): khoảng cách Fib trong kỳ — Loto 55,4% vs 54,1% · Mega 49,8% vs 52,0% · Power 47,2% vs 46,0%. Số kỳ nghỉ giữa 2 lần ra đúng số Fib — Loto 509 vs 507 · Mega 297 vs 281 · Power 254 vs 246 → không có cơ sở. Riêng Mega nghỉ đúng 13 kỳ: 27 lần vs 13 (100 kỳ) — cần soi thêm.
+- Số kỳ nghỉ giữa 2 lần ra (`build/fibo3.py`, chỉ so trong dữ liệu thật): mức nghỉ là số Fib (1 2 3 5 8 13 21) không gặp nhiều hơn mức nghỉ liền bên (4 6 7 9…); số lần giảm dần đều theo độ dài nghỉ. Riêng Mega nghỉ đúng 13 kỳ gặp 27 lần ở 100 kỳ, nhiều hơn hẳn nghỉ 12 (20) và 14 (13) — cần soi thêm.
