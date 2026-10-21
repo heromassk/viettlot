@@ -1927,3 +1927,10 @@ Số Fibonacci: 1 2 3 5 8 13 21 34 (55 với Power). Tỉ lệ 1 số ra mỗi k
   - Tổng kỳ này ≈ ×1,618 hoặc ×0,618 tổng kỳ trước (lệch ≤5%): Loto 5 / 10 / 13 kỳ; Mega 2 / 3 / 4; Power 1 / 2 / 9.
   → Không có cách dùng Fibonacci nào cho dấu vết rõ trên dữ liệu 3 game; Power ±Fib nhỉnh nhẹ (0,4–1 điểm %).
 - Số kỳ nghỉ giữa 2 lần ra (`build/fibo3.py`, chỉ so trong dữ liệu thật): mức nghỉ là số Fib (1 2 3 5 8 13 21) không gặp nhiều hơn mức nghỉ liền bên (4 6 7 9…); số lần giảm dần đều theo độ dài nghỉ. Riêng Mega nghỉ đúng 13 kỳ gặp 27 lần ở 100 kỳ, nhiều hơn hẳn nghỉ 12 (20) và 14 (13) — cần soi thêm.
+
+## 21/10/2026 — Loto: số đang nghỉ đúng 5/8/13/21/34 kỳ (`build/fibo_nghi.py`)
+Ra mỗi số (20 / 50 / 100 / 150 kỳ), nhóm nghỉ Fib (~5 số/kỳ) so với số còn lại:
+- Liền 2 buổi: 11,9 / 10,6 / 12,8 / 13,7% vs 14,7 / 14,9 / 14,6 / 14,4% → thấp hơn ở cả 4 khung, lệch nhỏ dần.
+- **Chỉ 13h (nghỉ tính theo kỳ 13h): 12,1 / 13,0 / 12,7 / 13,3% vs 14,7 / 14,5 / 14,6 / 14,5% → thấp hơn đều cả 4 khung (ổn định nhất).**
+- Chỉ 21h: 8,9 / 10,1 / 14,3 / 13,9% vs 15,3 / 15,1 / 14,3 / 14,4% → chỉ lệch ở 20/50 kỳ.
+→ Dấu vết nhẹ để trừ điểm (không loại hẳn), rõ nhất ở 13h. Chưa đưa vào gợi ý.
