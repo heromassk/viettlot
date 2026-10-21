@@ -469,7 +469,9 @@ function gdDelAll(g){if(typeof window!=='undefined'&&window.__gdAsk!=='all'){win
 function gdTog(b,el){if(typeof window==='undefined')return;window.__gdOpen=window.__gdOpen||{};window.__gdOpen[b]=el.open;}
 // dòng giả định: lab = nhãn cột ngày, balls(n,slot) = HTML bóng đã chọn, info(f) = phần bên phải; trả về details (danh sách dãy) + bảng chọn số
 // Kiểm tra dãy đang hiện (anh 21/10/2026): luật dạng vé của app + luật Fibonacci; mỗi luật: dãy đạt/phạm và số kỳ đúng ở 20/50/100 kỳ
-function gdCheck(J){if(typeof window==='undefined')return '';const RA=J.res201||[],LK=J.lk201||[],NB=J.nb,KB=J.kb,g=J.game,lo=g==='loto',n=RA.length;if(n<30)return '';
+function kdGio(v){if(typeof window==='undefined')return;window.__kdG=v;window.__dOpen=window.__dOpen||{};window.__dOpen.kd=true;if(typeof renderBangCard==='function')renderBangCard();}   /* Loto: kiểm dãy theo kỳ 13h / 21h / cả 2 (anh 21/10/2026) */
+function gdCheck(J){if(typeof window==='undefined')return '';const g=J.game,lo=g==='loto',KG=lo?(window.__kdG||''):'',DA0=J.dates201||[],IX=(J.res201||[]).map((_,i)=>i).filter(i=>!KG||String(DA0[i]).endsWith(KG));
+  const RA=IX.map(i=>J.res201[i]),LK=IX.map(i=>(J.lk201||[])[i]),NB=J.nb,KB=J.kb,n=RA.length;if(n<30)return '';
   const X=(window.__vxX&&window.__vxX[g])||({loto:8,mega:8,power:12}[g]||8),HC=lo?3:4,FB=new Set([1,2,3,5,8,13,21,34,55]),half=Math.floor(NB/2);
   const prev=(t,k)=>t-k>=0?RA[t-k]:[];
   const hot10=t=>{const c={};for(let u=Math.max(0,t-20);u<t;u++)RA[u].forEach(x=>c[x]=(c[x]||0)+1);return new Set(Object.keys(c).map(Number).sort((a,b)=>c[b]-c[a]||a-b).slice(0,10));};
@@ -505,11 +507,11 @@ function gdCheck(J){if(typeof window==='undefined')return '';const RA=J.res201||
   const ttl=full?`Kiểm tra Dãy ${V.cur+1} · đạt ${ok}/${L.length} luật`:`Kiểm tra Dãy ${V.cur+1} · ${d.length?'chưa đủ '+KB+' số':'chưa nhập dãy'}`;
   const rows=L.map(([lab],i)=>`<tr><td style="text-align:left;white-space:normal;">${lab}</td><td>${res[i]==null?'—':res[i]?'<b style="color:#51cf66">✓</b>':'<b style="color:#ff6b6b">✗</b>'}</td><td>${acc[i][0]}/20</td><td>${acc[i][1]}/50</td><td>${acc[i][2]}/100</td></tr>`).join('');
   return `<details class="bg-wh" style="margin:6px 0;"${dOp('kd')} ontoggle="dTog('kd',this)"><summary><b>${ttl}</b></summary>
-   <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:2px 0 4px;"><span class="bg-foot" style="margin:0;">Dãy ${V.cur+1}:</span>${balls}</div><div class="bg-foot" style="margin:0 0 6px;">Nhập / đổi dãy ở dòng ▸ Dãy trong thẻ x kỳ gần nhất.</div>
+   ${lo?`<div class="bg-row bg-chips">${[['','13h &amp; 21h'],['13h','Chỉ 13h'],['21h','Chỉ 21h']].map(([v,t])=>`<span class="bg-h20k${v===KG?' on':''}" onclick="kdGio('${v}')">${t}</span>`).join('')}</div>`:''}<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:2px 0 4px;"><span class="bg-foot" style="margin:0;">Dãy ${V.cur+1}:</span>${balls}</div><div class="bg-foot" style="margin:0 0 6px;">Nhập / đổi dãy ở dòng ▸ Dãy trong thẻ x kỳ gần nhất.</div>
    <div style="overflow-x:auto;"><table class="bg-g10 th3" style="font-size:.7rem;"><thead><tr><th style="text-align:left;">Luật</th><th>Dãy</th><th>20 kỳ</th><th>50 kỳ</th><th>100 kỳ</th></tr></thead><tbody>${rows}</tbody></table></div>
    <div style="overflow-x:auto;margin-top:8px;"><table class="bg-g10 th3" style="font-size:.7rem;"><thead><tr><th style="text-align:left;">Dạng</th><th>Dãy</th><th>20 kỳ</th><th>50 kỳ</th><th>100 kỳ</th></tr></thead><tbody>${drows}</tbody></table></div>
    <div class="bg-foot" style="margin:4px 0 0;">Dạng: % số kỳ thật có cùng dạng với dãy${useM?' (tổng, chẵn/lẻ, nhỏ/lớn tính cả MM; MM nhỏ = 1–6)':''}. Xanh ≥30% · đỏ &lt;15%.</div>
-   <div class="bg-foot" style="margin:4px 0 0;">Số kỳ đúng = số kỳ có kết quả thật đạt luật đó${lo?' (chẵn/lẻ, nhỏ/lớn tính cả số may mắn)':''}. ✓ dãy đạt · ✗ dãy phạm.</div></details>`;}
+   <div class="bg-foot" style="margin:4px 0 0;">${KG?`Chỉ xét kỳ ${KG}: "kỳ trước", 20/50/100 kỳ đều là kỳ ${KG}. `:''}Số kỳ đúng = số kỳ có kết quả thật đạt luật đó${lo?' (chẵn/lẻ, nhỏ/lớn tính cả số may mắn)':''}. ✓ dãy đạt · ✗ dãy phạm.</div></details>`;}
 function gdRow(J,b,balls,info,mmH,dateSt,lt){if(typeof window==='undefined')return '';const g=J.game,lo=g==='loto',K=J.kb||6,p2=n=>String(n).padStart(2,'0');
   window.__gdKB=window.__gdKB||{};window.__gdKB[g]=K;window.__gdLo=window.__gdLo||{};window.__gdLo[g]=lo;
   const V=gdGet(g),c=V.L[V.cur],P=window.__gdPick,act=P&&P.g===g&&P.b===b?P.s:null,stop='event.preventDefault();event.stopPropagation();';
