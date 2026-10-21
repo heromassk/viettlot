@@ -1831,3 +1831,14 @@ Chấm lùi, mỗi kỳ chỉ dùng dữ liệu trước nó. Ô ghi: trúng TB 
 ## 21/10/2026 — So các cách chọn 2 số May Mắn Loto (`build/mm_thu2.py`)
 Số kỳ trúng ở 20 / 50 / 100 / 200 kỳ: **đang dùng (±3 quanh MM kỳ trước + nóng 10 kỳ + chiều nghiêng) 7 / 18 / 27 / 49** · ±3 cùng buổi 8 / 13 / 19 / 37 · nóng cùng buổi 20 kỳ 6 / 14 / 20 / 32 · kết hợp nhiều tín hiệu 5 / 12 / 22 / 42 · vắng lâu nhất 4 / 9 / 21 / 43 · chiều + nóng 20 4 / 8 / 21 / 43 · nóng 20 kỳ 4 / 8 / 17 / 34 · chuyển kỳ 3 / 7 / 16 / 32 · vắng 3–8 kỳ 3 / 6 / 13 / 31.
 - Cách đang dùng vẫn tốt nhất ở 50, 100 và 200 kỳ → giữ. 10 kỳ gần nhất trúng 4/10.
+
+## 21/10/2026 — Nhịp bước nhảy số May Mắn Loto (`build/mm_nhip.py`)
+Đếm ở khung 20 / 50 / 100 kỳ (mẫu số = số kỳ có bước trước khác 0):
+| Dấu vết | Liền 2 buổi | Chỉ 13h | Chỉ 21h |
+|---|---|---|---|
+| Quay lại đúng số 2 kỳ trước (+3 → −3) | 2/20 · 6/47 · 8/92 | 0/18 · 1/46 · 5/93 | 2/18 · 7/46 · 8/90 |
+| Quay lại gần (±1) số 2 kỳ trước | 7/20 · 15/47 · 23/92 | 2/18 · 8/46 · 19/93 | 5/18 · 13/46 · 15/90 |
+| Bước sau ngắn hơn bước trước | 9/20 · 23/47 · 46/92 | 10/18 · 25/46 · 48/93 | 9/18 · 22/46 · 44/90 |
+| Đã zic-zắc → zic-zắc tiếp | 6/12 · 18/29 · 32/57 | 6/10 · 19/29 · 35/59 | **10/13 · 24/33 · 40/60** |
+- Quay lại đúng số 2 kỳ trước hiếm (dưới 10%). Bước ngắn / dài khoảng một nửa, không nghiêng.
+- 21h: zic-zắc tiếp 73% ở 50 kỳ, 67% ở 100 kỳ. Đã nằm trong luật "đổi chiều" đang dùng. Không có dấu vết mới đủ ≥70% ở cả 50 và 100 kỳ.
