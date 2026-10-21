@@ -1802,3 +1802,13 @@ Pool trúng (≥3 số / ≥4 số / trúng TB), cách cũ → trừ 0,5 điểm
 | MM ≤6 → kỳ sau lớn hơn | 8/10 · 20/28 · 37/56 | 8/15 · 19/32 · 36/54 | **5/7 · 18/24 · 34/43** |
 - Buổi 21h có dấu vết rõ nhất (≥70% ở cả 50 và 100 kỳ): đổi chiều, sau tăng thì giảm, MM cao thì kỳ sau thấp, MM thấp thì kỳ sau cao.
 - 13h: chỉ "MM ≥7 → kỳ sau nhỏ hơn" đạt ≥70% (78%, 76%).
+
+## 21/10/2026 — Áp dụng: số May Mắn Loto chỉ gợi ý 2 số + chiều nghiêng cùng buổi (`build/mm_chieu.py`)
+- Cách: ±3 quanh MM kỳ trước (liền 2 buổi), xếp theo số lần ra 10 kỳ (+1 nếu đúng chiều nghiêng theo MM kỳ trước cùng buổi), rồi 50 kỳ; lấy 2 số.
+- Chiều nghiêng: 21h — MM cùng buổi trước ≤6 → số lớn hơn, ≥7 → số nhỏ hơn; 13h — chỉ ≥7 → số nhỏ hơn.
+| 2 số | 20 kỳ | 50 kỳ | 100 kỳ | 200 kỳ |
+|---|---|---|---|---|
+| Cách cũ (top 2) | 6/20 | 16/50 | 25/100 | 45/200 |
+| Có chiều nghiêng | **7/20** | **18/50** | **27/100** | **49/200** |
+- Ưu tiên 1 trúng (3 số, có chiều): 5 · 12 · 19 · 30 lần so với cách cũ 3 · 9 · 16 · 28.
+- Bảng pool (Kiểm pool vắng x kỳ) có thêm dòng **May mắn gợi ý** (Loto), chấm với số may mắn thật, không tính vào ≥2 pool.
