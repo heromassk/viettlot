@@ -1997,3 +1997,9 @@ Anh hỏi Pool 9/12/15 có kém các pool khác không (sau kỳ Mega 21/10: tâ
 | Mega | 2,25/2,04/1,97 | 1,80/1,64/1,74 | 2,45/2,48/2,37 | 2,15/2,06/2,10 | 21,1/18,7/17,6 | 15,0/13,7/14,5 |
 | Power | 1,90/1,88/1,66 | 1,75/1,52/1,41 | 2,35/2,24/2,03 | 1,60/1,48/1,57 | 15,6/15,1/13,6 | 14,6/12,7/11,8 |
 → Pool 9/12/15 có % trúng mỗi số cao nhất trong các pool ở cả 3 game, 3 khung. Kỳ 21/10 Mega chỉ là 1 kỳ trật — giữ nguyên.
+
+## 21/10/2026 — Fibonacci để lọc Pool 9/12/15 (build/fibo_pool.js)
+Thử cộng/trừ 2–4 bậc cho: số Lucas, số Fibonacci, Fib tổng quát kỳ trước, số kế tiếp chuỗi Fib 2/3 kỳ, số đang nghỉ 5/8/13/21/34 kỳ.
+- Loto: không cách nào tăng quá +1–4 số/100 kỳ. Số nghỉ Fib ra ít hơn thật (11,9/10,6/12,8% vs 14,7/14,9/14,6%) nhưng trừ điểm làm P9/P12 kém đi (155/154 vs 157) — app rank đã đẩy chúng xuống sẵn.
+- Mega/Power: "nghỉ Fib +4" làm P9 tăng (Mega 158→162, Power 122→129) nhưng tỉ lệ ra từng số của nhóm này lẫn lộn (Mega 12,1/14,3/13,3 vs 13,6/13,1/13,3; Power 11,2/10,3/11,3 vs 10,8/11,0/10,8) → không có cơ sở, không áp. Mega P15 Lucas cộng hay trừ đều tăng → nhiễu.
+→ Fibonacci không lọc được số cho Pool 9/12/15. Không đổi app.
