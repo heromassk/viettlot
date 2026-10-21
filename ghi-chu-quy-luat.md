@@ -1884,3 +1884,8 @@ Khi một số đang nghỉ x kỳ, số lần nó ra ngay kỳ sau / số lần
 ## 21/10/2026 — Thu hẹp trong ±3 theo từng buổi (`build/mm_lech.py`)
 - Độ lệch MM kỳ này − MM kỳ trước (100 kỳ của buổi): 13h −3:9 · −2:11 · −1:10 · 0:8 · +1:10 · +2:8 · +3:3 · ngoài ±3: 41; 21h −3:7 · −2:5 · −1:8 · 0:10 · +1:6 · +2:14 · +3:7 · ngoài ±3: 43. 13h ít +3, 21h hay +2 — nhưng dùng tần suất độ lệch cùng buổi làm điểm thì kém đi (mọi kỳ 10/22/32/60 → 10/20/31/56) → không dùng.
 - Khoảng ±3 chỉ chứa MM thật ~51–57/100 kỳ. Thu hẹp bằng cách chấm điểm mỗi buổi một cách (100 kỳ của buổi): 13h 2 số 27 · 3 số 36 · 4 số 38 · cả ±3 51; 21h 2 số 33 · 3 số 38 · 4 số 43 · cả ±3 57.
+
+## 21/10/2026 — Áp dụng: +1 cho độ lệch hay ra trong 20 kỳ gần cùng buổi
+- Thử trên cách mỗi buổi một cách, 2 số trúng (mọi kỳ 20/50/100/200 · 13h 20/50/100 · 21h 20/50/100):
+  đang dùng 10/22/32/60 · 8/12/27 · 11/20/33 — luật cố định (13h đi xuống, 21h +2) +1: 8/20/31/55 · kém — **học độ lệch hay ra nhất 20 kỳ gần cùng buổi +1: 11/23/33/61 · 9/13/28 · 11/20/33** — học 50 kỳ hoặc học chiều lên/xuống đều kém.
+- Đã đưa vào `goiy.py`. Kỳ 13h 21/10: MM 07 · 01.
