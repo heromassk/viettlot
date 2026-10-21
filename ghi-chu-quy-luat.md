@@ -2003,3 +2003,14 @@ Thử cộng/trừ 2–4 bậc cho: số Lucas, số Fibonacci, Fib tổng quát
 - Loto: không cách nào tăng quá +1–4 số/100 kỳ. Số nghỉ Fib ra ít hơn thật (11,9/10,6/12,8% vs 14,7/14,9/14,6%) nhưng trừ điểm làm P9/P12 kém đi (155/154 vs 157) — app rank đã đẩy chúng xuống sẵn.
 - Mega/Power: "nghỉ Fib +4" làm P9 tăng (Mega 158→162, Power 122→129) nhưng tỉ lệ ra từng số của nhóm này lẫn lộn (Mega 12,1/14,3/13,3 vs 13,6/13,1/13,3; Power 11,2/10,3/11,3 vs 10,8/11,0/10,8) → không có cơ sở, không áp. Mega P15 Lucas cộng hay trừ đều tăng → nhiễu.
 → Fibonacci không lọc được số cho Pool 9/12/15. Không đổi app.
+
+## 21/10/2026 — Số trùng ngày / thứ / tháng (anh: kỳ Mega 21/10 thứ 4 ra 04 và 10)
+% ra mỗi số trong nhóm vs số còn lại (20/50/100 kỳ), dấu vết đứng cả 3 khung:
+
+| Game | Cao hơn | Thấp hơn |
+|---|---|---|
+| Loto | Tháng 35/26/20 vs ~14 · Ngày lộn 38/26/18 · Ghép tháng–ngày 21/21/22 · Tháng âm 20/18/21 · **Gộp thứ+ngày+tháng 23/18/17 vs 13/14/14** | Ngày ±1 10/10/11 · Tổng chữ số ngày tháng năm 5/10/11 |
+| Mega | Ngày lộn 30/28/22 vs 13 | Ngày 5/4/9 · Ghép tháng–ngày 0/8/7 · Thứ 10/8/12 · Gộp thứ+ngày+tháng 14/10/11 |
+| Power | **Thứ 30/20/17 vs 11** · Ngày ±1 18/16/15 · Gộp 20/16/12 | Ngày âm, Tháng âm |
+
+Thử làm điểm cho Pool 9/12/15 (build/ngay_pool.js): mỗi nhóm chỉ 1–3 số nên thay đổi nhỏ. Nhận **Loto P9, P15: số thứ/ngày/tháng đẩy lên 4 bậc** (có cơ sở, hơn đủ 3 khung): P9 31/74/157 → 32/77/159 (kỳ ≥3 số 2/6/16 → 3/7/19), P15 48/122/250 → 50/123/252 (9/25/51 → 11/28/54). Mega, Power: kết quả tăng không khớp chiều dấu vết (cộng hay trừ đều tăng) → không áp.
