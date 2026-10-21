@@ -2028,3 +2028,8 @@ Mỗi game bộ số riêng theo dấu vết: Loto thứ, ngày, tháng, ghép t
 
 ±1 (anh hỏi): Ngày ±1 chỉ Power ra nhiều (17,9/15,5/15,2% vs 10,7) — đã gồm trong dòng Power; Loto ngày ±1 ra ít (10/10/11% vs 14,5). Tháng ±1, thứ ±1: không ổn định ở game nào.
 Power Pool 15 giữ cách đếm cũ (không tính dòng ngày quay) vì tính vào thì kém đi 1 kỳ ≥3.
+
+## 21/10/2026 — Vì sao ≥2 pool Loto kém 2 kỳ gần (build/nh2_xet.js, nh2_bot.js)
+- 10 kỳ gần ≥2 pool trúng: 3 4 3 3 3 3 3 3 **0 1** — chỉ 2 kỳ cuối tụt; 100 kỳ vẫn 2,46 số/kỳ, 49 kỳ ≥3 số.
+- Loto: số ở đúng 2 pool ra 13,2/15,8/14,0% (20/50/100) ≈ số ở 1 pool 13,6/12,3/14,0% → đếm "≥2" lọc yếu, pool trúng nhiều chủ yếu vì to (~17/35 số). Số ở 3 pool ra 18,0/16,5/15,0%; ≥4 pool 8/13/12% (ít số).
+- Bỏ bớt pool yếu (k1, t, k2…) thì pool nhỏ lại nhưng trúng/kỳ và kỳ ≥3 đều giảm ở cả 3 game → giữ nguyên. Thu hẹp dùng Pool 9/12/15 (15 số: 2,50/2,46/2,52 trúng/kỳ, % mỗi số 16,7 vs 14,1 của ≥2).
