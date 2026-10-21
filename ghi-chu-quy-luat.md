@@ -1890,3 +1890,11 @@ Khi một số đang nghỉ x kỳ, số lần nó ra ngay kỳ sau / số lần
 - Thử trên cách mỗi buổi một cách, 2 số trúng (mọi kỳ 20/50/100/200 · 13h 20/50/100 · 21h 20/50/100):
   đang dùng 10/22/32/60 · 8/12/27 · 11/20/33 — luật cố định (13h đi xuống, 21h +2) +1: 8/20/31/55 · kém — **học độ lệch hay ra nhất 20 kỳ gần cùng buổi +1: 11/23/33/61 · 9/13/28 · 11/20/33** — học 50 kỳ hoặc học chiều lên/xuống đều kém.
 - Đã đưa vào `goiy.py`. Kỳ 13h 21/10: MM 07 · 01.
+
+## 21/10/2026 — Thêm Pool 9 vào bảng pool (`pool12_thu.js` chạy K=9)
+Trúng TB · số kỳ ≥3 số ở 20 / 50 / 100 kỳ:
+| Game | Pool app 9 | Chọn | Kết quả |
+|---|---|---|---|
+| Loto | 1,45·1 / 1,42·4 / 1,53·13 | − 1 × số pool | 1,45·1 / 1,44·5 / 1,53·15 |
+| Mega | 1,80·3 / 1,54·6 / 1,45·13 | − 2 × số pool | 1,75·3 / 1,56·9 / 1,48·17 |
+| Power | 1,30·4 / 1,24·5 / 1,13·10 | giữ pool app (cách khác không hơn rõ) | — |
