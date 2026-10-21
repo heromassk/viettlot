@@ -1987,3 +1987,13 @@ Tổng số trúng ở khung 20/50/100 kỳ, hiện tại → sau khi thêm. Ch�
 | Power P9 | hiệu ghép, bạn đi cùng đẩy lên 4 | 27/63/117 | **28/68/122** |
 | Power P12 | bạn đi cùng đẩy lên 2 | 38/92/165 | **38/94/166** |
 | Loto P9/12/15, Mega P12/15, Power P15 | không cách nào hơn đủ 3 khung | giữ nguyên | |
+
+## 21/10/2026 — So các pool trong app (build/so_pool.js, chấm lùi 20/50/100 kỳ)
+Anh hỏi Pool 9/12/15 có kém các pool khác không (sau kỳ Mega 21/10: tâm linh 4, P9 1). Số trúng TB/kỳ, so cùng cỡ:
+
+| Game | Pool 12 | Tâm linh 12 | Pool 15 | Vắng x kỳ (~10–14) | Pool 9: % trúng mỗi số | Tâm linh: % mỗi số |
+|---|---|---|---|---|---|---|
+| Loto | 1,95/1,92/2,01 | 1,55/1,66/1,70 | 2,40/2,44/2,50 | 1,55/1,48/1,48 | 17,2/16,4/17,4 | 12,9/13,8/14,2 |
+| Mega | 2,25/2,04/1,97 | 1,80/1,64/1,74 | 2,45/2,48/2,37 | 2,15/2,06/2,10 | 21,1/18,7/17,6 | 15,0/13,7/14,5 |
+| Power | 1,90/1,88/1,66 | 1,75/1,52/1,41 | 2,35/2,24/2,03 | 1,60/1,48/1,57 | 15,6/15,1/13,6 | 14,6/12,7/11,8 |
+→ Pool 9/12/15 có % trúng mỗi số cao nhất trong các pool ở cả 3 game, 3 khung. Kỳ 21/10 Mega chỉ là 1 kỳ trật — giữ nguyên.
