@@ -451,9 +451,12 @@ if A.game == 'loto':
     def mm_pick(t):
         c10 = {k: sum(LK[u] == k for u in range(max(0, t - 10), t)) for k in range(1, 13)}
         c50 = {k: sum(LK[u] == k for u in range(max(0, t - 50), t)) for k in range(1, 13)}
-        ok = [k for k in range(1, 13) if t < 1 or abs(k - LK[t - 1]) <= 3]
+        # anh 21/10/2026: bỏ MM kỳ trước (lặp lại chỉ 8/100 kỳ mà cách cũ gợi ý lại 66/100 kỳ) và +2 cho số = tổng / hiệu MM 2 kỳ trước
+        # (mm_thu2: 2 số trúng 9/19/29/53 ở 20/50/100/200 kỳ, cách trước 7/18/27/49)
+        ok = [k for k in range(1, 13) if t < 1 or (abs(k - LK[t - 1]) <= 3 and k != LK[t - 1])]
         f = mm_lean(t)
-        return sorted(ok, key=lambda k: (-c10[k] - (1 if f and f(k) else 0), -c50[k], k))[:MMK]
+        TH = {LK[t - 2] + LK[t - 1], abs(LK[t - 2] - LK[t - 1])} if t >= 2 else set()
+        return sorted(ok, key=lambda k: (-c10[k] - (1 if f and f(k) else 0) - (2 if k in TH else 0), -c50[k], k))[:MMK]
     MM = mm_pick(len(LK))
     hm = []; MMH = []; hr = []   # chạy lại 100 kỳ: mỗi kỳ chỉ dùng số may mắn các kỳ trước
     for t in range(len(LK) - 100, len(LK)):
