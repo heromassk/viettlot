@@ -1934,3 +1934,14 @@ Ra mỗi số (20 / 50 / 100 / 150 kỳ), nhóm nghỉ Fib (~5 số/kỳ) so v�
 - **Chỉ 13h (nghỉ tính theo kỳ 13h): 12,1 / 13,0 / 12,7 / 13,3% vs 14,7 / 14,5 / 14,6 / 14,5% → thấp hơn đều cả 4 khung (ổn định nhất).**
 - Chỉ 21h: 8,9 / 10,1 / 14,3 / 13,9% vs 15,3 / 15,1 / 14,3 / 14,4% → chỉ lệch ở 20/50 kỳ.
 → Dấu vết nhẹ để trừ điểm (không loại hẳn), rõ nhất ở 13h. Chưa đưa vào gợi ý.
+
+## 21/10/2026 — Fibonacci trong cùng 1 kỳ, dùng loại vé (`build/fibo_trongky.py`)
+Số kỳ đúng ở 20 / 50 / 100 kỳ (Loto · Mega · Power):
+- Có ≤2 số Fibonacci: 19/49/96 · 20/49/99 · 19/47/95
+- Không có chuỗi 4 số kiểu Fibonacci (a, b, a+b, a+2b): 20/50/99 · 19/49/99 · 19/48/98
+- Không phải mọi khoảng cách đều là số Fib: 19/47/95 · 20/50/100 · 20/49/98
+- Có ≥1 khoảng cách là số Fib: 19/49/98 · 20/49/99 · 19/48/98
+- Có ≤3 khoảng cách là số Fib: 19/47/95 · 17/46/86 · 19/45/90
+- Có ≥1 số Fibonacci: 16/38/69 · 13/28/62 · 13/36/74 (dưới hoặc sát 70%)
+- Không có bộ a+b=c: 6/29/60 · 12/27/43 · 8/23/47 (bộ a+b=c hay có → không dùng loại được)
+→ 5 luật đầu đúng ≥86% ở 50 và 100 kỳ, dùng được làm luật loại vé (giống các luật dạng vé đang có: giúp vé gọn, tự chúng không tăng trúng).
