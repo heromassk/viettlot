@@ -466,7 +466,14 @@ if A.game == 'loto':
         else:
             ok = [k for k in range(1, 13) if abs(k - p1) <= 3]
             f = (lambda k: k < m1) if m1 >= 7 else (lambda k: k > m1); bd, bt = 1, 1
-        return sorted(ok, key=lambda k: (-c10[k] - (bd if f and f(k) else 0) - (bt if k in TH else 0), -c50[k], k))[:MMK]
+        # +1 cho độ lệch (MM − MM kỳ liền trước) hay ra nhất trong 20 kỳ gần CÙNG BUỔI (anh 21/10/2026; mọi kỳ 10/22/32/60 → 11/23/33/61)
+        O = {}; m = 0
+        for u in range(t - 1, 0, -1):
+            if DL[u].endswith(g):
+                x = LK[u] - LK[u - 1]; O[x] = O.get(x, 0) + 1; m += 1
+                if m >= 20: break
+        mx = max(O.values()) if O else 0; BO = {x for x, v in O.items() if v == mx and -3 <= x <= 3}
+        return sorted(ok, key=lambda k: (-c10[k] - (bd if f and f(k) else 0) - (bt if k in TH else 0) - (1 if (k - p1) in BO else 0), -c50[k], k))[:MMK]
     MM = mm_pick(len(LK))
     hm = []; MMH = []; hr = []   # chạy lại 100 kỳ: mỗi kỳ chỉ dùng số may mắn các kỳ trước
     for t in range(len(LK) - 100, len(LK)):
