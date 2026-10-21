@@ -1898,3 +1898,17 @@ Trúng TB · số kỳ ≥3 số ở 20 / 50 / 100 kỳ:
 | Loto | 1,45·1 / 1,42·4 / 1,53·13 | − 1 × số pool | 1,45·1 / 1,44·5 / 1,53·15 |
 | Mega | 1,80·3 / 1,54·6 / 1,45·13 | − 2 × số pool | 1,75·3 / 1,56·9 / 1,48·17 |
 | Power | 1,30·4 / 1,24·5 / 1,13·10 | giữ pool app (cách khác không hơn rõ) | — |
+
+## 21/10/2026 — Pool 9 / 12 / 15: mỗi game một cách (`build/pool_rate.js`, `build/pool_grid.js`)
+Anh: 3 game không được chung 1 cách; Mega/Power bi vật lý nên pool vắng có thể kém, Loto ngược lại — xem dữ liệu.
+- %/số từng pool ở 50 / 100 / 200 kỳ:
+  - Loto: vắng 14,3/14,5/15,1 (cao nhất ở 200) · hiệu 17,9/14,7/14,6 · cách 1 kỳ 14,0/15,6/13,5 · tổng 13,0/12,6/11,9 (thấp nhất).
+  - Mega: tổng 15,5/15,0/14,6 (cao nhất) · vắng 14,3/14,9/14,2 · cách 1 kỳ 14,7/14,2/13,5 · ±1 cách 1 kỳ 11,1/11,8/12,6 (thấp nhất).
+  - Power: cách 1 kỳ 12,7/12,2/12,7 (cao nhất, ổn định) · vắng 12,4/12,4/11,3 (tụt ở 200) · trùng 11,0/9,5/11,3.
+  → Mega/Power: vắng không kém ở 50/100 kỳ, nhưng Power tụt ở 200 kỳ (bi thay). Mỗi game một bộ pool tốt khác nhau.
+- Dò đẩy số trong 1–2 pool lên b bậc trên thứ hạng app (trúng TB·kỳ ≥3 ở 20/50/100 kỳ), chọn:
+| Game | Pool 9 | Pool 12 | Pool 15 |
+|---|---|---|---|
+| Loto | cách 1 kỳ & kẹp +2: 1,55·2 / 1,48·6 / 1,57·16 (app 1,45·1 / 1,42·4 / 1,53·13) | vắng & tổng +4: 1,95·5 / 1,92·16 / 2,01·35 (app 1,85·4 / 1,80·12 / 1,92·29) | cách 1 kỳ & tâm linh +2: 2,40·9 / 2,44·25 / 2,50·51 (app 2,35·8 / 2,42·24 / 2,47·50) |
+| Mega | vắng & tâm linh +4: 1,80·4 / 1,56·10 / 1,52·19 (app 1,80·3 / 1,54·6 / 1,45·13) | tổng & tâm linh +2: 2,25·7 / 2,06·17 / 1,97·32 (app 2,25·7 / 2,02·15 / 1,91·29) | cách 1 kỳ & tâm linh +4: 2,50·8 / 2,52·26 / 2,37·48 (app 2,45·7 / 2,46·25 / 2,31·46) |
+| Power | ±1 kỳ trước +2: 1,35·4 / 1,26·6 / 1,17·11 (app 1,30·4 / 1,24·5 / 1,13·10) | trùng kỳ trước +6: 1,90·6 / 1,84·12 / 1,65·21 (app 1,90·4 / 1,84·10 / 1,62·16) | giữ: ≥2 pool +4 (2,35·9 / 2,24·19 / 2,03·31) |
