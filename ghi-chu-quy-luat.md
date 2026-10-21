@@ -1976,3 +1976,13 @@ Tỉ lệ ra mỗi số trong nhóm vs phần còn lại (khung 20/50/100 kỳ, 
 → "Tiếp đà" luôn kém nhất; Loto "đảo đà" tốt nhất ở 100 kỳ.
 
 Dấu vết ổn định: Loto tổng ghép thấp + Fib 2 kỳ thấp; Mega tổng ghép cao; Power hiệu ghép cao. Chưa áp vào pool — chờ thử như điểm cộng/trừ riêng từng game.
+
+## 21/10/2026 — Thử dấu vết 2 kỳ vào Pool 9/12/15 (build/dv2_pool.js)
+Tổng số trúng ở khung 20/50/100 kỳ, hiện tại → sau khi thêm. Chỉ nhận những thay đổi hơn ở cả 3 khung.
+
+| Pool | Cách thêm | Trước | Sau |
+|---|---|---|---|
+| Mega P9 | tổng ghép đẩy lên 2, bạn đi cùng đẩy xuống 4 | 36/78/152 | **39/86/159** |
+| Power P9 | hiệu ghép, bạn đi cùng đẩy lên 4 | 27/63/117 | **28/68/122** |
+| Power P12 | bạn đi cùng đẩy lên 2 | 38/92/165 | **38/94/166** |
+| Loto P9/12/15, Mega P12/15, Power P15 | không cách nào hơn đủ 3 khung | giữ nguyên | |
