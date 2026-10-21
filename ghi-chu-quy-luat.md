@@ -2033,3 +2033,11 @@ Power Pool 15 giữ cách đếm cũ (không tính dòng ngày quay) vì tính v
 - 10 kỳ gần ≥2 pool trúng: 3 4 3 3 3 3 3 3 **0 1** — chỉ 2 kỳ cuối tụt; 100 kỳ vẫn 2,46 số/kỳ, 49 kỳ ≥3 số.
 - Loto: số ở đúng 2 pool ra 13,2/15,8/14,0% (20/50/100) ≈ số ở 1 pool 13,6/12,3/14,0% → đếm "≥2" lọc yếu, pool trúng nhiều chủ yếu vì to (~17/35 số). Số ở 3 pool ra 18,0/16,5/15,0%; ≥4 pool 8/13/12% (ít số).
 - Bỏ bớt pool yếu (k1, t, k2…) thì pool nhỏ lại nhưng trúng/kỳ và kỳ ≥3 đều giảm ở cả 3 game → giữ nguyên. Thu hẹp dùng Pool 9/12/15 (15 số: 2,50/2,46/2,52 trúng/kỳ, % mỗi số 16,7 vs 14,1 của ≥2).
+
+## 21/10/2026 — Pool nào làm ≥2 pool phình mà không thêm số trúng (build/nh2_keo.js, nh2_trongso.js)
+"Số kéo thêm" = số chỉ lọt vào ≥2 nhờ pool đó. % ra của số kéo thêm (20/50/100 kỳ), kém hơn ≥2 ở cả 3 khung:
+- Loto: Tổng 6,1/13,4/10,4% · ±1 kỳ trước 10,0/10,8/11,4% (≥2: 14,2/15,8/14,1; ngoài ≥2: 14,4/12,8/14,4).
+- Mega: ±1 kỳ cách 1 kỳ 10,9/13,5/13,4% (≥2: 15,4/14,3/14,0).
+- Power: Vắng x kỳ 11,5/10,8/10,5 · Hiệu 11,3/10,5/9,7 · ±1 kỳ trước 12,2/11,2/10,6 · ±1 kỳ cách 1 11,0/10,5/9,9 (≥2: 13,8/12,1/11,5).
+Pool kéo thêm tốt: Loto hiệu, ngày quay, số kẹp · Mega tổng, vắng, ngày quay · Power số kỳ cách 1, ngày quay.
+Bỏ pool yếu khỏi phép đếm: % mỗi số tăng nhẹ (Loto 14,1→15,4% ở 100 kỳ, cỡ 17→12) nhưng trúng/kỳ và kỳ ≥3 giảm mạnh (Loto 49→22, Mega 71→46, Power 48→5). Cùng cỡ thì Pool 12/15 vẫn hơn (Loto P12: 2,01 trúng/kỳ, 16,8%). → Chưa đổi app, chờ anh chọn.
