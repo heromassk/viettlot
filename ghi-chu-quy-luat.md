@@ -1945,3 +1945,5 @@ Số kỳ đúng ở 20 / 50 / 100 kỳ (Loto · Mega · Power):
 - Có ≥1 số Fibonacci: 16/38/69 · 13/28/62 · 13/36/74 (dưới hoặc sát 70%)
 - Không có bộ a+b=c: 6/29/60 · 12/27/43 · 8/23/47 (bộ a+b=c hay có → không dùng loại được)
 → 5 luật đầu đúng ≥86% ở 50 và 100 kỳ, dùng được làm luật loại vé (giống các luật dạng vé đang có: giúp vé gọn, tự chúng không tăng trúng).
+- Áp dụng (anh duyệt 21/10/2026): 4 luật Fibonacci vào bộ lọc vé `goiy.py` (`fib_ok`: ≤2 số Fib, có ≥1 khoảng cách Fib, không phải mọi khoảng cách Fib, không có chuỗi 4 số kiểu Fib) cho cả 3 game. Vé đổi: Loto 21/10 21h vé 1 (03 05 07 10 11 → 01 05 07 10 11), vé 3 (02 06 15 22 28 → 02 05 06 15 22); Power 22/10 vé 4 (01 03 21 28 37 40 → 03 11 21 28 37 40).
+- App: thẻ **Kiểm tra Dãy** (trên 20 kỳ gần nhất) kiểm dãy giả định đang hiện theo 13 luật (9 luật dạng vé + 4 luật Fib), kèm số kỳ đúng ở 20/50/100 kỳ.

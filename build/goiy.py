@@ -506,8 +506,14 @@ def ok(tk, lv):
     if not SLO <= sum(tk) + (CUR_MM or 0) <= SHI: return False
     if lv == 0 and A.game != 'loto' and sum(x > 31 for x in tk) < 2: return False
     if not A.cu and bad_ticket(tk): return False
+    if not A.cu and not fib_ok(tk): return False
     return not any(tk[i] + 2 == tk[i + 1] + 1 == tk[i + 2] for i in range(len(tk) - 2))
 
+FIBS = {1, 2, 3, 5, 8, 13, 21, 34, 55}
+def fib_ok(tk):   # luật dạng Fibonacci (anh 21/10/2026, fibo_trongky.py: đúng 95–100% ở 100 kỳ, cả 3 game)
+    s = sorted(tk); S = set(s); g = [b - a for a, b in zip(s, s[1:])]
+    chain = any(a + b in S and 2 * b + a in S for i, a in enumerate(s) for b in s[i + 1:])
+    return len(S & FIBS) <= 2 and any(x in FIBS for x in g) and not all(x in FIBS for x in g) and not chain
 def bad_ticket(tk):
     """Luật loại vé — kỳ thật hiếm khi vi phạm (1–8%, ổn định 3 khúc)."""
     d6 = D6(tk, CUR_MM) if DAY6 else set(tk)
@@ -574,7 +580,7 @@ if RAIVE:
     _SPECS = _BV['specs']
     _prev = sorted(R[-1])
     _V8 = (set(range(1, NB + 1)) - set().union(*R[T - VX:T])) if not A.cu else set()   # mỗi vé ≥1 số vắng VX kỳ (anh 19/10/2026)
-    def _okv(x, mm): return _ev(x, mm) not in CL_TRANH and all(_KH.check(sp, x, mm, _prev, NB, KB) for sp in _SPECS) and (not _V8 or bool(set(x) & _V8))
+    def _okv(x, mm): return _ev(x, mm) not in CL_TRANH and all(_KH.check(sp, x, mm, _prev, NB, KB) for sp in _SPECS) and (not _V8 or bool(set(x) & _V8)) and fib_ok(x)
     VELUAT = dict(specs=_SPECS, cl=sorted(CL_TRANH), prev=_prev)
     _CAND = list(_P18) + [n for n in (POOLS.get(25) or rank) if n not in _P18]
     from itertools import combinations as _cb

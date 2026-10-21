@@ -47,6 +47,38 @@ function gdDel(g){const V=gdGet(g);if(typeof window!=='undefined'&&window.__gdAs
 function gdDelAll(g){if(typeof window!=='undefined'&&window.__gdAsk!=='all'){window.__gdAsk='all';rgRe();return;}window.__gdAsk=null;gdPut(g,{cur:0,L:[{x:[],mm:null}]});if(typeof window!=='undefined')window.__gdPick=null;rgRe();}
 function gdTog(b,el){if(typeof window==='undefined')return;window.__gdOpen=window.__gdOpen||{};window.__gdOpen[b]=el.open;}
 // dòng giả định: lab = nhãn cột ngày, balls(n,slot) = HTML bóng đã chọn, info(f) = phần bên phải; trả về details (danh sách dãy) + bảng chọn số
+// Kiểm tra dãy đang hiện (anh 21/10/2026): luật dạng vé của app + luật Fibonacci; mỗi luật: dãy đạt/phạm và số kỳ đúng ở 20/50/100 kỳ
+function gdCheck(J){if(typeof window==='undefined')return '';const RA=J.res201||[],LK=J.lk201||[],NB=J.nb,KB=J.kb,g=J.game,lo=g==='loto',n=RA.length;if(n<30)return '';
+  const X=(window.__vxX&&window.__vxX[g])||({loto:8,mega:8,power:12}[g]||8),HC=lo?3:4,FB=new Set([1,2,3,5,8,13,21,34,55]),half=Math.floor(NB/2);
+  const prev=(t,k)=>t-k>=0?RA[t-k]:[];
+  const hot10=t=>{const c={};for(let u=Math.max(0,t-20);u<t;u++)RA[u].forEach(x=>c[x]=(c[x]||0)+1);return new Set(Object.keys(c).map(Number).sort((a,b)=>c[b]-c[a]||a-b).slice(0,10));};
+  const vang=t=>{const S=new Set();for(let u=Math.max(0,t-X);u<t;u++)RA[u].forEach(x=>S.add(x));return S;};
+  const gaps=r=>r.slice(1).map((b,i)=>b-r[i]);
+  const L=[
+    ['Có ≥1 số của 2 kỳ gần nhất',(r,t)=>r.some(x=>prev(t,1).includes(x)||prev(t,2).includes(x))],
+    ['Có ≥1 số trong 10 số nóng nhất 20 kỳ',(r,t)=>{const H=hot10(t);return r.some(x=>H.has(x));}],
+    ['Có ≥1 số trùng / kề ±1 kỳ trước',(r,t)=>{const P=prev(t,1);return r.some(x=>P.includes(x)||P.includes(x-1)||P.includes(x+1));}],
+    ['Không trùng ≥2 số với kỳ trước',(r,t)=>r.filter(x=>prev(t,1).includes(x)).length<2],
+    [`Chẵn/lẻ cân${lo?' (gồm MM)':''}`,(r,t,m)=>{const a=lo&&m?[...r,m]:r,o=a.filter(x=>x%2).length;return Math.abs(o-a.length/2)<=1;}],
+    [`Nhỏ/lớn cân (≤${half}${lo?'; MM ≤6':''})`,(r,t,m)=>{const sm=r.filter(x=>x<=half).length+(lo&&m?(m<=6?1:0):0),N=r.length+(lo&&m?1:0);return Math.abs(sm-N/2)<=1;}],
+    [`Rải ≥${HC} hàng chục`,r=>new Set(r.map(x=>Math.floor(x/10))).size>=HC],
+    [`Có ≥1 số vắng ${X} kỳ`,(r,t)=>{const V=vang(t);return r.some(x=>!V.has(x));}],
+    ['Không có ≥3 số liên tiếp',r=>!r.some((x,i)=>i>=2&&r[i-1]===x-1&&r[i-2]===x-2)],
+    ['Tối đa 2 số Fibonacci',r=>r.filter(x=>FB.has(x)).length<=2],
+    ['Không có chuỗi 4 số kiểu Fibonacci',r=>{const S=new Set(r);return !r.some((a,i)=>r.slice(i+1).some(b=>S.has(a+b)&&S.has(a+2*b)));}],
+    ['Có ≥1 khoảng cách là số Fib',r=>gaps(r).some(x=>FB.has(x))],
+    ['Không phải mọi khoảng cách đều là số Fib',r=>!gaps(r).every(x=>FB.has(x))],
+  ];
+  const V=gdGet(g),c=V.L[V.cur],d=(c.x||[]).filter(v=>v!=null).sort((a,b)=>a-b),full=d.length===KB,mm=lo?c.mm:null;
+  const acc=L.map(([,f])=>[20,50,100].map(W=>{let k=0;for(let t=n-W;t<n;t++)if(f([...RA[t]].sort((a,b)=>a-b),t,LK[t]))k++;return k;}));
+  const res=L.map(([,f])=>full?f(d,n,mm):null),ok=res.filter(x=>x).length;
+  const p2=v=>String(v).padStart(2,'0');
+  const ttl=full?`Kiểm tra Dãy ${V.cur+1} · đạt ${ok}/${L.length} luật`:`Kiểm tra Dãy ${V.cur+1} · ${d.length?'chưa đủ '+KB+' số':'chưa nhập dãy'}`;
+  const rows=L.map(([lab],i)=>`<tr><td style="text-align:left;white-space:normal;">${lab}</td><td>${res[i]==null?'—':res[i]?'<b style="color:#51cf66">✓</b>':'<b style="color:#ff6b6b">✗</b>'}</td><td>${acc[i][0]}/20</td><td>${acc[i][1]}/50</td><td>${acc[i][2]}/100</td></tr>`).join('');
+  return `<details class="bg-wh" style="margin:6px 0;"${dOp('kd')} ontoggle="dTog('kd',this)"><summary><b>${ttl}</b></summary>
+   <div class="bg-foot" style="margin:2px 0 6px;">Dãy ${V.cur+1}: <b>${d.length?d.map(p2).join(' '):'(trống)'}</b>${lo&&mm!=null?` + <b style="color:#ff9f43">${p2(mm)}</b>`:''} — nhập / đổi dãy ở dòng ▸ Dãy trong thẻ x kỳ gần nhất.</div>
+   <div style="overflow-x:auto;"><table class="bg-g10 th3" style="font-size:.7rem;"><thead><tr><th style="text-align:left;">Luật</th><th>Dãy</th><th>20 kỳ</th><th>50 kỳ</th><th>100 kỳ</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <div class="bg-foot" style="margin:4px 0 0;">Số kỳ đúng = số kỳ có kết quả thật đạt luật đó${lo?' (chẵn/lẻ, nhỏ/lớn tính cả số may mắn)':''}. ✓ dãy đạt · ✗ dãy phạm.</div></details>`;}
 function gdRow(J,b,balls,info,mmH,dateSt,lt){if(typeof window==='undefined')return '';const g=J.game,lo=g==='loto',K=J.kb||6,p2=n=>String(n).padStart(2,'0');
   window.__gdKB=window.__gdKB||{};window.__gdKB[g]=K;window.__gdLo=window.__gdLo||{};window.__gdLo[g]=lo;
   const V=gdGet(g),c=V.L[V.cur],P=window.__gdPick,act=P&&P.g===g&&P.b===b?P.s:null,stop='event.preventDefault();event.stopPropagation();';
@@ -604,7 +636,7 @@ function renderBang(J){
   const lball=n=>MAU[n]?`<span class="bg-b" style="background:${MAU[n]};border-color:${MAU[n]};color:${CHU[n]};">${p2(n)}</span>`:null;
   const pm1=(h,n,pv,cl=['pm1','pm2','pm3'])=>{if(!pv||!h)return h;const P=new Set(pv);if(P.has(n))return h;const u=P.has(n-1),d=P.has(n+1);const c=u&&d?cl[2]:u?cl[0]:d?cl[1]:'';return c?h.replace('class="bg-b','class="bg-b '+c):h;};   // +1: n = số kỳ trước +1 · −1: n = số kỳ trước −1 (anh 18/10/2026)
   const HCOL=['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c77dff','#ff9f43'];   // mỗi hàng chục một màu: 0 đỏ · 1 vàng · 2 xanh lá · 3 xanh dương · 4 tím · 5 cam
-  const k10H=R10.length?`<details class="bg-wh" style="margin:6px 0;"${typeof window!=='undefined'&&window.__k10Open?' open':''} ontoggle="k10Tog(this)"><summary><b>${KR?`${rgLabel(J,IX)} · ${KN} kỳ`:`${KN} kỳ gần nhất`}${KG?' · chỉ '+KG:''}</b> <small>— màu tính trong ${KN} kỳ đang xem: số ra ≥2 lần có một màu riêng, ra 1 lần không tô</small></summary>
+  const k10H=R10.length?`${gdCheck(J)}<details class="bg-wh" style="margin:6px 0;"${typeof window!=='undefined'&&window.__k10Open?' open':''} ontoggle="k10Tog(this)"><summary><b>${KR?`${rgLabel(J,IX)} · ${KN} kỳ`:`${KN} kỳ gần nhất`}${KG?' · chỉ '+KG:''}</b> <small>— màu tính trong ${KN} kỳ đang xem: số ra ≥2 lần có một màu riêng, ra 1 lần không tô</small></summary>
     <div class="bg-row bg-chips">${[5,10,15,20,25,30,50].map(n=>`<span class="bg-h20k${!KR&&n===KN?' on':''}" onclick="k10Set(${n})">${n} kỳ</span>`).join('')}</div>
     <div class="bg-row bg-chips">${rgUI(J,'k',KN0,KG)}</div>
     ${J.game==='loto'?`<div class="bg-row bg-chips">${[['','13h &amp; 21h'],['13h','Chỉ 13h'],['21h','Chỉ 21h']].map(([g,t])=>`<span class="bg-h20k${g===KG?' on':''}" onclick="k10Gio('${g}')">${t}</span>`).join('')}</div>`:''}
