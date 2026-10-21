@@ -1858,3 +1858,11 @@ Dò 96 biến thể (±2/3/4/cả 12 số, bỏ/giữ MM trước, đếm 10/20 
 | 13h | 5 / 10 / 19 / 37 (cả 12 số, nóng 10 kỳ 13h) | **7 / 11 / 26 / 42** |
 | 21h | 9 / 15 / 27 / 46 (±4, bỏ MM trước, tổng/hiệu, chiều) | **9 / 18 / 27 / 45** |
 - Cách đang dùng (nhìn liền 2 buổi, có chiều nghiêng theo buổi) vẫn tốt hơn hoặc bằng cách riêng từng buổi → giữ 1 cách cho cả 3 cách xem.
+
+## 21/10/2026 — Áp dụng: số May Mắn mỗi buổi một cách (`build/mm_lai.py`)
+Anh: "riêng thì tín hiệu rõ hơn, chiều rõ hơn". Dò 192 biến thể cách lai (tâm / chiều / tổng-hiệu theo liền 2 buổi hoặc cùng buổi), chấm riêng trên kỳ từng buổi (20/50/100/150 kỳ của buổi):
+| Buổi | Cách trước | Cách riêng tốt nhất |
+|---|---|---|
+| 13h | 7 / 11 / 26 / 36 | **8 / 12 / 27 / 38** — ±3 quanh MM kỳ trước, bỏ MM kỳ trước, +2 đảo chiều bước trước cùng buổi, +2 tổng/hiệu |
+| 21h | 9 / 18 / 27 / 36 | **11 / 20 / 33 / 44** — ±3, giữ MM kỳ trước, +1 chiều nghiêng cùng buổi, +1 tổng/hiệu |
+- Gộp lại trên mọi kỳ: **10 / 22 / 32 / 60** ở 20/50/100/200 kỳ (cách trước 9/19/29/53). Đã đưa vào `goiy.py`. Kỳ 13h 21/10: MM 07 · 06.
