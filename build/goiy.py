@@ -449,14 +449,24 @@ if A.game == 'loto':
         if m <= 6 and g == '21h': return lambda k: k > m
         return None
     def mm_pick(t):
+        # anh 21/10/2026: "riêng thì tín hiệu rõ hơn" — mỗi buổi một cách (mm_lai.py, chấm riêng trên kỳ buổi đó):
+        #  13h: ±3 quanh MM kỳ trước (liền), BỎ MM kỳ trước, +2 nếu đảo chiều bước trước CÙNG BUỔI, +2 tổng/hiệu 2 kỳ trước (liền)
+        #  21h: ±3 quanh MM kỳ trước (liền), giữ MM kỳ trước, +1 chiều nghiêng cùng buổi (≥7 xuống, ≤6 lên), +1 tổng/hiệu 2 kỳ trước
+        #  mọi kỳ: 2 số trúng 10/22/32/60 ở 20/50/100/200 kỳ (cách chung trước 9/19/29/53)
         c10 = {k: sum(LK[u] == k for u in range(max(0, t - 10), t)) for k in range(1, 13)}
         c50 = {k: sum(LK[u] == k for u in range(max(0, t - 50), t)) for k in range(1, 13)}
-        # anh 21/10/2026: bỏ MM kỳ trước (lặp lại chỉ 8/100 kỳ mà cách cũ gợi ý lại 66/100 kỳ) và +2 cho số = tổng / hiệu MM 2 kỳ trước
-        # (mm_thu2: 2 số trúng 9/19/29/53 ở 20/50/100/200 kỳ, cách trước 7/18/27/49)
-        ok = [k for k in range(1, 13) if t < 1 or (abs(k - LK[t - 1]) <= 3 and k != LK[t - 1])]
-        f = mm_lean(t)
-        TH = {LK[t - 2] + LK[t - 1], abs(LK[t - 2] - LK[t - 1])} if t >= 2 else set()
-        return sorted(ok, key=lambda k: (-c10[k] - (1 if f and f(k) else 0) - (2 if k in TH else 0), -c50[k], k))[:MMK]
+        nd = DL[t] if t < len(DL) else A_NEXT_LOTO; g = nd[-3:]
+        su = [u for u in range(t - 1, -1, -1) if DL[u].endswith(g)][:2]
+        if t < 2 or len(su) < 2: return sorted(range(1, 13), key=lambda k: (-c10[k], -c50[k], k))[:MMK]
+        m1, m2 = LK[su[0]], LK[su[1]]; p1, p2 = LK[t - 1], LK[t - 2]
+        TH = {p1 + p2, abs(p1 - p2)}
+        if g == '13h':
+            ok = [k for k in range(1, 13) if abs(k - p1) <= 3 and k != p1]
+            f = (lambda k: k < m1) if m1 > m2 else (lambda k: k > m1) if m1 < m2 else None; bd, bt = 2, 2
+        else:
+            ok = [k for k in range(1, 13) if abs(k - p1) <= 3]
+            f = (lambda k: k < m1) if m1 >= 7 else (lambda k: k > m1); bd, bt = 1, 1
+        return sorted(ok, key=lambda k: (-c10[k] - (bd if f and f(k) else 0) - (bt if k in TH else 0), -c50[k], k))[:MMK]
     MM = mm_pick(len(LK))
     hm = []; MMH = []; hr = []   # chạy lại 100 kỳ: mỗi kỳ chỉ dùng số may mắn các kỳ trước
     for t in range(len(LK) - 100, len(LK)):
@@ -828,7 +838,7 @@ for i, (kind, tk, lv) in enumerate(tickets, 1):
 
 # Số May Mắn Loto (đã tính ở trên)
 if A.game == 'loto':
-    print(f'\n### Số May Mắn ({len(MM)} số, theo thứ tự ưu tiên — nóng 10 kỳ trong ±3 quanh số kỳ trước, cộng chiều nghiêng cùng buổi)\n\n'
+    print(f'\n### Số May Mắn ({len(MM)} số, theo thứ tự ưu tiên — ±3 quanh số kỳ trước, nóng 10 kỳ, chiều + tổng/hiệu, mỗi buổi một cách)\n\n'
           + ' · '.join(f'ưu tiên {i + 1}: **{k:02d}** (vắng {mg[k]} kỳ, về {MMRANK[50][i]}% / {MMRANK[100][i]}% ở 50/100 kỳ)' for i, k in enumerate(MM))
           + f'\n\nCả {len(MM)} số: chính cách này trúng {sum(hm[-50:]) * 2}% ở 50 kỳ, {sum(hm[-100:])}% ở 100 kỳ.'
           + ' Chia vé (không tính vé thay thế): ' + ', '.join(f'ưu tiên {i + 1} ({k:02d}) {sum(1 for (kd, _, _), m in zip(tickets, TMM) if m == k and not kd.startswith("cân nhắc"))} vé' for i, k in enumerate(MM)) + '.')
