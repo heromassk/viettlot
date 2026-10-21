@@ -48,15 +48,20 @@ function gdDelAll(g){if(typeof window!=='undefined'&&window.__gdAsk!=='all'){win
 function gdTog(b,el){if(typeof window==='undefined')return;window.__gdOpen=window.__gdOpen||{};window.__gdOpen[b]=el.open;}
 // dòng giả định: lab = nhãn cột ngày, balls(n,slot) = HTML bóng đã chọn, info(f) = phần bên phải; trả về details (danh sách dãy) + bảng chọn số
 // Kiểm tra dãy đang hiện (anh 21/10/2026): luật dạng vé của app + luật Fibonacci; mỗi luật: dãy đạt/phạm và số kỳ đúng ở 20/50/100 kỳ
-function kdGio(v){if(typeof window==='undefined')return;window.__kdG=v;window.__dOpen=window.__dOpen||{};window.__dOpen.kd=true;if(typeof renderBangCard==='function')renderBangCard();}   /* Loto: kiểm dãy theo kỳ 13h / 21h / cả 2 (anh 21/10/2026) */
-function gdCheck(J){if(typeof window==='undefined')return '';const g=J.game,lo=g==='loto',KG=lo?(window.__kdG||''):'',DA0=J.dates201||[],IX=(J.res201||[]).map((_,i)=>i).filter(i=>!KG||String(DA0[i]).endsWith(KG));
-  const RA=IX.map(i=>J.res201[i]),LK=IX.map(i=>(J.lk201||[])[i]),NB=J.nb,KB=J.kb,n=RA.length;if(n<30)return '';
+function kdGio(v){if(typeof window==='undefined')return;window.__kdG=v;window.__dOpen=window.__dOpen||{};window.__dOpen.kd=true;if(typeof renderBangCard==='function')renderBangCard();}   /* Loto: chấm dãy cho kỳ 13h / 21h (mặc định giờ kỳ tới) */
+function kdX(i){if(typeof window==='undefined')return;const S=window.__kdXo=window.__kdXo||{};S[i]=!S[i];document.querySelectorAll('.kdx'+i).forEach(e=>e.style.display=S[i]?'':'none');}
+/* Bộ chấm dãy (anh 21/10/2026): mỗi luật chấm riêng chung / 13h / 21h; luật dùng được = đúng ≥70% ở cả 50 & 100 kỳ;
+   chấm dãy theo giờ kỳ tới: ưu tiên riêng giờ nếu dùng được, không thì chung, không đạt kiểu nào → mờ, không tính */
+function gdCheck(J){if(typeof window==='undefined')return '';const g=J.game,lo=g==='loto',DA0=J.dates201||[],NB=J.nb,KB=J.kb;if((J.res201||[]).length<60)return '';
+  const NX=String(J.next||''),NG=lo?(window.__kdG||(NX.endsWith('13h')?'13h':NX.endsWith('21h')?'21h':'13h')):'';
   const X=(window.__vxX&&window.__vxX[g])||({loto:8,mega:8,power:12}[g]||8),HC=lo?3:4,FB=new Set([1,2,3,5,8,13,21,34,55]),half=Math.floor(NB/2);
-  const prev=(t,k)=>t-k>=0?RA[t-k]:[];
-  const hot10=t=>{const c={};for(let u=Math.max(0,t-20);u<t;u++)RA[u].forEach(x=>c[x]=(c[x]||0)+1);return new Set(Object.keys(c).map(Number).sort((a,b)=>c[b]-c[a]||a-b).slice(0,10));};
-  const vang=t=>{const S=new Set();for(let u=Math.max(0,t-X);u<t;u++)RA[u].forEach(x=>S.add(x));return S;};
   const gaps=r=>r.slice(1).map((b,i)=>b-r[i]);
-  const L=[
+  const mk=M=>{const IX=(J.res201||[]).map((_,i)=>i).filter(i=>!M||String(DA0[i]).endsWith(M));
+    const RA=IX.map(i=>J.res201[i]),LK=IX.map(i=>(J.lk201||[])[i]),n=RA.length;
+    const prev=(t,k)=>t-k>=0?RA[t-k]:[];
+    const hot10=t=>{const c={};for(let u=Math.max(0,t-20);u<t;u++)RA[u].forEach(x=>c[x]=(c[x]||0)+1);return new Set(Object.keys(c).map(Number).sort((a,b)=>c[b]-c[a]||a-b).slice(0,10));};
+    const vang=t=>{const S=new Set();for(let u=Math.max(0,t-X);u<t;u++)RA[u].forEach(x=>S.add(x));return S;};
+    const L=[
     ['Có ≥1 số của 2 kỳ gần nhất',(r,t)=>r.some(x=>prev(t,1).includes(x)||prev(t,2).includes(x))],
     ['Có ≥1 số trong 10 số nóng nhất 20 kỳ',(r,t)=>{const H=hot10(t);return r.some(x=>H.has(x));}],
     ['Có ≥1 số trùng / kề ±1 kỳ trước',(r,t)=>{const P=prev(t,1);return r.some(x=>P.includes(x)||P.includes(x-1)||P.includes(x+1));}],
@@ -71,26 +76,34 @@ function gdCheck(J){if(typeof window==='undefined')return '';const g=J.game,lo=g
     ['Có ≥1 khoảng cách là số Fib',r=>gaps(r).some(x=>FB.has(x))],
     ['Không phải mọi khoảng cách đều là số Fib',r=>!gaps(r).every(x=>FB.has(x))],
   ];
+    const acc=L.map(([,f])=>[20,50,100].map(W=>{let k=0;for(let t=n-W;t<n;t++)if(f([...RA[t]].sort((a,b)=>a-b),t,LK[t]))k++;return k;}));
+    return {M,RA,LK,n,L,acc};};
+  const MS=lo?['',NG,NG==='13h'?'21h':'13h']:[''],CX={};MS.forEach(M=>CX[M]=mk(M));const C0=CX[''],L=C0.L;
   const V=gdGet(g),c=V.L[V.cur],d=(c.x||[]).filter(v=>v!=null).sort((a,b)=>a-b),full=d.length===KB,mm=lo?c.mm:null;
-  const acc=L.map(([,f])=>[20,50,100].map(W=>{let k=0;for(let t=n-W;t<n;t++)if(f([...RA[t]].sort((a,b)=>a-b),t,LK[t]))k++;return k;}));
-  const res=L.map(([,f])=>full?f(d,n,mm):null),ok=res.filter(x=>x).length;
-  const p2=v=>String(v).padStart(2,'0');
-  /* dạng của dãy (anh 21/10/2026): tổng, chẵn/lẻ, nhỏ/lớn, liền nhau, trùng kỳ trước, chia hàng — % kỳ thật cùng dạng ở 20/50/100 kỳ */
-  const DK=[['tong','Tổng'],['cl','Chẵn – lẻ'],['nl','Nhỏ – lớn'],['lt','Liền nhau'],['tr','Trùng kỳ trước'],['hang','Chia hàng chục']];
-  const useM=lo&&mm!=null,DD=full?dangOf(J,d,useM?mm:null,RA[n-1]):null;
-  const HD=[];for(let t=n-100;t<n;t++)HD.push(dangOf(J,RA[t],useM?LK[t]:null,RA[t-1]));
+  const okA=a=>a[1]>=35&&a[2]>=70;
+  const pickM=i=>lo&&okA(CX[NG].acc[i])?NG:okA(C0.acc[i])?'':null;
+  const use=L.map((_,i)=>pickM(i)),res=L.map((_,i)=>{const M=use[i]==null?(lo?NG:''):use[i],C=CX[M];return full?C.L[i][1](d,C.n,mm):null;});
+  const nUse=use.filter(u=>u!=null).length,ok=res.filter((x,i)=>x&&use[i]!=null).length;
+  const p2=v=>String(v).padStart(2,'0'),lb=M=>M?'Riêng '+M:'Chung',ck=x=>x==null?'—':x?'<b style="color:#51cf66">✓</b>':'<b style="color:#ff6b6b">✗</b>';
+  /* dạng của dãy: % kỳ thật cùng dạng ở 20/50/100 kỳ — Loto theo giờ kỳ tới */
+  const DC=lo?CX[NG]:C0,DK=[['tong','Tổng'],['cl','Chẵn – lẻ'],['nl','Nhỏ – lớn'],['lt','Liền nhau'],['tr','Trùng kỳ trước'],['hang','Chia hàng chục']];
+  const useM=lo&&mm!=null,DD=full?dangOf(J,d,useM?mm:null,DC.RA[DC.n-1]):null;
+  const HD=[];for(let t=DC.n-100;t<DC.n;t++)HD.push(dangOf(J,DC.RA[t],useM?DC.LK[t]:null,DC.RA[t-1]));
   const pc=(k,v,W)=>{const a=HD.slice(-W);return Math.round(a.filter(h=>h[k]===v).length*100/W);};
   const pcol=x=>x>=30?'#51cf66':x>=15?'inherit':'#ff6b6b';
   const drows=DK.map(([k,lab])=>{const v=DD?(k==='tong'?`${DD.sum} (${DD.tong})`:DD[k]):'—';const ps=[20,50,100].map(W=>DD?pc(k,DD[k],W):null);return `<tr><td style="text-align:left;white-space:normal;">${lab}</td><td style="white-space:normal;">${v}</td>${ps.map(x=>`<td>${x==null?'—':`<b style="color:${pcol(x)}">${x}%</b>`}</td>`).join('')}</tr>`;}).join('');
   const balls=d.length?d.map(x=>`<span class="bg-b t10">${p2(x)}</span>`).join('')+(lo&&mm!=null?`<span class="bg-b mm">${p2(mm)}</span>`:''):'<b>(trống)</b>';
-  const ttl=full?`Kiểm tra Dãy ${V.cur+1} · đạt ${ok}/${L.length} luật`:`Kiểm tra Dãy ${V.cur+1} · ${d.length?'chưa đủ '+KB+' số':'chưa nhập dãy'}`;
-  const rows=L.map(([lab],i)=>`<tr><td style="text-align:left;white-space:normal;">${lab}</td><td>${res[i]==null?'—':res[i]?'<b style="color:#51cf66">✓</b>':'<b style="color:#ff6b6b">✗</b>'}</td><td>${acc[i][0]}/20</td><td>${acc[i][1]}/50</td><td>${acc[i][2]}/100</td></tr>`).join('');
+  const ttl=full?`Kiểm tra Dãy ${V.cur+1}${lo?' · '+NG:''} · đạt ${ok}/${nUse} luật`:`Kiểm tra Dãy ${V.cur+1} · ${d.length?'chưa đủ '+KB+' số':'chưa nhập dãy'}`;
+  const XO=window.__kdXo||{};
+  const rows=L.map(([lab],i)=>{const u=use[i],A=(u==null?(lo?CX[NG]:C0):CX[u]).acc[i],dim=u==null?'opacity:.4;':'';
+    const sub=(lo?MS:['']).map(M=>{const a=CX[M].acc[i],r=full?CX[M].L[i][1](d,CX[M].n,mm):null;return `<tr class="kdx${i}" style="${XO[i]?'':'display:none;'}font-size:.92em;color:var(--muted,#8b93a7);"><td style="text-align:left;padding-left:12px;">↳ ${lb(M)}${okA(a)?' ✔':''}</td><td>${ck(r)}</td><td colspan="2">${a[0]}/20 · ${a[1]}/50</td><td>${a[2]}/100</td></tr>`;}).join('');
+    return `<tr style="${dim}cursor:pointer;" onclick="kdX(${i})"><td style="text-align:left;white-space:normal;">${lab} <small style="color:var(--muted,#8b93a7)">▾</small></td><td>${ck(res[i])}</td><td style="white-space:nowrap;">${u==null?'Không đạt':lb(u)}</td><td>${A[1]}/50</td><td>${A[2]}/100</td></tr>${sub}`;}).join('');
   return `<details class="bg-wh" style="margin:6px 0;"${dOp('kd')} ontoggle="dTog('kd',this)"><summary><b>${ttl}</b></summary>
-   ${lo?`<div class="bg-row bg-chips">${[['','13h &amp; 21h'],['13h','Chỉ 13h'],['21h','Chỉ 21h']].map(([v,t])=>`<span class="bg-h20k${v===KG?' on':''}" onclick="kdGio('${v}')">${t}</span>`).join('')}</div>`:''}<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:2px 0 4px;"><span class="bg-foot" style="margin:0;">Dãy ${V.cur+1}:</span>${balls}</div><div class="bg-foot" style="margin:0 0 6px;">Nhập / đổi dãy ở dòng ▸ Dãy trong thẻ x kỳ gần nhất.</div>
-   <div style="overflow-x:auto;"><table class="bg-g10 th3" style="font-size:.7rem;"><thead><tr><th style="text-align:left;">Luật</th><th>Dãy</th><th>20 kỳ</th><th>50 kỳ</th><th>100 kỳ</th></tr></thead><tbody>${rows}</tbody></table></div>
-   <div style="overflow-x:auto;margin-top:8px;"><table class="bg-g10 th3" style="font-size:.7rem;"><thead><tr><th style="text-align:left;">Dạng</th><th>Dãy</th><th>20 kỳ</th><th>50 kỳ</th><th>100 kỳ</th></tr></thead><tbody>${drows}</tbody></table></div>
-   <div class="bg-foot" style="margin:4px 0 0;">Dạng: % số kỳ thật có cùng dạng với dãy${useM?' (tổng, chẵn/lẻ, nhỏ/lớn tính cả MM; MM nhỏ = 1–6)':''}. Xanh ≥30% · đỏ &lt;15%.</div>
-   <div class="bg-foot" style="margin:4px 0 0;">${KG?`Chỉ xét kỳ ${KG}: "kỳ trước", 20/50/100 kỳ đều là kỳ ${KG}. `:''}Số kỳ đúng = số kỳ có kết quả thật đạt luật đó${lo?' (chẵn/lẻ, nhỏ/lớn tính cả số may mắn)':''}. ✓ dãy đạt · ✗ dãy phạm.</div></details>`;}
+   ${lo?`<div class="bg-row bg-chips"><small>Chấm cho kỳ:</small>${['13h','21h'].map(v=>`<span class="bg-h20k${v===NG?' on':''}" onclick="kdGio('${v}')">${v}${NX.endsWith(v)?' (kỳ tới)':''}</span>`).join('')}</div>`:''}<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:2px 0 4px;"><span class="bg-foot" style="margin:0;">Dãy ${V.cur+1}:</span>${balls}</div><div class="bg-foot" style="margin:0 0 6px;">Nhập / đổi dãy ở dòng ▸ Dãy trong thẻ x kỳ gần nhất.</div>
+   <div style="overflow-x:auto;"><table class="bg-g10 th3" style="font-size:.7rem;"><thead><tr><th style="text-align:left;">Luật</th><th>Dãy</th><th>Dùng</th><th>50 kỳ</th><th>100 kỳ</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <div class="bg-foot" style="margin:4px 0 0;">Luật dùng được = đúng ≥70% ở cả 50 và 100 kỳ.${lo?` Chấm cho kỳ ${NG}: ưu tiên luật riêng ${NG} (kỳ trước = kỳ ${NG} liền trước), không đạt thì dùng chung 2 giờ.`:''} Luật mờ = không đạt, không tính. Nhấn vào luật để xem ${lo?'chung / 13h / 21h':'20/50/100 kỳ'}.</div>
+   <div style="overflow-x:auto;margin-top:8px;"><table class="bg-g10 th3" style="font-size:.7rem;"><thead><tr><th style="text-align:left;">Dạng${lo?' ('+NG+')':''}</th><th>Dãy</th><th>20 kỳ</th><th>50 kỳ</th><th>100 kỳ</th></tr></thead><tbody>${drows}</tbody></table></div>
+   <div class="bg-foot" style="margin:4px 0 0;">Dạng: % số kỳ${lo?' '+NG:''} thật có cùng dạng với dãy${useM?' (tổng, chẵn/lẻ, nhỏ/lớn tính cả MM; MM nhỏ = 1–6)':''}. Xanh ≥30% · đỏ &lt;15%. ✓ dãy đạt · ✗ dãy phạm.</div></details>`;}
 function gdRow(J,b,balls,info,mmH,dateSt,lt){if(typeof window==='undefined')return '';const g=J.game,lo=g==='loto',K=J.kb||6,p2=n=>String(n).padStart(2,'0');
   window.__gdKB=window.__gdKB||{};window.__gdKB[g]=K;window.__gdLo=window.__gdLo||{};window.__gdLo[g]=lo;
   const V=gdGet(g),c=V.L[V.cur],P=window.__gdPick,act=P&&P.g===g&&P.b===b?P.s:null,stop='event.preventDefault();event.stopPropagation();';
