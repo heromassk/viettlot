@@ -1866,3 +1866,17 @@ Anh: "riêng thì tín hiệu rõ hơn, chiều rõ hơn". Dò 192 biến thể 
 | 13h | 7 / 11 / 26 / 36 | **8 / 12 / 27 / 38** — ±3 quanh MM kỳ trước, bỏ MM kỳ trước, +2 đảo chiều bước trước cùng buổi, +2 tổng/hiệu |
 | 21h | 9 / 18 / 27 / 36 | **11 / 20 / 33 / 44** — ±3, giữ MM kỳ trước, +1 chiều nghiêng cùng buổi, +1 tổng/hiệu |
 - Gộp lại trên mọi kỳ: **10 / 22 / 32 / 60** ở 20/50/100/200 kỳ (cách trước 9/19/29/53). Đã đưa vào `goiy.py`. Kỳ 13h 21/10: MM 07 · 06.
+
+## 21/10/2026 — Xu hướng nghỉ của số May Mắn Loto (`build/mm_nghi.py`)
+Khi một số đang nghỉ x kỳ, số lần nó ra ngay kỳ sau / số lần ở mức nghỉ đó (100 kỳ · 200 kỳ):
+| Đang nghỉ | Liền 2 buổi | Chỉ 13h | Chỉ 21h |
+|---|---|---|---|
+| 1 (vừa ra) | 8/100 · 18/200 | 7/100 · 20/200 | 10/100 · 21/200 |
+| 2 | 8/92 · 14/182 | 5/93 · 16/180 | 8/90 · 18/179 |
+| 3–5 | 18/233 · 33/465 | 21/247 · 39/454 | 21/222 · 35/447 |
+| 6–10 | 22/282 · 48/578 | 23/271 · 41/534 | 22/264 · 45/551 |
+| 11–15 | 13/190 · 27/376 | 18/170 · 31/356 | 15/160 · 31/342 |
+| 16–25 | 21/213 · 38/410 | 13/176 · 28/374 | 10/182 · 24/381 |
+| ≥26 | 10/90 · 22/189 | 13/143 · 25/302 | 14/182 · 26/300 |
+- Mức nào cũng ra lại khoảng 7–12% mỗi kỳ, không có mức nghỉ nào nổi hẳn. Liền 2 buổi: nghỉ ≥26 kỳ nhỉnh nhất (11%, 12%) nhưng tách buổi thì không giữ (13h 9%/8%, 21h 8%/9%).
+- Thử cộng điểm số nghỉ ≥26 kỳ vào cách mỗi buổi một cách: 10/22/32/60 → 10/22/32/62 (chỉ hơn 2 kỳ ở khung 200) → chưa đưa vào.
