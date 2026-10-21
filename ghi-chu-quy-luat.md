@@ -1843,3 +1843,4 @@ Số kỳ trúng ở 20 / 50 / 100 / 200 kỳ: **đang dùng (±3 quanh MM kỳ 
 - Quay lại đúng số 2 kỳ trước hiếm (dưới 10%). Bước ngắn / dài khoảng một nửa, không nghiêng.
 - 21h: zic-zắc tiếp 73% ở 50 kỳ, 67% ở 100 kỳ. Đã nằm trong luật "đổi chiều" đang dùng. Không có dấu vết mới đủ ≥70% ở cả 50 và 100 kỳ.
 - Bổ sung (`build/mm_day.py`): độ lớn bước nhảy (bỏ dấu) nối tiếp dãy tự nhiên từ 2 bước trước (4,3→2 · 3,4→5 · 3,3→3) — đúng độ lớn: liền 2 buổi 3/19 · 4/40 · 8/76; 13h 0/15 · 4/38 · 5/75; 21h 2/15 · 7/41 · 10/77. Dùng để đoán số May Mắn (cả 2 chiều, TB khoảng 1 số/kỳ) trúng 8/76 kỳ (liền 2 buổi, 100 kỳ) → không có dấu vết, không dùng.
+- Bổ sung (`build/mm_tonghieu.py`): 3 kỳ liên tiếp, có số = tổng / hiệu (bỏ dấu) của 2 số kia — liền 2 buổi 4/20 · 10/50 · 16/100; 13h 2/20 · 5/50 · 10/100; 21h 1/20 · 5/50 · 12/100. Đoán kỳ sau = tổng hoặc hiệu 2 kỳ trước (TB 1,5 số/kỳ) trúng đúng chừng đó kỳ → ít, không dùng.
