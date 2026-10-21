@@ -597,6 +597,8 @@ print(f'## Gợi ý {NAME} — kỳ {nd}\n')
 print(f'Kỳ gần nhất {D["dates"][-1]}: **{fm(R[-1])}** (tổng {sums[-1]})\n')
 print('### Tín hiệu dấu vết (cùng một cách tính mọi kỳ)\n')
 RECS = backtest(100)   # tối đa 100 kỳ
+if os.environ.get('GOIY_RKDUMP'):   # nghiên cứu pool 12/15 (anh 21/10/2026): xuất thứ hạng app (top 20) từng kỳ, chấm lùi
+    json.dump({D['dates'][r['t']]: r['rk'] for r in backtest(int(os.environ.get('GOIY_RKW', '200')))}, open(os.environ['GOIY_RKDUMP'], 'w'))
 B = {W: summ(RECS[-W:]) for W in (10, 50, 100)}
 if os.environ.get('GOIY_BAO'):   # bao k số theo thứ hạng pool (anh 19/10/2026): mỗi kỳ chấm lại, kỳ có ≥3 / ≥4 / đủ KB số trong k số đầu
     from math import comb as _cmb

@@ -1812,3 +1812,18 @@ Pool trúng (≥3 số / ≥4 số / trúng TB), cách cũ → trừ 0,5 điểm
 | Có chiều nghiêng | **7/20** | **18/50** | **27/100** | **49/200** |
 - Ưu tiên 1 trúng (3 số, có chiều): 5 · 12 · 19 · 30 lần so với cách cũ 3 · 9 · 16 · 28.
 - Bảng pool (Kiểm pool vắng x kỳ) có thêm dòng **May mắn gợi ý** (Loto), chấm với số may mắn thật, không tính vào ≥2 pool.
+
+## 21/10/2026 — Thử dựng pool 12 / 15 từ pool app + các pool + luật loại (`build/pool12_thu.js`)
+Chấm lùi, mỗi kỳ chỉ dùng dữ liệu trước nó. Ô ghi: trúng TB · số kỳ ≥3 số · số kỳ ≥4 số, ở khung 20 / 50 / 100 kỳ.
+- Tính điểm tổng hợp từ tỉ lệ trúng của từng pool (không dùng thứ hạng app hoặc dùng thêm): **kém hơn pool app** ở cả 3 game → bỏ.
+- Bỏ khỏi pool app số ra ≥2 lần/5 kỳ, số ra ≥3 lần/10 kỳ, số trùng kỳ trước: phần lớn kém đi.
+- Cách tốt nhất: **giữ thứ hạng pool app, đẩy số có mặt ở nhiều pool lên trên** (bậc thứ hạng − b × số pool chứa số, hoặc − b nếu có mặt ≥2 pool):
+| Game · pool | Pool app | Cách tốt nhất | Kết quả cách tốt nhất |
+|---|---|---|---|
+| Loto P12 | 1,80·4·0 / 1,80·12·2 / 1,92·29·8 | − 3 × số pool | **2,05·7·2 / 1,90·17·4 / 1,94·34·9** |
+| Loto P15 | 2,30·7·2 / 2,40·23·7 / 2,47·50·19 | (không cách nào hơn) | giữ pool app |
+| Mega P12 | 2,25·7·4 / 2,02·15·7 / 1,91·29·10 | − 6 nếu ≥2 pool | 2,25·7·4 / 2,02·17·8 / 1,95·29·12 |
+| Mega P15 | 2,45·7·5 / 2,46·25·12 / 2,31·46·16 | − 2 × số pool | 2,50·8·5 / 2,48·25·12 / 2,32·46·17 |
+| Power P12 | 1,90·4·1 / 1,84·10·3 / 1,62·16·4 | (không cách nào hơn rõ) | giữ pool app |
+| Power P15 | 2,25·8·2 / 2,22·17·6 / 1,98·28·10 | − 4 nếu ≥2 pool | 2,35·9·2 / 2,24·19·6 / 2,03·31·9 |
+- Chỉ Loto P12 hơn rõ ở cả 3 khung. Mega P12/P15, Power P15 hơn nhẹ. Chưa đưa vào app, chờ anh quyết.
