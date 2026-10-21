@@ -2014,3 +2014,16 @@ Thử cộng/trừ 2–4 bậc cho: số Lucas, số Fibonacci, Fib tổng quát
 | Power | **Thứ 30/20/17 vs 11** · Ngày ±1 18/16/15 · Gộp 20/16/12 | Ngày âm, Tháng âm |
 
 Thử làm điểm cho Pool 9/12/15 (build/ngay_pool.js): mỗi nhóm chỉ 1–3 số nên thay đổi nhỏ. Nhận **Loto P9, P15: số thứ/ngày/tháng đẩy lên 4 bậc** (có cơ sở, hơn đủ 3 khung): P9 31/74/157 → 32/77/159 (kỳ ≥3 số 2/6/16 → 3/7/19), P15 48/122/250 → 50/123/252 (9/25/51 → 11/28/54). Mega, Power: kết quả tăng không khớp chiều dấu vết (cộng hay trừ đều tăng) → không áp.
+
+## 21/10/2026 — Dòng pool "Ngày quay" tính vào ≥2 pool (build/ngay_nh2.js)
+Mỗi game bộ số riêng theo dấu vết: Loto thứ, ngày, tháng, ghép tháng–ngày · Mega ngày lộn, ngày+tháng · Power thứ, ngày ±1.
+≥2 pool (trúng TB/kỳ · % mỗi số · kỳ ≥3, 20/50/100 kỳ):
+
+| Game | Trước | Sau |
+|---|---|---|
+| Loto | 2,40/2,52/2,22 · 14,8/15,8/13,8% · 11/25/39 | **2,65/2,76/2,46 · 14,8/16,0/14,2% · 14/32/49** |
+| Mega | 3,10/2,88/2,90 · 15,0/14,0/13,9% · 16/31/67 | **3,30/3,04/3,00 · 15,4/14,3/14,0% · 17/34/71** |
+| Power | 2,50/2,20/2,17 · 12,9/11,6/11,1% · 12/21/43 | **2,85/2,46/2,41 · 13,8/12,1/11,5% · 13/24/48** |
+
+±1 (anh hỏi): Ngày ±1 chỉ Power ra nhiều (17,9/15,5/15,2% vs 10,7) — đã gồm trong dòng Power; Loto ngày ±1 ra ít (10/10/11% vs 14,5). Tháng ±1, thứ ±1: không ổn định ở game nào.
+Power Pool 15 giữ cách đếm cũ (không tính dòng ngày quay) vì tính vào thì kém đi 1 kỳ ≥3.
