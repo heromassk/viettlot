@@ -1920,3 +1920,9 @@ Số Fibonacci: 1 2 3 5 8 13 21 34 (55 với Power). Tỉ lệ 1 số ra mỗi k
 - Power: Fib 11,7 / 12,2 / 12,3% · số khác 10,8 / 10,7 / 10,6% → Fib nhỉnh hơn nhẹ, chủ yếu ở số Fib ≤13 (50/100 kỳ: 13,3 / 13,2% so với 12,3 / 10,9%), khung 20 ngược lại.
 - Bộ 3 số Fibonacci a+b=c trong cùng kỳ: gần như không có (Loto 3/200 kỳ, Mega và Power 0/100).
 - Số May Mắn: Fib (1 2 3 5 8) và số khác ngang nhau (200 kỳ 8,3% / 8,4%).
+- Kiểm thêm (`build/fibo2.py`, 20 / 50 / 100 kỳ):
+  - Khoảng cách giữa các số liền nhau trong kỳ là số Fib: Loto 42/80 · 114/200 · 227/400; Mega 54/100 · 119/250 · 249/500; Power 50/100 · 123/250 · 236/500. Nhiều vì khoảng nhỏ (1, 2, 3, 5) vốn hay gặp; khoảng 4 và 6 (không phải Fib) gặp ngang 5 (Loto 100 kỳ 4:40 · 5:36 · 6:33). Kỳ có mọi khoảng đều là Fib: Loto 5/100, Mega 0, Power 2.
+  - Số đang vắng đúng số Fib kỳ → ra ngay: Loto 13,4 / 13,5 / 13,9% so với vắng số khác 15,2 / 15,2 / 14,7% (kém hơn); Mega 12,6 / 13,8 / 13,4% vs 14,1 / 12,9 / 13,2%; Power 11,6 / 10,7 / 10,5% vs 10,4 / 11,1 / 11,2% → không có dấu vết.
+  - Số cách số kỳ trước ±1/2/3/5/8 so với ±4/6/7: Loto 13,6 / 13,3 / 14,0% vs 15,3 / 14,4 / 14,6% (kém hơn); Mega 14,3 / 13,4 / 13,3% vs 14,3 / 13,3 / 12,9%; Power 10,3 / 10,8 / 11,0% vs 9,3 / 9,9 / 10,6% (nhỉnh nhẹ cả 3 khung).
+  - Tổng kỳ này ≈ ×1,618 hoặc ×0,618 tổng kỳ trước (lệch ≤5%): Loto 5 / 10 / 13 kỳ; Mega 2 / 3 / 4; Power 1 / 2 / 9.
+  → Không có cách dùng Fibonacci nào cho dấu vết rõ trên dữ liệu 3 game; Power ±Fib nhỉnh nhẹ (0,4–1 điểm %).
