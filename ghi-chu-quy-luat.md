@@ -1790,3 +1790,15 @@ Pool trúng (≥3 số / ≥4 số / trúng TB), cách cũ → trừ 0,5 điểm
 | 18 | 58/32/2,76 → 60/32/2,76 | 57/25/2,69 → 58/27/2,70 |
 | 20 | 68/36/2,98 → 70/34/3,00 | 66/34/2,95 → 66/34/2,95 |
 - Trừ 1 điểm cũng tương tự. Trúng TB gần như không đổi, pool 15 (pool chính) kỳ ≥4 số kém đi → không áp dụng, giữ cách cũ. Power vẫn giữ luật cũ −0,5 cho số này.
+
+## 21/10/2026 — Loto: chiều tăng/giảm (âm dương) của số May Mắn
+Đếm trên dãy MM, chia 3 kiểu: liền 2 buổi / chỉ 13h / chỉ 21h, khung 20 / 50 / 100 kỳ.
+| Dấu vết | Liền 2 buổi | Chỉ 13h | Chỉ 21h |
+|---|---|---|---|
+| Đổi chiều so với lần trước | 12/20 · 29/44 · 57/84 (68%) | 10/17 · 30/43 · 59/87 (68%) | **13/17 · 34/43 · 60/82 (73–79%)** |
+| Sau tăng (+) → giảm | 6/12 · 14/24 · 28/44 | 5/9 · 16/23 · 32/47 | **7/7 · 19/22 · 32/44** |
+| Sau giảm (−) → tăng | 6/8 · 15/23 · 29/48 | 5/9 · 14/23 · 27/46 | 6/11 · 15/24 · 28/46 |
+| MM ≥7 → kỳ sau nhỏ hơn | 6/10 · 16/22 · 33/44 | 4/5 · 14/18 · 35/46 | **11/13 · 23/26 · 43/57** |
+| MM ≤6 → kỳ sau lớn hơn | 8/10 · 20/28 · 37/56 | 8/15 · 19/32 · 36/54 | **5/7 · 18/24 · 34/43** |
+- Buổi 21h có dấu vết rõ nhất (≥70% ở cả 50 và 100 kỳ): đổi chiều, sau tăng thì giảm, MM cao thì kỳ sau thấp, MM thấp thì kỳ sau cao.
+- 13h: chỉ "MM ≥7 → kỳ sau nhỏ hơn" đạt ≥70% (78%, 76%).
