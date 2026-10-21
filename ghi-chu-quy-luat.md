@@ -1912,3 +1912,11 @@ Anh: 3 game không được chung 1 cách; Mega/Power bi vật lý nên pool v�
 | Loto | cách 1 kỳ & kẹp +2: 1,55·2 / 1,48·6 / 1,57·16 (app 1,45·1 / 1,42·4 / 1,53·13) | vắng & tổng +4: 1,95·5 / 1,92·16 / 2,01·35 (app 1,85·4 / 1,80·12 / 1,92·29) | cách 1 kỳ & tâm linh +2: 2,40·9 / 2,44·25 / 2,50·51 (app 2,35·8 / 2,42·24 / 2,47·50) |
 | Mega | vắng & tâm linh +4: 1,80·4 / 1,56·10 / 1,52·19 (app 1,80·3 / 1,54·6 / 1,45·13) | tổng & tâm linh +2: 2,25·7 / 2,06·17 / 1,97·32 (app 2,25·7 / 2,02·15 / 1,91·29) | cách 1 kỳ & tâm linh +4: 2,50·8 / 2,52·26 / 2,37·48 (app 2,45·7 / 2,46·25 / 2,31·46) |
 | Power | ±1 kỳ trước +2: 1,35·4 / 1,26·6 / 1,17·11 (app 1,30·4 / 1,24·5 / 1,13·10) | trùng kỳ trước +6: 1,90·6 / 1,84·12 / 1,65·21 (app 1,90·4 / 1,84·10 / 1,62·16) | giữ: ≥2 pool +4 (2,35·9 / 2,24·19 / 2,03·31) |
+
+## 21/10/2026 — Dãy Fibonacci (`build/fibo.py`)
+Số Fibonacci: 1 2 3 5 8 13 21 34 (55 với Power). Tỉ lệ 1 số ra mỗi kỳ, so với các số còn lại cùng game (20 / 50 / 100 kỳ; Loto thêm 200):
+- Loto: Fib 15,0 / 14,0 / 12,6 / 14,2% · số khác 14,1 / 14,4 / 14,8 / 14,3% → không có dấu vết.
+- **Mega: Fib 10,6 / 9,8 / 10,6% · số khác 13,9 / 14,1 / 13,9% → Fib ra ít hơn ở cả 3 khung.** Không phải do số nhỏ: Fib ≤13 8,3 / 9,7 / 11,0% so với số thường ≤13 15,7 / 14,6 / 14,4%; 21, 34 cũng thấp ở 50/100 kỳ. Ít nhất là 5 và 8 (100 kỳ: 8 và 9 lần).
+- Power: Fib 11,7 / 12,2 / 12,3% · số khác 10,8 / 10,7 / 10,6% → Fib nhỉnh hơn nhẹ, chủ yếu ở số Fib ≤13 (50/100 kỳ: 13,3 / 13,2% so với 12,3 / 10,9%), khung 20 ngược lại.
+- Bộ 3 số Fibonacci a+b=c trong cùng kỳ: gần như không có (Loto 3/200 kỳ, Mega và Power 0/100).
+- Số May Mắn: Fib (1 2 3 5 8) và số khác ngang nhau (200 kỳ 8,3% / 8,4%).
