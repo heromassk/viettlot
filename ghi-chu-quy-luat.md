@@ -1958,3 +1958,21 @@ Số kỳ đúng ở 20 / 50 / 100 kỳ (Loto · Mega · Power):
 | Số kế tiếp chuỗi trên 3 kỳ (~3–6 số) | 13,3/13,9/17,4 vs 14,4/14,3/14,0 | 11,8/11,3/12,1 vs 13,5/13,5/13,4 | 8,2/11,9/11,6 vs 11,2/10,8/10,8 |
 - Đuôi tổng kỳ = đuôi (tổng 2 kỳ trước) kiểu Pisano: Loto 1/3/12, Mega 4/7/11, Power 4/7/13 (trên 20/50/100) → không có.
 - Dấu vết ổn định cả 3 khung: **Mega Fib tổng quát cao**, **Mega chuỗi 2 kỳ cao** (ít số), **Power Lucas cao**, **Loto Fib tổng quát thấp**, Mega Lucas hơi thấp.
+
+## 21/10/2026 — Xét nốt 4 cách 2 kỳ (build/hai_ky.py)
+Tỉ lệ ra mỗi số trong nhóm vs phần còn lại (khung 20/50/100 kỳ, %):
+
+| Cách | Loto | Mega | Power |
+|---|---|---|---|
+| 1a. Tổng ghép (a kỳ trước + b kỳ cách 1) | **12,2/12,5/13,1 vs 15,3/15,0/14,7 (thấp)** | **14,4/14,0/14,1 vs 12,9/13,1/13,0 (cao)** | 9,5/10,3/10,7 vs 11,6/11,2/11,0 (thấp) |
+| 1b. Hiệu ghép | ~ngang | 12,9/12,8/12,9 vs 13,8/13,8/13,7 (thấp nhẹ) | **12,5/11,7/11,9 vs 9,8/10,4/10,2 (cao)** |
+| 2. Fib tổng quát từ 2 kỳ gộp | **12,6/13,2/13,5 vs 16,0/15,2/14,9 (thấp)** | ~ngang/hơi cao | lẫn |
+| 4. Bạn hay đi cùng (100 kỳ) | ~ngang | lẫn | 10,9/11,6/12,6 vs 10,9/10,7/10,5 (cao ở 50/100) |
+
+3. Theo vị trí (đoán ±2, số lần đúng 20/50/100 kỳ): giữ như kỳ trước / tiếp đà / đảo đà
+- Loto 23/58/111 · 13/37/69 · 24/57/150
+- Mega 29/87/167 · 24/60/108 · 31/78/145
+- Power 24/59/112 · 14/32/69 · 20/53/112
+→ "Tiếp đà" luôn kém nhất; Loto "đảo đà" tốt nhất ở 100 kỳ.
+
+Dấu vết ổn định: Loto tổng ghép thấp + Fib 2 kỳ thấp; Mega tổng ghép cao; Power hiệu ghép cao. Chưa áp vào pool — chờ thử như điểm cộng/trừ riêng từng game.
