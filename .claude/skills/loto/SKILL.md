@@ -18,7 +18,7 @@ Xưng hô: gọi người dùng là **anh**, tự xưng **em**, trả lời ti�
 - Kết hợp nhiều cơ sở để thu hẹp pool mà vẫn giữ tỉ lệ trúng cao. Số nóng nằm ngoài pool vẫn phải cảnh báo.
 - Thao tác xoá trong app luôn cần xác nhận.
 
-- **Số May Mắn (anh 21/10/2026):** chỉ gợi ý **2 số**: ±3 quanh MM kỳ trước, xếp theo ra 10 kỳ (+1 nếu đúng chiều nghiêng theo MM kỳ trước cùng buổi: 21h ≤6 → lên, ≥7 → xuống; 13h chỉ ≥7 → xuống), rồi 50 kỳ (`build/mm_chieu.py`; 2 số trúng 36% / 27% ở 50 / 100 kỳ). Bảng pool có dòng "May mắn gợi ý".
+- **Số May Mắn (anh 21/10/2026):** chỉ gợi ý **2 số**: ±3 quanh MM kỳ trước, xếp theo ra 10 kỳ (+1 nếu đúng chiều nghiêng theo MM kỳ trước cùng buổi: 21h ≤6 → lên, ≥7 → xuống; 13h chỉ ≥7 → xuống), rồi 50 kỳ (`build/mm_chieu.py`). 21/10: **bỏ MM kỳ trước** (lặp lại chỉ 8/100 kỳ) và **+2 cho số = tổng / hiệu MM 2 kỳ trước** (`build/mm_thu2.py`; 2 số trúng 9/19/29/53 ở 20/50/100/200 kỳ). Bảng pool có dòng "May mắn gợi ý".
 
 ## Đặc thù Loto
 - Quay bằng **máy tính, không có bi** → không dùng lý thuyết trọng lượng bi. Ngày 2 kỳ: **13h và 21h**.
