@@ -1827,3 +1827,7 @@ Chấm lùi, mỗi kỳ chỉ dùng dữ liệu trước nó. Ô ghi: trúng TB 
 | Power P12 | 1,90·4·1 / 1,84·10·3 / 1,62·16·4 | (không cách nào hơn rõ) | giữ pool app |
 | Power P15 | 2,25·8·2 / 2,22·17·6 / 1,98·28·10 | − 4 nếu ≥2 pool | 2,35·9·2 / 2,24·19·6 / 2,03·31·9 |
 - Chỉ Loto P12 hơn rõ ở cả 3 khung. Mega P12/P15, Power P15 hơn nhẹ. Chưa đưa vào app, chờ anh quyết.
+
+## 21/10/2026 — So các cách chọn 2 số May Mắn Loto (`build/mm_thu2.py`)
+Số kỳ trúng ở 20 / 50 / 100 / 200 kỳ: **đang dùng (±3 quanh MM kỳ trước + nóng 10 kỳ + chiều nghiêng) 7 / 18 / 27 / 49** · ±3 cùng buổi 8 / 13 / 19 / 37 · nóng cùng buổi 20 kỳ 6 / 14 / 20 / 32 · kết hợp nhiều tín hiệu 5 / 12 / 22 / 42 · vắng lâu nhất 4 / 9 / 21 / 43 · chiều + nóng 20 4 / 8 / 21 / 43 · nóng 20 kỳ 4 / 8 / 17 / 34 · chuyển kỳ 3 / 7 / 16 / 32 · vắng 3–8 kỳ 3 / 6 / 13 / 31.
+- Cách đang dùng vẫn tốt nhất ở 50, 100 và 200 kỳ → giữ. 10 kỳ gần nhất trúng 4/10.
