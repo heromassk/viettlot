@@ -2041,3 +2041,9 @@ Power Pool 15 giữ cách đếm cũ (không tính dòng ngày quay) vì tính v
 - Power: Vắng x kỳ 11,5/10,8/10,5 · Hiệu 11,3/10,5/9,7 · ±1 kỳ trước 12,2/11,2/10,6 · ±1 kỳ cách 1 11,0/10,5/9,9 (≥2: 13,8/12,1/11,5).
 Pool kéo thêm tốt: Loto hiệu, ngày quay, số kẹp · Mega tổng, vắng, ngày quay · Power số kỳ cách 1, ngày quay.
 Bỏ pool yếu khỏi phép đếm: % mỗi số tăng nhẹ (Loto 14,1→15,4% ở 100 kỳ, cỡ 17→12) nhưng trúng/kỳ và kỳ ≥3 giảm mạnh (Loto 49→22, Mega 71→46, Power 48→5). Cùng cỡ thì Pool 12/15 vẫn hơn (Loto P12: 2,01 trúng/kỳ, 16,8%). → Chưa đổi app, chờ anh chọn.
+
+## 21/10/2026 — Loại số trong ≥2 pool (build/nh2_loai.js)
+Nhóm ra ít ổn định trong ≥2 pool: Loto vắng 3–5 kỳ (11%), có trong pool Tổng (12%), có mặt ≥4 pool; Mega ngoài top 20 app (12%), ra kỳ trước (12%), ra ≥3 lần/10 kỳ; Power không có nhóm nào.
+Loại các nhóm này: % mỗi số tăng 0,5–1,5 điểm nhưng mất kỳ trúng ≥3/≥4 (Loto 49/15 → 24/6, Mega 71/29 → 43/18 ở 100 kỳ).
+Kỳ trúng ≥3/≥4/≥5 ở 100 kỳ: Loto ≥2 (17 số) 49/15/2 · Pool app 18: **65/31/11** · P15: 55/20/4. Mega ≥2 (21 số) 71/29/9 · app 18: 59/26/7 · P15: 48/18/6. Power ≥2 (21 số) 48/11/2 · app 18: 41/16/1 · P15: 31/9/1.
+→ Muốn trúng 4–5 số: Loto dùng Pool app 18; Mega ≥2 và app 18 ngang nhau (app ít số hơn); Power app 18 nhiều kỳ ≥4 hơn. ≥2 pool không lọc ra được số để thu hẹp.
