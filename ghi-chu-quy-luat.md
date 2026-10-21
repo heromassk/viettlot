@@ -1880,3 +1880,7 @@ Khi một số đang nghỉ x kỳ, số lần nó ra ngay kỳ sau / số lần
 | ≥26 | 10/90 · 22/189 | 13/143 · 25/302 | 14/182 · 26/300 |
 - Mức nào cũng ra lại khoảng 7–12% mỗi kỳ, không có mức nghỉ nào nổi hẳn. Liền 2 buổi: nghỉ ≥26 kỳ nhỉnh nhất (11%, 12%) nhưng tách buổi thì không giữ (13h 9%/8%, 21h 8%/9%).
 - Thử cộng điểm số nghỉ ≥26 kỳ vào cách mỗi buổi một cách: 10/22/32/60 → 10/22/32/62 (chỉ hơn 2 kỳ ở khung 200) → chưa đưa vào.
+
+## 21/10/2026 — Thu hẹp trong ±3 theo từng buổi (`build/mm_lech.py`)
+- Độ lệch MM kỳ này − MM kỳ trước (100 kỳ của buổi): 13h −3:9 · −2:11 · −1:10 · 0:8 · +1:10 · +2:8 · +3:3 · ngoài ±3: 41; 21h −3:7 · −2:5 · −1:8 · 0:10 · +1:6 · +2:14 · +3:7 · ngoài ±3: 43. 13h ít +3, 21h hay +2 — nhưng dùng tần suất độ lệch cùng buổi làm điểm thì kém đi (mọi kỳ 10/22/32/60 → 10/20/31/56) → không dùng.
+- Khoảng ±3 chỉ chứa MM thật ~51–57/100 kỳ. Thu hẹp bằng cách chấm điểm mỗi buổi một cách (100 kỳ của buổi): 13h 2 số 27 · 3 số 36 · 4 số 38 · cả ±3 51; 21h 2 số 33 · 3 số 38 · 4 số 43 · cả ±3 57.
