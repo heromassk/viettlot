@@ -2075,3 +2075,9 @@ Pool 9/12/15 cộng điểm tam giác: chỉ **Mega P12, P15 lên 4 bậc** hơn
 | P25 | 4/6/21/37 | 8/30/63/122 | 3,70 |
 | P30 | 11/24/45/88 | 15/39/82/169 | 4,25 |
 Mỗi kỳ chỉ còn 26–30 số sau luật loại. P18→P20: đủ 5 từ 9 lên 15 kỳ/100; P20→P22: 15→18.
+
+## 22/10/2026 — Kỳ sau có số = ×2 hoặc ÷2 số kỳ trước? (build/nhan_chia2.py)
+% ra mỗi số trong nhóm vs số còn lại (20/50/100 kỳ):
+- **÷2 (nửa số chẵn kỳ trước):** Loto 13h (so kỳ 13h trước) 26,2/23,0/18,6 vs ~14 · Power 16,0/16,1/13,9 vs ~10,7 · Mega 18,2/15,1/13,2 vs ~13,2 (đang nhạt dần) · Loto 21h, Loto liền: không đều.
+- **×2:** Mega ra ít 9,3/10,0/11,5 vs ~13,5 · Loto 13h ra ít 12,2/11,0/11,5 vs ~14,5 · Power, Loto 21h: không đều.
+- Mỗi kỳ ~2 số mỗi nhóm; kỳ có ≥1 số ÷2 ra: Loto 13h 8/18/32, Power 7/16/31 (20/50/100).
