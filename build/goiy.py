@@ -295,10 +295,11 @@ def backtest(W=100):
     recs = []
     for t in range(T - W, T):
         f, s = signals(t)
-        rk = pool_of(score(f, s), s, 20)
+        rkx = pool_of(score(f, s), s, int(os.environ.get('GOIY_RKN', '20')))   # GOIY_RKN: nghiên cứu pool to hơn 20 (anh 22/10/2026)
+        rk = rkx[:20]
         sig = {k: (len(s[k] & R[t]), len(s[k])) for k in SIGS}
         cl = [(lab, fn(XT(t)), sum(fn(m) for m in MC) / len(MC)) for lab, _, fn in claims(t, rk)]
-        recs.append(dict(sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 18, 20)}, cl=cl, rk=rk, t=t))
+        recs.append(dict(sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 18, 20)}, cl=cl, rk=rk, rkx=rkx, t=t))
     return recs
 
 def summ(recs):
@@ -624,7 +625,7 @@ print(f'Kỳ gần nhất {D["dates"][-1]}: **{fm(R[-1])}** (tổng {sums[-1]})\
 print('### Tín hiệu dấu vết (cùng một cách tính mọi kỳ)\n')
 RECS = backtest(100)   # tối đa 100 kỳ
 if os.environ.get('GOIY_RKDUMP'):   # nghiên cứu pool 12/15 (anh 21/10/2026): xuất thứ hạng app (top 20) từng kỳ, chấm lùi
-    json.dump({D['dates'][r['t']]: r['rk'] for r in backtest(int(os.environ.get('GOIY_RKW', '200')))}, open(os.environ['GOIY_RKDUMP'], 'w'))
+    json.dump({D['dates'][r['t']]: r['rkx'] for r in backtest(int(os.environ.get('GOIY_RKW', '200')))}, open(os.environ['GOIY_RKDUMP'], 'w'))
 B = {W: summ(RECS[-W:]) for W in (10, 50, 100)}
 if os.environ.get('GOIY_BAO'):   # bao k số theo thứ hạng pool (anh 19/10/2026): mỗi kỳ chấm lại, kỳ có ≥3 / ≥4 / đủ KB số trong k số đầu
     from math import comb as _cmb
