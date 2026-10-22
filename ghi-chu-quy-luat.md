@@ -2081,3 +2081,7 @@ Mỗi kỳ chỉ còn 26–30 số sau luật loại. P18→P20: đủ 5 từ 9 
 - **÷2 (nửa số chẵn kỳ trước):** Loto 13h (so kỳ 13h trước) 26,2/23,0/18,6 vs ~14 · Power 16,0/16,1/13,9 vs ~10,7 · Mega 18,2/15,1/13,2 vs ~13,2 (đang nhạt dần) · Loto 21h, Loto liền: không đều.
 - **×2:** Mega ra ít 9,3/10,0/11,5 vs ~13,5 · Loto 13h ra ít 12,2/11,0/11,5 vs ~14,5 · Power, Loto 21h: không đều.
 - Mỗi kỳ ~2 số mỗi nhóm; kỳ có ≥1 số ÷2 ra: Loto 13h 8/18/32, Power 7/16/31 (20/50/100).
+
+## 22/10/2026 — Áp "Chia 2" vào app (bang.js c2Row; chấm lùi build/nhan2_pool.js)
+- Dòng pool **Chia 2** (Loto: chỉ kỳ 13h, nửa số chẵn kỳ 13h trước; Power: nửa số chẵn kỳ trước) tính vào ≥2 pool. ≥2 pool (trúng/kỳ · kỳ ≥3; 20/50/100): Loto 2,85/2,94/2,68 → 3,00/3,02/2,76 · 15/36/61 → 15/36/63; Power 3,05/2,72/2,62 → 3,10/2,80/2,70 · 14/31/58 → 14/32/62. Power P15 đếm ≥2 không tính dòng này.
+- **Nhân 2 đẩy xuống 4 bậc** chỉ ở Pool 12: Loto (kỳ 13h) 40/96/202 → 40/98/206; Mega 46/104/197 → 46/105/198. P9, P15 kém đi → không áp.
