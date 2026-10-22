@@ -2047,3 +2047,12 @@ Nhóm ra ít ổn định trong ≥2 pool: Loto vắng 3–5 kỳ (11%), có tro
 Loại các nhóm này: % mỗi số tăng 0,5–1,5 điểm nhưng mất kỳ trúng ≥3/≥4 (Loto 49/15 → 24/6, Mega 71/29 → 43/18 ở 100 kỳ).
 Kỳ trúng ≥3/≥4/≥5 ở 100 kỳ: Loto ≥2 (17 số) 49/15/2 · Pool app 18: **65/31/11** · P15: 55/20/4. Mega ≥2 (21 số) 71/29/9 · app 18: 59/26/7 · P15: 48/18/6. Power ≥2 (21 số) 48/11/2 · app 18: 41/16/1 · P15: 31/9/1.
 → Muốn trúng 4–5 số: Loto dùng Pool app 18; Mega ≥2 và app 18 ngang nhau (app ít số hơn); Power app 18 nhiều kỳ ≥4 hơn. ≥2 pool không lọc ra được số để thu hẹp.
+
+## 22/10/2026 — Dấu vết "tam giác" 3 số trên 2 kỳ liền (build/tam_giac.py)
+▽ = 2 số kề cột kỳ trước (i, i+1) → số kỳ sau = tổng / hiệu / tích / thương của chúng. △ = 1 số kỳ trước + 2 số kề kỳ sau có quan hệ.
+Kỳ có ▽ (20/50/100): Loto 8/20/29 · Mega 7/11/31 · Power 9/15/23. Kỳ có △: Loto 5/8/19 · Mega 3/11/21 · Power 4/10/20.
+Đoán trước bằng ▽ — % ra mỗi số trong nhóm vs số còn lại (20/50/100), đứng cả 3 khung:
+- **Mega ▽ tổng** (~2 số/kỳ): 17,8/16,7/16,8% vs 13,1/13,2/13,2%.
+- **Power ▽ tổng** 13,8/12,4/11,7 vs ~10,8 · **▽ hiệu** 12,5/12,2/11,2 vs ~10,8 · gộp 4 phép (~7 số) 12,5/11,5/11,5 vs ~10,8.
+- **Loto 13h ▽ gộp 4 phép** (~5 số) 18,3/17,7/16,0 vs 13,5/13,7/14,0 · **Loto 21h ▽ tổng** 17,1/16,1/17,1 vs ~14,1. Loto liền 2 buổi: ▽ tổng thấp (7,9/13,7/12,3 vs 14,4).
+- Ra đúng cột (i / i+1) thấp hơn nhiều → chỉ dùng giá trị, không dùng vị trí. Tích, thương quá ít số (0,1–0,3/kỳ) để kết luận.
