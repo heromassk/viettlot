@@ -2056,3 +2056,10 @@ Kỳ có ▽ (20/50/100): Loto 8/20/29 · Mega 7/11/31 · Power 9/15/23. Kỳ c�
 - **Power ▽ tổng** 13,8/12,4/11,7 vs ~10,8 · **▽ hiệu** 12,5/12,2/11,2 vs ~10,8 · gộp 4 phép (~7 số) 12,5/11,5/11,5 vs ~10,8.
 - **Loto 13h ▽ gộp 4 phép** (~5 số) 18,3/17,7/16,0 vs 13,5/13,7/14,0 · **Loto 21h ▽ tổng** 17,1/16,1/17,1 vs ~14,1. Loto liền 2 buổi: ▽ tổng thấp (7,9/13,7/12,3 vs 14,4).
 - Ra đúng cột (i / i+1) thấp hơn nhiều → chỉ dùng giá trị, không dùng vị trí. Tích, thương quá ít số (0,1–0,3/kỳ) để kết luận.
+
+## 22/10/2026 — Áp dòng pool "Tam giác" (bang.js tgRow; chấm lùi build/tam_giac_pool.js)
+Dòng Tam giác tính vào ≥2 pool. ≥2 pool trước → sau (trúng/kỳ · % mỗi số · kỳ ≥3; 20/50/100):
+- Loto: 2,55/2,74/2,46 → **2,80/2,96/2,68** · 14,2/15,8/14,1 → 14,7/16,0/14,3% · 13/32/49 → **14/36/61**
+- Mega: 3,30/3,04/3,00 → **3,45/3,12/3,06** · 15,4/14,3/14,0 → 15,6/14,3/13,9% · 17/34/71 → **18/36/74**
+- Power (tổng+hiệu): 2,85/2,46/2,41 → **3,05/2,72/2,62** · 13,8/12,1/11,5 → 13,2/12,0/11,4% · 13/24/48 → **14/31/58** (chỉ tổng: 52 kỳ ≥3 → giữ tổng+hiệu)
+Pool 9/12/15 cộng điểm tam giác: chỉ **Mega P12, P15 lên 4 bậc** hơn đủ 3 khung (P12 45/102/197 → 46/104/197; P15 49/124/237 → 50/125/238). Loto, Power kém đi → không áp. Power P15 đếm ≥2 không tính dòng Tam giác, Ngày quay.
