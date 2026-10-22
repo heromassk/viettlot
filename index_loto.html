@@ -615,6 +615,10 @@ function vxBlock(J){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game,p2=
    Loto: thứ, ngày, tháng, ghép tháng–ngày · Mega: ngày lộn, ngày + tháng · Power: thứ, ngày ±1 */
 /* Pool tam giác (anh 22/10/2026, tam_giac.py): số = phép tính của 2 số ĐỨNG KỀ (xếp tăng dần) ở kỳ trước; không cần đúng cột.
    Mega: tổng · Power: tổng + hiệu · Loto: so với kỳ CÙNG GIỜ trước — 13h tổng/hiệu/tích/thương, 21h tổng */
+/* Pool chia 2 (anh 22/10/2026, nhan_chia2.py): một nửa số chẵn kỳ trước — Power (kỳ liền trước), Loto 13h (so kỳ 13h trước). Mega, Loto 21h không có dấu vết */
+function c2Prev(J,t){const RA=J.res201||[],DA=J.dates201||[],g=J.game,ds=String(t>=RA.length?J.next:DA[t]||'');if(g!=='loto')return {p:RA[t-1],s:''};const s=ds.endsWith('13h')?'13h':ds.endsWith('21h')?'21h':'';for(let i=t-1;i>=0;i--)if(!s||String(DA[i]).endsWith(s))return {p:RA[i],s};return {p:null,s};}
+function c2Row(J,t){const g=J.game;if(g!=='power'&&g!=='loto')return null;const {p,s}=c2Prev(J,t);if(g==='loto'&&s!=='13h')return ['c2','Chia 2 <small>(chỉ kỳ 13h)</small>',[]];if(!p)return ['c2','Chia 2',null];const P=new Set(p);
+  return ['c2',g==='loto'?'Chia 2 <small>(nửa số chẵn kỳ 13h trước)</small>':'Chia 2 <small>(nửa số chẵn kỳ trước)</small>',[...new Set(p.filter(a=>a%2===0).map(a=>a/2))].filter(x=>x>=1&&!P.has(x)).sort((a,b)=>a-b)];}
 function tgRow(J,t){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game,ds=String(t>=RA.length?J.next:DA[t]||'');let p=null,s='',lab='Tam giác';
   if(g==='loto'){s=ds.endsWith('13h')?'13h':ds.endsWith('21h')?'21h':'';for(let i=t-1;i>=0;i--)if(!s||String(DA[i]).endsWith(s)){p=RA[i];break;}}else p=RA[t-1];
   if(!p)return ['tg',lab,null];const a=[...p].sort((x,y)=>x-y),P=new Set(a),o=new Set();
@@ -638,9 +642,9 @@ function poolAt(J,G,t){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game;
   const kep=S=>{const o=[];S.forEach(a=>{if(S.has(a+2)&&!S.has(a+1))o.push(a+1);});return o;};
   const kp=[...new Set([...kep(P),...kep(P2).filter(n=>!P.has(n))])].sort((a,b)=>a-b);
   const d1=String(DA[idx[0]]).replace(/\/\d{4}/,''),d2=String(DA[idx[1]]).replace(/\/\d{4}/,'');
-  const rows=[['v',`Vắng ${X} kỳ`,vang],['t','Tổng',[...T].sort((a,b)=>a-b)],['h','Hiệu',[...H].sort((a,b)=>a-b)],['k1',`±1 kỳ trước <small>(${d1})</small>`,ke(P)],['k2',`±1 kỳ cách 1 kỳ <small>(${d2})</small>`,ke(P2)],['tr',`Trùng kỳ trước <small>(${d1})</small>`,[...pv].sort((a,b)=>a-b)],['t2',`Số kỳ cách 1 kỳ <small>(${d2})</small>`,[...pv2].sort((a,b)=>a-b)],['kp','Số kẹp <small>(chờ trong 2 kỳ)</small>',kp],ndRow(J,t>=RA.length?J.next:DA[t]),tgRow(J,t)];
+  const rows=[['v',`Vắng ${X} kỳ`,vang],['t','Tổng',[...T].sort((a,b)=>a-b)],['h','Hiệu',[...H].sort((a,b)=>a-b)],['k1',`±1 kỳ trước <small>(${d1})</small>`,ke(P)],['k2',`±1 kỳ cách 1 kỳ <small>(${d2})</small>`,ke(P2)],['tr',`Trùng kỳ trước <small>(${d1})</small>`,[...pv].sort((a,b)=>a-b)],['t2',`Số kỳ cách 1 kỳ <small>(${d2})</small>`,[...pv2].sort((a,b)=>a-b)],['kp','Số kẹp <small>(chờ trong 2 kỳ)</small>',kp],ndRow(J,t>=RA.length?J.next:DA[t]),tgRow(J,t)];{const c=c2Row(J,t);if(c)rows.push(c);}
   // số có mặt ở nhiều pool (anh 20/10/2026): đếm số pool chứa mỗi số, giữ số có mặt ≥2 pool (anh 20/10/2026), xếp nhiều → ít
-  const C={};rows.forEach(([,,a])=>a.forEach(n=>C[n]=(C[n]||0)+1));const nh=Object.keys(C).map(Number).filter(n=>C[n]>=2).sort((a,b)=>C[b]-C[a]||a-b);
+  const C={};rows.forEach(([,,a])=>(a||[]).forEach(n=>C[n]=(C[n]||0)+1));const nh=Object.keys(C).map(Number).filter(n=>C[n]>=2).sort((a,b)=>C[b]-C[a]||a-b);
   rows.push(['nh','Có mặt ≥2 pool',nh]);
   // pool app (cỡ đang chọn ở "Pool gợi ý") để đối chiếu (anh 20/10/2026): kỳ tới lấy J.pools, kỳ cũ lấy poolThuc.hist (app lưu 20 kỳ gần)
   const PK=(typeof window!=='undefined'&&window.__poolK)||18;let AP=null;
@@ -653,7 +657,7 @@ function poolAt(J,G,t){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game;
   rows.push(['tl','Pool tâm linh',TLo?[...TLo.top].sort((a,b)=>a-b):null]);
   rows.push(['ap',`Pool app ${PK}`,APs]);{const R20=t>=RA.length?(J.rank||[]).slice(0,20):(((J.rkHist||{})[DA[t]])||null);rows.push(['ai','Pool 20 <small>(tham khảo)</small>',R20?[...R20].slice(0,20).sort((a,b)=>a-b):null]);}   /* anh 22/10/2026: thay dòng App ∩ ≥2 pool bằng Pool 20 (top 20 app) — chỉ tham khảo */
   // Pool 12 / 15 (anh 21/10/2026, pool12_thu.js): giữ thứ hạng app (top 20, chấm lùi cùng cách), đẩy số có mặt ở nhiều pool lên trên; ô nào không hơn app thì giữ pool app
-  {const RK=t>=RA.length?(J.rank||[]).slice(0,20):((J.rkHist||{})[DA[t]]||null);const NDs=new Set(((rows.find(r=>r[0]==='nd')||[])[2])||[]),TGs=new Set(((rows.find(r=>r[0]==='tg')||[])[2])||[]),cn=x=>(C[x]||0)-(NDs.has(x)?1:0)-(TGs.has(x)?1:0);   /* Power P15 giữ cách đếm cũ (không tính dòng ngày quay) */
+  {const RK=t>=RA.length?(J.rank||[]).slice(0,20):((J.rkHist||{})[DA[t]]||null);const NDs=new Set(((rows.find(r=>r[0]==='nd')||[])[2])||[]),TGs=new Set(((rows.find(r=>r[0]==='tg')||[])[2])||[]),C2s=new Set(((rows.find(r=>r[0]==='c2')||[])[2])||[]),cn=x=>(C[x]||0)-(NDs.has(x)?1:0)-(TGs.has(x)?1:0)-(C2s.has(x)?1:0);   /* Power P15 giữ cách đếm cũ (không tính dòng ngày quay) */
    const MS={};rows.forEach(([k,,a])=>{if(a)MS[k]=new Set(a);});const TS=new Set(TLo?TLo.top:[]);const hs=(k,x)=>k==='tl'?TS.has(x):!!(MS[k]&&MS[k].has(x));const up=(ks,b)=>(x,i)=>i-ks.reduce((z,k)=>z+(hs(k,x)?b:0),0);
    // mỗi game / mỗi cỡ một cách (anh 21/10/2026, pgrid: chấm lùi 20/50/100 kỳ): đẩy số nằm trong pool tốt của chính game đó lên b bậc
    const HK2=(()=>{const tg=new Set(),hi=new Set(),bn=new Set();for(const a of pv)for(const b of pv2){if(a+b<=NB)tg.add(a+b);if(a!==b)hi.add(Math.abs(a-b));}const co={};for(let u=Math.max(0,t-101);u<t-1;u++)for(const a of RA[u])for(const b of RA[u])if(a!==b)co[a*100+b]=(co[a*100+b]||0)+1;for(const a of pv){let m=0;for(let b=1;b<=NB;b++)if(b!==a)m=Math.max(m,co[a*100+b]||0);for(let b=1;b<=NB;b++)if(b!==a&&(co[a*100+b]||0)===m)bn.add(b);}[tg,hi,bn].forEach(S=>pv.forEach(a=>S.delete(a)));return {tg,hi,bn};})();
@@ -661,11 +665,13 @@ function poolAt(J,G,t){const RA=J.res201||[],DA=J.dates201||[],NB=J.nb,g=J.game;
    const ND=(()=>{const m=String((t>=RA.length?J.next:DA[t])||'').match(/(\d+)\/(\d+)\/(\d+)/);if(!m)return new Set();const w=new Date(+m[3],+m[2]-1,+m[1]).getDay();return new Set([+m[1],+m[2],w===0?8:w+1].filter(x=>x>=1&&x<=NB));})();
    /* Mega P12, P15 (anh 22/10/2026): số tam giác đẩy lên 4 bậc */
    /* Loto (anh 21/10/2026, dò ngày-thứ-tháng): số = thứ / ngày / tháng của kỳ đó ra 23/18/17% vs 14% → P9, P15 đẩy lên 4 bậc */
-   const RULE={loto:{9:(x,i)=>up(['t2','kp'],2)(x,i)-(ND.has(x)?4:0),12:up(['v','t'],4),15:(x,i)=>up(['t2','tl'],2)(x,i)-(ND.has(x)?4:0)},mega:{9:(x,i)=>up(['v','tl'],4)(x,i)-(HK2.tg.has(x)?2:0)+(HK2.bn.has(x)?4:0),12:(x,i)=>up(['t','tl'],2)(x,i)-(TGs.has(x)?4:0),15:(x,i)=>up(['t2','tl'],4)(x,i)-(TGs.has(x)?4:0)},power:{9:(x,i)=>up(['k1'],2)(x,i)-(HK2.hi.has(x)?4:0)-(HK2.bn.has(x)?4:0),12:(x,i)=>up(['tr'],6)(x,i)-(HK2.bn.has(x)?2:0),15:(x,i)=>i-(cn(x)>=2?4:0)}}[g]||{9:(x,i)=>i,12:(x,i)=>i,15:(x,i)=>i};
+   /* Loto P12 (kỳ 13h), Mega P12 (anh 22/10/2026, nhan_chia2): số = 2× số kỳ trước ra ít → đẩy xuống 4 bậc */
+   const X2s=(()=>{const {p,s:ss}=c2Prev(J,t);if(!p||(g==='loto'&&ss!=='13h')||g==='power')return new Set();const P=new Set(p);return new Set(p.map(a=>2*a).filter(x=>x<=NB&&!P.has(x)));})();
+   const RULE={loto:{9:(x,i)=>up(['t2','kp'],2)(x,i)-(ND.has(x)?4:0),12:(x,i)=>up(['v','t'],4)(x,i)+(X2s.has(x)?4:0),15:(x,i)=>up(['t2','tl'],2)(x,i)-(ND.has(x)?4:0)},mega:{9:(x,i)=>up(['v','tl'],4)(x,i)-(HK2.tg.has(x)?2:0)+(HK2.bn.has(x)?4:0),12:(x,i)=>up(['t','tl'],2)(x,i)-(TGs.has(x)?4:0)+(X2s.has(x)?4:0),15:(x,i)=>up(['t2','tl'],4)(x,i)-(TGs.has(x)?4:0)},power:{9:(x,i)=>up(['k1'],2)(x,i)-(HK2.hi.has(x)?4:0)-(HK2.bn.has(x)?4:0),12:(x,i)=>up(['tr'],6)(x,i)-(HK2.bn.has(x)?2:0),15:(x,i)=>i-(cn(x)>=2?4:0)}}[g]||{9:(x,i)=>i,12:(x,i)=>i,15:(x,i)=>i};
    [9,12,15].forEach(K=>rows.push(['p'+K,`Pool ${K}`,RK?RK.map((x,i)=>[RULE[K](x,i),i,x]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).slice(0,K).map(z=>z[2]).sort((a,b)=>a-b):null]));}
   if(g==='loto'){const mg=t>=RA.length?(J.mm||null):((J.mmGoi||{})[DA[t]]||null);rows.push(['mm','May mắn gợi ý',mg?[...mg]:null]);}
   return {rows,P,P2,T,C,TLs,MMR:t<RA.length?(J.lk201||[])[t]:null,lo:g==='loto'};}
-const POOLNM={v:'Vắng',t:'Tổng',h:'Hiệu',k1:'±1 trước',k2:'±1 cách 1',tr:'Trùng trước',t2:'Cách 1 kỳ',kp:'Kẹp',nd:'Ngày quay',tg:'Tam giác',nh:'≥2 pool',mm:'May mắn',p9:'Pool 9',p12:'Pool 12',p15:'Pool 15',tl:'Tâm linh',ap:'Pool app',ai:'Pool 20 (tk)'};
+const POOLNM={v:'Vắng',t:'Tổng',h:'Hiệu',k1:'±1 trước',k2:'±1 cách 1',tr:'Trùng trước',t2:'Cách 1 kỳ',kp:'Kẹp',nd:'Ngày quay',tg:'Tam giác',c2:'Chia 2',nh:'≥2 pool',mm:'May mắn',p9:'Pool 9',p12:'Pool 12',p15:'Pool 15',tl:'Tâm linh',ap:'Pool app',ai:'Pool 20 (tk)'};
 // bảng pool (kỳ tới hoặc 1 kỳ cũ): res = kết quả kỳ đó để chấm (số trúng tô màu + cột Trúng)
 function poolTableHTML(A,res,p2,fs,cp){const R=res?new Set(res):null,{P,P2,T,lo}=A;
   const mk=n=>lo?'':(P2.has(n)?'<sup style="color:#3fb950;font-size:.6em;">▲</sup>':'')+(T.has(n)?'<sup style="color:#ffb347;font-size:.6em;">◆</sup>':'')+(!P.has(n)&&(P.has(n-1)||P.has(n+1))?'<sup style="color:#ff4d4f;font-size:.6em;">▼</sup>':'');   // Loto: ẩn dấu (chưa ổn định)
