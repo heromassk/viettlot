@@ -3,7 +3,7 @@
 Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt, ngắn gọn, dùng bảng. Đọc kỹ các skill trong `.claude/skills/` (loto, mega, power, suyluan) trước khi làm — nguyên tắc của anh nằm ở đầu mỗi skill.
 
 ## Nguyên tắc cốt lõi của anh (không được làm trái)
-- Không so với "bốc ngẫu nhiên / bỏ bừa" như thước đo thắng thua; phương pháp phải có cơ sở, **cố định cách tính qua các kỳ**, chấm bằng tỉ lệ đúng của chính nó và độ ổn định (khung 10/20/50/100 kỳ, 3 đoạn 100 kỳ).
+- Không so với "bốc ngẫu nhiên / bỏ bừa" — kể cả "mức tự nhiên", "mọi bộ số có thể", "kỳ vọng" (anh nhắc lại 19/10/2026: ngẫu nhiên không có cơ sở). Anh hỏi bao nhiêu kỳ thì chỉ đếm số kỳ ở khung 20/50/100; phương pháp phải có cơ sở, **cố định cách tính qua các kỳ**, chấm bằng tỉ lệ đúng của chính nó và độ ổn định (khung 10/20/50/100 kỳ, 3 đoạn 100 kỳ).
 - **Chơi bền, không chơi ăn ngay**: không đổi luật/pool vì 1 kỳ; có kỳ trúng kỳ trật.
 - **Dấu vết = xác suất nghiêng**, không phải đúng 100%. Lệch nhỏ mà ổn định vẫn dùng (trọng số nhỏ).
 - **Luật đúng ≥70%** (khung 50 & 100 kỳ) là dùng tốt, miễn số bị loại không ra nhiều hơn trung bình.
@@ -20,7 +20,11 @@ Người dùng: gọi là **anh**, tự xưng **em**, trả lời tiếng Việt
 - Nghiên cứu và kết quả: `ghi-chu-quy-luat.md` (ghi nối tiếp), `ra-soat-dau-vet.md`.
 - Max 3D / 3D+ / Pro: dữ liệu `build/max3d_data.json`, `build/max3dpro_data.json`; ô trong app + gợi ý 3 cặp kèm lý do từ `build/max3d_app.py` (lưu gợi ý đã đưa vào `build/max3d_goiy_log.jsonl`); tâm linh `build/max3d_tamlinh.py`; các script `build/max3d_*.py`. Sau mỗi lần `lay_kq.py`: `python3 build/max3d_app.py` → `node build/max3d_tl.js` (17 phương pháp tâm linh, ra `build/max3d_tl.json`) → `python3 build/max3d_app.py` lần nữa (ghép cặp tâm linh) → `assemble.py`.
 
+## Đẩy lên GitHub (anh dặn 19/10/2026)
+- Mỗi lần cập nhật (sửa app, nhập kết quả, gợi ý, nghiên cứu): commit → push nhánh làm việc → tạo PR vào `main` → gộp luôn, không cần hỏi lại. Đăng lại app ở link hiện dùng.
+
 ## App đã đăng
+- **Link hiện dùng (tài khoản mới, 19/10/2026):** https://claude.ai/artifact/JQaEpNPaGoodyS8YthwX5X — cập nhật bằng cách đăng lại `build/nghien-cuu-loto.html` (khai báo capabilities db + downloads). Link ULkC95JvE2BsKHfXyypXHF (13/10) có thêm ô Pool 25 Power, Máy học Mega, Kiểm bộ số chưa có trong code.
 - https://claude.ai/artifact/X8ZmKZJ3RGDKZF7j8wbxFr — thuộc tài khoản cũ. Tài khoản mới không ghi đè được link này trừ khi được chia sẻ quyền sửa; nếu không, đăng thành link mới từ `build/nghien-cuu-loto.html`.
 
 ## Việc đang dở (05/10/2026)

@@ -14,6 +14,16 @@ h3{margin:14px 0 6px;font-size:.95rem;}
 .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px;}
 .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px;box-shadow:0 4px 18px rgba(0,0,0,.25);}
 details.card>summary{cursor:pointer;list-style:none;margin-bottom:0;}
+#poolIn .bg-poolblk{background:none!important;border:0!important;padding:0!important;margin:0!important;}
+#poolIn details.pcard{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--pc);border-radius:14px;padding:12px 12px;margin:0 0 16px;box-shadow:0 4px 18px rgba(0,0,0,.25);}
+#poolIn details.pcard>summary{font-size:.84rem;}
+#poolIn details.pcard{padding:10px 10px;}
+/* tạm ẩn (anh 20/10/2026): thẻ Cập nhật kết quả, tiêu đề Nghiên cứu…, dòng Dữ liệu… */
+#addCard,#h1,#status,#m3plusCard,#m3proCard{display:none!important;}   /* + Max 3D+, Max 3D Pro tạm ẩn */
+#poolIn .bg-ppr{gap:2px!important;}#poolIn .bg-ppr>b{min-width:24px;}#poolIn .bg-ppr .bg-b,#poolIn .bg-ppe{min-width:23px!important;width:23px!important;height:23px!important;flex:0 0 23px!important;font-size:.72rem!important;}
+#poolIn details.pcard>summary>b{font-size:1.08rem;color:var(--pc);}
+#poolIn details.pcard[open]>summary{margin-bottom:8px;}
+
 details.card>summary::-webkit-details-marker{display:none;}
 details.card>summary::before{content:'▸ ';color:var(--accent);}
 details.card[open]>summary::before{content:'▾ ';}
@@ -92,10 +102,7 @@ input.n{width:52px;text-align:center;}
   <div id="bkAuto" class="foot"></div>
   <div id="bkMsg" class="foot"></div>
 </details>
-<details class="card" id="poolCard">
-  <summary><h2>Pool</h2></summary>
-  <div id="poolIn"></div>
-</details>
+<div id="poolIn"></div>
 <details class="card" id="bangCard">
   <summary><h2>Gợi ý kỳ tới</h2></summary>
   <div id="bangIn"></div>
@@ -371,7 +378,14 @@ function nextKy(s){const p=s.slice(0,10).split('/').map(Number),d=new Date(p[2],
 function renderBangCard(){const el=$('bangIn');if(!el)return;const J0=GOIY[GAME],J=withDraws(J0);let h=renderBang(J);
   if(J0&&S.M&&S.M.nd&&J0.next!==S.M.nd)h=`<div class="bg-warn" style="margin-bottom:8px;">Bảng này cho kỳ ${J0.next}; kỳ tới của app là ${S.M.nd}. Bảng sẽ cập nhật khi chạy lại gợi ý.</div>`+h;
   el.innerHTML=h;if(typeof bgFold==='function')bgFold(el);
-  const pe=$('poolIn');if(pe){pe.innerHTML=window.__bgPool||'';if(typeof bgFold==='function')bgFold(pe);}}
+  const pe=$('poolIn');if(pe){pe.innerHTML=window.__bgPool||'';if(typeof bgFold==='function')bgFold(pe);pCards(pe);}}
+// các block của Pool thành thẻ riêng ngoài trang, mỗi nhãn một màu (anh 20/10/2026)
+function pCards(root){const PC=[[t=>/^Kiểm tra Dãy/.test(t.trim()),'#20c997'],[t=>/Vé (bốc )?ngẫu nhiên/.test(t),'#4dabf7'],[t=>/Pool số đã ra|Pool số \d|Pool số \S+ ·|Pool của anh|Đang sửa/.test(t),'#69db7c'],[t=>/Sổ pool/.test(t),'#8ce99a'],[t=>/Kiểm pool vắng/.test(t),'#ffa94d'],[t=>/Kiểm pool tổng/.test(t),'#f783ac'],
+  [t=>/Quan hệ/.test(t)&&/Mega \+ Power/.test(t),'#e599f7'],[t=>/Mega \+ Power/.test(t),'#3bc9db'],[t=>/kỳ gần nhất|kỳ ·/.test(t)&&!/Pool/.test(t),'#ffd43b'],[t=>/Quan hệ/.test(t),'#b197fc'],[t=>/Pool gợi ý/.test(t),'#ff6b6b'],[t=>/Độ trúng/.test(t),'#38d9a9'],[t=>/Pool trúng mấy/.test(t),'#a9e34b'],[t=>/chọn thế nào/.test(t),'#ffc078']];
+  root.querySelectorAll('details').forEach(d=>{const up=d.parentElement&&d.parentElement.closest('details');if(up&&root.contains(up))return;const s=d.querySelector('summary');if(!s)return;const t=s.textContent;
+    const c=(PC.find(([f])=>f(t))||[0,'var(--accent)'])[1];d.classList.add('pcard');d.style.setProperty('--pc',c);
+    const sm=s.querySelector(':scope>small');if(sm)sm.remove();   // nhãn chỉ giữ tên, bỏ giải thích chữ nhỏ (anh 20/10/2026)
+    s.style.whiteSpace='nowrap';s.style.overflow='hidden';s.style.textOverflow='ellipsis';});}
 const GAMES={
  loto535:{label:'Loto 5/35',sub:'13h · 21h mỗi ngày',N:35,C:5,extra:'MM',extraName:'số may mắn',extraN:12,hours:true,coll:'draws',pcoll:'preds',ls:'loto_extra_v1',mcoll:'mine'},
  mega645:{label:'Mega 6/45',sub:'T4 · T6 · CN',N:45,C:6,extra:null,days:[3,5,0],coll:'draws_mega645',pcoll:'preds_mega645',ls:'mega_extra_v1',mcoll:'mine_mega645'},
@@ -1279,7 +1293,7 @@ function myHistShow(){const el=$('myHist');if(!el)return;const res=new Map(S.M.a
 function bkLs(k){try{const a=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
 function bkCollect(){const out={app:'vietlott-nghien-cuu',ver:1,at:new Date().toISOString(),games:{},prefs:{}};
   Object.keys(GAMES).forEach(g=>{const st=getS(g),c=GAMES[g];out.games[g]={draws:DB?(st.dbRows||[]):bkLs(c.ls),preds:DB?(st.preds||[]):bkLs('vt_pred_'+g),mine:DB?(st.mineDb||[]):bkLs('vt_mine_'+g)};});
-  ['vt_tt','vt_kx','vt_tq_who'].forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null)out.prefs[k]=v;}catch(e){}});
+  ['vt_tt','vt_kx','vt_tq_who','vl_gd_loto','vl_gd_mega','vl_gd_power','vl_nhf_loto','vl_nhf_mega','vl_nhf_power'].forEach(k=>{try{const v=localStorage.getItem(k);if(v!=null)out.prefs[k]=v;}catch(e){}});
   out.ver=2;out.sopool={};out.sove={};['loto','mega','power'].forEach(g=>{out.sopool[g]=ppBook(g);out.sove[g]=svBook(g);});return out;}
 function bkCount(o){let d=0,p=0,m=0,sp=0,sv=0;Object.values(o.games||{}).forEach(x=>{d+=(x.draws||[]).length;p+=(x.preds||[]).length;m+=(x.mine||[]).length;});Object.values(o.sopool||{}).forEach(b=>sp+=Object.keys(b||{}).length);Object.values(o.sove||{}).forEach(b=>sv+=Object.keys(b||{}).length);return {d,p,m,sp,sv};}
 const bkTxt=c=>`${c.d} kết quả nhập thêm, ${c.p} gợi ý app, ${c.m} kỳ có dãy của anh, ${c.sp} kỳ có pool đã lưu, ${c.sv} kỳ có bộ vé đã chốt`;
@@ -1711,18 +1725,18 @@ const KX_M=[
 function kxTq(c,N){const who=($('tqWho')&&$('tqWho').value)||tqWhoGet()||'16/06/1991 âm lịch, giờ Sửu',k=who+'|'+c.dd+'/'+c.mm+'/'+c.yy+'|'+c.hh+'|'+N;S.kxTqC=S.kxTqC||{};if(!S.kxTqC[k]){try{S.kxTqC[k]=tqDraw(who,`${p2(c.dd)}/${p2(c.mm)}/${c.yy}`,0,N,`${p2(c.hh)}:00`);}catch(e){S.kxTqC[k]=null;}}return S.kxTqC[k];}
 function kxRun(cb){const all=S.M.all,L=all.length,N=NM,C=CC,P=kxPerson(),key=[GAME,L,P?P.sol.join('-')+P.hb+P.name+P.sex:'',($('tqWho')&&$('tqWho').value)||''].join('|');
   if(S.kx&&S.kx.key===key){cb(S.kx);return;}
-  const st={T:new Float64Array((N+1)*(N+1)),cnt:new Float64Array(N+1),f:new Float64Array(N+1),n:0},acc=KX_M.map(()=>({n:0,h:0,e:0,v:0,k:0,n2:0,h2:0,e2:0,any:0,eany:0})),VL=[...Array(KX_M.length+1)].map(()=>({c:0,h:0,c2:0,h2:0})),KV=Math.round(N*0.3),VT={n:0,h:0,n2:0,h2:0},hist10=[],RKV=[];let lastV=null;
+  const st={T:new Float64Array((N+1)*(N+1)),cnt:new Float64Array(N+1),f:new Float64Array(N+1),n:0},acc=KX_M.map(()=>({n:0,h:0,e:0,v:0,k:0,n2:0,h2:0,e2:0,any:0,eany:0})),VL=[...Array(KX_M.length+1)].map(()=>({c:0,h:0,c2:0,h2:0})),KV=Math.round(N*0.3),VT={n:0,h:0,n2:0,h2:0},hist10=[],RKV=[],vh=[];let lastV=null;
   const hyp0=(K)=>{let p=1;for(let i=0;i<C;i++)p*=(N-K-i)/(N-i);return p;};
   let t=0;const g0=GAME,step=()=>{if(GAME!==g0)return;if(busyUser()){setTimeout(step,250);return;}const t1=performance.now();
     while(t<L&&performance.now()-t1<20){const ctx=kxCtx(all[t].date),pv=t?all[t-1].r:null,r=all[t].r;
       const vt=new Int8Array(N+1);if(t>=30)KX_M.forEach((m,i)=>{let o=null;try{o=m[3](ctx,pv,st,P,N);}catch(e){}if(!o||!o.nums.length)return;o.nums.forEach(v=>vt[v]++);const K=o.nums.length,h=r.filter(v=>o.nums.includes(v)).length,e=K*C/N,va=e*(N-C)/N*(N-K)/(N-1),a=acc[i];
         a.n++;a.h+=h;a.e+=e;a.v+=va;a.k+=K;a.any+=h>0?1:0;a.eany+=1-hyp0(K);if(t>=L-200){a.n2++;a.h2+=h;a.e2+=e;}});
       if(t>=30){const ordV=[...Array(N).keys()].map(i=>i+1).sort((a,b)=>vt[b]-vt[a]||a-b),posV=new Int16Array(N+1);ordV.forEach((v,i)=>posV[v]=i);RKV.push([t>=L-200?1:0,r.map(v=>posV[v])]);const r2=t>=L-200;for(let v=1;v<=N;v++){const o=VL[vt[v]],hh=r.includes(v)?1:0;o.c++;o.h+=hh;if(r2){o.c2++;o.h2+=hh;}}
-        const top=[...Array(N).keys()].map(i=>i+1).sort((a,b)=>vt[b]-vt[a]||a-b).slice(0,KV),th=r.filter(v=>top.includes(v)).length;VT.n++;VT.h+=th;if(r2){VT.n2++;VT.h2+=th;}if(t>=L-10)hist10.push({vt:Array.from(vt),r,date:all[t].date,lk:all[t].lk,top,mx:Math.max(...vt)});if(t===L-1)lastV={vt:Array.from(vt),r,date:all[t].date,lk:all[t].lk,top};}
+        const top=[...Array(N).keys()].map(i=>i+1).sort((a,b)=>vt[b]-vt[a]||a-b).slice(0,KV),th=r.filter(v=>top.includes(v)).length;VT.n++;VT.h+=th;if(r2){VT.n2++;VT.h2+=th;}if(t>=L-10)hist10.push({vt:Array.from(vt),r,date:all[t].date,lk:all[t].lk,top,mx:Math.max(...vt)});if(t>=L-100)vh.push([all[t].date,Array.from(vt)]);if(t===L-1)lastV={vt:Array.from(vt),r,date:all[t].date,lk:all[t].lk,top};}
       if(pv){pv.forEach(x=>{st.cnt[x]++;r.forEach(y=>st.T[x*(N+1)+y]++);});}r.forEach(y=>st.f[y]++);st.n++;t++;}
     if(t<L){nextStep(step,t1);return;}
     const nx=kxCtx(S.M.nd),last=all[L-1].r,now=KX_M.map(m=>{try{return m[3](nx,last,st,P,N);}catch(e){return null;}});
-    const nv=new Array(N+1).fill(0);now.forEach(o=>{if(o&&o.nums)o.nums.forEach(v=>nv[v]++);});S.kx={key,acc,now,P,VL,VT,KV,lastV,nv,hist10,RKV};cb(S.kx);};
+    const nv=new Array(N+1).fill(0);now.forEach(o=>{if(o&&o.nums)o.nums.forEach(v=>nv[v]++);});S.kx={key,acc,now,P,VL,VT,KV,lastV,nv,hist10,RKV,vh};/* vh: phiếu tâm linh 100 kỳ gần (chấm lùi) cho bảng pool, anh 21/10/2026 */cb(S.kx);};
   setTimeout(step,20);}
 function renderKX(){const box=$('kxOut');if(!box)return;
   try{const v=JSON.parse(localStorage.getItem('vt_kx')||'{}');if(!$('kxName').value&&!S.kxNameSet){$('kxName').value=v.name!=null?v.name:'Nguyễn Thành Luân';S.kxNameSet=1;}if(v.sex&&!S.kxSexSet){$('kxSex').value=v.sex;S.kxSexSet=1;}}catch(e){}

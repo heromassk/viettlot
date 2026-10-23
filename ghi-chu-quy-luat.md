@@ -265,6 +265,7 @@ Nguyên tắc (theo yêu cầu của anh): phương pháp có cơ sở, cố đ�
 | Kỳ | Kết quả | Bỏ vắng≥20 (12 20 30 50) | Bỏ khó ra (04 06 37 49 12 50) | Số nóng ★ (01 05 07 11 18 25) | Kề ±1 kỳ trước | Đà tổng thấp | Pool dấu vết 15 | Tâm linh pool 12 | Dãy tốt nhất |
 |---|---|---|---|---|---|---|---|---|---|
 | 03/10 | 07 11 13 16 18 54 · ĐB 41 | 4/4 bỏ đúng | 6/6 bỏ đúng | 3 trúng (07 11 18) | 1 (54) | đúng (tổng 119) | 4 trúng (07 11 18 54) | 3 (07 13 54) | 01 07 11 22 43 54 → 3 số |
+| 20/10 | 13 20 23 30 50 55 · ĐB 45 | — | — | 1 (13) | 1 (13) | — | 3 (13 20 23); pool 10: 1 · pool 18: 3 · ≥2 pool (22 số): 1 (13) · vắng 12 kỳ: 1 (30) · sổ kiểm chứng 27/36 luật · khẳng định 8/8 | 2 (13 30) | 2 số (vé 3: 20 23) |
 
 ## Dấu vết Loto 5/35 (máy tính quay, không bi) — nghiên cứu 04/10/2026, 924 kỳ, `build/loto_dauvet.py`
 Chấm bằng tỉ lệ của chính phương pháp, chạy tiến (chỉ dùng dữ liệu trước kỳ), chia 3 khúc để xem độ ổn định.
@@ -411,12 +412,20 @@ Kết quả (bình quân mỗi số: Loto 14.3, Mega 13.3, Power 10.9%):
 | 03/10 21h | 10 12 29 33 35 · MM 07 | 1/6 (10) | 1/7 (12) | 0/7 | 3/3 bỏ đúng | 5/6 (29 về sau 15+ kỳ) | sai: tổng 119 ngoài 77–105 | 2 (10 12) | 1 số |
 | 04/10 13h | 02 19 22 32 35 · MM 04 | 0/4 | 1/7 (32) | 2/8 (22 35) | 3/3 bỏ đúng | 4/5 (19 về, vắng 15+) | sai: tổng 110 ngoài 77–106 | **3 (22 32 35)**; pool 10: 2 · tâm linh 12: **3 (19 22 32)** | 1 số |
 | 05/10 13h | 09 14 15 16 35 · MM 02 | — | — | — | luật ● 8/9 đúng (tx10 sai: 16 về) | — | — | **3 (14 15 35)**; pool 10: 2 (15 35) · pool 20: 4 · tâm linh 12: 3 · MM 06 01 10 trật (02 lặp lại kỳ trước) | 1 số; vé anh: 1 số mỗi vé (35 / 15) |
+| 19/10 13h | 05 19 23 28 31 · MM 04 | — | — | — | sổ kiểm chứng 23/31 luật đúng | — | — | 2 (05 28); pool 10: 2 (05 28) · pool 20: 3 (05 19 28) · tâm linh 12: 2 (05 31) · MM 09 06 07 trật (ra 04) | 1 số (vé 1, vé 7: 05) |
+| 19/10 21h | 11 14 17 26 28 · MM 07 | — | — | — | sổ kiểm chứng 27/34 luật đúng | — | — | 2 (11 14); pool 10: 1 (11) · pool 20: 3 (11 14 28) · tâm linh 12: 2 (11 14) · vắng 8 kỳ: 2 (11 26) · **MM 07 trúng** (ưu tiên 2) | 2 số + MM (vé 6: 10 11 14 21 34 + 07) |
+| 20/10 13h | 04 05 06 16 17 · MM 03 | — | — | — | sổ kiểm chứng 25/35 luật đúng · khẳng định 6/8 (sai: nhỏ/lớn cân — cả 5 số ≤17; rải ≥3 hàng chục) | — | — | 2 (05 06); pool 10: 2 · pool 20: 2 · tâm linh 12: 1 (04) · vắng 8 kỳ: 1 (04) · ≥2 pool (cả 2 buổi): 3 (04 06 17) · kẹp 13h 04 (kẹp 18/10 13h) về đúng kỳ +2 cùng buổi · MM 09 04 07 trật (ra 03) | 2 số (vé 1: 05 06; vé 7: 04 05) |
+| 20/10 21h | 02 09 11 25 30 · MM 04 | — | — | — | khẳng định 6/8 (sai: ≥1 số nóng 20 kỳ; ≥1 số trùng/kề ±1 kỳ trước) | — | — | 1 (11); pool 10: 1 · pool 20: 4 (02 11 25 30) · pool 18: 3 (02 11 25) · tâm linh 12: 2 (09 11) · vắng 8 kỳ: 2 (02 25) · ≥2 pool: 3 (02 11 25) · **MM 04 trúng** (ưu tiên 1) | 2 số (vé 2: 02 11); 1 số + MM 04: vé 1, 3, 5, 7 |
+| 21/10 13h | 14 20 29 30 34 · MM 11 | — | — | — | sổ kiểm chứng 26/35 luật · khẳng định 3/8 (sai: nóng 20 kỳ; chẵn/lẻ; nhỏ/lớn; rải ≥3 hàng chục; vắng 8 kỳ) | — | — | pool 15 đồng thuận 3 (20 29 34) · pool 10: 1 · pool app 15/18: 1 (20) · Pool 12: 1 · tâm linh 12: 2 (14 20) · ≥2 pool: 0 · MM 07 01 trật (ra 11) | 1 số (vé 4, vé 6: 20) |
+| 21/10 21h | 07 17 18 22 35 · MM 06 | — | — | — | sổ kiểm chứng 31/35 luật đúng | — | — | 2 (07 22); pool 10/15/20: 3/3/**5** · vé tốt nhất 2 (vé 5) · MM gợi ý 11 09: trật. App: Pool 9/12: 3 (07 17 22) · **Pool 15: 4 (07 17 22 35)** · Pool app 18: 4 · vắng 8 kỳ: 3/10 · ≥2 pool: 1/19 (35) · Ngày quay: 0 |
+| 22/10 13h | 10 13 15 20 27 · MM 12 | — | — | — | sổ kiểm chứng 30/34 luật đúng | — | — | 2 (10 27); pool gợi ý 10/15/20: 3/3/3 · vé tốt nhất 2 (vé 1, 7) · MM gợi ý 04 03: trật. App: Pool 9/12/15: 3 (10 15 20) · **P18: 4 (10 15 20 27)** · Pool 20: 3 · vắng 8 kỳ: 3/8 (10 13 27) · hiệu: 3 · ≥2 pool: 3/18 (10 13 15) · ngày quay: 1 (10) · tam giác: 0 |
 
 ## Sổ chấm phương pháp Mega 6/45 (bắt đầu 04/10/2026; chi tiết từng luật trong app → "Sổ kiểm chứng suy luận")
 | Kỳ | Kết quả | Luật loại (đã áp dụng) | Bị loại | Pool 10 / 15 / 20 | Vé tốt nhất | Tâm linh 12 | Bao 7 anh | Ghi chú |
 |---|---|---|---|---|---|---|---|---|
 | 04/10 | 15 20 29 37 40 45 (tổng 186) | **đúng hết** (8 số bị loại, không số nào về); sổ: 24/25 luật đúng | 02 05 08 19 27 31 41 42 | 1 / 1 / 3 (15; 20 45) | 1 | 0 | 1 (15) | 4/6 số về đang vắng 11–14 kỳ (29 37 40 45) → thêm +1 điểm "vắng 11–15" cho Mega (pool 15 ở 50 kỳ 2.12→2.22). Tổng 186 > 126 đúng xu hướng hồi về trung vị. |
 | 04/10 21h | 07 16 30 31 33 · MM 02 | 0/4 nóng | 2 (31 33) | — | — | luật loại áp dụng đúng hết (bỏ 10 19 26 27 35) | — | pool 10/15/20: 0/2/4 | vé tốt nhất 1; **vé anh** 09 11 19 28 34 mm06 & 11 14 20 28 34 mm10: 0 số, MM trật; sổ 23/25 luật đúng |
+| 21/10 | 04 10 14 22 25 44 (tổng 119) | sổ kiểm chứng 31/37 luật đúng | — | pool 10/15/20: 0/1/1 (pool 18: 3 — 04 10 22) | 2 (vé 3: 10 22) | **4 (04 14 22 44)** | — | App: Pool 9/12: 1 (22) · Pool 15: 2 (04 22) · vắng 8 kỳ: 3/13 (04 22 25) · ≥2 pool: 3/19 (04 10 25) · trùng kỳ trước: 2 (10 44). Tâm linh tốt nhất kỳ này. |
 
 
 # Dấu vết bi theo 4 khung 10/20/50/100 kỳ (05/10/2026)
@@ -1621,3 +1630,458 @@ Bộ chọn (≥85% ở 10/50/100 kỳ, ghim kép ≤1) KHÔNG nhận luật nà
 - **Power: anh bỏ ghim nhịp riêng** (52/71 = 73%) → bộ: nhịp tổng, biên tổng (ghim) + khác dạng hàng, ≤1 cặp liền nhau, nhóm chia 3 ít nhất. Lọt 10/50/100: 60/60/71 → 70/86/88%; chấm tiến 60 → 82%; thu hẹp tổ hợp 20 → 26%.
 - **Loto: anh chọn A** → bộ: kép ≤1 + AC 4–6, số đuôi khác nhau 3–5, chia 3 đông nhất 2–3 / ít nhất 0–1 (+ maxh, lt, trung khi bật). Lọt 80/92/95 → 80/86/86%; chấm tiến 76 → 72%; thu hẹp 5 → 21% (anh chấp nhận đổi lọt lấy vé chặt hơn).
 - Mega: giữ bộ cũ (khác dạng hàng, tổng, kép ≤1 — 100/86/85%, chấm tiến 88%).
+
+## Loto: pool "số đang vắng x kỳ" (ý anh 19/10/2026, `build/vang_x.py`)
+Mỗi kỳ lấy các số không ra trong x kỳ trước làm pool, đếm kỳ đó trúng mấy số. 954 kỳ.
+- Tỉ lệ ra của **1 số đang vắng** gần bằng **1 số vừa ra trong x kỳ**: x=10 liền nhau 14.7% / 14.2% (toàn bộ); 100 kỳ gần 12.9% / 14.7%; đoạn 2–3: 15.6% / 14.0%, 15.0% / 14.1% → không nghiêng ổn định.
+- Pool vắng 10 kỳ (liền nhau) TB 7–8 số, trúng TB ~1.0 số; ≥1 số 72% (3 đoạn 68/72/72%), ≥2 số 28%, ≥3 số 6%.
+- Cùng giờ x=15: 1 số vắng ra 16–25% ở 20–100 kỳ gần nhưng 12.6–13.6% ở 2 đoạn trước → chưa ổn định, theo dõi.
+- Kết luận: không dùng làm pool chính; có thể dùng làm dạng "mỗi kỳ có ≥1 số vắng ≥10 kỳ" (~70%, sát ngưỡng).
+- **Lấy 8 kỳ (anh chọn, 19/10/2026):** nhóm vắng ~10 số, trúng TB 1.50; ≥1 số 87–90%, ≥2 số 40–49%; 1 số vắng ra 14.6/15.6/15.4% so với 14.2/13.8/13.9% ở 3 đoạn 100 kỳ → nhỏ mà ổn định. Đã đưa vào gợi ý: +0.5 điểm (`GOIY_V8`), mỗi vé ≥1 số vắng 8 kỳ, sổ kiểm chứng `kd_vang8`/`nhom_vang8`.
+- **So x = 6…12 kỳ (19/10/2026):** lệch "1 số vắng ra − 1 số đã ra" ở 3 đoạn 100 kỳ (gần → xa): x6 +0.5/+1.6/+2.3 · x7 +0.0/+2.4/+2.0 · **x8 +0.5/+1.8/+1.5** · x9 −0.7/+2.4/+0.5 · x10 −1.7/+1.7/+0.8 · x11 −1.0/+0.8/+0.6 · x12 −1.2/+0.6/−0.5. Chỉ 6 và 8 dương cả 3 đoạn; "≥1 số vắng": x6 94–96%, x8 87%, x9 75–80%, x11 62–66%, x12 53–59%. Giữ 8.
+- **Tách 13h / 21h (19/10/2026):** chia 3 đoạn 50 kỳ cùng giờ. Liền nhau 8 kỳ lệch dương cả 3 đoạn ở cả 2 giờ (13h +0.5/+3.5/+1.1; 21h +0.4/+0.2/+1.9), ≥1 số 86–90% (13h), 84–88% (21h). Lấy x kỳ CÙNG GIỜ không tốt hơn: 13h cùng giờ 3 kỳ dương cả 3 đoạn nhưng nhóm 22 số (quá rộng); cùng giờ 5–8 kỳ đổi chiều qua các đoạn ở cả 13h và 21h. Giữ 8 kỳ liền nhau cho cả 2 giờ.
+
+# Số May Mắn Loto — thử dấu vết mới ngoài ±3 (anh 19/10/2026, `build/somayman_moi2.py`)
+- ±3 quanh MM kỳ trước là dấu vết thật: 1 số trong ±3 ra 9.4/9.6/8.8% so với 7.3/7.0/7.9% số ngoài (3 đoạn 100 kỳ).
+- Thử 20+ cách chọn 3 số (vắng lâu/ít trong ±3, sát/xa MM trước, chênh lệch Δ hay gặp, Markov MM→MM, ±3 quanh MM cùng giờ, giao 2 cửa sổ, MM vắng 4/8 kỳ, số chính ≤12, tổng/đuôi tổng kỳ trước, nóng 5/15/20 kỳ, kết hợp nóng + Δ). Không cách nào hơn cách đang dùng (±3, nóng 10 kỳ: 31/32/33% ở 3 đoạn, 30% ở 500 kỳ). Gần nhất: Δ hay gặp 30/29/30%; ±3 nóng 20 kỳ 30/31/34%. MM vắng 4/8 kỳ tụt mạnh ở đoạn xa (14%, 13%) → không dùng.
+- Giữ nguyên cách đang dùng.
+
+# Mega / Power: pool "số đang vắng x kỳ" (anh 19/10/2026, `build/vang_x_bi.py`, chỉ 100 kỳ gần — bi thay 1–2 tháng)
+"lệch" = % ra của 1 số vắng − % ra của 1 số đã ra (điểm %), khung 10/20/50/100 kỳ, 2 nửa 50 kỳ (xa / gần).
+- **Mega:** x = 5…12 lệch dương ở cả 4 khung. x=8: nhóm ~14 số, trúng TB 2.08, ≥1/≥2/≥3 số 96/66/33%, lệch +6.0/+3.2/+1.4/+2.2, 2 nửa +3.0/+1.4. x=15 âm (khớp luật loại vắng lâu).
+- **Power:** x=7, 8, 10, 12 dương cả 4 khung (trừ x=8 khung 10 kỳ +0.1). x=12: nhóm ~13 số, trúng TB 1.56, ≥1/≥2 số 84/50%, lệch +2.1/+3.0/+2.3/+1.8, 2 nửa +1.2/+2.3.
+- Thử cộng điểm vào goiy.py (`GOIY_VX`, `GOIY_WVX`, mặc định tắt): Mega x=8 +1 điểm → pool 15 ≥3 số 44→50% (50 kỳ), 40→46% (100 kỳ); x=12 +1 → 52%/45%. Power: pool 15 không đổi (27% / 32%) ở mọi x và trọng số 0.5–3 — pool Power đã gộp hạng với chuỗi ra/vắng bậc 3, 5.
+- **Anh duyệt 19/10/2026, đã áp:** Mega +1 điểm số vắng 8 kỳ + mỗi vé ≥1 số vắng 8 kỳ; Power chỉ luật vé ≥1 số vắng 12 kỳ (đúng 84%). Mặc định trong goiy.py: VX Loto 8 / Mega 8 / Power 12; điểm Loto 0.5 / Mega 1 / Power 0.
+
+# Kết hợp số vắng x kỳ với số kề ±1 kỳ trước / t−2 (anh 19/10/2026, `build/vang_ke.py`)
+Nhóm giao = vắng x kỳ (Loto, Mega 8; Power 12) VÀ kề ±1 số của kỳ trước / kỳ t−2 / cả hai. So % ra của 1 số trong giao với số vắng không kề.
+- **Loto** (±1 kỳ trước hoặc t−2, ~4–5 số): 100 kỳ gần giao 12.2% < vắng không kề 16.7%; đoạn 2, 3 ngược lại (17.3% > 14.3%, 13.8%) → đổi chiều, không ổn định. ±1 kỳ trước: 11.0 / 19.7 / 17.0%.
+- **Mega** (100 kỳ): giao 11–14% < vắng không kề 15–17.5% ở cả 3 cách; nhưng nửa 50 kỳ xa thì giao nhỉnh hơn → không ổn định.
+- **Power**: ±1 kỳ trước giao 12.7% (50 kỳ) = vắng không kề 12.7%; 100 kỳ 13.7% > 11.9%; ±1 t−2 kém (9–10.5%) → không rõ.
+- Nhóm giao chỉ 1–5 số nên tỉ lệ dao động mạnh. Không đưa vào gợi ý; chỉ ghi tham khảo.
+
+# Loto: bao số theo thứ hạng pool (anh 19/10/2026, `GOIY_BAO=1 python3 build/goiy.py loto …`)
+Mỗi kỳ chấm lại, lấy k số đầu bảng điểm (chỉ dữ liệu trước kỳ đó). Bao k = C(k,5) vé × 10.000đ. 100 kỳ đến 19/10/2026 21h:
+| Bao | Vé | Trúng TB | Kỳ có ≥3 số | ≥4 số | 5 số |
+|---|---|---|---|---|---|
+| 6 | 6 | 0.95 | 6 | 2 | 0 |
+| 7 | 21 | 1.12 | 8 | 2 | 0 |
+| 8 | 56 | 1.29 | 9 | 3 | 0 |
+| 9 | 126 | 1.53 | 13 | 4 | 0 |
+| 10 | 252 | 1.68 | 21 | 6 | 0 |
+| 12 | 792 | 1.91 | 29 | 8 | 0 |
+Không kỳ nào đủ 5 số trong 12 số đầu. Bao lớn tốn nhiều vé mà chỉ tăng số kỳ ≥3/≥4 số chậm → rải vé bao phủ pool rẻ hơn.
+
+# Loto: số kẹp giữa (a, a+2 → a+1) có về trong 2 kỳ tới? (anh 19/10/2026, `build/kep_giua2.py`)
+So % ra của số kẹp với các số khác không có ở kỳ đó (trung bình ~14.3% ở 1 kỳ, ~26.7% trong 2 kỳ). 3 đoạn 100 kỳ (gần → xa) · toàn bộ:
+- **Cả 2 giờ (liền nhau):** trong 2 kỳ 20.7 / 25.5 / 24.0% · 24.5% (số khác ~27%) → số kẹp về ÍT hơn một chút, ổn định (khớp luật `nhom_lokep` đang áp).
+- **Chỉ 13h (2 kỳ 13h tới):** 44.8 / 22.0 / 28.9% · 31.9% → 100 kỳ gần về rất nhiều nhưng đoạn 2 ngược lại → chưa ổn định, theo dõi.
+- **Chỉ 21h:** ngay kỳ 21h sau chỉ 7.1 / 4.9 / 7.7% · 8.8% (số khác ~14.3%) → **ổn định cả 3 đoạn: số kẹp kỳ 21h hầu như không về ở kỳ 21h kế tiếp** (loại đúng ~92–95%). Trong 2 kỳ 21h: 23.2 / 12.2 / 23.1%.
+- Mẫu nhỏ (40–58 số kẹp mỗi đoạn), cần theo dõi thêm trong sổ kiểm chứng.
+- **Khung 20 / 50 kỳ (19/10/2026):** cả 2 giờ trong 2 kỳ 40% (4/10) / 25% (7/28), số khác ~26% · **chỉ 13h trong 2 kỳ 13h: 53% (8/15) / 47% (14/30)**, số khác ~26% · chỉ 21h kỳ 21h sau: 0/10 / 2/29 (7%), số khác ~14%. 13h đang mạnh ở 20–100 kỳ gần nhưng đoạn 2 ngược → theo dõi.
+
+# Quan hệ các số trong cùng 1 kỳ (anh 19/10/2026, `build/quanhe_hang.py`)
+Số kỳ có quan hệ, khung 20 / 50 / 100 kỳ gần (anh: chỉ đếm, không so với ngẫu nhiên / mức tự nhiên):
+| Game | a+b=c | a+b=c+d | gấp đôi | 3 số cách đều |
+|---|---|---|---|---|
+| Loto | 12 / 21 / 40 | 10 / 20 / 30 | 13 / 23 / 35 | 3 / 10 / 32 |
+| Mega | 8 / 23 / 57 | 14 / 27 / 50 | 4 / 9 / 28 | 9 / 23 / 50 |
+| Power | 11 / 26 / 52 | 11 / 24 / 50 | 4 / 11 / 24 | 7 / 17 / 42 |
+
+# Tổng / hiệu 2 số kỳ trước ra ở kỳ sau (anh 20/10/2026, `build/tonghieu_ky.py`) — đếm số kỳ, khung 20 / 50 / 100
+Nhóm tổng = a+b (≤ số lớn nhất) của mọi cặp kỳ trước; nhóm hiệu = |a−b|. Số kỳ sau có ≥1 / ≥2 số trong nhóm:
+| Game | Nhóm (số lượng) | Tổng ≥1 | Tổng ≥2 | Hiệu ≥1 | Hiệu ≥2 | Gộp ≥1 | Gộp ≥2 |
+|---|---|---|---|---|---|---|---|
+| Loto cả 2 giờ | tổng ~5, hiệu ~9 | 7 / 22 / 41 | 2 / 10 / 13 | 19 / 44 / 79 | 8 / 24 / 42 | 19 / 46 / 88 | 12 / 36 / 61 |
+| Loto 13h | | 11 / 22 / 47 | 7 / 8 / 15 | 18 / 43 / 82 | 6 / 17 / 38 | 19 / 46 / 89 | 14 / 26 / 60 |
+| Loto 21h | | 8 / 23 / 48 | 3 / 6 / 15 | 19 / 44 / 88 | 5 / 14 / 27 | 19 / 48 / 95 | 11 / 24 / 54 |
+| Mega | tổng ~7, hiệu ~13 | 13 / 31 / 64 | 8 / 15 / 29 | 20 / 46 / 92 | 14 / 29 / 55 | 20 / 50 / 99 | 17 / 38 / 80 |
+| Power | tổng ~8, hiệu ~13 | 14 / 33 / 62 | 4 / 10 / 18 | 17 / 43 / 80 | 12 / 25 / 48 | 19 / 47 / 93 | 14 / 37 / 72 |
+- Khẳng định "kỳ sau có ≥1 số bằng HIỆU 2 số kỳ trước" đúng ≥79% ở 100 kỳ, ≥86% ở 50 kỳ cả 3 game → đạt ngưỡng 70%. "≥1 số bằng TỔNG" chỉ 41–64% → chưa đạt.
+
+# Dấu vết bên trong pool hiệu (anh 20/10/2026, `build/hieu_dauvet.py`)
+So % ra 1 số của từng nhóm con với phần còn lại của pool hiệu. Loto 3 đoạn 100 kỳ; Mega/Power 2 nửa 50 kỳ.
+- **Loto:** không nhóm nào giữ chiều qua 3 đoạn (liền nhau 15/14/14 vs 14/15/15; nhỏ ≤11 16/13/14; trùng t−2 18/7/10; trong pool tổng 8/10/18) → chưa thu hẹp được.
+- **Mega:** hiệu trùng số kỳ t−2 15/15% vs 12/12% · hiệu cũng nằm trong pool tổng 16/17% vs 12/12% (nhóm ~1 số) → nghiêng lên ổn định 2 nửa. Hiệu kề ±1 số kỳ trước 12/8% vs 13/14% → nghiêng xuống.
+- **Power:** hiệu trùng số kỳ t−2 16/13% vs 11/10% → nghiêng lên. Hiệu kề ±1 số kỳ trước 8/8% vs 12/11% → nghiêng xuống (loại).
+- Nhóm nhỏ (1–3 số/kỳ), cần theo dõi thêm; chưa đưa vào gợi ý.
+
+# So nhóm "Có mặt ≥2 pool" (bảng pool) với pool của app (anh 20/10/2026, `build/so_pool2.py`)
+Cùng kỳ, mỗi kỳ dựng từ dữ liệu trước nó; khung 50 / 100 kỳ. Số kỳ có ≥3 số trúng:
+- Loto: ≥2 pool (cỡ ~13.7) 16 / 26 kỳ, TB 2.06 / 1.83 — app pool 12: 13 / 29, TB 1.94 / 1.96 · app pool 15: 27 / 51, TB 2.48 / 2.49.
+- Mega: ≥2 pool (~18.2) 24 / 47, ≥4 số 9 / 19, TB 2.52 / 2.51 — app pool 18: 33 / 61, ≥4 số 21 / 35, TB 2.92 / 2.79.
+- Power: ≥2 pool (~16.5) 11 / 27, TB 1.80 / 1.83 — app pool 15: 17 / 29 · app pool 18: 24 / 41, TB 2.52 / 2.31.
+- Kết luận: pool của app trúng nhiều hơn ở cùng cỡ, cả 3 game. Bảng pool dùng để soi dấu vết / đối chiếu, không thay pool app.
+
+# Số ra ở kỳ mới có hay là số chưa xuất hiện 5 kỳ gần? (anh 20/10/2026, `build/moi5.py`) — khung 20 / 50 / 100
+- Loto (cả 2 giờ): số "mới" TB 2.2 / 2.4 / 2.3 trên 5; kỳ ≥3 số mới 7 / 22 / 41. 1 số chưa ra 5 kỳ ra 13.3 / 14.5 / 14.3% — 1 số đã ra 15.2 / 14.1 / 14.3% → ngang nhau. 13h, 21h tương tự (21h 20 kỳ gần nghiêng số mới 15.7 vs 12.9%).
+- Mega: số mới TB 3.0 / 3.0 / 3.0 trên 6; kỳ ≥3 số mới 16 / 37 / 72. 1 số mới 13.7 / 13.7 / 13.8% — đã ra 13.0 / 13.0 / 12.9% → nghiêng nhẹ về số mới.
+- Power: số mới TB 3.6 / 3.6 / 3.5 trên 6; kỳ ≥3 số mới 18 / 42 / 82. 1 số mới 11.7 / 11.6 / 11.4% — đã ra 9.9 / 10.0 / 10.3% → nghiêng rõ về số mới (khớp luật vắng 12 kỳ).
+
+## 20/10/2026 — Pool "bỏ số đã ra x kỳ" (x anh tự nhập, mặc định 5)
+- Thêm 2 dòng vào bảng pool (Pool kỳ tới, bảng từng kỳ, Hiệu quả từng pool): **Bỏ ra x kỳ** (số chưa ra x kỳ gần nhất) và **App bỏ ra x kỳ** (pool app 18 trừ các số đã ra x kỳ).
+- Đếm số trúng mỗi kỳ, x = 5. Bỏ ra 5 kỳ:
+
+| Game | Khung | Cỡ pool | Trúng TB/kỳ | ≥2 số | ≥3 số |
+|---|---|---|---|---|---|
+| Loto | 20/50/100 | ~16 | 2,25 / 2,36 / 2,32 | 15 / 39 / 79 | 7 / 22 / 41 |
+| Mega | 20/50/100 | ~22 | 3,00 / 3,02 / 3,04 | 18 / 43 / 92 | 16 / 37 / 72 |
+| Power | 20/50/100 | ~31 | 3,65 / 3,58 / 3,50 | 20 / 47 / 92 | 18 / 42 / 82 |
+
+- App 18 bỏ ra 5 kỳ (khoảng 20 kỳ có pool app): Loto cỡ 7,7, trúng 1,09/kỳ (app 18 trúng 2,59); Mega cỡ 7,7, trúng 1,30 (app 2,90); Power cỡ 9,6, trúng 1,70 (app 2,65).
+
+## 20/10/2026 — Tính "Bỏ ra x kỳ" (x=5) vào đếm ≥2 pool
+| Game | Khung | ≥2 pool cũ: cỡ / trúng TB / kỳ ≥2 / kỳ ≥3 | ≥2 pool mới: cỡ / trúng TB / kỳ ≥2 / kỳ ≥3 |
+|---|---|---|---|
+| Loto | 20 / 50 / 100 | 14,3 · 2,05 · 14 · 6 / 13,6 · 2,12 · 35 · 17 / 13,7 · 1,84 · 60 · 26 | 20,1 · 2,80 · 18 · 13 / 19,4 · 2,90 · 45 · 33 / 19,5 · 2,77 · 86 · 63 |
+| Mega | 20 / 50 / 100 | 17,9 · 2,60 · 18 · 10 / 18,1 · 2,52 · 42 · 24 / 18,3 · 2,51 · 81 · 47 | 25,4 · 3,25 · 19 · 15 / 25,5 · 3,46 · 48 · 39 / 25,9 · 3,46 · 96 · 78 |
+| Power | 20 / 50 / 100 | 16,6 · 2,10 · 16 · 7 / 16,3 · 1,80 · 33 · 11 / 16,9 · 1,83 · 64 · 27 | 29,9 · 3,75 · 20 · 19 / 29,3 · 3,42 · 48 · 41 / 29,4 · 3,30 · 93 · 75 |
+- App 18 ∩ ≥2 pool (khoảng 20 kỳ có pool app): Loto cỡ 6,9→9,3, trúng 1,14→1,41; Mega cỡ 7,0→9,7, trúng 1,25→1,60; Power cỡ 5,4→9,2, trúng 0,90→1,70.
+
+## 20/10/2026 — Bỏ dòng "Bỏ ra x kỳ"
+- Anh chỉ ra: "Bỏ số ra x kỳ" chính là "Vắng x kỳ", chỉ khác số kỳ. Đem vào đếm ≥2 pool là đếm một dấu vết 2 lần, nên pool ≥2 phình to (số liệu ngày 20/10 ở trên không dùng).
+- Đã xoá dòng "Bỏ ra x kỳ" và "App bỏ ra x kỳ". Pool ≥2 về lại 7 pool. Muốn xem vắng 5 kỳ thì nhập x ở ô của Pool vắng.
+- Dòng tóm tắt mỗi kỳ: "Pool N số - trúng: X · Pool vắng x kỳ - N số - trúng: Y" (trúng ≥4 in đậm xanh lá).
+
+## 20/10/2026 — Loto: cách ra số của các pool (trừ pool app)
+Dùng đúng poolAt của app trên dữ liệu đủ (955 kỳ). Pool: Vắng 8, Tổng, Hiệu, ±1 kỳ trước, ±1 cách 1 kỳ, Trùng kỳ trước, Kẹp, ≥2 pool. Có 3 kiểu tính kỳ trước: cả 2 buổi, chỉ 13h, chỉ 21h. Chấm trên 3 đoạn 100 kỳ.
+- Tỉ lệ trúng mỗi số của các pool đều trong khoảng 12–17%. Không pool nào hơn hẳn và giữ được qua cả 3 đoạn. Số nằm ở nhiều pool cũng không ra nhiều hơn số nằm ở 1 pool.
+- **Dấu vết ổn định duy nhất: Pool vắng kỳ trước trúng 0 → kỳ này pool vắng yếu hơn.** Đúng 9/9 lần chấm (3 kiểu × 3 đoạn):
+  - cả 2 buổi: 11,4 / 13,0 / 12,4 %/số, so với sau kỳ trúng ≥1: 15,9 / 16,4 / 15,0
+  - 13h: 14,3 / 12,7 / 13,7 so với 14,9 / 13,3 / 15,3
+  - 21h: 14,1 / 10,8 / 10,9 so với 16,0 / 14,0 / 15,0
+  - Mỗi đoạn chỉ có 12–24 kỳ như vậy (khoảng 13 kỳ trong 100 kỳ) → lệch nhỏ, dùng trọng số nhỏ.
+- Chưa ổn định, chỉ đúng ở đoạn 100 kỳ gần nhất:
+  - Kẹp 13h: 24,5% mỗi số, nhưng 2 đoạn trước 16,3% và 11,6%.
+  - Số có mặt ≥4 pool ở 13h: 23,4%, 2 đoạn trước 14,6% và 14,3%.
+  - ±1 kỳ trước sau kỳ trúng 0 thì mạnh hơn: đúng 6/9 lần chấm.
+
+## 20/10/2026 — Số kẹp không ra sau 1–2 kỳ thì kỳ sau nữa có ra? (`build/kep_sau.py`)
+Mỗi ô ghi: số lần ra / số lần còn chờ (chưa ra ở các kỳ trước đó).
+| Game | Khung | Kỳ +1 | Kỳ +2 | Kỳ +3 | Kỳ +4 |
+|---|---|---|---|---|---|
+| Loto cả 2 buổi | 50 | 5/27 | 2/22 | **4/20 (20%)** | 2/15 |
+| | 100 | 8/55 | 4/47 | **8/43 (19%)** | 7/34 |
+| | 300 | 21/163 | 17/142 | **25/125 (20%)** | 14/99 |
+| Loto chỉ 13h | 50 | 4/29 | **10/24 (42%)** | 3/14 | 1/11 |
+| | 100 | 11/58 | **15/46 (33%)** | 3/31 | 3/28 |
+| Loto chỉ 21h | 50 | 2/26 | **5/24 (21%)** | 0/19 | 1/19 |
+| | 100 | 4/54 | **8/50 (16%)** | 2/42 | 4/40 |
+| Mega | 100 | 5/50 | 7/44 | 3/37 | 5/34 |
+| Power | 100 | 6/60 | 9/53 | 6/44 | 3/37 |
+- Loto, tính liền cả 2 buổi: kẹp chưa ra sau 2 kỳ thì kỳ +3 ra khoảng 20%, cao hơn kỳ +1 và +2 của chính nó. Đúng ở các khung 50/100/300 kỳ (khung 20 kỳ chỉ có 4 lần chờ, 0 lần ra).
+- Loto, tính theo từng buổi: kẹp hay ra nhất ở kỳ +2 cùng buổi (13h: 42% ở 50 kỳ, 33% ở 100 kỳ). Qua kỳ +2 không ra thì kỳ +3 yếu hẳn.
+- Mega: không thấy kỳ +3 mạnh hơn. Power: kỳ +3 mạnh ở 20/50 kỳ (27% và 22%), xuống 14% ở 100 kỳ, chưa ổn định.
+
+## 21/10/2026 — Thêm pool "Số kỳ cách 1 kỳ" vào bảng pool, tính vào ≥2 pool
+Đếm pool ≥2 trước/sau khi tính thêm dòng này (cả 2 buổi với Loto):
+| Game | Khung | Cũ: cỡ · trúng TB · %/số · kỳ ≥2 · kỳ ≥3 | Mới: cỡ · trúng TB · %/số · kỳ ≥2 · kỳ ≥3 |
+|---|---|---|---|
+| Loto | 50 | 13,7 · 2,18 · 15,9% · 36 · 18 | 16,0 · 2,56 · 16,0% · 43 · 25 |
+| Loto | 100 | 13,7 · 1,84 · 13,4% · 60 · 26 | 16,1 · 2,23 · 13,9% · 76 · 39 |
+| Mega | 50 | 18,1 · 2,52 · 13,9% · 42 · 24 | 20,7 · 2,88 · 13,9% · 44 · 31 |
+| Mega | 100 | 18,3 · 2,51 · 13,7% · 81 · 47 | 21,0 · 2,89 · 13,8% · 88 · 66 |
+| Power | 50 | 16,4 · 1,80 · 11,0% · 33 · 11 | 19,0 · 2,20 · 11,6% · 40 · 21 |
+| Power | 100 | 16,9 · 1,80 · 10,6% · 63 · 26 | 19,6 · 2,17 · 11,1% · 76 · 43 |
+- Pool ≥2 to thêm khoảng 2,5 số. Tỉ lệ trúng mỗi số giữ nguyên hoặc nhích lên ở cả 3 game và các khung 20/50/100 kỳ. Số kỳ trúng ≥3 tăng rõ.
+
+## 21/10/2026 — Thử Mega: trừ điểm số kỳ cách 2 kỳ (cùng thứ tuần trước) → không hơn, đã bỏ
+Pool trúng (≥3 số / ≥4 số / trúng TB), cách cũ → trừ 0,5 điểm:
+| Pool | 50 kỳ | 100 kỳ |
+|---|---|---|
+| 10 | 18/12/1,68 → 24/8/1,74 | 18/7/1,58 → 21/5/1,60 |
+| 15 | 50/24/2,46 → 50/20/2,46 | 46/16/2,31 → 45/15/2,31 |
+| 18 | 58/32/2,76 → 60/32/2,76 | 57/25/2,69 → 58/27/2,70 |
+| 20 | 68/36/2,98 → 70/34/3,00 | 66/34/2,95 → 66/34/2,95 |
+- Trừ 1 điểm cũng tương tự. Trúng TB gần như không đổi, pool 15 (pool chính) kỳ ≥4 số kém đi → không áp dụng, giữ cách cũ. Power vẫn giữ luật cũ −0,5 cho số này.
+
+## 21/10/2026 — Loto: chiều tăng/giảm (âm dương) của số May Mắn
+Đếm trên dãy MM, chia 3 kiểu: liền 2 buổi / chỉ 13h / chỉ 21h, khung 20 / 50 / 100 kỳ.
+| Dấu vết | Liền 2 buổi | Chỉ 13h | Chỉ 21h |
+|---|---|---|---|
+| Đổi chiều so với lần trước | 12/20 · 29/44 · 57/84 (68%) | 10/17 · 30/43 · 59/87 (68%) | **13/17 · 34/43 · 60/82 (73–79%)** |
+| Sau tăng (+) → giảm | 6/12 · 14/24 · 28/44 | 5/9 · 16/23 · 32/47 | **7/7 · 19/22 · 32/44** |
+| Sau giảm (−) → tăng | 6/8 · 15/23 · 29/48 | 5/9 · 14/23 · 27/46 | 6/11 · 15/24 · 28/46 |
+| MM ≥7 → kỳ sau nhỏ hơn | 6/10 · 16/22 · 33/44 | 4/5 · 14/18 · 35/46 | **11/13 · 23/26 · 43/57** |
+| MM ≤6 → kỳ sau lớn hơn | 8/10 · 20/28 · 37/56 | 8/15 · 19/32 · 36/54 | **5/7 · 18/24 · 34/43** |
+- Buổi 21h có dấu vết rõ nhất (≥70% ở cả 50 và 100 kỳ): đổi chiều, sau tăng thì giảm, MM cao thì kỳ sau thấp, MM thấp thì kỳ sau cao.
+- 13h: chỉ "MM ≥7 → kỳ sau nhỏ hơn" đạt ≥70% (78%, 76%).
+
+## 21/10/2026 — Áp dụng: số May Mắn Loto chỉ gợi ý 2 số + chiều nghiêng cùng buổi (`build/mm_chieu.py`)
+- Cách: ±3 quanh MM kỳ trước (liền 2 buổi), xếp theo số lần ra 10 kỳ (+1 nếu đúng chiều nghiêng theo MM kỳ trước cùng buổi), rồi 50 kỳ; lấy 2 số.
+- Chiều nghiêng: 21h — MM cùng buổi trước ≤6 → số lớn hơn, ≥7 → số nhỏ hơn; 13h — chỉ ≥7 → số nhỏ hơn.
+| 2 số | 20 kỳ | 50 kỳ | 100 kỳ | 200 kỳ |
+|---|---|---|---|---|
+| Cách cũ (top 2) | 6/20 | 16/50 | 25/100 | 45/200 |
+| Có chiều nghiêng | **7/20** | **18/50** | **27/100** | **49/200** |
+- Ưu tiên 1 trúng (3 số, có chiều): 5 · 12 · 19 · 30 lần so với cách cũ 3 · 9 · 16 · 28.
+- Bảng pool (Kiểm pool vắng x kỳ) có thêm dòng **May mắn gợi ý** (Loto), chấm với số may mắn thật, không tính vào ≥2 pool.
+
+## 21/10/2026 — Thử dựng pool 12 / 15 từ pool app + các pool + luật loại (`build/pool12_thu.js`)
+Chấm lùi, mỗi kỳ chỉ dùng dữ liệu trước nó. Ô ghi: trúng TB · số kỳ ≥3 số · số kỳ ≥4 số, ở khung 20 / 50 / 100 kỳ.
+- Tính điểm tổng hợp từ tỉ lệ trúng của từng pool (không dùng thứ hạng app hoặc dùng thêm): **kém hơn pool app** ở cả 3 game → bỏ.
+- Bỏ khỏi pool app số ra ≥2 lần/5 kỳ, số ra ≥3 lần/10 kỳ, số trùng kỳ trước: phần lớn kém đi.
+- Cách tốt nhất: **giữ thứ hạng pool app, đẩy số có mặt ở nhiều pool lên trên** (bậc thứ hạng − b × số pool chứa số, hoặc − b nếu có mặt ≥2 pool):
+| Game · pool | Pool app | Cách tốt nhất | Kết quả cách tốt nhất |
+|---|---|---|---|
+| Loto P12 | 1,80·4·0 / 1,80·12·2 / 1,92·29·8 | − 3 × số pool | **2,05·7·2 / 1,90·17·4 / 1,94·34·9** |
+| Loto P15 | 2,30·7·2 / 2,40·23·7 / 2,47·50·19 | (không cách nào hơn) | giữ pool app |
+| Mega P12 | 2,25·7·4 / 2,02·15·7 / 1,91·29·10 | − 6 nếu ≥2 pool | 2,25·7·4 / 2,02·17·8 / 1,95·29·12 |
+| Mega P15 | 2,45·7·5 / 2,46·25·12 / 2,31·46·16 | − 2 × số pool | 2,50·8·5 / 2,48·25·12 / 2,32·46·17 |
+| Power P12 | 1,90·4·1 / 1,84·10·3 / 1,62·16·4 | (không cách nào hơn rõ) | giữ pool app |
+| Power P15 | 2,25·8·2 / 2,22·17·6 / 1,98·28·10 | − 4 nếu ≥2 pool | 2,35·9·2 / 2,24·19·6 / 2,03·31·9 |
+- Chỉ Loto P12 hơn rõ ở cả 3 khung. Mega P12/P15, Power P15 hơn nhẹ. Chưa đưa vào app, chờ anh quyết.
+
+## 21/10/2026 — So các cách chọn 2 số May Mắn Loto (`build/mm_thu2.py`)
+Số kỳ trúng ở 20 / 50 / 100 / 200 kỳ: **đang dùng (±3 quanh MM kỳ trước + nóng 10 kỳ + chiều nghiêng) 7 / 18 / 27 / 49** · ±3 cùng buổi 8 / 13 / 19 / 37 · nóng cùng buổi 20 kỳ 6 / 14 / 20 / 32 · kết hợp nhiều tín hiệu 5 / 12 / 22 / 42 · vắng lâu nhất 4 / 9 / 21 / 43 · chiều + nóng 20 4 / 8 / 21 / 43 · nóng 20 kỳ 4 / 8 / 17 / 34 · chuyển kỳ 3 / 7 / 16 / 32 · vắng 3–8 kỳ 3 / 6 / 13 / 31.
+- Cách đang dùng vẫn tốt nhất ở 50, 100 và 200 kỳ → giữ. 10 kỳ gần nhất trúng 4/10.
+
+## 21/10/2026 — Nhịp bước nhảy số May Mắn Loto (`build/mm_nhip.py`)
+Đếm ở khung 20 / 50 / 100 kỳ (mẫu số = số kỳ có bước trước khác 0):
+| Dấu vết | Liền 2 buổi | Chỉ 13h | Chỉ 21h |
+|---|---|---|---|
+| Quay lại đúng số 2 kỳ trước (+3 → −3) | 2/20 · 6/47 · 8/92 | 0/18 · 1/46 · 5/93 | 2/18 · 7/46 · 8/90 |
+| Quay lại gần (±1) số 2 kỳ trước | 7/20 · 15/47 · 23/92 | 2/18 · 8/46 · 19/93 | 5/18 · 13/46 · 15/90 |
+| Bước sau ngắn hơn bước trước | 9/20 · 23/47 · 46/92 | 10/18 · 25/46 · 48/93 | 9/18 · 22/46 · 44/90 |
+| Đã zic-zắc → zic-zắc tiếp | 6/12 · 18/29 · 32/57 | 6/10 · 19/29 · 35/59 | **10/13 · 24/33 · 40/60** |
+- Quay lại đúng số 2 kỳ trước hiếm (dưới 10%). Bước ngắn / dài khoảng một nửa, không nghiêng.
+- 21h: zic-zắc tiếp 73% ở 50 kỳ, 67% ở 100 kỳ. Đã nằm trong luật "đổi chiều" đang dùng. Không có dấu vết mới đủ ≥70% ở cả 50 và 100 kỳ.
+- Bổ sung (`build/mm_day.py`): độ lớn bước nhảy (bỏ dấu) nối tiếp dãy tự nhiên từ 2 bước trước (4,3→2 · 3,4→5 · 3,3→3) — đúng độ lớn: liền 2 buổi 3/19 · 4/40 · 8/76; 13h 0/15 · 4/38 · 5/75; 21h 2/15 · 7/41 · 10/77. Dùng để đoán số May Mắn (cả 2 chiều, TB khoảng 1 số/kỳ) trúng 8/76 kỳ (liền 2 buổi, 100 kỳ) → không có dấu vết, không dùng.
+- Bổ sung (`build/mm_tonghieu.py`): 3 kỳ liên tiếp, có số = tổng / hiệu (bỏ dấu) của 2 số kia — liền 2 buổi 4/20 · 10/50 · 16/100; 13h 2/20 · 5/50 · 10/100; 21h 1/20 · 5/50 · 12/100. Đoán kỳ sau = tổng hoặc hiệu 2 kỳ trước (TB 1,5 số/kỳ) trúng đúng chừng đó kỳ → ít, không dùng.
+
+## 21/10/2026 — Áp dụng: số May Mắn bỏ MM kỳ trước + cộng điểm tổng/hiệu 2 kỳ trước
+- MM lặp đúng kỳ trước: liền 2 buổi 0/20 · 3/50 · 8/100 · 18/200 (13h 7/100, 21h 10/100). Cách trước gợi ý lại MM kỳ trước 66/100 kỳ → phí 1 chỗ.
+- Thử (±3, nóng 10 kỳ, chiều nghiêng): 2 số trúng ở 20 / 50 / 100 / 200 kỳ — cách trước 7 / 18 / 27 / 49 · bỏ MM trước 8 / 17 / 25 / 46 · +tổng/hiệu 1 điểm 7 / 20 / 29 / 52 · **bỏ MM trước + tổng/hiệu 2 điểm 9 / 19 / 29 / 53** · ±4 kém hơn.
+- Đã đưa vào `goiy.py`. Kỳ 13h 21/10: MM 07 · 01 (= 4+3, 4−3).
+- Thử chỉ gợi ý 1 chiều (lọc số theo chiều nghiêng / đảo chiều bước trước, thiếu thì bù chiều kia), 2 số trúng 20/50/100/200 kỳ: đang dùng (cộng điểm chiều) 9/19/29/53 · lọc theo chiều nghiêng 9/17/28/51 · lọc đảo chiều bước trước 9/18/23/45 · đảo chiều chỉ 21h 9/17/23/47 · chiều nghiêng, không có thì đảo chiều 9/19/31/52 · mở ±4, ±5 đều kém hơn ở 100/200 kỳ → giữ cách cộng điểm, không lọc cứng.
+
+## 21/10/2026 — Cách chọn số May Mắn riêng cho từng cách xem (`build/mm_buoi.py`)
+Dò 96 biến thể (±2/3/4/cả 12 số, bỏ/giữ MM trước, đếm 10/20 kỳ, tổng/hiệu 0/1/2, chiều nghiêng) trên dãy chỉ 13h và chỉ 21h. 2 số trúng ở 20/50/100/200 kỳ của buổi đó:
+| Buổi | Cách riêng tốt nhất | Cách cả 2 buổi (đang dùng) chấm trên kỳ buổi đó |
+|---|---|---|
+| 13h | 5 / 10 / 19 / 37 (cả 12 số, nóng 10 kỳ 13h) | **7 / 11 / 26 / 42** |
+| 21h | 9 / 15 / 27 / 46 (±4, bỏ MM trước, tổng/hiệu, chiều) | **9 / 18 / 27 / 45** |
+- Cách đang dùng (nhìn liền 2 buổi, có chiều nghiêng theo buổi) vẫn tốt hơn hoặc bằng cách riêng từng buổi → giữ 1 cách cho cả 3 cách xem.
+
+## 21/10/2026 — Áp dụng: số May Mắn mỗi buổi một cách (`build/mm_lai.py`)
+Anh: "riêng thì tín hiệu rõ hơn, chiều rõ hơn". Dò 192 biến thể cách lai (tâm / chiều / tổng-hiệu theo liền 2 buổi hoặc cùng buổi), chấm riêng trên kỳ từng buổi (20/50/100/150 kỳ của buổi):
+| Buổi | Cách trước | Cách riêng tốt nhất |
+|---|---|---|
+| 13h | 7 / 11 / 26 / 36 | **8 / 12 / 27 / 38** — ±3 quanh MM kỳ trước, bỏ MM kỳ trước, +2 đảo chiều bước trước cùng buổi, +2 tổng/hiệu |
+| 21h | 9 / 18 / 27 / 36 | **11 / 20 / 33 / 44** — ±3, giữ MM kỳ trước, +1 chiều nghiêng cùng buổi, +1 tổng/hiệu |
+- Gộp lại trên mọi kỳ: **10 / 22 / 32 / 60** ở 20/50/100/200 kỳ (cách trước 9/19/29/53). Đã đưa vào `goiy.py`. Kỳ 13h 21/10: MM 07 · 06.
+
+## 21/10/2026 — Xu hướng nghỉ của số May Mắn Loto (`build/mm_nghi.py`)
+Khi một số đang nghỉ x kỳ, số lần nó ra ngay kỳ sau / số lần ở mức nghỉ đó (100 kỳ · 200 kỳ):
+| Đang nghỉ | Liền 2 buổi | Chỉ 13h | Chỉ 21h |
+|---|---|---|---|
+| 1 (vừa ra) | 8/100 · 18/200 | 7/100 · 20/200 | 10/100 · 21/200 |
+| 2 | 8/92 · 14/182 | 5/93 · 16/180 | 8/90 · 18/179 |
+| 3–5 | 18/233 · 33/465 | 21/247 · 39/454 | 21/222 · 35/447 |
+| 6–10 | 22/282 · 48/578 | 23/271 · 41/534 | 22/264 · 45/551 |
+| 11–15 | 13/190 · 27/376 | 18/170 · 31/356 | 15/160 · 31/342 |
+| 16–25 | 21/213 · 38/410 | 13/176 · 28/374 | 10/182 · 24/381 |
+| ≥26 | 10/90 · 22/189 | 13/143 · 25/302 | 14/182 · 26/300 |
+- Mức nào cũng ra lại khoảng 7–12% mỗi kỳ, không có mức nghỉ nào nổi hẳn. Liền 2 buổi: nghỉ ≥26 kỳ nhỉnh nhất (11%, 12%) nhưng tách buổi thì không giữ (13h 9%/8%, 21h 8%/9%).
+- Thử cộng điểm số nghỉ ≥26 kỳ vào cách mỗi buổi một cách: 10/22/32/60 → 10/22/32/62 (chỉ hơn 2 kỳ ở khung 200) → chưa đưa vào.
+
+## 21/10/2026 — Thu hẹp trong ±3 theo từng buổi (`build/mm_lech.py`)
+- Độ lệch MM kỳ này − MM kỳ trước (100 kỳ của buổi): 13h −3:9 · −2:11 · −1:10 · 0:8 · +1:10 · +2:8 · +3:3 · ngoài ±3: 41; 21h −3:7 · −2:5 · −1:8 · 0:10 · +1:6 · +2:14 · +3:7 · ngoài ±3: 43. 13h ít +3, 21h hay +2 — nhưng dùng tần suất độ lệch cùng buổi làm điểm thì kém đi (mọi kỳ 10/22/32/60 → 10/20/31/56) → không dùng.
+- Khoảng ±3 chỉ chứa MM thật ~51–57/100 kỳ. Thu hẹp bằng cách chấm điểm mỗi buổi một cách (100 kỳ của buổi): 13h 2 số 27 · 3 số 36 · 4 số 38 · cả ±3 51; 21h 2 số 33 · 3 số 38 · 4 số 43 · cả ±3 57.
+
+## 21/10/2026 — Áp dụng: +1 cho độ lệch hay ra trong 20 kỳ gần cùng buổi
+- Thử trên cách mỗi buổi một cách, 2 số trúng (mọi kỳ 20/50/100/200 · 13h 20/50/100 · 21h 20/50/100):
+  đang dùng 10/22/32/60 · 8/12/27 · 11/20/33 — luật cố định (13h đi xuống, 21h +2) +1: 8/20/31/55 · kém — **học độ lệch hay ra nhất 20 kỳ gần cùng buổi +1: 11/23/33/61 · 9/13/28 · 11/20/33** — học 50 kỳ hoặc học chiều lên/xuống đều kém.
+- Đã đưa vào `goiy.py`. Kỳ 13h 21/10: MM 07 · 01.
+
+## 21/10/2026 — Thêm Pool 9 vào bảng pool (`pool12_thu.js` chạy K=9)
+Trúng TB · số kỳ ≥3 số ở 20 / 50 / 100 kỳ:
+| Game | Pool app 9 | Chọn | Kết quả |
+|---|---|---|---|
+| Loto | 1,45·1 / 1,42·4 / 1,53·13 | − 1 × số pool | 1,45·1 / 1,44·5 / 1,53·15 |
+| Mega | 1,80·3 / 1,54·6 / 1,45·13 | − 2 × số pool | 1,75·3 / 1,56·9 / 1,48·17 |
+| Power | 1,30·4 / 1,24·5 / 1,13·10 | giữ pool app (cách khác không hơn rõ) | — |
+
+## 21/10/2026 — Pool 9 / 12 / 15: mỗi game một cách (`build/pool_rate.js`, `build/pool_grid.js`)
+Anh: 3 game không được chung 1 cách; Mega/Power bi vật lý nên pool vắng có thể kém, Loto ngược lại — xem dữ liệu.
+- %/số từng pool ở 50 / 100 / 200 kỳ:
+  - Loto: vắng 14,3/14,5/15,1 (cao nhất ở 200) · hiệu 17,9/14,7/14,6 · cách 1 kỳ 14,0/15,6/13,5 · tổng 13,0/12,6/11,9 (thấp nhất).
+  - Mega: tổng 15,5/15,0/14,6 (cao nhất) · vắng 14,3/14,9/14,2 · cách 1 kỳ 14,7/14,2/13,5 · ±1 cách 1 kỳ 11,1/11,8/12,6 (thấp nhất).
+  - Power: cách 1 kỳ 12,7/12,2/12,7 (cao nhất, ổn định) · vắng 12,4/12,4/11,3 (tụt ở 200) · trùng 11,0/9,5/11,3.
+  → Mega/Power: vắng không kém ở 50/100 kỳ, nhưng Power tụt ở 200 kỳ (bi thay). Mỗi game một bộ pool tốt khác nhau.
+- Dò đẩy số trong 1–2 pool lên b bậc trên thứ hạng app (trúng TB·kỳ ≥3 ở 20/50/100 kỳ), chọn:
+| Game | Pool 9 | Pool 12 | Pool 15 |
+|---|---|---|---|
+| Loto | cách 1 kỳ & kẹp +2: 1,55·2 / 1,48·6 / 1,57·16 (app 1,45·1 / 1,42·4 / 1,53·13) | vắng & tổng +4: 1,95·5 / 1,92·16 / 2,01·35 (app 1,85·4 / 1,80·12 / 1,92·29) | cách 1 kỳ & tâm linh +2: 2,40·9 / 2,44·25 / 2,50·51 (app 2,35·8 / 2,42·24 / 2,47·50) |
+| Mega | vắng & tâm linh +4: 1,80·4 / 1,56·10 / 1,52·19 (app 1,80·3 / 1,54·6 / 1,45·13) | tổng & tâm linh +2: 2,25·7 / 2,06·17 / 1,97·32 (app 2,25·7 / 2,02·15 / 1,91·29) | cách 1 kỳ & tâm linh +4: 2,50·8 / 2,52·26 / 2,37·48 (app 2,45·7 / 2,46·25 / 2,31·46) |
+| Power | ±1 kỳ trước +2: 1,35·4 / 1,26·6 / 1,17·11 (app 1,30·4 / 1,24·5 / 1,13·10) | trùng kỳ trước +6: 1,90·6 / 1,84·12 / 1,65·21 (app 1,90·4 / 1,84·10 / 1,62·16) | giữ: ≥2 pool +4 (2,35·9 / 2,24·19 / 2,03·31) |
+
+## 21/10/2026 — Dãy Fibonacci (`build/fibo.py`)
+Số Fibonacci: 1 2 3 5 8 13 21 34 (55 với Power). Tỉ lệ 1 số ra mỗi kỳ, so với các số còn lại cùng game (20 / 50 / 100 kỳ; Loto thêm 200):
+- Loto: Fib 15,0 / 14,0 / 12,6 / 14,2% · số khác 14,1 / 14,4 / 14,8 / 14,3% → không có dấu vết.
+- **Mega: Fib 10,6 / 9,8 / 10,6% · số khác 13,9 / 14,1 / 13,9% → Fib ra ít hơn ở cả 3 khung.** Không phải do số nhỏ: Fib ≤13 8,3 / 9,7 / 11,0% so với số thường ≤13 15,7 / 14,6 / 14,4%; 21, 34 cũng thấp ở 50/100 kỳ. Ít nhất là 5 và 8 (100 kỳ: 8 và 9 lần).
+- Power: Fib 11,7 / 12,2 / 12,3% · số khác 10,8 / 10,7 / 10,6% → Fib nhỉnh hơn nhẹ, chủ yếu ở số Fib ≤13 (50/100 kỳ: 13,3 / 13,2% so với 12,3 / 10,9%), khung 20 ngược lại.
+- Bộ 3 số Fibonacci a+b=c trong cùng kỳ: gần như không có (Loto 3/200 kỳ, Mega và Power 0/100).
+- Số May Mắn: Fib (1 2 3 5 8) và số khác ngang nhau (200 kỳ 8,3% / 8,4%).
+- Kiểm thêm (`build/fibo2.py`, 20 / 50 / 100 kỳ):
+  - Khoảng cách giữa các số liền nhau trong kỳ là số Fib: Loto 42/80 · 114/200 · 227/400; Mega 54/100 · 119/250 · 249/500; Power 50/100 · 123/250 · 236/500. Nhiều vì khoảng nhỏ (1, 2, 3, 5) vốn hay gặp; khoảng 4 và 6 (không phải Fib) gặp ngang 5 (Loto 100 kỳ 4:40 · 5:36 · 6:33). Kỳ có mọi khoảng đều là Fib: Loto 5/100, Mega 0, Power 2.
+  - Số đang vắng đúng số Fib kỳ → ra ngay: Loto 13,4 / 13,5 / 13,9% so với vắng số khác 15,2 / 15,2 / 14,7% (kém hơn); Mega 12,6 / 13,8 / 13,4% vs 14,1 / 12,9 / 13,2%; Power 11,6 / 10,7 / 10,5% vs 10,4 / 11,1 / 11,2% → không có dấu vết.
+  - Số cách số kỳ trước ±1/2/3/5/8 so với ±4/6/7: Loto 13,6 / 13,3 / 14,0% vs 15,3 / 14,4 / 14,6% (kém hơn); Mega 14,3 / 13,4 / 13,3% vs 14,3 / 13,3 / 12,9%; Power 10,3 / 10,8 / 11,0% vs 9,3 / 9,9 / 10,6% (nhỉnh nhẹ cả 3 khung).
+  - Tổng kỳ này ≈ ×1,618 hoặc ×0,618 tổng kỳ trước (lệch ≤5%): Loto 5 / 10 / 13 kỳ; Mega 2 / 3 / 4; Power 1 / 2 / 9.
+  → Không có cách dùng Fibonacci nào cho dấu vết rõ trên dữ liệu 3 game; Power ±Fib nhỉnh nhẹ (0,4–1 điểm %).
+- Số kỳ nghỉ giữa 2 lần ra (`build/fibo3.py`, chỉ so trong dữ liệu thật): mức nghỉ là số Fib (1 2 3 5 8 13 21) không gặp nhiều hơn mức nghỉ liền bên (4 6 7 9…); số lần giảm dần đều theo độ dài nghỉ. Riêng Mega nghỉ đúng 13 kỳ gặp 27 lần ở 100 kỳ, nhiều hơn hẳn nghỉ 12 (20) và 14 (13) — cần soi thêm.
+
+## 21/10/2026 — Loto: số đang nghỉ đúng 5/8/13/21/34 kỳ (`build/fibo_nghi.py`)
+Ra mỗi số (20 / 50 / 100 / 150 kỳ), nhóm nghỉ Fib (~5 số/kỳ) so với số còn lại:
+- Liền 2 buổi: 11,9 / 10,6 / 12,8 / 13,7% vs 14,7 / 14,9 / 14,6 / 14,4% → thấp hơn ở cả 4 khung, lệch nhỏ dần.
+- **Chỉ 13h (nghỉ tính theo kỳ 13h): 12,1 / 13,0 / 12,7 / 13,3% vs 14,7 / 14,5 / 14,6 / 14,5% → thấp hơn đều cả 4 khung (ổn định nhất).**
+- Chỉ 21h: 8,9 / 10,1 / 14,3 / 13,9% vs 15,3 / 15,1 / 14,3 / 14,4% → chỉ lệch ở 20/50 kỳ.
+→ Dấu vết nhẹ để trừ điểm (không loại hẳn), rõ nhất ở 13h. Chưa đưa vào gợi ý.
+
+## 21/10/2026 — Fibonacci trong cùng 1 kỳ, dùng loại vé (`build/fibo_trongky.py`)
+Số kỳ đúng ở 20 / 50 / 100 kỳ (Loto · Mega · Power):
+- Có ≤2 số Fibonacci: 19/49/96 · 20/49/99 · 19/47/95
+- Không có chuỗi 4 số kiểu Fibonacci (a, b, a+b, a+2b): 20/50/99 · 19/49/99 · 19/48/98
+- Không phải mọi khoảng cách đều là số Fib: 19/47/95 · 20/50/100 · 20/49/98
+- Có ≥1 khoảng cách là số Fib: 19/49/98 · 20/49/99 · 19/48/98
+- Có ≤3 khoảng cách là số Fib: 19/47/95 · 17/46/86 · 19/45/90
+- Có ≥1 số Fibonacci: 16/38/69 · 13/28/62 · 13/36/74 (dưới hoặc sát 70%)
+- Không có bộ a+b=c: 6/29/60 · 12/27/43 · 8/23/47 (bộ a+b=c hay có → không dùng loại được)
+→ 5 luật đầu đúng ≥86% ở 50 và 100 kỳ, dùng được làm luật loại vé (giống các luật dạng vé đang có: giúp vé gọn, tự chúng không tăng trúng).
+- Áp dụng (anh duyệt 21/10/2026): 4 luật Fibonacci vào bộ lọc vé `goiy.py` (`fib_ok`: ≤2 số Fib, có ≥1 khoảng cách Fib, không phải mọi khoảng cách Fib, không có chuỗi 4 số kiểu Fib) cho cả 3 game. Vé đổi: Loto 21/10 21h vé 1 (03 05 07 10 11 → 01 05 07 10 11), vé 3 (02 06 15 22 28 → 02 05 06 15 22); Power 22/10 vé 4 (01 03 21 28 37 40 → 03 11 21 28 37 40).
+- App: thẻ **Kiểm tra Dãy** (trên 20 kỳ gần nhất) kiểm dãy giả định đang hiện theo 13 luật (9 luật dạng vé + 4 luật Fib), kèm số kỳ đúng ở 20/50/100 kỳ.
+
+## 21/10/2026 — Lucas, Fibonacci tổng quát, chuỗi Fib trên 2/3 kỳ, Pisano (`build/fibo4.py`)
+1 số trong nhóm ra % kỳ so với số còn lại (20 / 50 / 100 kỳ):
+| Nhóm | Loto | Mega | Power |
+|---|---|---|---|
+| Dãy Lucas (1 2 3 4 7 11 18 29 47) | 14,4/14,2/13,9 vs 14,3/14,3/14,4 | 12,5/12,5/12,0 vs 13,5/13,5/13,6 | **17,2/13,8/12,7 vs 9,7/10,3/10,6** |
+| Fib tổng quát từ kỳ trước (a+b, a+2b, 2a+3b; ~6–12 số) | **9,9/12,9/13,8 vs 15,3/14,6/14,4 (thấp)** | **19,1/17,5/15,9 vs 12,1/12,5/12,8 (cao)** | 10,7/11,9/11,4 vs 11,0/10,7/10,8 |
+| Số kế tiếp chuỗi a,b,a+b trên 2 kỳ (~1–2 số) | 14,3/12,2/15,3 vs 14,3/14,4/14,3 | 16,1/17,9/15,3 vs 13,2/13,2/13,3 | 3,9/11,7/12,4 vs 11,2/10,9/10,9 |
+| Số kế tiếp chuỗi trên 3 kỳ (~3–6 số) | 13,3/13,9/17,4 vs 14,4/14,3/14,0 | 11,8/11,3/12,1 vs 13,5/13,5/13,4 | 8,2/11,9/11,6 vs 11,2/10,8/10,8 |
+- Đuôi tổng kỳ = đuôi (tổng 2 kỳ trước) kiểu Pisano: Loto 1/3/12, Mega 4/7/11, Power 4/7/13 (trên 20/50/100) → không có.
+- Dấu vết ổn định cả 3 khung: **Mega Fib tổng quát cao**, **Mega chuỗi 2 kỳ cao** (ít số), **Power Lucas cao**, **Loto Fib tổng quát thấp**, Mega Lucas hơi thấp.
+
+## 21/10/2026 — Xét nốt 4 cách 2 kỳ (build/hai_ky.py)
+Tỉ lệ ra mỗi số trong nhóm vs phần còn lại (khung 20/50/100 kỳ, %):
+
+| Cách | Loto | Mega | Power |
+|---|---|---|---|
+| 1a. Tổng ghép (a kỳ trước + b kỳ cách 1) | **12,2/12,5/13,1 vs 15,3/15,0/14,7 (thấp)** | **14,4/14,0/14,1 vs 12,9/13,1/13,0 (cao)** | 9,5/10,3/10,7 vs 11,6/11,2/11,0 (thấp) |
+| 1b. Hiệu ghép | ~ngang | 12,9/12,8/12,9 vs 13,8/13,8/13,7 (thấp nhẹ) | **12,5/11,7/11,9 vs 9,8/10,4/10,2 (cao)** |
+| 2. Fib tổng quát từ 2 kỳ gộp | **12,6/13,2/13,5 vs 16,0/15,2/14,9 (thấp)** | ~ngang/hơi cao | lẫn |
+| 4. Bạn hay đi cùng (100 kỳ) | ~ngang | lẫn | 10,9/11,6/12,6 vs 10,9/10,7/10,5 (cao ở 50/100) |
+
+3. Theo vị trí (đoán ±2, số lần đúng 20/50/100 kỳ): giữ như kỳ trước / tiếp đà / đảo đà
+- Loto 23/58/111 · 13/37/69 · 24/57/150
+- Mega 29/87/167 · 24/60/108 · 31/78/145
+- Power 24/59/112 · 14/32/69 · 20/53/112
+→ "Tiếp đà" luôn kém nhất; Loto "đảo đà" tốt nhất ở 100 kỳ.
+
+Dấu vết ổn định: Loto tổng ghép thấp + Fib 2 kỳ thấp; Mega tổng ghép cao; Power hiệu ghép cao. Chưa áp vào pool — chờ thử như điểm cộng/trừ riêng từng game.
+
+## 21/10/2026 — Thử dấu vết 2 kỳ vào Pool 9/12/15 (build/dv2_pool.js)
+Tổng số trúng ở khung 20/50/100 kỳ, hiện tại → sau khi thêm. Chỉ nhận những thay đổi hơn ở cả 3 khung.
+
+| Pool | Cách thêm | Trước | Sau |
+|---|---|---|---|
+| Mega P9 | tổng ghép đẩy lên 2, bạn đi cùng đẩy xuống 4 | 36/78/152 | **39/86/159** |
+| Power P9 | hiệu ghép, bạn đi cùng đẩy lên 4 | 27/63/117 | **28/68/122** |
+| Power P12 | bạn đi cùng đẩy lên 2 | 38/92/165 | **38/94/166** |
+| Loto P9/12/15, Mega P12/15, Power P15 | không cách nào hơn đủ 3 khung | giữ nguyên | |
+
+## 21/10/2026 — So các pool trong app (build/so_pool.js, chấm lùi 20/50/100 kỳ)
+Anh hỏi Pool 9/12/15 có kém các pool khác không (sau kỳ Mega 21/10: tâm linh 4, P9 1). Số trúng TB/kỳ, so cùng cỡ:
+
+| Game | Pool 12 | Tâm linh 12 | Pool 15 | Vắng x kỳ (~10–14) | Pool 9: % trúng mỗi số | Tâm linh: % mỗi số |
+|---|---|---|---|---|---|---|
+| Loto | 1,95/1,92/2,01 | 1,55/1,66/1,70 | 2,40/2,44/2,50 | 1,55/1,48/1,48 | 17,2/16,4/17,4 | 12,9/13,8/14,2 |
+| Mega | 2,25/2,04/1,97 | 1,80/1,64/1,74 | 2,45/2,48/2,37 | 2,15/2,06/2,10 | 21,1/18,7/17,6 | 15,0/13,7/14,5 |
+| Power | 1,90/1,88/1,66 | 1,75/1,52/1,41 | 2,35/2,24/2,03 | 1,60/1,48/1,57 | 15,6/15,1/13,6 | 14,6/12,7/11,8 |
+→ Pool 9/12/15 có % trúng mỗi số cao nhất trong các pool ở cả 3 game, 3 khung. Kỳ 21/10 Mega chỉ là 1 kỳ trật — giữ nguyên.
+
+## 21/10/2026 — Fibonacci để lọc Pool 9/12/15 (build/fibo_pool.js)
+Thử cộng/trừ 2–4 bậc cho: số Lucas, số Fibonacci, Fib tổng quát kỳ trước, số kế tiếp chuỗi Fib 2/3 kỳ, số đang nghỉ 5/8/13/21/34 kỳ.
+- Loto: không cách nào tăng quá +1–4 số/100 kỳ. Số nghỉ Fib ra ít hơn thật (11,9/10,6/12,8% vs 14,7/14,9/14,6%) nhưng trừ điểm làm P9/P12 kém đi (155/154 vs 157) — app rank đã đẩy chúng xuống sẵn.
+- Mega/Power: "nghỉ Fib +4" làm P9 tăng (Mega 158→162, Power 122→129) nhưng tỉ lệ ra từng số của nhóm này lẫn lộn (Mega 12,1/14,3/13,3 vs 13,6/13,1/13,3; Power 11,2/10,3/11,3 vs 10,8/11,0/10,8) → không có cơ sở, không áp. Mega P15 Lucas cộng hay trừ đều tăng → nhiễu.
+→ Fibonacci không lọc được số cho Pool 9/12/15. Không đổi app.
+
+## 21/10/2026 — Số trùng ngày / thứ / tháng (anh: kỳ Mega 21/10 thứ 4 ra 04 và 10)
+% ra mỗi số trong nhóm vs số còn lại (20/50/100 kỳ), dấu vết đứng cả 3 khung:
+
+| Game | Cao hơn | Thấp hơn |
+|---|---|---|
+| Loto | Tháng 35/26/20 vs ~14 · Ngày lộn 38/26/18 · Ghép tháng–ngày 21/21/22 · Tháng âm 20/18/21 · **Gộp thứ+ngày+tháng 23/18/17 vs 13/14/14** | Ngày ±1 10/10/11 · Tổng chữ số ngày tháng năm 5/10/11 |
+| Mega | Ngày lộn 30/28/22 vs 13 | Ngày 5/4/9 · Ghép tháng–ngày 0/8/7 · Thứ 10/8/12 · Gộp thứ+ngày+tháng 14/10/11 |
+| Power | **Thứ 30/20/17 vs 11** · Ngày ±1 18/16/15 · Gộp 20/16/12 | Ngày âm, Tháng âm |
+
+Thử làm điểm cho Pool 9/12/15 (build/ngay_pool.js): mỗi nhóm chỉ 1–3 số nên thay đổi nhỏ. Nhận **Loto P9, P15: số thứ/ngày/tháng đẩy lên 4 bậc** (có cơ sở, hơn đủ 3 khung): P9 31/74/157 → 32/77/159 (kỳ ≥3 số 2/6/16 → 3/7/19), P15 48/122/250 → 50/123/252 (9/25/51 → 11/28/54). Mega, Power: kết quả tăng không khớp chiều dấu vết (cộng hay trừ đều tăng) → không áp.
+
+## 21/10/2026 — Dòng pool "Ngày quay" tính vào ≥2 pool (build/ngay_nh2.js)
+Mỗi game bộ số riêng theo dấu vết: Loto thứ, ngày, tháng, ghép tháng–ngày · Mega ngày lộn, ngày+tháng · Power thứ, ngày ±1.
+≥2 pool (trúng TB/kỳ · % mỗi số · kỳ ≥3, 20/50/100 kỳ):
+
+| Game | Trước | Sau |
+|---|---|---|
+| Loto | 2,40/2,52/2,22 · 14,8/15,8/13,8% · 11/25/39 | **2,65/2,76/2,46 · 14,8/16,0/14,2% · 14/32/49** |
+| Mega | 3,10/2,88/2,90 · 15,0/14,0/13,9% · 16/31/67 | **3,30/3,04/3,00 · 15,4/14,3/14,0% · 17/34/71** |
+| Power | 2,50/2,20/2,17 · 12,9/11,6/11,1% · 12/21/43 | **2,85/2,46/2,41 · 13,8/12,1/11,5% · 13/24/48** |
+
+±1 (anh hỏi): Ngày ±1 chỉ Power ra nhiều (17,9/15,5/15,2% vs 10,7) — đã gồm trong dòng Power; Loto ngày ±1 ra ít (10/10/11% vs 14,5). Tháng ±1, thứ ±1: không ổn định ở game nào.
+Power Pool 15 giữ cách đếm cũ (không tính dòng ngày quay) vì tính vào thì kém đi 1 kỳ ≥3.
+
+## 21/10/2026 — Vì sao ≥2 pool Loto kém 2 kỳ gần (build/nh2_xet.js, nh2_bot.js)
+- 10 kỳ gần ≥2 pool trúng: 3 4 3 3 3 3 3 3 **0 1** — chỉ 2 kỳ cuối tụt; 100 kỳ vẫn 2,46 số/kỳ, 49 kỳ ≥3 số.
+- Loto: số ở đúng 2 pool ra 13,2/15,8/14,0% (20/50/100) ≈ số ở 1 pool 13,6/12,3/14,0% → đếm "≥2" lọc yếu, pool trúng nhiều chủ yếu vì to (~17/35 số). Số ở 3 pool ra 18,0/16,5/15,0%; ≥4 pool 8/13/12% (ít số).
+- Bỏ bớt pool yếu (k1, t, k2…) thì pool nhỏ lại nhưng trúng/kỳ và kỳ ≥3 đều giảm ở cả 3 game → giữ nguyên. Thu hẹp dùng Pool 9/12/15 (15 số: 2,50/2,46/2,52 trúng/kỳ, % mỗi số 16,7 vs 14,1 của ≥2).
+
+## 21/10/2026 — Pool nào làm ≥2 pool phình mà không thêm số trúng (build/nh2_keo.js, nh2_trongso.js)
+"Số kéo thêm" = số chỉ lọt vào ≥2 nhờ pool đó. % ra của số kéo thêm (20/50/100 kỳ), kém hơn ≥2 ở cả 3 khung:
+- Loto: Tổng 6,1/13,4/10,4% · ±1 kỳ trước 10,0/10,8/11,4% (≥2: 14,2/15,8/14,1; ngoài ≥2: 14,4/12,8/14,4).
+- Mega: ±1 kỳ cách 1 kỳ 10,9/13,5/13,4% (≥2: 15,4/14,3/14,0).
+- Power: Vắng x kỳ 11,5/10,8/10,5 · Hiệu 11,3/10,5/9,7 · ±1 kỳ trước 12,2/11,2/10,6 · ±1 kỳ cách 1 11,0/10,5/9,9 (≥2: 13,8/12,1/11,5).
+Pool kéo thêm tốt: Loto hiệu, ngày quay, số kẹp · Mega tổng, vắng, ngày quay · Power số kỳ cách 1, ngày quay.
+Bỏ pool yếu khỏi phép đếm: % mỗi số tăng nhẹ (Loto 14,1→15,4% ở 100 kỳ, cỡ 17→12) nhưng trúng/kỳ và kỳ ≥3 giảm mạnh (Loto 49→22, Mega 71→46, Power 48→5). Cùng cỡ thì Pool 12/15 vẫn hơn (Loto P12: 2,01 trúng/kỳ, 16,8%). → Chưa đổi app, chờ anh chọn.
+
+## 21/10/2026 — Loại số trong ≥2 pool (build/nh2_loai.js)
+Nhóm ra ít ổn định trong ≥2 pool: Loto vắng 3–5 kỳ (11%), có trong pool Tổng (12%), có mặt ≥4 pool; Mega ngoài top 20 app (12%), ra kỳ trước (12%), ra ≥3 lần/10 kỳ; Power không có nhóm nào.
+Loại các nhóm này: % mỗi số tăng 0,5–1,5 điểm nhưng mất kỳ trúng ≥3/≥4 (Loto 49/15 → 24/6, Mega 71/29 → 43/18 ở 100 kỳ).
+Kỳ trúng ≥3/≥4/≥5 ở 100 kỳ: Loto ≥2 (17 số) 49/15/2 · Pool app 18: **65/31/11** · P15: 55/20/4. Mega ≥2 (21 số) 71/29/9 · app 18: 59/26/7 · P15: 48/18/6. Power ≥2 (21 số) 48/11/2 · app 18: 41/16/1 · P15: 31/9/1.
+→ Muốn trúng 4–5 số: Loto dùng Pool app 18; Mega ≥2 và app 18 ngang nhau (app ít số hơn); Power app 18 nhiều kỳ ≥4 hơn. ≥2 pool không lọc ra được số để thu hẹp.
+
+## 22/10/2026 — Dấu vết "tam giác" 3 số trên 2 kỳ liền (build/tam_giac.py)
+▽ = 2 số kề cột kỳ trước (i, i+1) → số kỳ sau = tổng / hiệu / tích / thương của chúng. △ = 1 số kỳ trước + 2 số kề kỳ sau có quan hệ.
+Kỳ có ▽ (20/50/100): Loto 8/20/29 · Mega 7/11/31 · Power 9/15/23. Kỳ có △: Loto 5/8/19 · Mega 3/11/21 · Power 4/10/20.
+Đoán trước bằng ▽ — % ra mỗi số trong nhóm vs số còn lại (20/50/100), đứng cả 3 khung:
+- **Mega ▽ tổng** (~2 số/kỳ): 17,8/16,7/16,8% vs 13,1/13,2/13,2%.
+- **Power ▽ tổng** 13,8/12,4/11,7 vs ~10,8 · **▽ hiệu** 12,5/12,2/11,2 vs ~10,8 · gộp 4 phép (~7 số) 12,5/11,5/11,5 vs ~10,8.
+- **Loto 13h ▽ gộp 4 phép** (~5 số) 18,3/17,7/16,0 vs 13,5/13,7/14,0 · **Loto 21h ▽ tổng** 17,1/16,1/17,1 vs ~14,1. Loto liền 2 buổi: ▽ tổng thấp (7,9/13,7/12,3 vs 14,4).
+- Ra đúng cột (i / i+1) thấp hơn nhiều → chỉ dùng giá trị, không dùng vị trí. Tích, thương quá ít số (0,1–0,3/kỳ) để kết luận.
+
+## 22/10/2026 — Áp dòng pool "Tam giác" (bang.js tgRow; chấm lùi build/tam_giac_pool.js)
+Dòng Tam giác tính vào ≥2 pool. ≥2 pool trước → sau (trúng/kỳ · % mỗi số · kỳ ≥3; 20/50/100):
+- Loto: 2,55/2,74/2,46 → **2,80/2,96/2,68** · 14,2/15,8/14,1 → 14,7/16,0/14,3% · 13/32/49 → **14/36/61**
+- Mega: 3,30/3,04/3,00 → **3,45/3,12/3,06** · 15,4/14,3/14,0 → 15,6/14,3/13,9% · 17/34/71 → **18/36/74**
+- Power (tổng+hiệu): 2,85/2,46/2,41 → **3,05/2,72/2,62** · 13,8/12,1/11,5 → 13,2/12,0/11,4% · 13/24/48 → **14/31/58** (chỉ tổng: 52 kỳ ≥3 → giữ tổng+hiệu)
+Pool 9/12/15 cộng điểm tam giác: chỉ **Mega P12, P15 lên 4 bậc** hơn đủ 3 khung (P12 45/102/197 → 46/104/197; P15 49/124/237 → 50/125/238). Loto, Power kém đi → không áp. Power P15 đếm ≥2 không tính dòng Tam giác, Ngày quay.
+
+## 22/10/2026 — Loto: pool app to hơn có trúng đủ 5 số nhiều hơn? (GOIY_RKN=30 GOIY_RKDUMP, chấm lùi 200 kỳ)
+| Pool (top app) | Đủ 5 số 20/50/100/200 kỳ | ≥4 số 20/50/100/200 | Trúng TB/kỳ (100) |
+|---|---|---|---|
+| P15 | 0/1/4/5 | 3/7/20/29 | 2,50 |
+| P18 | 1/2/9/14 | 4/9/28/45 | 2,92 |
+| P20 | 4/5/15/22 | 6/15/36/67 | 3,16 |
+| P22 | 4/5/18/28 | 7/17/40/80 | 3,33 |
+| P25 | 4/6/21/37 | 8/30/63/122 | 3,70 |
+| P30 | 11/24/45/88 | 15/39/82/169 | 4,25 |
+Mỗi kỳ chỉ còn 26–30 số sau luật loại. P18→P20: đủ 5 từ 9 lên 15 kỳ/100; P20→P22: 15→18.
+
+## 22/10/2026 — Kỳ sau có số = ×2 hoặc ÷2 số kỳ trước? (build/nhan_chia2.py)
+% ra mỗi số trong nhóm vs số còn lại (20/50/100 kỳ):
+- **÷2 (nửa số chẵn kỳ trước):** Loto 13h (so kỳ 13h trước) 26,2/23,0/18,6 vs ~14 · Power 16,0/16,1/13,9 vs ~10,7 · Mega 18,2/15,1/13,2 vs ~13,2 (đang nhạt dần) · Loto 21h, Loto liền: không đều.
+- **×2:** Mega ra ít 9,3/10,0/11,5 vs ~13,5 · Loto 13h ra ít 12,2/11,0/11,5 vs ~14,5 · Power, Loto 21h: không đều.
+- Mỗi kỳ ~2 số mỗi nhóm; kỳ có ≥1 số ÷2 ra: Loto 13h 8/18/32, Power 7/16/31 (20/50/100).
+
+## 22/10/2026 — Áp "Chia 2" vào app (bang.js c2Row; chấm lùi build/nhan2_pool.js)
+- Dòng pool **Chia 2** (Loto: chỉ kỳ 13h, nửa số chẵn kỳ 13h trước; Power: nửa số chẵn kỳ trước) tính vào ≥2 pool. ≥2 pool (trúng/kỳ · kỳ ≥3; 20/50/100): Loto 2,85/2,94/2,68 → 3,00/3,02/2,76 · 15/36/61 → 15/36/63; Power 3,05/2,72/2,62 → 3,10/2,80/2,70 · 14/31/58 → 14/32/62. Power P15 đếm ≥2 không tính dòng này.
+- **Nhân 2 đẩy xuống 4 bậc** chỉ ở Pool 12: Loto (kỳ 13h) 40/96/202 → 40/98/206; Mega 46/104/197 → 46/105/198. P9, P15 kém đi → không áp.

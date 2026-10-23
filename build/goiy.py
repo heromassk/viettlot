@@ -105,6 +105,8 @@ def signals(t):
                 import datetime as _dt
                 _l = _dt.datetime.strptime(_ds[-1][:10], '%d/%m/%Y'); _m = (_l + _dt.timedelta(days=1 if _ds[-1].endswith('21h') else 0)).month
             sig['nong35'].discard(_m)
+    if not A.cu:   # số không ra trong VX kỳ gần (anh 19/10/2026; vang_x.py Loto 8 kỳ, vang_x_bi.py Mega 8 kỳ / Power 12 kỳ)
+        sig['vang8'] = set(range(1, NB + 1)) - set().union(*R[t - VX:t])
     sig['_td'] = td_sets(t)
     if WMK and not A.cu: sig['_mk'] = mk_rank(t)
     if MIXM and not A.cu: sig['_mix'] = [MIXF[m](t) for m in MIXM.split(',')]
@@ -211,6 +213,7 @@ def score(f, s, extra=None):
         v += WCHIN * (n in s.get('chin', ())) - WG610 * (n in s.get('g610', ())) \
             - WDUOI * (n in s.get('duoi', ())) - WLAP * (n in s.get('lap', ())) - WTUAN * (n in s.get('tuan', ())) \
             + 1 * (n in s.get('ben', ())) + WSC * (n in s.get('kep', ())) + WSC * (n in s.get('pascal', ()))
+        v += WV8 * (n in s.get('vang8', ()))
         v += sum(WTD * sg for sg, st in s.get('_td', {}).values() if n in st)
         v += WMK * s.get('_mk', {}).get(n, 0)
         v += min(f[n]['c20'], 6) * 0.15            # độ nóng mềm để tách hoà
@@ -239,6 +242,10 @@ WCHIN, WG610, WDUOI, WLAP = (float(x) for x in os.environ.get('GOIY_W', '1 0.5 0
 WSC = float(os.environ.get('GOIY_SC', '0'))   # lô kép (Loto), Pascal (Power): thử 05/10 — pool không đổi rõ → tắt, chỉ theo dõi trong sổ
 WCHM = float(os.environ.get('GOIY_CHM', '1'))   # Mega: +1 số vắng 11–15 (pool 15: 2.12→2.22 ở 50 kỳ)
 WTUAN = float(os.environ.get('GOIY_WT', '0.5'))
+# Số vắng VX kỳ (anh duyệt 19/10/2026): + điểm WV8 và mỗi vé ≥1 số trong nhóm. Loto 8 kỳ +0.5 · Mega 8 kỳ +1 · Power 12 kỳ chỉ luật vé
+# (pool Power đã gộp hạng chuỗi ra/vắng, cộng điểm không đổi pool).
+VX = int(os.environ.get('GOIY_VX', {'loto': 8, 'mega': 8, 'power': 12}[A.game]))
+WV8 = float(os.environ.get('GOIY_V8', {'loto': 0.5, 'mega': 1, 'power': 0}[A.game]))   # Loto: + điểm nhỏ cho số vắng 8 kỳ (anh 19/10/2026)
 SIGS = ('hot', 'ke', 'de', 'kho', 'vang') + (('chuyen', 'phien') if A.game == 'loto' else ()) + (() if A.cu else
         {'power': ('chin', 'g610', 'tuan', 'it100'), 'mega': ('duoi', 'lien2', 'ben', 'lt3', 'zprev', 'thua', 'chin'), 'loto': ('lap', 'tx15', 'vang1', 'nong35', 'thua')}[A.game])
 import random
@@ -270,6 +277,7 @@ def claims(t, rk):
         while g < t and n not in R[t - 1 - g]: g += 1
         gp[n] = g
     hot10 = set(sorted(c20, key=lambda n: (-c20[n], gp[n], n))[:10])
+    v8 = set(range(1, NB + 1)) - set().union(*R[t - VX:t])
     ke = {m for n in last for m in (n - 1, n, n + 1) if 1 <= m <= NB}
     # (15/10/2026) bỏ khẳng định "Pool 10/15/20 có …": chấm bằng pool thô, không phải pool đang hiện — xem bảng pool thật (pool_app.py)
     return [
@@ -280,17 +288,18 @@ def claims(t, rk):
         (f'Chẵn/lẻ cân ({NDAY // 2}±1 số lẻ' + (', dãy 6 số gồm MM)' if DAY6 else ')'), None, lambda x: abs(odd_n(x) - NDAY / 2) <= 1),
         (f'Nhỏ/lớn cân ({NDAY // 2}±1 số ≤{NB // 2}' + ('; MM ≤6)' if DAY6 else ')'), None, lambda x: abs(small_n(x) - NDAY / 2) <= 1),
         (f'Rải ≥{KB - 2} hàng chục', None, lambda x: len({n // 10 for n in x}) >= KB - 2),
-    ]
+    ] + [(f'Có ≥1 số vắng {VX} kỳ (không ra trong {VX} kỳ gần)', v8, lambda x: bool(x & v8))]
 
 def backtest(W=100):
     """Chạy tiến W kỳ: mỗi kỳ ghi số trúng của từng tín hiệu, pool 10/15/20 và từng khẳng định."""
     recs = []
     for t in range(T - W, T):
         f, s = signals(t)
-        rk = pool_of(score(f, s), s, 20)
+        rkx = pool_of(score(f, s), s, int(os.environ.get('GOIY_RKN', '20')))   # GOIY_RKN: nghiên cứu pool to hơn 20 (anh 22/10/2026)
+        rk = rkx[:20]
         sig = {k: (len(s[k] & R[t]), len(s[k])) for k in SIGS}
         cl = [(lab, fn(XT(t)), sum(fn(m) for m in MC) / len(MC)) for lab, _, fn in claims(t, rk)]
-        recs.append(dict(sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 18, 20)}, cl=cl, rk=rk, t=t))
+        recs.append(dict(sig=sig, h={k: len(set(rk[:k]) & R[t]) for k in (7, 8, 9, 10, 12, 15, 18, 20)}, cl=cl, rk=rk, rkx=rkx, t=t))
     return recs
 
 def summ(recs):
@@ -427,11 +436,45 @@ if A.game == 'loto':
     # anh 14/10/2026: "tối đa 3 số may mắn và phải có độ ưu tiên". Cách: nóng 10 kỳ trong ±3 quanh MM kỳ trước
     # (somayman_soluong.py: ổn định nhất trong 14 cách ở 3 số, đúng 42/33/32/30% ở 50/100/200/500 kỳ; hòa → số lần ra 50 kỳ).
     # Thứ tự trả về = ưu tiên 1 → 3. Ưu tiên 1 về nhiều nhất ở cả 4 khung (18/17/13/11%); ưu tiên 2 và 3 gần ngang nhau.
+    # anh 21/10/2026: thêm "chiều nghiêng" (âm dương) theo MM kỳ trước CÙNG BUỔI m — 21h: m ≤6 → số lớn hơn m, m ≥7 → nhỏ hơn m;
+    # 13h: chỉ m ≥7 → nhỏ hơn m (ghi-chu 21/10). Số đúng chiều +1 vào số lần ra 10 kỳ khi xếp. Và chỉ gợi ý 2 số (anh 21/10/2026).
+    # mm_chieu.py: 2 số trúng 35/36/27/24% ở 20/50/100/200 kỳ (cách cũ 30/32/25/22%).
+    MMK = int(os.environ.get('GOIY_MMK', '2'))
+    A_NEXT_LOTO = APP['next'] if APP else next_date(D['dates'][-1])
+    DL = D['dates']
+    def mm_lean(t):
+        nd = DL[t] if t < len(DL) else A_NEXT_LOTO
+        g = nd[-3:]; m = next((LK[u] for u in range(t - 1, -1, -1) if DL[u].endswith(g)), None)
+        if m is None: return None
+        if m >= 7: return lambda k: k < m
+        if m <= 6 and g == '21h': return lambda k: k > m
+        return None
     def mm_pick(t):
+        # anh 21/10/2026: "riêng thì tín hiệu rõ hơn" — mỗi buổi một cách (mm_lai.py, chấm riêng trên kỳ buổi đó):
+        #  13h: ±3 quanh MM kỳ trước (liền), BỎ MM kỳ trước, +2 nếu đảo chiều bước trước CÙNG BUỔI, +2 tổng/hiệu 2 kỳ trước (liền)
+        #  21h: ±3 quanh MM kỳ trước (liền), giữ MM kỳ trước, +1 chiều nghiêng cùng buổi (≥7 xuống, ≤6 lên), +1 tổng/hiệu 2 kỳ trước
+        #  mọi kỳ: 2 số trúng 10/22/32/60 ở 20/50/100/200 kỳ (cách chung trước 9/19/29/53)
         c10 = {k: sum(LK[u] == k for u in range(max(0, t - 10), t)) for k in range(1, 13)}
         c50 = {k: sum(LK[u] == k for u in range(max(0, t - 50), t)) for k in range(1, 13)}
-        ok = [k for k in range(1, 13) if t < 1 or abs(k - LK[t - 1]) <= 3]
-        return sorted(ok, key=lambda k: (-c10[k], -c50[k], k))[:3]
+        nd = DL[t] if t < len(DL) else A_NEXT_LOTO; g = nd[-3:]
+        su = [u for u in range(t - 1, -1, -1) if DL[u].endswith(g)][:2]
+        if t < 2 or len(su) < 2: return sorted(range(1, 13), key=lambda k: (-c10[k], -c50[k], k))[:MMK]
+        m1, m2 = LK[su[0]], LK[su[1]]; p1, p2 = LK[t - 1], LK[t - 2]
+        TH = {p1 + p2, abs(p1 - p2)}
+        if g == '13h':
+            ok = [k for k in range(1, 13) if abs(k - p1) <= 3 and k != p1]
+            f = (lambda k: k < m1) if m1 > m2 else (lambda k: k > m1) if m1 < m2 else None; bd, bt = 2, 2
+        else:
+            ok = [k for k in range(1, 13) if abs(k - p1) <= 3]
+            f = (lambda k: k < m1) if m1 >= 7 else (lambda k: k > m1); bd, bt = 1, 1
+        # +1 cho độ lệch (MM − MM kỳ liền trước) hay ra nhất trong 20 kỳ gần CÙNG BUỔI (anh 21/10/2026; mọi kỳ 10/22/32/60 → 11/23/33/61)
+        O = {}; m = 0
+        for u in range(t - 1, 0, -1):
+            if DL[u].endswith(g):
+                x = LK[u] - LK[u - 1]; O[x] = O.get(x, 0) + 1; m += 1
+                if m >= 20: break
+        mx = max(O.values()) if O else 0; BO = {x for x, v in O.items() if v == mx and -3 <= x <= 3}
+        return sorted(ok, key=lambda k: (-c10[k] - (bd if f and f(k) else 0) - (bt if k in TH else 0) - (1 if (k - p1) in BO else 0), -c50[k], k))[:MMK]
     MM = mm_pick(len(LK))
     hm = []; MMH = []; hr = []   # chạy lại 100 kỳ: mỗi kỳ chỉ dùng số may mắn các kỳ trước
     for t in range(len(LK) - 100, len(LK)):
@@ -464,8 +507,14 @@ def ok(tk, lv):
     if not SLO <= sum(tk) + (CUR_MM or 0) <= SHI: return False
     if lv == 0 and A.game != 'loto' and sum(x > 31 for x in tk) < 2: return False
     if not A.cu and bad_ticket(tk): return False
+    if not A.cu and not fib_ok(tk): return False
     return not any(tk[i] + 2 == tk[i + 1] + 1 == tk[i + 2] for i in range(len(tk) - 2))
 
+FIBS = {1, 2, 3, 5, 8, 13, 21, 34, 55}
+def fib_ok(tk):   # luật dạng Fibonacci (anh 21/10/2026, fibo_trongky.py: đúng 95–100% ở 100 kỳ, cả 3 game)
+    s = sorted(tk); S = set(s); g = [b - a for a, b in zip(s, s[1:])]
+    chain = any(a + b in S and 2 * b + a in S for i, a in enumerate(s) for b in s[i + 1:])
+    return len(S & FIBS) <= 2 and any(x in FIBS for x in g) and not all(x in FIBS for x in g) and not chain
 def bad_ticket(tk):
     """Luật loại vé — kỳ thật hiếm khi vi phạm (1–8%, ổn định 3 khúc)."""
     d6 = D6(tk, CUR_MM) if DAY6 else set(tk)
@@ -531,7 +580,8 @@ if RAIVE:
         if _lv: KHUON['tien'], KHUON['tien10'] = _lv.get('tien'), _lv.get('tien10')   # % lọt CHẤM TIẾN (chọn bằng kỳ trước, thử kỳ sau)
     _SPECS = _BV['specs']
     _prev = sorted(R[-1])
-    def _okv(x, mm): return _ev(x, mm) not in CL_TRANH and all(_KH.check(sp, x, mm, _prev, NB, KB) for sp in _SPECS)
+    _V8 = (set(range(1, NB + 1)) - set().union(*R[T - VX:T])) if not A.cu else set()   # mỗi vé ≥1 số vắng VX kỳ (anh 19/10/2026)
+    def _okv(x, mm): return _ev(x, mm) not in CL_TRANH and all(_KH.check(sp, x, mm, _prev, NB, KB) for sp in _SPECS) and (not _V8 or bool(set(x) & _V8)) and fib_ok(x)
     VELUAT = dict(specs=_SPECS, cl=sorted(CL_TRANH), prev=_prev)
     _CAND = list(_P18) + [n for n in (POOLS.get(25) or rank) if n not in _P18]
     from itertools import combinations as _cb
@@ -574,7 +624,15 @@ print(f'## Gợi ý {NAME} — kỳ {nd}\n')
 print(f'Kỳ gần nhất {D["dates"][-1]}: **{fm(R[-1])}** (tổng {sums[-1]})\n')
 print('### Tín hiệu dấu vết (cùng một cách tính mọi kỳ)\n')
 RECS = backtest(100)   # tối đa 100 kỳ
+if os.environ.get('GOIY_RKDUMP'):   # nghiên cứu pool 12/15 (anh 21/10/2026): xuất thứ hạng app (top 20) từng kỳ, chấm lùi
+    json.dump({D['dates'][r['t']]: r['rkx'] for r in backtest(int(os.environ.get('GOIY_RKW', '200')))}, open(os.environ['GOIY_RKDUMP'], 'w'))
 B = {W: summ(RECS[-W:]) for W in (10, 50, 100)}
+if os.environ.get('GOIY_BAO'):   # bao k số theo thứ hạng pool (anh 19/10/2026): mỗi kỳ chấm lại, kỳ có ≥3 / ≥4 / đủ KB số trong k số đầu
+    from math import comb as _cmb
+    for _k in (6, 7, 8, 9, 10, 12):
+        for _W in (50, 100):
+            _m = [len(set(r['rk'][:_k]) & R[r['t']]) for r in RECS[-_W:]]
+            print(f'BAO {_k} ({_cmb(_k, KB)} vé) {_W} kỳ: TB {sum(_m) / _W:.2f} | ≥3 {sum(x >= 3 for x in _m)} ≥4 {sum(x >= 4 for x in _m)} ={KB} {sum(x >= KB for x in _m)}')
 pc = lambda v: '—' if v is None else f'{v:.0f}%'
 rows = [('hot', 'Nóng (c10≥3 hoặc c20≥2×kỳ vọng)', 'tỉ lệ ra/số'),
         ('ke', 'Kề ±1 kỳ trước', 'tỉ lệ ra/số'),
@@ -794,9 +852,9 @@ for i, (kind, tk, lv) in enumerate(tickets, 1):
 
 # Số May Mắn Loto (đã tính ở trên)
 if A.game == 'loto':
-    print(f'\n### Số May Mắn (3 số, theo thứ tự ưu tiên — nóng 10 kỳ trong ±3 quanh số kỳ trước)\n\n'
+    print(f'\n### Số May Mắn ({len(MM)} số, theo thứ tự ưu tiên — ±3 quanh số kỳ trước, nóng 10 kỳ, chiều + tổng/hiệu, mỗi buổi một cách)\n\n'
           + ' · '.join(f'ưu tiên {i + 1}: **{k:02d}** (vắng {mg[k]} kỳ, về {MMRANK[50][i]}% / {MMRANK[100][i]}% ở 50/100 kỳ)' for i, k in enumerate(MM))
-          + f'\n\nCả 3 số: chính cách này trúng {sum(hm[-50:]) * 2}% ở 50 kỳ, {sum(hm[-100:])}% ở 100 kỳ.'
+          + f'\n\nCả {len(MM)} số: chính cách này trúng {sum(hm[-50:]) * 2}% ở 50 kỳ, {sum(hm[-100:])}% ở 100 kỳ.'
           + ' Chia vé (không tính vé thay thế): ' + ', '.join(f'ưu tiên {i + 1} ({k:02d}) {sum(1 for (kd, _, _), m in zip(tickets, TMM) if m == k and not kd.startswith("cân nhắc"))} vé' for i, k in enumerate(MM)) + '.')
 
 # ---------- Rải vé bao phủ trên pool (anh, 13/10/2026; bao_phu.py, kiểu Đại học Manchester) ----------
@@ -876,7 +934,7 @@ if A.json:
              hist20=[dict(d=D["dates"][r["t"]], r=sorted(R[r["t"]]), lk=LKA[r["t"]] if DAY6 else None, rk=r["rk"][:20]) for r in reversed(RECS[-20:])],   # 20 kỳ gần: pool chạy lại từng kỳ (mới nhất trước)
              last10=B[10]['pool'][2], claims=CLR, sumRange=[SLO, SHI], da=DA_INFO, c50=round(c50, 2),
              ticketsK=TICKETS_K, veLuat=VELUAT, nghi=((json.load(open(os.path.join(HERE, 'nghi.json'), encoding='utf-8')).get(A.game)) if os.path.exists(os.path.join(HERE, 'nghi.json')) else None), tickets=[dict(kind=k, x=tk, lv=lv, sum=sum(tk) + (TMM[j] or 0 if j < len(TMM) else 0), lk=TMM[j] if j < len(TMM) else None) for j, (k, tk, lv) in enumerate(tickets)], day6=DAY6, core=core, mm=MM,
-             mmGap={k: mg[k] for k in MM} if MM else {}, mmRate=MMRATE if MM else None, mmRank={str(W): v for W, v in MMRANK.items()} if MM else None, mmHist=list(reversed(MMH[-20:])) if MM else None, linh=sorted(LINH),
+             mmGap={k: mg[k] for k in MM} if MM else {}, mmRate=MMRATE if MM else None, mmRank={str(W): v for W, v in MMRANK.items()} if MM else None, mmGoi={m['d']: m['goi'] for m in MMH} if MM else {}, rkHist={D['dates'][r['t']]: r['rk'] for r in RECS}, tlHist={h['d']: {'top': h['top'], 'votes': h['votes']} for h in (APP.get('votesHist') or [])} if APP else {}, mmHist=list(reversed(MMH[-20:])) if MM else None, linh=sorted(LINH),
              tl=dict(votes=votes, top=top_v, strong=strong, rescued=rescued, out=strong_out,
                      day=day, nm=len(APP.get('methods', [])), dung=TLDUNG) if APP else None,
              vl=VL, nong=NONG, nhip=NHIP, sig=[dict(lab=lab, nums=sorted(s[k]), how=how, r=[B[W][k][0] for W in (10, 50, 100)]) for k, lab, how in rows])
@@ -885,7 +943,7 @@ if A.json:
 # Lưu lại gợi ý để chấm sổ khi có kết quả
 if A.save:
     rec = dict(game=A.game, next=nd, last=D['dates'][-1], pool=sorted(pool), rank=rank, core=core,
-               tickets=[tk for _, tk, _ in tickets], ticket_mm=TMM, tamlinh=sorted(top_v) if APP else [], tl_strong=sorted(strong) if APP else [], tl_rescued=rescued if APP else [], linh=sorted(LINH),
+               tickets=[tk for _, tk, _ in tickets], ticket_mm=TMM, tamlinh=sorted(top_v) if APP else [], tl_strong=sorted(strong) if APP else [], tl_votes={n: votes[n] for n in top_v} if APP else {}, tl_rescued=rescued if APP else [], linh=sorted(LINH),
                signals={k: sorted(v) for k, v in s.items() if k not in ('_td', '_mk', '_mix')}, pool_cach=' + '.join(MIXN[m] for m in MIXM.split(',') if m in MIXN), rank_cu=RANK_CU, khuon=_SPECS if RAIVE else None, pools={str(k): v for k, v in POOLS.items()}, sum_range=[SLO, SHI], mm=MM, markov2=WMK > 0,
                claims=[dict(lab=c['lab'], nums=c['nums'], r200=round(c['r200'])) for c in CLR if c['r200'] >= 70])
     with open(os.path.join(HERE, 'goiy_log.jsonl'), 'a') as fo:
