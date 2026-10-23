@@ -7,7 +7,6 @@
    "maxh",
    "nho",
    "trung",
-   "xac",
    "xduoi",
    "xm3min"
   ],
@@ -15,38 +14,14 @@
    "kep1"
   ],
   "pass10": 90,
-  "pass50": 90,
-  "pass100": 85,
+  "pass50": 94,
+  "pass100": 88,
   "tien": 72,
-  "tien10": 6,
+  "tien10": 8,
   "bo10": [
    "liên hệ: Số kép"
   ],
   "rec": [
-   {
-    "hàng (bh)": true,
-    "hàng (hc)": true,
-    "lt": true,
-    "kep1": true,
-    "lon0": true,
-    "nhiprieng": true,
-    "tongthuong": true,
-    "xac": true,
-    "xspan": true,
-    "xdmin": true,
-    "xdmax": true,
-    "xduoi": true,
-    "xtduoi": true,
-    "xm3max": true,
-    "xm3min": true,
-    "bientong": true,
-    "liên hệ: Tổng": false,
-    "liên hệ: Số lẻ": false,
-    "liên hệ: Số nhỏ": false,
-    "liên hệ: Cặp liền nhau": true,
-    "liên hệ: Tổng so": true,
-    "chẵn–lẻ tránh": true
-   },
    {
     "hàng (bh)": true,
     "hàng (hc)": true,
@@ -2341,10 +2316,33 @@
     "liên hệ: Trùng": true,
     "liên hệ: Tổng so": true,
     "chẵn–lẻ tránh": true
+   },
+   {
+    "le": true,
+    "hàng (hc)": false,
+    "maxh": true,
+    "kep1": false,
+    "lon0": true,
+    "tongthuong": true,
+    "xac": false,
+    "xspan": true,
+    "xdmin": true,
+    "xdmax": true,
+    "xduoi": true,
+    "xtduoi": true,
+    "xm3max": true,
+    "xm3min": true,
+    "bientong": true,
+    "liên hệ: Tổng": true,
+    "liên hệ: Số lẻ": true,
+    "liên hệ: Số nhỏ": true,
+    "liên hệ: Số kép": false,
+    "liên hệ: Trùng": true,
+    "liên hệ: Tổng so": true,
+    "chẵn–lẻ tránh": true
    }
   ],
   "dates": [
-   "03/09/2026 13h",
    "03/09/2026 21h",
    "04/09/2026 13h",
    "04/09/2026 21h",
@@ -2443,17 +2441,18 @@
    "21/10/2026 13h",
    "21/10/2026 21h",
    "22/10/2026 13h",
-   "22/10/2026 21h"
+   "22/10/2026 21h",
+   "23/10/2026 13h"
   ],
-  "den": "22/10/2026 21h",
+  "den": "23/10/2026 13h",
   "per": {
    "xm3min": [
     100,
     100
    ],
    "maxh": [
-    14,
-    14
+    15,
+    15
    ],
    "liên hệ: Có số kép ≥3 kỳ liền": [
     1,
@@ -2463,16 +2462,16 @@
     99,
     100
    ],
-   "kep1": [
+   "xm3max": [
     95,
+    100
+   ],
+   "kep1": [
+    94,
     100
    ],
    "xac": [
-    95,
-    100
-   ],
-   "xm3max": [
-    95,
+    94,
     100
    ],
    "lon0": [
@@ -2491,13 +2490,13 @@
     92,
     100
    ],
-   "lt": [
-    10,
-    11
-   ],
    "xdmax": [
     90,
     100
+   ],
+   "lt": [
+    9,
+    10
    ],
    "xtduoi": [
     89,
@@ -2515,33 +2514,33 @@
     87,
     100
    ],
+   "le": [
+    30,
+    36
+   ],
    "nho": [
     10,
     12
-   ],
-   "le": [
-    29,
-    35
    ],
    "tongthuong": [
     81,
     100
    ],
    "liên hệ: Trùng": [
-    34,
-    43
+    35,
+    44
    ],
    "nhiptong": [
     15,
     19
    ],
    "hàng (bh)": [
-    45,
-    61
+    44,
+    60
    ],
    "nhiprieng": [
-    52,
-    73
+    51,
+    72
    ],
    "liên hệ: Tổng so": [
     32,
@@ -2552,27 +2551,27 @@
     25
    ],
    "hàng (hc)": [
-    53,
+    52,
     88
    ],
    "liên hệ: Số kép": [
     48,
-    81
+    82
    ],
    "liên hệ: Số lẻ": [
-    43,
+    44,
     76
    ],
    "liên hệ: Tổng": [
-    41,
+    42,
     75
    ],
    "liên hệ: Cặp liền nhau": [
-    41,
-    75
+    40,
+    74
    ],
    "liên hệ: Số nhỏ": [
-    30,
+    31,
     60
    ]
   }
