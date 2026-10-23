@@ -6,17 +6,6 @@ import json,glob
 GO={}
 for f in glob.glob(os.path.join(B,'goiy_latest','*.json')):
     j=json.load(open(f,encoding='utf-8'));GO[{'power':'power655','mega':'mega645','loto':'loto535'}[j['game']]]=j
-# pool app đã đưa cho từng kỳ (goiy_log.jsonl, bản cuối mỗi kỳ) — để bảng pool đối chiếu cả các kỳ mà pool_thuc.json chưa có (anh 20/10/2026)
-_LG=os.path.join(B,'goiy_log.jsonl')
-if os.path.exists(_LG):
-    _PL={}
-    for _l in open(_LG,encoding='utf-8'):
-        try:_e=json.loads(_l)
-        except Exception:continue
-        if _e.get('pools') and _e.get('next'):_PL.setdefault(_e['game'],{})[_e['next']]={k:v for k,v in _e['pools'].items()}
-        if _e.get('next') and _e.get('tamlinh') and _e['next'] in _PL.get(_e['game'],{}):_PL[_e['game']][_e['next']]['_tl']={'top':_e['tamlinh'],'strong':_e.get('tl_strong',[]),'votes':_e.get('tl_votes',{})}   # tâm linh đã đưa kỳ đó (anh 20/10/2026)
-    for _g,_k in (('loto','loto535'),('mega','mega645'),('power','power655')):
-        if _k in GO and _g in _PL:GO[_k]['poolLog']=dict(list(_PL[_g].items())[-60:])
 bj=open(os.path.join(B,'bang.js'),encoding='utf-8').read()
 css=bj[bj.index('const BANG_CSS=`')+16:bj.index('`;',bj.index('const BANG_CSS=`'))]
 TD=json.load(open(os.path.join(B,'theodoi.json'),encoding='utf-8')) if os.path.exists(os.path.join(B,'theodoi.json')) else {}
