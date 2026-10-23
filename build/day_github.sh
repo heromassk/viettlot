@@ -1,6 +1,6 @@
 #!/bin/bash
 # Đẩy app + dữ liệu + code lên github.com/heromassk/viettlot (không đẩy build/_tmp, __pycache__, pdf, saoluu)
-S="C:/Users/User/OneDrive/Desktop/viettlot-main"; D=/tmp/vl_push
+S="C:/Users/User/OneDrive/Desktop/mega"; D=/tmp/vl_push
 [ -d $D/.git ] || { rm -rf $D; gh repo clone heromassk/viettlot $D; }
 cd $D && git config core.autocrlf false && git config user.name heromassk && git config user.email heromassk@users.noreply.github.com
 git pull -q --rebase

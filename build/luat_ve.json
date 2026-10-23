@@ -16,37 +16,13 @@
   "pass10": 90,
   "pass50": 94,
   "pass100": 88,
-  "tien": 72,
+  "tien": 70,
   "tien10": 8,
   "bo10": [
+   "hàng (hc)",
    "liên hệ: Số kép"
   ],
   "rec": [
-   {
-    "hàng (bh)": true,
-    "hàng (hc)": true,
-    "khac": true,
-    "kep1": true,
-    "lon0": true,
-    "nhiprieng": true,
-    "tongthuong": true,
-    "xac": true,
-    "xspan": true,
-    "xdmin": true,
-    "xdmax": true,
-    "xduoi": true,
-    "xtduoi": true,
-    "xm3max": true,
-    "xm3min": true,
-    "bientong": true,
-    "liên hệ: Tổng": true,
-    "liên hệ: Số lẻ": true,
-    "liên hệ: Số nhỏ": false,
-    "liên hệ: Cặp liền nhau": true,
-    "liên hệ: Số kép": true,
-    "liên hệ: Tổng so": false,
-    "chẵn–lẻ tránh": true
-   },
    {
     "hàng (bh)": true,
     "hàng (hc)": true,
@@ -2340,10 +2316,34 @@
     "liên hệ: Trùng": true,
     "liên hệ: Tổng so": true,
     "chẵn–lẻ tránh": true
+   },
+   {
+    "le": false,
+    "hàng (bh)": true,
+    "hàng (hc)": false,
+    "maxh": true,
+    "kep1": true,
+    "lon0": false,
+    "tongthuong": true,
+    "xac": true,
+    "xspan": true,
+    "xdmin": true,
+    "xdmax": true,
+    "xduoi": true,
+    "xtduoi": true,
+    "xm3max": true,
+    "xm3min": true,
+    "nhiptong": true,
+    "bientong": true,
+    "liên hệ: Tổng": true,
+    "liên hệ: Số lẻ": false,
+    "liên hệ: Số nhỏ": true,
+    "liên hệ: Trùng": false,
+    "liên hệ: Tổng so": true,
+    "chẵn–lẻ tránh": true
    }
   ],
   "dates": [
-   "03/09/2026 21h",
    "04/09/2026 13h",
    "04/09/2026 21h",
    "05/09/2026 13h",
@@ -2442,17 +2442,18 @@
    "21/10/2026 21h",
    "22/10/2026 13h",
    "22/10/2026 21h",
-   "23/10/2026 13h"
+   "23/10/2026 13h",
+   "23/10/2026 21h"
   ],
-  "den": "23/10/2026 13h",
+  "den": "23/10/2026 21h",
   "per": {
    "xm3min": [
     100,
     100
    ],
    "maxh": [
-    15,
-    15
+    16,
+    16
    ],
    "liên hệ: Có số kép ≥3 kỳ liền": [
     1,
@@ -2474,17 +2475,17 @@
     94,
     100
    ],
-   "lon0": [
-    93,
-    100
-   ],
    "chẵn–lẻ tránh": [
     93,
     100
    ],
    "khac": [
-    13,
-    14
+    12,
+    13
+   ],
+   "lon0": [
+    92,
+    100
    ],
    "xdmin": [
     92,
@@ -2514,52 +2515,52 @@
     87,
     100
    ],
-   "le": [
-    30,
-    36
-   ],
    "nho": [
     10,
     12
+   ],
+   "le": [
+    30,
+    37
    ],
    "tongthuong": [
     81,
     100
    ],
+   "nhiptong": [
+    16,
+    20
+   ],
    "liên hệ: Trùng": [
     35,
-    44
-   ],
-   "nhiptong": [
-    15,
-    19
+    45
    ],
    "hàng (bh)": [
     44,
     60
    ],
    "nhiprieng": [
-    51,
-    72
+    50,
+    71
    ],
    "liên hệ: Tổng so": [
-    32,
+    33,
     47
    ],
    "tong": [
     17,
     25
    ],
+   "liên hệ: Số kép": [
+    47,
+    81
+   ],
    "hàng (hc)": [
-    52,
+    51,
     88
    ],
-   "liên hệ: Số kép": [
-    48,
-    82
-   ],
    "liên hệ: Số lẻ": [
-    44,
+    43,
     76
    ],
    "liên hệ: Tổng": [
@@ -2567,11 +2568,11 @@
     75
    ],
    "liên hệ: Cặp liền nhau": [
-    40,
-    74
+    39,
+    73
    ],
    "liên hệ: Số nhỏ": [
-    31,
+    32,
     60
    ]
   }
@@ -2579,50 +2580,25 @@
  "mega": {
   "nhom": [
    "kep1",
-   "khac"
+   "khac",
+   "nho"
   ],
   "pin": [
    "kep1"
   ],
-  "pass10": 80,
+  "pass10": 70,
   "pass50": 84,
-  "pass100": 85,
+  "pass100": 84,
   "tien": 84,
-  "tien10": 8,
+  "tien10": 7,
   "bo10": [
    "hàng (hc)",
    "liên hệ: Số kép",
-   "liên hệ: Số lẻ",
    "liên hệ: Số nhỏ",
    "liên hệ: Tổng",
    "nhiptong"
   ],
   "rec": [
-   {
-    "hàng (hc)": false,
-    "nho": false,
-    "khac": true,
-    "kep1": true,
-    "lon0": true,
-    "tongthuong": false,
-    "xac": true,
-    "xspan": true,
-    "xdmin": true,
-    "xdmax": false,
-    "xduoi": true,
-    "xtduoi": true,
-    "xm3max": true,
-    "xm3min": true,
-    "bientong": false,
-    "liên hệ: Tổng": true,
-    "liên hệ: Số lẻ": false,
-    "liên hệ: Số nhỏ": true,
-    "liên hệ: Cặp liền nhau": true,
-    "liên hệ: Số kép": true,
-    "liên hệ: Trùng": true,
-    "liên hệ: Tổng so": false,
-    "chẵn–lẻ tránh": true
-   },
    {
     "hàng (hc)": false,
     "hàng (bh)": true,
@@ -4833,10 +4809,30 @@
     "liên hệ: Cặp liền nhau": true,
     "liên hệ: Số kép": false,
     "chẵn–lẻ tránh": true
+   },
+   {
+    "hàng (hc)": false,
+    "hàng (bh)": true,
+    "le": true,
+    "kep1": false,
+    "lon0": true,
+    "tongthuong": true,
+    "xac": true,
+    "xspan": true,
+    "xdmin": true,
+    "xdmax": true,
+    "xduoi": true,
+    "xtduoi": false,
+    "xm3max": true,
+    "xm3min": true,
+    "bientong": true,
+    "liên hệ: Tổng": false,
+    "liên hệ: Cặp liền nhau": false,
+    "liên hệ: Số kép": false,
+    "chẵn–lẻ tránh": true
    }
   ],
   "dates": [
-   "04/03/2026",
    "06/03/2026",
    "08/03/2026",
    "11/03/2026",
@@ -4935,13 +4931,18 @@
    "14/10/2026",
    "16/10/2026",
    "18/10/2026",
-   "21/10/2026"
+   "21/10/2026",
+   "23/10/2026"
   ],
-  "den": "21/10/2026",
+  "den": "23/10/2026",
   "per": {
    "khac": [
-    6,
-    6
+    5,
+    5
+   ],
+   "nho": [
+    5,
+    5
    ],
    "maxh": [
     3,
@@ -4984,11 +4985,11 @@
     100
    ],
    "bientong": [
-    90,
+    91,
     100
    ],
    "xdmax": [
-    89,
+    90,
     100
    ],
    "xspan": [
@@ -5000,71 +5001,67 @@
     8
    ],
    "xtduoi": [
-    86,
-    100
-   ],
-   "kep1": [
     85,
     100
    ],
-   "nho": [
-    5,
-    6
+   "kep1": [
+    84,
+    100
+   ],
+   "tongthuong": [
+    83,
+    100
    ],
    "nhiptong": [
     14,
     17
    ],
-   "tongthuong": [
-    82,
-    100
+   "hàng (bh)": [
+    38,
+    48
    ],
    "lon0": [
     79,
     100
    ],
-   "hàng (bh)": [
-    37,
-    47
-   ],
    "le": [
-    32,
-    45
+    33,
+    46
    ],
    "liên hệ: Tổng so": [
     37,
-    59
+    58
    ],
    "liên hệ: Số lẻ": [
     51,
-    84
+    83
    ],
    "liên hệ: Cặp liền nhau": [
-    51,
+    50,
     87
    ],
    "liên hệ: Số nhỏ": [
-    43,
-    78
+    42,
+    77
    ],
    "hàng (hc)": [
     35,
     67
    ],
    "liên hệ: Trùng": [
-    24,
-    46
+    23,
+    45
    ],
    "liên hệ: Có số kép 2 kỳ liền": [
     2,
     4
    ],
    "liên hệ: Tổng": [
-    33,
+    32,
     72
    ],
    "liên hệ: Số kép": [
-    26,
+    25,
     67
    ]
   }
