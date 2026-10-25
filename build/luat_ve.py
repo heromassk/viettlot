@@ -169,14 +169,27 @@ if __name__ == '__main__':
     key, NB, KB = {'power': ('power655', 55, 6), 'mega': ('mega645', 45, 6), 'loto': ('loto535', 35, 5)}[GAME]
     D = json.load(open(os.path.join(B_, 'all_data.json'), encoding='utf-8'))[key]
     R = [set(r) for r in D['res']]; LK = D.get('lk') if GAME == 'loto' else None; T = len(R)
+    # Kết quả chấm từng kỳ lưu ra đĩa, kỳ cũ không chấm lại (anh 23/10/2026). Dấu vân tay kỳ t = toàn bộ dữ liệu đến hết kỳ t;
+    # code luật (luat_ve, khuon, lienhe_dang, dauvet_ltkep) đổi thì xoá hết. Kết quả y hệt chấm lại từ đầu.
+    import hashlib, pickle
+    CP = os.path.join(B_, '_tmp', f'luat_ve_rec_{GAME}.pkl')
+    VER = hashlib.md5(b''.join(open(os.path.join(B_, f), 'rb').read() for f in ('luat_ve.py', 'khuon.py', 'lienhe_dang.py', 'dauvet_ltkep.py'))).hexdigest()
+    h = hashlib.md5(); FP = []
+    for i in range(T): h.update(repr((sorted(R[i]), LK[i] if LK else None)).encode()); FP.append(h.hexdigest())
+    try:
+        _c = pickle.load(open(CP, 'rb')); OLD = _c['rec'] if _c.get('ver') == VER else {}
+    except Exception: OLD = {}
     REC = []   # mỗi kỳ: {nhóm: đúng hết các luật của nhóm đó?}
     for t in range(T - N, T):
+        if FP[t] in OLD: REC.append(OLD[FP[t]]); continue
         Bt = build(R, LK, NB, KB, t, GAME, all_rules=True); x = sorted(R[t]); mm = LK[t] if LK else None; prev = sorted(R[t - 1])
         g = {}
         for r, lh in [(r, False) for r in Bt['rules']] + [(r, True) for r in Bt['lienhe']]:
             k = nhom(r, lh); g[k] = g.get(k, True) and KH.check(r['spec'], x, mm, prev, NB, KB)
         g['chẵn–lẻ tránh'] = _ev(x, mm) not in Bt['cl']
         REC.append(g)
+    OLD.update({FP[t]: g for t, g in zip(range(T - N, T), REC)}); keep = set(FP[-200:])
+    pickle.dump(dict(ver=VER, rec={k: v for k, v in OLD.items() if k in keep}), open(CP + '.tmp', 'wb')); os.replace(CP + '.tmp', CP)
     per = defaultdict(lambda: [0, 0])
     for g in REC:
         for k, v in g.items(): per[k][1] += 1; per[k][0] += v

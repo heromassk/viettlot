@@ -41,10 +41,57 @@ def ranks(items):
             f, s = SIG[t]; out[t] = GY['pool_of'](GY['score'](f, s, e), s, 25)
         _C[key] = out
     return _C[key]
+# Số trúng từng kỳ của mỗi bộ cộng điểm (theo cỡ KS) lưu ra đĩa — kỳ cũ đã chấm thì không chấm lại, chỉ chấm kỳ mới rồi tính lại khung
+# (anh 23/10/2026: "những cái cũ chấm làm gì khi đã xong rồi"). Mỗi kỳ có dấu vân tay = dữ liệu + tín hiệu + ứng viên của kỳ đó; code
+# goiy.py / dauvet_ngay.py đổi thì xoá hết. Kết quả y hệt chấm lại từ đầu.
+_H = {}; _HD = None; _FP = {}
+_HP = os.path.join(B, '_tmp', f'pool_chon_hits_{GAME}.pkl')
+def _canon(x):
+    if isinstance(x, dict): return tuple(sorted(((_canon(k), _canon(v)) for k, v in x.items()), key=repr))
+    if isinstance(x, (set, frozenset)): return ('s',) + tuple(sorted((_canon(v) for v in x), key=repr))
+    if isinstance(x, (list, tuple)): return tuple(_canon(v) for v in x)
+    return x
+def _hload():
+    global _HD, _VER
+    import hashlib, pickle
+    src = b''.join(open(os.path.join(B, f), 'rb').read() for f in ('goiy.py', 'dauvet_ngay.py'))
+    _VER = hashlib.md5(src + repr((KS, sorted((k, v) for k, v in os.environ.items() if k.startswith('GOIY_')))).encode()).hexdigest()
+    for t in TS: _FP[t] = hashlib.md5(repr(_canon((DS[t], R[t], SIG[t], NUMS[t]))).encode()).hexdigest()
+    try:
+        d = pickle.load(open(_HP, 'rb')); _HD = d['h'] if d.get('ver') == _VER else {}
+    except Exception: _HD = {}
+def hits(items):   # {t: (số trúng ở từng cỡ KS)}
+    key = frozenset(items)
+    if key not in _H:
+        if _HD is None: _hload()
+        old = _HD.get(key, {}); out = {}
+        for t in TS:
+            v = old.get(_FP[t])
+            if v is None:
+                e = {}
+                for nm, w in items:
+                    for n in NUMS[t][nm]: e[n] = e.get(n, 0) + w
+                f, s = SIG[t]; rk = GY['pool_of'](GY['score'](f, s, e), s, 25); v = tuple(len(set(rk[:K]) & R[t]) for K in KS)
+            out[t] = tuple(v)
+        _H[key] = out
+    return _H[key]
+def hsave():
+    if _HD is None: return
+    import pickle
+    cur = set(_FP.values()); new = {}
+    for key, m in _HD.items():
+        mm = {fp: v for fp, v in m.items() if fp in cur}
+        if mm: new[key] = mm
+    for key, out in _H.items():
+        mm = new.setdefault(key, {})
+        for t, v in out.items(): mm[_FP[t]] = bytes(v)
+    pickle.dump(dict(ver=_VER, h=new), open(_HP + '.tmp', 'wb'), protocol=pickle.HIGHEST_PROTOCOL); os.replace(_HP + '.tmp', _HP)
 def stat(items, K, end=None):   # {W: (số kỳ ≥3, số kỳ ≥4)}
-    rk = ranks(items); o = {}; end = end or END
+    o = {}; end = end or END
+    if K in KS: H = hits(items); i = KS.index(K); hk = lambda t: H[t][i]
+    else: rk = ranks(items); hk = lambda t: len(set(rk[t][:K]) & R[t])
     for W in (10, 20, 50, 100):
-        hs = [len(set(rk[t][:K]) & R[t]) for t in range(end - W, end)]; o[W] = (sum(h >= 3 for h in hs), sum(h >= 4 for h in hs))
+        hs = [hk(t) for t in range(end - W, end)]; o[W] = (sum(h >= 3 for h in hs), sum(h >= 4 for h in hs))
     return o
 fmt = lambda o: ' / '.join(f'{o[W][0] * 100 // W}·{o[W][1] * 100 // W}' for W in (10, 20, 50, 100))
 CHON = {}; STAT = {}
@@ -75,6 +122,7 @@ for K in KS:
     CHON[str(K)] = [[nm, w] for nm, w in cur]; STAT[str(K)] = {str(W): list(b[W]) for W in b}
     lab = ', '.join(f"{nm.replace('TL: ', '')} {w:+g}" for nm, w in cur) or '—'
     print(f'| {K} | {fmt(base)} | {lab} | {fmt(b)} |')
+if not HOLD: hsave()
 if HOLD or os.environ.get('NOSAVE') == '1': sys.exit()
 P = os.path.join(B, 'pool_chon.json')
 allc = json.load(open(P, encoding='utf-8')) if os.path.exists(P) else {}
