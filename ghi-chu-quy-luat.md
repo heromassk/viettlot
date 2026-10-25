@@ -2095,3 +2095,4 @@ Mỗi kỳ chỉ còn 26–30 số sau luật loại. P18→P20: đủ 5 từ 9 
 | Mega 25/10 | 04 13 22 25 40 41 | 1 / 2 / 2 | 2 | 2 | 3/26 | 1 | sổ 23/36 |
 | Power 24/10 | 06 07 18 41 44 50 · ĐB 53 | 2 / 2 / 2 | 2 | 2 | 4/28 | 2 | ngày quay 1 · tam giác 1 · chia 2: 1 · sổ 28/34 |
 (Mega 23/10, Power 22/10, Loto 22/10 21h – 23/10 21h đã được phiên khác nhập lên main ngày 23/10.)
+| Loto 25/10 21h | 02 04 13 22 26 · MM 09 | 1 / 1 / 2 | 1 | 2 | **4/21** | 2 | tam giác 2 (04 13? — 2/4) · ngày quay 1 · MM gợi ý 11 08 trật · vé tốt nhất 2 · sổ 27/35 |
