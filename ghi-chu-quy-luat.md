@@ -2085,3 +2085,13 @@ Mỗi kỳ chỉ còn 26–30 số sau luật loại. P18→P20: đủ 5 từ 9 
 ## 22/10/2026 — Áp "Chia 2" vào app (bang.js c2Row; chấm lùi build/nhan2_pool.js)
 - Dòng pool **Chia 2** (Loto: chỉ kỳ 13h, nửa số chẵn kỳ 13h trước; Power: nửa số chẵn kỳ trước) tính vào ≥2 pool. ≥2 pool (trúng/kỳ · kỳ ≥3; 20/50/100): Loto 2,85/2,94/2,68 → 3,00/3,02/2,76 · 15/36/61 → 15/36/63; Power 3,05/2,72/2,62 → 3,10/2,80/2,70 · 14/31/58 → 14/32/62. Power P15 đếm ≥2 không tính dòng này.
 - **Nhân 2 đẩy xuống 4 bậc** chỉ ở Pool 12: Loto (kỳ 13h) 40/96/202 → 40/98/206; Mega 46/104/197 → 46/105/198. P9, P15 kém đi → không áp.
+
+## 25/10/2026 — Chấm các kỳ mới (lấy từ kho, app Pool chấm theo cách hiện tại)
+| Kỳ | Kết quả | P9 / P12 / P15 | P18 | Pool 20 | ≥2 pool | Tâm linh | Khác |
+|---|---|---|---|---|---|---|---|
+| Loto 24/10 13h | 02 07 12 22 27 · MM 08 | 2 / 2 / 2 | 2 | 3 | 3/19 | 0 | **MM gợi ý 11 08: trúng 08** · ngày quay 2 · tam giác 1 · sổ 28/34 |
+| Loto 24/10 21h | 01 05 10 12 14 · MM 03 | 3 / 3 / 3 | 3 | 3 | 3/17 | 2 | sổ 23/36 |
+| Loto 25/10 13h | 01 04 14 20 30 · MM 10 | 1 / 1 / 2 | 3 | 3 | 3/21 | 3 | tam giác 1 · chia 2: 1 · sổ 21/36 |
+| Mega 25/10 | 04 13 22 25 40 41 | 1 / 2 / 2 | 2 | 2 | 3/26 | 1 | sổ 23/36 |
+| Power 24/10 | 06 07 18 41 44 50 · ĐB 53 | 2 / 2 / 2 | 2 | 2 | 4/28 | 2 | ngày quay 1 · tam giác 1 · chia 2: 1 · sổ 28/34 |
+(Mega 23/10, Power 22/10, Loto 22/10 21h – 23/10 21h đã được phiên khác nhập lên main ngày 23/10.)
