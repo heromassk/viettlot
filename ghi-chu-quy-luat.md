@@ -2130,3 +2130,9 @@ Ghi chú: Loto 05/11 21h — P18 và Pool 20 (top app) chứa đủ cả 5 số;
 | Loto 07/11 21h | 09 18 23 25 27 · MM 08 | 0 / 0 / 0 | 0 | 0 | **4/20** | 2 | MM gợi ý trật · sổ **17/37** (thấp nhất từ trước) |
 | Power 07/11 | 05 19 20 26 44 53 · ĐB 39 | 0 / 0 / 1 | 1 | 1 | 3/21 | 1 | tam giác 1 · chia 2: 1 · sổ 27/35 |
 Ghi chú: Loto 07/11 21h — mọi pool top app (P9–P20) trúng 0 nhưng ≥2 pool trúng 4/5 số; Mega 08/11 chưa có trong kho.
+
+## 08/11/2026 (tối) — Chấm các kỳ mới (lấy từ kho; Pool chấm theo cách hiện tại)
+| Kỳ | Kết quả | P9 / P12 / P15 | P18 | Pool 20 | ≥2 pool | Tâm linh | Khác |
+|---|---|---|---|---|---|---|---|
+| Loto 08/11 13h | 02 13 16 18 22 · MM 05 | 1 / 1 / 2 | 2 | 2 | **4/22** | 2 | **tam giác trúng 3/5 số** · MM gợi ý 06 07 trật · sổ 26/35 |
+| Mega 08/11 | 01 02 14 20 23 36 | 1 / 2 / 3 | 3 | 3 | 3/19 | 0 | sổ 22/35 |
