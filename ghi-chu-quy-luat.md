@@ -2137,3 +2137,14 @@ Ghi chú: Loto 07/11 21h — mọi pool top app (P9–P20) trúng 0 nhưng ≥2 
 | Loto 08/11 13h | 02 13 16 18 22 · MM 05 | 1 / 1 / 2 | 2 | 2 | **4/22** | 2 | **tam giác trúng 3/5 số** · MM gợi ý 06 07 trật · sổ 26/35 |
 | Mega 08/11 | 01 02 14 20 23 36 | 1 / 2 / 3 | 3 | 3 | 3/19 | 0 | sổ 22/35 |
 | **Loto 08/11 21h** | 04 11 17 26 35 · MM 11 | 2 / 2 / 2 | 3 | 4 | **5/24 (đủ)** | 2 | **Vắng 8 kỳ trúng đủ 5/15** · ngày quay 1 · MM gợi ý 05 07 trật · pool gợi ý 20/25: 4/4 · vé tốt nhất 2 (vé 7) · sổ 28/38 |
+
+## 08/11/2026 — Loto: đuôi (chữ số hàng đơn vị) của 5 số trong 1 kỳ có tạo dãy liên tiếp? (build/loto_duoi_lt.py)
+Số kỳ có ≥k đuôi liên tiếp (ví dụ đuôi 3,4,5 ↔ 13, 24, 35), không tính vòng 9→0:
+| Khung | ≥2 đuôi liền | ≥3 | ≥4 | đuôi tăng/giảm đều theo thứ tự số (≥3) |
+|---|---|---|---|---|
+| 20 kỳ | 20/20 | 11/20 | 3/20 | 3 |
+| 50 kỳ | 42/50 | 23/50 | 5/50 | 5 |
+| 100 kỳ | 85/100 | 44/100 | 11/100 | 9 |
+| 200 kỳ | 172/200 | 74/200 | 21/200 | 12 |
+13h 100 kỳ: 86/34/12 · 21h 100 kỳ: 86/40/9 (≥2/≥3/≥4). Ba đoạn 100 kỳ liền nhau (≥3): 39/30/44. Kỳ sau khi kỳ trước có ≥3 đuôi liền: 25/74 vs 49/126 → không dự đoán được kỳ sau.
+→ "≥2 đuôi liền nhau" là dạng phổ biến (85%, đạt luật ≥70% cả 50 & 100 kỳ, 13h và 21h); ≥3 đuôi liền khoảng 40%; không có dấu vết nghiêng giữa các kỳ.
