@@ -2122,3 +2122,11 @@ Mỗi kỳ chỉ còn 26–30 số sau luật loại. P18→P20: đủ 5 từ 9 
 | Power 05/11 | 06 20 34 41 49 52 · ĐB 36 | 0 / 0 / 0 | 0 | 0 | 1/19 | 1 | sổ 20/34 |
 Ghi chú: Loto 05/11 21h — P18 và Pool 20 (top app) chứa đủ cả 5 số; Mega 06/11 và Power 05/11: mọi pool nhỏ trúng 0.
 | Loto 06/11 21h | 18 20 25 27 31 · MM 01 | 1 / 1 / 1 | 2 | 2 | 2/17 | 2 | vắng 8 kỳ 2/10 · pool gợi ý 10/15/20/25: 1/1/2/3 · vé tốt nhất 2 (vé 4, 5) · MM gợi ý 05 06 trật · sổ 23/35 |
+
+## 08/11/2026 — Chấm các kỳ mới (lấy từ kho; Pool chấm theo cách hiện tại)
+| Kỳ | Kết quả | P9 / P12 / P15 | P18 | Pool 20 | ≥2 pool | Tâm linh | Khác |
+|---|---|---|---|---|---|---|---|
+| Loto 07/11 13h | 06 10 23 25 33 · MM 05 | 2 / 2 / 2 | 3 | 3 | 2/18 | 1 | MM gợi ý 04 03 trật · sổ 25/35 |
+| Loto 07/11 21h | 09 18 23 25 27 · MM 08 | 0 / 0 / 0 | 0 | 0 | **4/20** | 2 | MM gợi ý trật · sổ **17/37** (thấp nhất từ trước) |
+| Power 07/11 | 05 19 20 26 44 53 · ĐB 39 | 0 / 0 / 1 | 1 | 1 | 3/21 | 1 | tam giác 1 · chia 2: 1 · sổ 27/35 |
+Ghi chú: Loto 07/11 21h — mọi pool top app (P9–P20) trúng 0 nhưng ≥2 pool trúng 4/5 số; Mega 08/11 chưa có trong kho.
