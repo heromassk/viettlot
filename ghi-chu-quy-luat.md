@@ -2148,3 +2148,4 @@ Số kỳ có ≥k đuôi liên tiếp (ví dụ đuôi 3,4,5 ↔ 13, 24, 35), k
 | 200 kỳ | 172/200 | 74/200 | 21/200 | 12 |
 13h 100 kỳ: 86/34/12 · 21h 100 kỳ: 86/40/9 (≥2/≥3/≥4). Ba đoạn 100 kỳ liền nhau (≥3): 39/30/44. Kỳ sau khi kỳ trước có ≥3 đuôi liền: 25/74 vs 49/126 → không dự đoán được kỳ sau.
 → "≥2 đuôi liền nhau" là dạng phổ biến (85%, đạt luật ≥70% cả 50 & 100 kỳ, 13h và 21h); ≥3 đuôi liền khoảng 40%; không có dấu vết nghiêng giữa các kỳ.
+- Áp dụng (09/11/2026): thẻ "Đuôi liên tiếp" dưới Quan hệ trong kỳ (xếp số theo đuôi, khoanh dãy đuôi liền dài nhất, lọc 13h/21h, 10/20/50 kỳ); luật "Có ≥2 đuôi liền nhau" trong Kiểm tra Dãy; goiy.py Loto bỏ vé không có cặp đuôi liền (duoi_ok).
