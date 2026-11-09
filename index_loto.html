@@ -764,7 +764,7 @@ function dlBlock(J,ball,p2){if(typeof window==='undefined')return '';const RA=J.
   const N=[10,20,50].includes(W.__dlN)?W.__dlN:20,G=lo&&['13h','21h'].includes(W.__dlG)?W.__dlG:'',IX=RA.map((_,i)=>i).filter(i=>!G||String(DA[i]).endsWith(G));
   const row=(lab,a,st)=>{const r=dlRun(a),S=new Set(r),b=[...a].sort((x,y)=>x%10-y%10||x-y);
     const balls=b.map(n=>r.length>=2&&S.has(n%10)?ball(n,'',' style="outline:2px solid var(--ac);outline-offset:1px;"'):ball(n,'',' style="opacity:.35;"')).join('');
-    return `<div class="bg-row bg-pool bg-k10" style="margin:2px 0;"><small class="bg-k10d${lo?' lo':''}" style="${st||''}">${lab}</small>${balls}<small style="white-space:nowrap;font-size:.66rem;margin-left:4px;color:${r.length>=3?'var(--ac)':'var(--muted,#8b93a7)'};">${r.length>=2?`đuôi ${r.join('-')} <b>(${r.length})</b>`:'—'}</small></div>`;};
+    return `<div class="bg-row bg-pool bg-k10" style="margin:6px 0;"><small class="bg-k10d${lo?' lo':''}" style="${st||''}">${lab}</small>${balls}<small style="white-space:nowrap;font-size:.66rem;margin-left:4px;color:${r.length>=3?'var(--ac)':'var(--muted,#8b93a7)'};">${r.length>=2?`đuôi ${r.join('-')} <b>(${r.length})</b>`:'—'}</small></div>`;};
   const V=gdGet(J.game),c=V.L[V.cur],d=(c.x||[]).filter(v=>v!=null);
   const gd=d.length?row(`Dãy ${V.cur+1}`,d,'color:var(--ac);font-weight:700;'):'';
   const rows=IX.slice(-N).reverse().map(i=>row(String(DA[i]).replace(/\/\d{4}/,''),RA[i],p20St(J,i))).join('');
