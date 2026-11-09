@@ -2149,3 +2149,17 @@ Số kỳ có ≥k đuôi liên tiếp (ví dụ đuôi 3,4,5 ↔ 13, 24, 35), k
 13h 100 kỳ: 86/34/12 · 21h 100 kỳ: 86/40/9 (≥2/≥3/≥4). Ba đoạn 100 kỳ liền nhau (≥3): 39/30/44. Kỳ sau khi kỳ trước có ≥3 đuôi liền: 25/74 vs 49/126 → không dự đoán được kỳ sau.
 → "≥2 đuôi liền nhau" là dạng phổ biến (85%, đạt luật ≥70% cả 50 & 100 kỳ, 13h và 21h); ≥3 đuôi liền khoảng 40%; không có dấu vết nghiêng giữa các kỳ.
 - Áp dụng (09/11/2026): thẻ "Đuôi liên tiếp" dưới Quan hệ trong kỳ (xếp số theo đuôi, khoanh dãy đuôi liền dài nhất, lọc 13h/21h, 10/20/50 kỳ); luật "Có ≥2 đuôi liền nhau" trong Kiểm tra Dãy; goiy.py Loto bỏ vé không có cặp đuôi liền (duoi_ok).
+
+## 09/11/2026 — Loto: 2 số đầu kỳ trước và 2 số đầu kỳ sau có quan hệ tổng/hiệu? (build/loto_2so_dau.py)
+Số kỳ có quan hệ (số kỳ sau = tổng/hiệu 2 số kỳ trước, hoặc ngược lại, hoặc cùng tổng/hiệu), 20/50/100 kỳ:
+| Cặp vị trí | Liền 2 buổi | 13h | 21h |
+|---|---|---|---|
+| 2 số đầu (nhỏ nhất) | 6/17/38 | 7/19/38 | 8/23/44 |
+| 2 số giữa | 5/12/29 | 8/16/26 | 4/12/23 |
+| 2 số cuối | 3/3/9 | 3/10/13 | 2/5/15 |
+| 2 số đầu theo đuôi | 7/17/35 | 8/18/31 | 4/11/24 |
+Cặp số nhỏ tự nhiên dễ có tổng/hiệu rơi vào số nhỏ → so vị trí chưa đủ nói dấu vết. Kiểm bằng đoán trước: số = tổng / hiệu 2 số nhỏ nhất kỳ trước (~1,7 số/kỳ), % ra ở kỳ sau vs số khác:
+- **Loto 21h (so kỳ 21h trước): 15,2/17,6/17,9% vs ~14,1% — ra nhiều hơn cả 3 khung.**
+- Loto liền 2 buổi: 15,2/18,6/16,9% vs ~14,2% — ra nhiều hơn.
+- **Loto 13h (so kỳ 13h trước): 5,4/11,5/13,0% vs ~14,5% — ra ít hơn cả 3 khung (ngược chiều).**
+- Ra đúng ở 2 vị trí đầu: thấp hơn ra bất kỳ chỗ nào → chỉ dùng giá trị, không dùng vị trí.
