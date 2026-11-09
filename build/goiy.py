@@ -508,7 +508,12 @@ def ok(tk, lv):
     if lv == 0 and A.game != 'loto' and sum(x > 31 for x in tk) < 2: return False
     if not A.cu and bad_ticket(tk): return False
     if not A.cu and not fib_ok(tk): return False
+    if not A.cu and A.game == 'loto' and not duoi_ok(tk): return False
     return not any(tk[i] + 2 == tk[i + 1] + 1 == tk[i + 2] for i in range(len(tk) - 2))
+
+def duoi_ok(tk):   # Loto: vé có ≥2 đuôi (hàng đơn vị) liền nhau — kỳ thật đúng ~85% ở 50 & 100 kỳ, cả 13h/21h (anh 09/11/2026, loto_duoi_lt.py)
+    t = {x % 10 for x in tk}
+    return any(d in t and d + 1 in t for d in range(9))
 
 FIBS = {1, 2, 3, 5, 8, 13, 21, 34, 55}
 def fib_ok(tk):   # luật dạng Fibonacci (anh 21/10/2026, fibo_trongky.py: đúng 95–100% ở 100 kỳ, cả 3 game)

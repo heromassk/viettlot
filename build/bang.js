@@ -75,6 +75,7 @@ function gdCheck(J){if(typeof window==='undefined')return '';const g=J.game,lo=g
     ['Không có chuỗi 4 số kiểu Fibonacci',r=>{const S=new Set(r);return !r.some((a,i)=>r.slice(i+1).some(b=>S.has(a+b)&&S.has(a+2*b)));}],
     ['Có ≥1 khoảng cách là số Fib',r=>gaps(r).some(x=>FB.has(x))],
     ['Không phải mọi khoảng cách đều là số Fib',r=>!gaps(r).every(x=>FB.has(x))],
+    ['Có ≥2 đuôi liền nhau',r=>dlRun(r).length>=2],
   ];
     const acc=L.map(([,f])=>[20,50,100].map(W=>{let k=0;for(let t=n-W;t<n;t++)if(f([...RA[t]].sort((a,b)=>a-b),t,LK[t]))k++;return k;}));
     return {M,RA,LK,n,L,acc};};
@@ -326,6 +327,25 @@ function lapMau(ROWS){const C10={};ROWS.forEach(r=>r.forEach(n=>C10[n]=(C10[n]||
 // Bảng "Quan hệ trong kỳ" (anh 19/10/2026): như bảng x kỳ gần nhất nhưng không khoanh kép / liên tiếp / ±1; thay bằng
 // cặp kẹp (a, a+2 thiếu a+1: gạch chân tím) · số kẹp về trong 2 kỳ sau (vòng tím) · tổng a+b=c (Σ trên phải) · nhân đôi 2a=b (×2 dưới phải).
 // Lọc 13h / 21h: "2 kỳ sau" = 2 kỳ cùng giờ tiếp theo.
+/* Đuôi liên tiếp (anh 09/11/2026, loto_duoi_lt.py): đuôi (hàng đơn vị) các số trong kỳ tạo dãy liền nhau; ≥2 đuôi liền ~85% kỳ.
+   Mỗi kỳ xếp lại theo đuôi (vd 10 22 31 → 10 31 22), số thuộc dãy đuôi liền dài nhất khoanh viền, số khác mờ */
+function dlRun(a){const T=new Set(a.map(x=>x%10));let best=[];for(let s=0;s<10;s++){if(!T.has(s)||T.has(s-1))continue;const r=[];for(let d=s;d<10&&T.has(d);d++)r.push(d);if(r.length>best.length)best=r;}return best;}
+function dlN(n){if(typeof window==='undefined')return;window.__dlN=n;window.__dOpen=window.__dOpen||{};window.__dOpen.dl=true;rgRe();}
+function dlGio(g){if(typeof window==='undefined')return;window.__dlG=g;window.__dOpen=window.__dOpen||{};window.__dOpen.dl=true;rgRe();}
+function dlBlock(J,ball,p2){if(typeof window==='undefined')return '';const RA=J.res201||[],DA=J.dates201||[],lo=J.game==='loto',W=window;if(RA.length<20)return '';
+  const N=[10,20,50].includes(W.__dlN)?W.__dlN:20,G=lo&&['13h','21h'].includes(W.__dlG)?W.__dlG:'',IX=RA.map((_,i)=>i).filter(i=>!G||String(DA[i]).endsWith(G));
+  const row=(lab,a,st)=>{const r=dlRun(a),S=new Set(r),b=[...a].sort((x,y)=>x%10-y%10||x-y);
+    const balls=b.map(n=>r.length>=2&&S.has(n%10)?ball(n,'',' style="outline:2px solid var(--ac);outline-offset:1px;"'):ball(n,'',' style="opacity:.35;"')).join('');
+    return `<div class="bg-row bg-pool bg-k10" style="margin:2px 0;"><small class="bg-k10d${lo?' lo':''}" style="${st||''}">${lab}</small>${balls}<small style="white-space:nowrap;font-size:.66rem;margin-left:4px;color:${r.length>=3?'var(--ac)':'var(--muted,#8b93a7)'};">${r.length>=2?`đuôi ${r.join('-')} <b>(${r.length})</b>`:'—'}</small></div>`;};
+  const V=gdGet(J.game),c=V.L[V.cur],d=(c.x||[]).filter(v=>v!=null);
+  const gd=d.length?row(`Dãy ${V.cur+1}`,d,'color:var(--ac);font-weight:700;'):'';
+  const rows=IX.slice(-N).reverse().map(i=>row(String(DA[i]).replace(/\/\d{4}/,''),RA[i],p20St(J,i))).join('');
+  const cnt=(W2,k)=>IX.slice(-W2).filter(i=>dlRun(RA[i]).length>=k).length;
+  const sm=[2,3,4].map(k=>`≥${k} đuôi liền: <b>${cnt(20,k)}/20 · ${cnt(50,k)}/50 · ${cnt(100,k)}/100</b>`).join('<br>');
+  return `<details class="bg-wh" style="margin:6px 0;"${dOp('dl')} ontoggle="dTog('dl',this)"><summary><b>Đuôi liên tiếp</b></summary>
+   <div class="bg-row bg-chips"><small>Xem:</small>${[10,20,50].map(k=>`<span class="bg-h20k${k===N?' on':''}" onclick="dlN(${k})">${k} kỳ</span>`).join('')}</div>${lo?`<div class="bg-row bg-chips">${[['','13h &amp; 21h'],['13h','Chỉ 13h'],['21h','Chỉ 21h']].map(([v,t])=>`<span class="bg-h20k${v===G?' on':''}" onclick="dlGio('${v}')">${t}</span>`).join('')}</div>`:''}
+   ${gd}${rows}
+   <div class="bg-foot" style="margin:4px 0 0;">Mỗi kỳ xếp lại theo đuôi (chữ số hàng đơn vị). Số viền = thuộc dãy đuôi liền dài nhất của kỳ, số mờ = không. Bên phải: dãy đuôi (độ dài).${G?` Chỉ xét kỳ ${G}.`:''}<br>${sm}</div></details>`;}
 function qhBlock(J,ball,p2,HCOL,O={}){const X=O.s||'',QK='q'+X;const RA=J.res201||[],DA=J.dates201||[],L=J.lk201||[],lo=J.game==='loto';if(RA.length<5)return '';
   const W=typeof window!=='undefined'?window:{},N0=[5,10,15,20,25,30,50].includes(W['__qhN'+X])?W['__qhN'+X]:20,G=lo&&['13h','21h'].includes(W.__qhG)?W.__qhG:'',okG=i=>!G||String(DA[i]).endsWith(G);
   const QR=rgGet(QK),IX=rgPick(J,QK,N0,G),N=IX.length;if(!N)return '';
@@ -712,7 +732,7 @@ function renderBang(J){
         f=>{const a=[...f].sort((x,y)=>x-y),c=a.filter(n=>n%2===0).length;return `<small class="bg-k10i">${a.map(n=>{const h=Math.floor(n/10);return `<i style="color:${HCOL[h%HCOL.length]};">${h}</i>`;}).join('-')} <b>${a.reduce((x,y)=>x+y,0)}</b> ${c}C:${a.length-c}L</small>`;},
         J.game==='loto'?(m=>{const h=ball(m,'mm');return LK==null?h:h.replace(/<\/span>$/,mmCirc(m-LK)+'</span>');}):null,'',1);})()}
     ${R10.map((r,i)=>[r,D10[i],L10[i],P10[i],IX[i],P2[i]]).slice(-KN).reverse().map(([r,d,lk,pv,ix,p2k])=>`<div class="bg-row bg-pool bg-k10"><small class="bg-k10d${J.game==='loto'?' lo':''}" style="${p20St(J,ix)}">${String(d).replace(/\/\d{4}/,'')}</small>${ltWrap(r,n=>pm1(pm1(lball(n)||ball(n,''),n,pv),n,p2k,['qm1','qm2','qm3']))}${J.game==='loto'&&lk!=null?mmBall(ball(lk,'mm'),J,ix,KG):''}${(()=>{const a=[...r].sort((x,y)=>x-y),c=a.filter(n=>n%2===0).length;return `<small class="bg-k10i">${a.map(n=>{const h=Math.floor(n/10);return `<i style="color:${HCOL[h%HCOL.length]};">${h}</i>`;}).join('-')} <b>${a.reduce((x,y)=>x+y,0)}</b> ${c}C:${a.length-c}L</small>`;})()}</div>`).join('')}
-    <div class="bg-foot" style="margin:2px 0 0;">Dấu đen +1 / −1 / ±1 góc dưới phải = số đó hơn / kém / kề hai phía một số của kỳ liền trước; <b style="background:#d62828;color:#fff;border-radius:4px;padding:0 3px;">dấu đỏ</b> góc trên trái = so với kỳ cách 1 kỳ (số lặp không dấu). Bên phải mỗi kỳ: hàng chục từng số · tổng · số chẵn (C) / lẻ (L), tính 5 số chính. <b style="color:var(--ac)">Dòng ▸ Dãy</b> trên cùng = dãy giả định của anh cho kỳ tới: bấm vòng tròn để chọn số, viền vàng = trùng kỳ mới nhất, bấm chữ ▸ Dãy để mở danh sách dãy (thêm / xoá / chọn dãy hiện).${KG?` Đang lọc chỉ kỳ ${KG}: màu lặp và dấu ±1 so với kỳ ${KG} liền trước.`:''}${J.game==='loto'?' Bóng cam = số may mắn; vòng nhỏ góc dưới phải bóng cam = hơn / kém số may mắn kỳ liền trước'+(KG?' cùng giờ '+KG:'')+' (<b style="color:#3fb950">+ xanh</b>, <b style="color:#ff4d4f">− đỏ</b>).':''}</div></details>${qhBlock(J,ball,p2,HCOL)}${vxBlock(J)}${thBlock(J)}${mpBlocks(J,ball,p2,HCOL)}`:'';   // thứ tự (anh 20/10/2026): x kỳ gần nhất, Quan hệ trong kỳ lên đầu
+    <div class="bg-foot" style="margin:2px 0 0;">Dấu đen +1 / −1 / ±1 góc dưới phải = số đó hơn / kém / kề hai phía một số của kỳ liền trước; <b style="background:#d62828;color:#fff;border-radius:4px;padding:0 3px;">dấu đỏ</b> góc trên trái = so với kỳ cách 1 kỳ (số lặp không dấu). Bên phải mỗi kỳ: hàng chục từng số · tổng · số chẵn (C) / lẻ (L), tính 5 số chính. <b style="color:var(--ac)">Dòng ▸ Dãy</b> trên cùng = dãy giả định của anh cho kỳ tới: bấm vòng tròn để chọn số, viền vàng = trùng kỳ mới nhất, bấm chữ ▸ Dãy để mở danh sách dãy (thêm / xoá / chọn dãy hiện).${KG?` Đang lọc chỉ kỳ ${KG}: màu lặp và dấu ±1 so với kỳ ${KG} liền trước.`:''}${J.game==='loto'?' Bóng cam = số may mắn; vòng nhỏ góc dưới phải bóng cam = hơn / kém số may mắn kỳ liền trước'+(KG?' cùng giờ '+KG:'')+' (<b style="color:#3fb950">+ xanh</b>, <b style="color:#ff4d4f">− đỏ</b>).':''}</div></details>${qhBlock(J,ball,p2,HCOL)}${dlBlock(J,ball,p2)}${vxBlock(J)}${thBlock(J)}${mpBlocks(J,ball,p2,HCOL)}`:'';   // thứ tự (anh 20/10/2026): x kỳ gần nhất, Quan hệ trong kỳ lên đầu
   const secP=(sub,body)=>`<div class="bg-poolblk">${sub?`<div class="bg-subt" style="display:block;margin-bottom:6px;">${sub}</div>`:''}${body}</div>`;   // Pool = block lớn riêng, nằm trên 'Gợi ý kỳ tới' (anh 16/10/2026)
   const BAN=J.stale?`<div class="bg-foot" style="margin:0 0 6px;color:var(--ac);">Pool đang áp dụng cho kỳ <b>${J.next}</b>${(()=>{const i=J.dates201.indexOf(J.nextBase);if(i<0||!J.pools)return '';const r=J.res201[i];return `<br><span style="color:var(--text,#e8ecf5);">Pool app kỳ ${J.nextBase} trúng: ${Object.keys(J.pools).map(Number).sort((x,y)=>x-y).map(k=>`P${k} <b>${J.pools[k].filter(n=>r.includes(n)).length}</b>`).join(' · ')}</span>`;})()}</div>`:'';
   const S3=secP('',   // bỏ dòng 'pool 18: kỳ trúng…' (anh 20/10/2026)
